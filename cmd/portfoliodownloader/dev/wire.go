@@ -6,7 +6,7 @@
 package main
 
 import (
-	"github.com/dhojayev/traderepublic-portfolio-downloader/cmd/portfoliodownloader/app"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/cmd/portfoliodownloader"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/auth"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
@@ -23,7 +23,7 @@ import (
 
 var (
 	DefaultSet = wire.NewSet(
-		app.NewApp,
+		portfoliodownloader.NewApp,
 		transactions.NewClient,
 		details.NewClient,
 		transaction.NewTypeResolver,
@@ -58,14 +58,14 @@ var (
 	)
 )
 
-func CreateLocalApp(baseDir string, logger *log.Logger) (app.App, error) {
+func CreateLocalApp(baseDir string, logger *log.Logger) (portfoliodownloader.App, error) {
 	wire.Build(LocalSet)
 
-	return app.App{}, nil
+	return portfoliodownloader.App{}, nil
 }
 
-func CreateRemoteApp(phoneNumber auth.PhoneNumber, pin auth.Pin, logger *log.Logger) (app.App, error) {
+func CreateRemoteApp(phoneNumber auth.PhoneNumber, pin auth.Pin, logger *log.Logger) (portfoliodownloader.App, error) {
 	wire.Build(RemoteSet)
 
-	return app.App{}, nil
+	return portfoliodownloader.App{}, nil
 }

@@ -9,7 +9,7 @@ import (
 	"github.com/google/wire"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/dhojayev/traderepublic-portfolio-downloader/cmd/portfoliodownloader/app"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/cmd/portfoliodownloader"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/auth"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
@@ -23,7 +23,7 @@ import (
 
 var (
 	DefaultSet = wire.NewSet(
-		app.NewApp,
+		portfoliodownloader.NewApp,
 		transactions.NewClient,
 		details.NewClient,
 		transaction.NewTypeResolver,
@@ -56,14 +56,14 @@ var (
 	)
 )
 
-func CreateNonWritingApp(phoneNumber auth.PhoneNumber, pin auth.Pin, logger *log.Logger) (app.App, error) {
+func CreateNonWritingApp(phoneNumber auth.PhoneNumber, pin auth.Pin, logger *log.Logger) (portfoliodownloader.App, error) {
 	wire.Build(NonWritingSet)
 
-	return app.App{}, nil
+	return portfoliodownloader.App{}, nil
 }
 
-func CreateWritingApp(phoneNumber auth.PhoneNumber, pin auth.Pin, logger *log.Logger) (app.App, error) {
+func CreateWritingApp(phoneNumber auth.PhoneNumber, pin auth.Pin, logger *log.Logger) (portfoliodownloader.App, error) {
 	wire.Build(WritingSet)
 
-	return app.App{}, nil
+	return portfoliodownloader.App{}, nil
 }
