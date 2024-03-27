@@ -29,6 +29,7 @@ func (r CSVReader) Read(filepath string) ([]CSVEntry, error) {
 			return entries, nil
 		}
 	}
+
 	defer func() {
 		if err := file.Close(); err != nil {
 			r.logger.Errorf("csv reader could not close file: %s", err)

@@ -80,6 +80,7 @@ func (r *Reader) Close() error {
 	return nil
 }
 
+//nolint:cyclop,ireturn
 func (r *Reader) Read(dataType string, dataMap map[string]any) (portfolio.OutputDataInterface, error) {
 	r.subID++
 

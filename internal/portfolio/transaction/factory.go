@@ -77,7 +77,7 @@ func (f CSVEntryFactory) FromSale(sale Sale) filesystem.CSVEntry {
 }
 
 func (f CSVEntryFactory) FromBenefit(benefit Benefit) filesystem.CSVEntry {
-	var debit float64 = 0
+	var debit float64
 
 	if benefit.IsTypeRoundUp() {
 		debit = benefit.MonetaryValues.Total

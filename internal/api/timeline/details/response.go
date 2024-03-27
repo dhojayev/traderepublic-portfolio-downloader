@@ -155,7 +155,7 @@ func (r ResponseSectionTypeTable) Event() (ResponseSectionTypeTableData, error) 
 func (r ResponseSectionTypeTable) OrderType() (ResponseSectionTypeTableData, error) {
 	data, err := r.findDataByTitle(overviewDataTitleOrderType)
 	if err == nil {
-		return data, err
+		return data, nil
 	}
 
 	return r.findDataByTitle(overviewDataTitleOrderTypeAlt)

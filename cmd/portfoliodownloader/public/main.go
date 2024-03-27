@@ -11,10 +11,6 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/auth"
 )
 
-const (
-	responsesBaseDir string = "responses"
-)
-
 func main() {
 	var args Args
 
