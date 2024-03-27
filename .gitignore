@@ -1,6 +1,6 @@
 *_gen.go
-.session
-.refresh
-transactions.csv
-responses
+/.session
+/.refresh
+/transactions.csv
+/responses
 vendor
