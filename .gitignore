@@ -1,0 +1,5 @@
+*_gen.go
+.session
+.refresh
+transactions.csv
+vendor
