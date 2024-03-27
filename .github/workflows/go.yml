@@ -45,6 +45,7 @@ jobs:
   releases-matrix:
     name: Release Go Binary
     runs-on: ubuntu-latest
+    needs: [build]
     strategy:
       matrix:
         goos: [ linux, windows, darwin ]
@@ -62,5 +63,6 @@ jobs:
           goos: ${{ matrix.goos }}
           goarch: ${{ matrix.goarch }}
           goversion: "1.22.1"
+          project_path: "./cmd/portfoliodownloader/public"
           binary_name: "portfoliodownloader"
           extra_files: LICENSE README.md
