@@ -34,12 +34,23 @@ jobs:
       - name: Test
         run: go test -v ./...
 
-      - name: Build
-        run: |
-          GOOS=darwin GOARCH=amd64 go build -v ./cmd/portfoliodownloader/public
-          GOOS=darwin GOARCH=arm64 go build -v ./cmd/portfoliodownloader/public
-          GOOS=windows GOARCH=386 go build -v ./cmd/portfoliodownloader/public
-          GOOS=windows GOARCH=amd64 go build -v ./cmd/portfoliodownloader/public
-          GOOS=linux GOARCH=386 go build -v ./cmd/portfoliodownloader/public
-          GOOS=linux GOARCH=amd64 go build -v ./cmd/portfoliodownloader/public
-          GOOS=linux GOARCH=arm64 go build -v ./cmd/portfoliodownloader/public
+      - name: Build darwin-amd64
+        run: GOOS=darwin GOARCH=amd64 go build -v ./cmd/portfoliodownloader/public
+
+      - name: Build darwin-arm64
+        run: GOOS=darwin GOARCH=arm64 go build -v ./cmd/portfoliodownloader/public
+
+      - name: Build windows-386
+        run: GOOS=windows GOARCH=386 go build -v ./cmd/portfoliodownloader/public
+
+      - name: Build windows-amd64
+        run: GOOS=windows GOARCH=amd64 go build -v ./cmd/portfoliodownloader/public
+
+      - name: Build linux-386
+        run: GOOS=linux GOARCH=386 go build -v ./cmd/portfoliodownloader/public
+
+      - name: Build linux-amd64
+        run: GOOS=linux GOARCH=amd64 go build -v ./cmd/portfoliodownloader/public
+
+      - name: Build linux-arm64
+        run: GOOS=linux GOARCH=arm64 go build -v ./cmd/portfoliodownloader/public
