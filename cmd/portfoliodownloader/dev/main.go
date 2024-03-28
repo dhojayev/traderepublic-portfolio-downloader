@@ -7,7 +7,7 @@ import (
 	"github.com/alexflint/go-arg"
 	nested "github.com/antonfisher/nested-logrus-formatter"
 	log "github.com/sirupsen/logrus"
-	"golang.org/x/crypto/ssh/terminal"
+	"golang.org/x/term"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/auth"
@@ -44,7 +44,7 @@ func main() {
 	if !args.LocalMode {
 		fmt.Println("Enter pin:")
 
-		input, err := terminal.ReadPassword(syscall.Stdin)
+		input, err := term.ReadPassword(syscall.Stdin)
 		if err != nil {
 			logger.Panic(err)
 		}
