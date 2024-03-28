@@ -72,15 +72,15 @@ would do:
 Download one of the binaries from [releases](https://github.com/dhojayev/traderepublic-portfolio-downloader/releases)
 section according to the table below:
 
-| OS      | Architecture | Description                     | File to download      |
-|---------|--------------|---------------------------------|-----------------------|
-| macOS   | amd64        | Apple M1 SoC and newer          | *-darwin-amd64.tar.gz |
-| macOS   | arm64        | Apple devices using Intel CPU   | *-darwin-arm64.tar.gz |
-| Windows | x86          | 32-Bit Windows                  | *-windows-386.zip     |
-| Windows | amd64        | 64-Bit Windows                  | *-windows-amd64.zip   |
-| Linux   | x86          | 32-Bit linux distro             | *-linux-386.tar.gz    |
-| Linux   | amd64        | 64-Bit linux distro             | *-linux-amd64.tar.gz  |
-| Linux   | arm64        | linux distro for ARM processors | *-linux-arm64.tar.gz  |
+| OS      | Architecture | Description                          | File to download      |
+|---------|--------------|--------------------------------------|-----------------------|
+| macOS   | amd64        | Apple devices using Intel CPU        | *-darwin-amd64.tar.gz |
+| macOS   | arm64        | Apple devices using M1 SoC and newer | *-darwin-arm64.tar.gz |
+| Windows | x86          | 32-Bit Windows                       | *-windows-386.zip     |
+| Windows | amd64        | 64-Bit Windows                       | *-windows-amd64.zip   |
+| Linux   | x86          | 32-Bit linux distro                  | *-linux-386.tar.gz    |
+| Linux   | amd64        | 64-Bit linux distro                  | *-linux-amd64.tar.gz  |
+| Linux   | arm64        | linux distro for ARM processors      | *-linux-arm64.tar.gz  |
 
 ### Running the app
 
@@ -167,7 +167,7 @@ Mar 28 12:02:27.379 [INFO] All data processed
 | **Credit**          | Amount credited to the deposited amount in EUR                            |
 | **Portfolio value** | Amount that contributes to the portfolio size in EUR                      |
 
-Example CSV output can be viewed here: [transactions.csv](assets%2Ftransactions.csv)
+Example CSV output can be viewed here: [transactions.csv](./assets/transactions.csv)
 
 ## Troubleshooting
 
@@ -188,5 +188,6 @@ suggestions and feedback.
 
 ## Closing words
 
-This project and I have no affiliation to Trade Republic Bank GmbH by any means. Trade Republic is a registered
-trademark of Trade Republic Bank GmbH.
+This project and I have no affiliation to Trade Republic Bank GmbH by any means.
+
+Trade Republic is a registered trademark of Trade Republic Bank GmbH.
