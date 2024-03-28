@@ -3,14 +3,7 @@
 
 name: Go
 
-on:
-  release:
-    types: [created]
-
-permissions:
-  contents: write
-  packages: write
-
+on: push
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -22,7 +15,7 @@ jobs:
         with:
           go-version: '1.22.1'
 
-      - name: Install dependecies
+      - name: Install dependencies
         run: go mod vendor
 
       - name: Install binaries
@@ -34,51 +27,5 @@ jobs:
       - name: Lint
         run: make lint
 
-      - name: Build
-        run: go build -v ./...
-
       - name: Test
         run: go test -v ./...
-
-      - name: Archive generated files
-        uses: actions/upload-artifact@v4
-        with:
-          name: wire-gen-files
-          path: |
-            ./**/*_gen.go
-
-  releases-matrix:
-    name: Release Go Binary
-    runs-on: ubuntu-latest
-    needs: [ build ]
-    strategy:
-      matrix:
-        goos: [ linux, windows, darwin ]
-        goarch: [ "386", amd64, arm64 ]
-        exclude:
-          - goarch: "386"
-            goos: darwin
-          - goarch: arm64
-            goos: windows
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: '1.22.1'
-
-      - name: Download all workflow run artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: wire-gen-files
-
-      - uses: wangyoucao577/go-release-action@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          goos: ${{ matrix.goos }}
-          goarch: ${{ matrix.goarch }}
-          goversion: "1.22.1"
-          project_path: "./cmd/portfoliodownloader/public"
-          binary_name: "portfoliodownloader"
-          extra_files: LICENSE README.md

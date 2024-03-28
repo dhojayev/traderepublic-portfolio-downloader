@@ -10,6 +10,7 @@ require (
 	github.com/gorilla/websocket v1.5.1
 	github.com/sirupsen/logrus v1.9.3
 	github.com/thlib/go-timezone-local v0.0.0-20210907160436-ef149e42d28e
+	golang.org/x/term v0.16.0
 )
 
 require (
