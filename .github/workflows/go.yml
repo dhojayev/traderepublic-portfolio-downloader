@@ -42,6 +42,13 @@ jobs:
       - name: Test
         run: go test -v ./...
 
+      - name: Archive generated files
+        uses: actions/upload-artifact@v4
+        with:
+          name: wire-gen-files
+          path: |
+            ./**/*_gen.go
+
   releases-matrix:
     name: Release Go Binary
     runs-on: ubuntu-latest
@@ -57,10 +64,15 @@ jobs:
             goos: windows
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
           go-version: '1.22.1'
+
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v4
+
       - uses: wangyoucao577/go-release-action@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
