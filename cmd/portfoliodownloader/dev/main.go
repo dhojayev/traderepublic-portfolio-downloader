@@ -2,15 +2,14 @@ package main
 
 import (
 	"fmt"
-	"syscall"
 
 	"github.com/alexflint/go-arg"
 	nested "github.com/antonfisher/nested-logrus-formatter"
 	log "github.com/sirupsen/logrus"
-	"golang.org/x/term"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/auth"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/util"
 )
 
 const (
@@ -44,7 +43,7 @@ func main() {
 	if !args.LocalMode {
 		fmt.Println("Enter pin:")
 
-		input, err := term.ReadPassword(syscall.Stdin)
+		input, err := util.ReadPassword()
 		if err != nil {
 			logger.Panic(err)
 		}
