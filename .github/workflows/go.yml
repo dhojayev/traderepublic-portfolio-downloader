@@ -22,11 +22,11 @@ jobs:
       - name: Install dependencies
         run: go mod vendor
 
-      - name: Lint
-        run: make lint
-
       - name: Make generate
         run: make generate
+
+      - name: Lint
+        run: make lint
 
       - name: Test
         run: go test -v ./...
