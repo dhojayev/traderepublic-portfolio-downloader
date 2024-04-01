@@ -54,4 +54,4 @@ jobs:
         run: GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -v -o /tmp/portfoliodownloader ./cmd/portfoliodownloader/public
 
       - name: Dev ${{ matrix.goos }}-${{ matrix.goarch }}
-      run: GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -v -o /tmp/portfoliodownloader-dev ./cmd/portfoliodownloader/dev
+        run: GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -v -o /tmp/portfoliodownloader-dev ./cmd/portfoliodownloader/dev
