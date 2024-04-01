@@ -31,6 +31,7 @@ jobs:
 
   build-matrix:
     name: Build Go Binary
+    needs: [build]
     runs-on: ubuntu-latest
     strategy:
       matrix:
