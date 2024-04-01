@@ -47,7 +47,7 @@ jobs:
         run: make build-linux-386
 
       - name: Make build-linux-amd64
-        run: build-linux-amd64
+        run: make build-linux-amd64
 
       - name: Make build-linux-arm64
         run: make build-linux-arm64
