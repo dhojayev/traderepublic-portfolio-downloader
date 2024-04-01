@@ -6,6 +6,9 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/thlib/go-timezone-local/tzlocal"
+
+	// load timezone data.
+	_ "time/tzdata"
 )
 
 func GetRuntimeTimezone(logger *log.Logger) error {
