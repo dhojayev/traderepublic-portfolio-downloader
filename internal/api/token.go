@@ -12,7 +12,6 @@ const (
 	TokenNameRefresh TokenName = "refresh"
 
 	cookieNamePrefix = "tr_"
-	cookieValueLen   = 514
 
 	headerSetCookie = "Set-Cookie"
 	filePermissions = 0o600
@@ -58,7 +57,7 @@ func NewTokenFromHeader(name TokenName, header http.Header) (Token, error) {
 		found = true
 		cookieName := cookieNamePrefix + name
 		startPos := len(cookieName) + 1
-		token.value = v[startPos : strings.Index(v, ";")]
+		token.value = v[startPos:strings.Index(v, ";")]
 	}
 
 	if !found {
