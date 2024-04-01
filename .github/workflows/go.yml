@@ -23,11 +23,11 @@ jobs:
       - name: Make generate
         run: make generate
 
-      - name: Lint
-        run: make lint
-
       - name: Make generate
         run: make generate
+
+      - name: Lint
+        run: make lint
 
       - name: Test
         run: make test
