@@ -152,6 +152,7 @@ func (d DetailsDeserializer) DeserializeBaseTransaction(response details.Respons
 	return NewBaseTransaction(response.ID, header.Data.Status, timestamp), nil
 }
 
+//nolint:cyclop
 func (d DetailsDeserializer) DeserializeAsset(response details.Response) (Asset, error) {
 	overview, err := response.OverviewSection()
 	if err != nil {
@@ -180,6 +181,10 @@ func (d DetailsDeserializer) DeserializeAsset(response details.Response) (Asset,
 
 	shares, err := transactionSection.Shares()
 	if err != nil {
+		if errors.Is(err, details.ErrSectionDataEntryNotFound) {
+			return Asset{}, fmt.Errorf("could not get shares: %w", ErrUnsupportedResponse)
+		}
+
 		return Asset{}, fmt.Errorf("could not get shares: %w", err)
 	}
 
