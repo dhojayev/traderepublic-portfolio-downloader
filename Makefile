@@ -1,13 +1,18 @@
-.PHONY: all install wire lint
+.PHONY: all init generate lint run-dev run-prod
 
-all: install wire lint
+all: generate lint
 
-install:
-	go install github.com/google/wire/cmd/wire@latest
-	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.57.1
-
-wire:
+init:
 	go run -mod=mod github.com/google/wire/cmd/wire ./...
 
+generate:
+	go generate ./...
+	
 lint:
-	golangci-lint run ./...
+	go run -mod=mod github.com/golangci/golangci-lint/cmd/golangci-lint@v1.57.2 run ./...
+
+run-dev:
+	go run ./cmd/portfoliodownloader/dev -l --trace +490123456789
+
+run-public:
+	go run ./cmd/portfoliodownloader/public -w --trace +490123456789

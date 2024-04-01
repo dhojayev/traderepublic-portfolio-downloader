@@ -21,14 +21,14 @@ const (
 )
 
 type Reader struct {
-	authClient *auth.Client
+	authClient auth.ClientInterface
 	writer     writer.Interface
 	logger     *log.Logger
 	conn       *websocket.Conn
 	subID      uint
 }
 
-func NewReader(authClient *auth.Client, writer writer.Interface, logger *log.Logger) (*Reader, error) {
+func NewReader(authClient auth.ClientInterface, writer writer.Interface, logger *log.Logger) (*Reader, error) {
 	client := &Reader{
 		authClient: authClient,
 		writer:     writer,

@@ -1,3 +1,5 @@
+//go:generate go run -mod=mod go.uber.org/mock/mockgen -source=client.go -destination client_mock.go -package=auth
+
 package auth
 
 import (
@@ -19,6 +21,12 @@ type (
 	PhoneNumber string
 	Pin         string
 )
+
+type ClientInterface interface {
+	Login() (api.LoginResponse, error)
+	ProvideOTP(processID, otp string) error
+	SessionToken() api.Token
+}
 
 type Client struct {
 	apiClient    api.Client

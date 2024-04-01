@@ -6,7 +6,7 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/auth"
 )
 
-func Login(authClient *auth.Client) error {
+func Login(authClient auth.ClientInterface) error {
 	resp, err := authClient.Login()
 	if err != nil {
 		return fmt.Errorf("could not login: %w", err)
