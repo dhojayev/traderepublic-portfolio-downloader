@@ -1,4 +1,4 @@
-.PHONY: all init generate lint test run-dev run-prod
+.PHONY: all init generate lint test build-darwin-amd64 build-darwin-arm64 build-windows-386 build-windows-amd64 build-linux-386 build-linux-amd64 build-linux-arm64
 
 all: generate lint test
 
@@ -9,13 +9,28 @@ generate:
 	go generate ./...
 	
 lint:
-	go run -mod=mod github.com/golangci/golangci-lint/cmd/golangci-lint@v1.57.2 run ./...
+	go run -mod=mod github.com/golangci/golangci-lint/cmd/golangci-lint@v1.57.2 run ./... 
 
 test:
 	go test -v ./...
 
-run-dev:
-	go run ./cmd/portfoliodownloader/dev -l --trace +490123456789
+build-darwin-amd64:
+	GOOS=darwin GOARCH=amd64 go build -v -o /tmp/portfoliodownloader ./cmd/portfoliodownloader/public
 
-run-public:
-	go run ./cmd/portfoliodownloader/public -w --trace +490123456789
+build-darwin-arm64:
+	GOOS=darwin GOARCH=arm64 go build -v -o /tmp/portfoliodownloader ./cmd/portfoliodownloader/public
+
+build-windows-386:
+	GOOS=windows GOARCH=386 go build -v -o /tmp/portfoliodownloader.exe ./cmd/portfoliodownloader/public
+
+build-windows-amd64:
+	GOOS=windows GOARCH=amd64 go build -v -o /tmp/portfoliodownloader.exe ./cmd/portfoliodownloader/public
+
+build-linux-386:
+	GOOS=linux GOARCH=386 go build -v -o /tmp/portfoliodownloader ./cmd/portfoliodownloader/public
+
+build-linux-amd64:
+	GOOS=linux GOARCH=amd64 go build -v -o /tmp/portfoliodownloader ./cmd/portfoliodownloader/public
+
+build-linux-arm64:
+	GOOS=linux GOARCH=arm64 go build -v -o /tmp/portfoliodownloader ./cmd/portfoliodownloader/public
