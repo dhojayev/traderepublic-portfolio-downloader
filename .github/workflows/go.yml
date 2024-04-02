@@ -22,35 +22,32 @@ jobs:
       - name: Install dependencies
         run: go mod vendor
 
-      - name: Install binaries
-        run: make install
-
       - name: Make wire
         run: make wire
 
       - name: Lint
         run: make lint
 
-      - name: Test
-        run: go test -v ./...
+      - name: Make Test
+        run: make test
 
-      - name: Build darwin-amd64
-        run: GOOS=darwin GOARCH=amd64 go build -v ./cmd/portfoliodownloader/public
+      - name: Make build-darwin-amd64
+        run: make build-darwin-amd64
 
-      - name: Build darwin-arm64
-        run: GOOS=darwin GOARCH=arm64 go build -v ./cmd/portfoliodownloader/public
+      - name: Make build-darwin-arm64
+        run: make build-darwin-arm64
 
-      - name: Build windows-386
-        run: GOOS=windows GOARCH=386 go build -v ./cmd/portfoliodownloader/public
+      - name: Make build-windows-386
+        run: make build-windows-386
 
-      - name: Build windows-amd64
-        run: GOOS=windows GOARCH=amd64 go build -v ./cmd/portfoliodownloader/public
+      - name: Make build-windows-amd64
+        run: make build-windows-amd64
 
-      - name: Build linux-386
-        run: GOOS=linux GOARCH=386 go build -v ./cmd/portfoliodownloader/public
+      - name: Make build-linux-386
+        run: make build-linux-386
 
-      - name: Build linux-amd64
-        run: GOOS=linux GOARCH=amd64 go build -v ./cmd/portfoliodownloader/public
+      - name: Make build-linux-amd64
+        run: make build-linux-amd64
 
-      - name: Build linux-arm64
-        run: GOOS=linux GOARCH=arm64 go build -v ./cmd/portfoliodownloader/public
+      - name: Make build-linux-arm64
+        run: make build-linux-arm64

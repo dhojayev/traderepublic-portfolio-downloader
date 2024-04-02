@@ -1,0 +1,13 @@
+version: '3'
+services:
+  go:
+    image: golang:1.22.1-alpine
+    restart: no
+    stdin_open: true
+    tty: true
+    entrypoint: /usr/src/app/entrypoint.sh
+    working_dir: /usr/src/app
+    environment:
+      - TZ=Europe/Berlin
+    volumes:
+      - ./:/usr/src/app
