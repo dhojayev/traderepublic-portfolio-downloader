@@ -141,9 +141,8 @@ func (c *Client) Session(refreshToken Token) (Token, error) {
 func (c *Client) request(req *http.Request) (*http.Response, error) {
 	c.logger.
 		WithFields(log.Fields{
-			"method":  req.Method,
-			"url":     req.URL.String(),
-			"headers": req.Header,
+			"method": req.Method,
+			"url":    req.URL.String(),
 		}).
 		Trace("executing request")
 

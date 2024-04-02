@@ -59,7 +59,7 @@ func (w JSONWriter) write(dir, filename string, dataMap map[string]any) error {
 	}
 
 	destDir := baseDir + "/" + dir
-	filepath := fmt.Sprintf("%s/%s.json", destDir, filename)
+	filepath := fmt.Sprintf("./%s/%s.json", destDir, filename)
 
 	if err := w.createDir(destDir); err != nil {
 		return err

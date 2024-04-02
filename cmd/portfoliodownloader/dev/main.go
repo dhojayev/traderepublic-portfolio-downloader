@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/alexflint/go-arg"
 	nested "github.com/antonfisher/nested-logrus-formatter"
 	log "github.com/sirupsen/logrus"
@@ -41,9 +39,7 @@ func main() {
 	}
 
 	if !args.LocalMode {
-		fmt.Println("Enter pin:")
-
-		input, err := util.ReadPassword()
+		input, err := util.ReadPassword("pin")
 		if err != nil {
 			logger.Panic(err)
 		}
