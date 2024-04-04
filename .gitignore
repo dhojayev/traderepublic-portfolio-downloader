@@ -1,4 +1,4 @@
-*_gen.go
+*_mock.go
 /.session
 /.refresh
 /transactions.csv

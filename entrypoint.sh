@@ -4,9 +4,7 @@ apk add -u --no-cache tzdata make
 
 go mod vendor
 
-make wire
-make lint
-make test
+make all
 
 make build-darwin-amd64
 make build-darwin-arm64

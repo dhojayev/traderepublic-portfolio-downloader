@@ -36,6 +36,7 @@ var (
 		auth.NewClient,
 		websocket.NewReader,
 
+		wire.Bind(new(auth.ClientInterface), new(*auth.Client)),
 		wire.Bind(new(portfolio.ReaderInterface), new(*websocket.Reader)),
 		wire.Bind(new(transaction.DetailsDeserializerInterface), new(transaction.DetailsDeserializer)),
 		wire.Bind(new(filesystem.FactoryInterface), new(transaction.CSVEntryFactory)),
