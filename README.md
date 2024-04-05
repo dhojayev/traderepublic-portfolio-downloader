@@ -2,34 +2,29 @@
 
 ## Preamble
 
-This project exists solely because I need a better representation of all purchases and sales made in Trade Republic.
-
-The initial idea was to create a list of all purchase and sale transactions to be able to track profit and loss.
-Unfortunately Trade Republic does not provide such dashboard or file(s) to download (it is possible to view current
-portfolio
-assets but no analytics of what has been sold and how much of profit has been gained).
+This project exists because Trade Republic does not provide a better representation of all purchases and sales. While it is still possible to see current holdings in analytics (it is possible to view current
+portfolio assets but no analytics of what has been sold and how much of profit has been gained), all sale transactions have to be tracked manually one-by-one to understand your benefits of trading better. Since Trade Republic does not provide such dashboard or file(s) to download this project's idea was born.
 
 ## Existing solutions
 
-After researching a bit in internet I found a solution (or
-two) that fulfill similar requirements, however, those
-solutions are pretty outdated and do not benefit from new endpoints (actually websocket message types, but let's call
-them here that way for simplicity).
+After researching couple of solutions that fulfill similar requirements were discovered, however, some
+are pretty outdated and do not benefit from new endpoints (actually websocket message types, but let's call
+them here that way for simplicity), some are very limit in fullfiling the main requirements: tracking purchases and sales of assets.
 
-Main disadvantages of existing solutions for me:
+Main disadvantages of existing solutions in our opinion were:
 
-* Resets paired device (which is annoying if you use the mobile app regularly)
-* Requires OCR for getting transaction details
-* Pretty outdated and not well-maintained
-* Written in python (which I am not proficient in enough to contribute)
+* Reseting paired device (which is annoying if you use the mobile app regularly)
+* Requiring OCR for getting transaction details (reading from transaction PDF documents)
+* Using outdated endpoints to fetch data (no support of newly introduced "Save-back" and "Round up" transactions)
+* Being written in python (which is not the main language of programming of ours)
 
 ## Implementation
 
 ### Minimum requirements and limitations
 
-I initially set a few requirements and limitations for myself when planning this project which I followed:
+A few requirements and limitations were set intially when planning this project which we strictly follow:
 
-* Written in go and compiled as a binary for all major platforms and architectures
+* It should be written in go and compiled as a binary for all major platforms and architectures
 * Making it opensource to allow others to contribute and audit
 * No configuration file requirements (all input requested in console)
 * No dependencies (such as SQL databases, etc) to enable non-techs using the app "AS IS"
@@ -37,8 +32,7 @@ I initially set a few requirements and limitations for myself when planning this
 * No security information storage (except for session and refresh tokens) on host machine
 * **No data should leave the host machine**
 
-It is important to mention that this application does nothing more than Trade Republic's official frontend application
-would do:
+It is important to understand that this application does nothing more than Trade Republic's official frontend application would do:
 
 * Authenticates using the same API endpoints
 * Retrieves the data using the same websocket address
@@ -56,14 +50,15 @@ would do:
 
 **What is coming:**
 
-* Support of "interest received" transactions
+* Support of including "interest received" transactions
+* Support of including "lending" transactions
 * Identifying stock transactions
 * Downloading and storing PDF files attached to each transaction
 * Source code test coverage
 
 **What (maybe) will follow:**
 
-* Writing the data into an SQL database for using it in custom applications
+* Writing data into an SQL database for using it in custom applications
 
 ## Usage
 
@@ -73,7 +68,7 @@ Download one of the binaries from [releases](https://github.com/dhojayev/tradere
 section according to the table below:
 
 | OS      | Architecture | Description                          | File to download      |
-|---------|--------------|--------------------------------------|-----------------------|
+| ------- | ------------ | ------------------------------------ | --------------------- |
 | macOS   | amd64        | Apple devices using Intel CPU        | *-darwin-amd64.tar.gz |
 | macOS   | arm64        | Apple devices using M1 SoC and newer | *-darwin-arm64.tar.gz |
 | Windows | x86          | 32-Bit Windows                       | *-windows-386.zip     |
@@ -150,7 +145,7 @@ Mar 28 12:02:27.379 [INFO] All data processed
 ### CSV file fields
 
 | Field               | Description                                                               |
-|---------------------|---------------------------------------------------------------------------|
+| ------------------- | ------------------------------------------------------------------------- |
 | **ID**              | Transaction UUID                                                          |
 | **Status**          | Transaction status (should always be `executed`)                          |
 | **Timestamp**       | Date and time of transaction execution, e.g.: `30 Nov 23 10:22 +0000`     |
@@ -165,29 +160,26 @@ Mar 28 12:02:27.379 [INFO] All data processed
 | **Commission**      | Commission paid to Trade Republic for the transaction in EUR              |
 | **Debit**           | Amount debited from the deposited amount in EUR                           |
 | **Credit**          | Amount credited to the deposited amount in EUR                            |
-| **Portfolio value** | Amount that contributes to the portfolio size in EUR                      |
+| **Invested amount** | Amount that was invested (or taken out from portfolio) in EUR             |
 
 Example CSV output can be viewed here: [transactions.csv](./assets/transactions.csv)
 
 ## Troubleshooting
 
-It is possible that you will get an error while running the app because it will receive unexpected data. This is normal
-because I was able to cover only the data I have in my portfolio. It is possible that you have some type of assets that
-I simply don't own and cannot test, e.g: derivates.
+It is possible that you will get an error while running the app because it will receive unexpected data. This is normal because we were able to cover only the data we have in our portfolios. It is possible that you have some type of assets that we simply don't own and cannot test, e.g: derivates.
 
-Please create an issue and attach failing response with falsified values in it. I will the either add support of these
-responses or make sure to not let the app fail when received such response.
+Please create an issue and attach failing response with falsified amounts and removed ID. We will the either implement support of these responses or make sure to not let the app fail when received such response.
 
 ## Have suggestions or improvements?
 
-I hope that this app will become better with the help of the community until Trade Republic decides to implement a
+We hope that this app will become better with the help of the community until Trade Republic decides to implement a
 better dashboard to be able to have an overview of such data.
 
-Please create a pull request with your changes if you have something to contribute. I am very open for constructive
+Please create a pull request with your changes if you have something to contribute. We are very open for constructive
 suggestions and feedback.
 
 ## Closing words
 
-This project and I have no affiliation to Trade Republic Bank GmbH by any means.
+This project and it's contributors have no affiliation to Trade Republic Bank GmbH by any means.
 
 Trade Republic is a registered trademark of Trade Republic Bank GmbH.

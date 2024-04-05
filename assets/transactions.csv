@@ -1,4 +1,4 @@
-ID,Status,Timestamp,Type,Asset type,Name,Instrument,Shares,Rate,Realized yield,Realized PnL,Commission,Debit,Credit,Portfolio value
+ID,Status,Timestamp,Type,Asset type,Name,Instrument,Shares,Rate,Realized yield,Realized PnL,Commission,Debit,Credit,Invested amount
 xxxxxxxxxxxxxxxxx,executed,01 Oct 23 11:42 +0000,Purchase,ETF,MSCI World USD (Dist),IE00BK1PV551,1,72.592,0,0,0,72.592,0,72.592
 xxxxxxxxxxxxxxxxx,executed,30 Nov 23 10:22 +0000,Dividends,ETF,MSCI World USD (Dist),IE00BK1PV551,10.344033,0.28,0,2.94,0,0,2.94,0
 xxxxxxxxxxxxxxxxx,executed,08 Dec 23 16:07 +0000,Sale,Cryptocurrency,Ethereum,XF000ETH0019,0.227902,2092.56,6.09,27.37,1,0,475.9,-475.9

@@ -35,7 +35,7 @@ func (f CSVEntryFactory) Make(valueObject any) (filesystem.CSVEntry, error) {
 }
 
 func (f CSVEntryFactory) FromPurchase(purchase Purchase) filesystem.CSVEntry {
-	portfolioValue := purchase.MonetaryValues.Total - purchase.MonetaryValues.Commission
+	investedAmount := purchase.MonetaryValues.Total - purchase.MonetaryValues.Commission
 
 	return filesystem.NewCSVEntry(
 		purchase.BaseTransaction.ID,
@@ -51,12 +51,14 @@ func (f CSVEntryFactory) FromPurchase(purchase Purchase) filesystem.CSVEntry {
 		purchase.MonetaryValues.Commission,
 		purchase.MonetaryValues.Total,
 		0,
-		portfolioValue,
+		investedAmount,
 		internal.DateTime{Time: purchase.BaseTransaction.Timestamp},
 	)
 }
 
 func (f CSVEntryFactory) FromSale(sale Sale) filesystem.CSVEntry {
+	investedAmount := -(sale.MonetaryValues.Total - sale.Profit + sale.Purchase.MonetaryValues.Commission)
+
 	return filesystem.NewCSVEntry(
 		sale.BaseTransaction.ID,
 		sale.BaseTransaction.Status,
@@ -64,14 +66,14 @@ func (f CSVEntryFactory) FromSale(sale Sale) filesystem.CSVEntry {
 		sale.Asset.Type,
 		sale.Asset.Name,
 		sale.Asset.Instrument,
-		sale.Asset.Shares,
+		-sale.Asset.Shares,
 		sale.MonetaryValues.Rate,
 		sale.Yield,
 		sale.Profit,
 		sale.MonetaryValues.Commission,
 		0,
 		sale.MonetaryValues.Total,
-		-sale.MonetaryValues.Total,
+		investedAmount,
 		internal.DateTime{Time: sale.BaseTransaction.Timestamp},
 	)
 }
