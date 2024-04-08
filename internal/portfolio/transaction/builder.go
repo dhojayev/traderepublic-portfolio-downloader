@@ -12,39 +12,39 @@ import (
 
 var ErrUnsupportedResponse = errors.New("unsupported response")
 
-type DetailsDeserializerInterface interface {
-	Deserialize(response details.Response) (any, error)
+type BuilderInterface interface {
+	FromResponse(response details.Response) (any, error)
 }
 
-type DetailsDeserializer struct {
+type Builder struct {
 	resolver TypeResolver
 	logger   *log.Logger
 }
 
-func NewDetailsDeserializer(resolver TypeResolver, logger *log.Logger) DetailsDeserializer {
-	return DetailsDeserializer{
+func NewBuilder(resolver TypeResolver, logger *log.Logger) Builder {
+	return Builder{
 		resolver: resolver,
 		logger:   logger,
 	}
 }
 
-func (d DetailsDeserializer) Deserialize(response details.Response) (any, error) {
-	resolvedType, err := d.resolver.Resolve(response)
+func (b Builder) FromResponse(response details.Response) (any, error) {
+	resolvedType, err := b.resolver.Resolve(response)
 	if err != nil {
 		return Purchase{}, fmt.Errorf("resolver error: %w", err)
 	}
 
 	switch resolvedType {
 	case TypeSaleTransaction:
-		return d.DeserializeSaleTransaction(response)
+		return b.BuildSaleTransaction(response)
 	case TypePurchaseTransaction:
-		return d.DeserializePurchase(response)
+		return b.BuildPurchase(response)
 	case TypeDividendPayoutTransaction:
-		return d.DeserializeDividendPayout(response)
+		return b.BuildDividendPayout(response)
 	case TypeRoundUpTransaction:
-		return d.DeserializeBenefit(TypeRoundUp, response)
+		return b.DeserializeBenefit(TypeRoundUp, response)
 	case TypeSavebackTransaction:
-		return d.DeserializeBenefit(TypeSaveback, response)
+		return b.DeserializeBenefit(TypeSaveback, response)
 	case TypeUnsupported, TypeCardPaymentTransaction:
 		return Purchase{}, ErrUnsupportedResponse
 	default:
@@ -52,23 +52,23 @@ func (d DetailsDeserializer) Deserialize(response details.Response) (any, error)
 	}
 }
 
-func (d DetailsDeserializer) DeserializePurchase(response details.Response) (Purchase, error) {
-	transaction, err := d.DeserializeBaseTransaction(response)
+func (b Builder) BuildPurchase(response details.Response) (Purchase, error) {
+	transaction, err := b.BuildBaseTransaction(response)
 	if err != nil {
 		return Purchase{}, err
 	}
 
-	asset, err := d.DeserializeAsset(response)
+	asset, err := b.BuildAsset(response)
 	if err != nil {
 		return Purchase{}, err
 	}
 
-	monetaryValues, err := d.DeserializeMonetaryValues(response)
+	monetaryValues, err := b.BuildMonetaryValues(response)
 	if err != nil {
 		return Purchase{}, err
 	}
 
-	documents, err := d.DeserializeDocuments(response)
+	documents, err := b.BuildDocuments(response)
 	if err != nil {
 		return Purchase{}, err
 	}
@@ -76,8 +76,8 @@ func (d DetailsDeserializer) DeserializePurchase(response details.Response) (Pur
 	return NewPurchase(transaction, asset, monetaryValues, documents), nil
 }
 
-func (d DetailsDeserializer) DeserializeSaleTransaction(response details.Response) (Sale, error) {
-	purchase, err := d.DeserializePurchase(response)
+func (b Builder) BuildSaleTransaction(response details.Response) (Sale, error) {
+	purchase, err := b.BuildPurchase(response)
 	if err != nil {
 		return Sale{}, err
 	}
@@ -120,8 +120,8 @@ func (d DetailsDeserializer) DeserializeSaleTransaction(response details.Respons
 	return sale, nil
 }
 
-func (d DetailsDeserializer) DeserializeDividendPayout(response details.Response) (DividendPayout, error) {
-	purchase, err := d.DeserializePurchase(response)
+func (b Builder) BuildDividendPayout(response details.Response) (DividendPayout, error) {
+	purchase, err := b.BuildPurchase(response)
 	if err != nil {
 		return DividendPayout{}, err
 	}
@@ -129,8 +129,8 @@ func (d DetailsDeserializer) DeserializeDividendPayout(response details.Response
 	return NewDividendPayout(NewSale(0, 0, purchase)), nil
 }
 
-func (d DetailsDeserializer) DeserializeBenefit(benefitType string, response details.Response) (Benefit, error) {
-	purchase, err := d.DeserializePurchase(response)
+func (b Builder) DeserializeBenefit(benefitType string, response details.Response) (Benefit, error) {
+	purchase, err := b.BuildPurchase(response)
 	if err != nil {
 		return Benefit{}, err
 	}
@@ -138,7 +138,7 @@ func (d DetailsDeserializer) DeserializeBenefit(benefitType string, response det
 	return NewBenefit(benefitType, purchase), nil
 }
 
-func (d DetailsDeserializer) DeserializeBaseTransaction(response details.Response) (BaseTransaction, error) {
+func (b Builder) BuildBaseTransaction(response details.Response) (BaseTransaction, error) {
 	header, err := response.HeaderSection()
 	if err != nil {
 		return BaseTransaction{}, fmt.Errorf("could not get transaction header %w", err)
@@ -153,7 +153,7 @@ func (d DetailsDeserializer) DeserializeBaseTransaction(response details.Respons
 }
 
 //nolint:cyclop
-func (d DetailsDeserializer) DeserializeAsset(response details.Response) (Asset, error) {
+func (b Builder) BuildAsset(response details.Response) (Asset, error) {
 	overview, err := response.OverviewSection()
 	if err != nil {
 		return Asset{}, fmt.Errorf("error getting overview: %w", err)
@@ -203,7 +203,7 @@ func (d DetailsDeserializer) DeserializeAsset(response details.Response) (Asset,
 	return NewAsset(instrument, asset.Detail.Text, sharesParsed), nil
 }
 
-func (d DetailsDeserializer) DeserializeMonetaryValues(response details.Response) (MonetaryValues, error) {
+func (b Builder) BuildMonetaryValues(response details.Response) (MonetaryValues, error) {
 	transactionSection, err := response.TransactionSection()
 	if err != nil {
 		return MonetaryValues{}, fmt.Errorf("could not get transaction section: %w", err)
@@ -248,7 +248,7 @@ func (d DetailsDeserializer) DeserializeMonetaryValues(response details.Response
 	return NewMonetaryValues(rateParsed, commissionParsed, totalParsed), nil
 }
 
-func (d DetailsDeserializer) DeserializeDocuments(response details.Response) ([]Document, error) {
+func (b Builder) BuildDocuments(response details.Response) ([]Document, error) {
 	documents := make([]Document, 0)
 
 	documentsSection, err := response.DocumentsSection()

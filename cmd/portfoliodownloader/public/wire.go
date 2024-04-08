@@ -27,7 +27,7 @@ var (
 		transactions.NewClient,
 		details.NewClient,
 		transaction.NewTypeResolver,
-		transaction.NewDetailsDeserializer,
+		transaction.NewBuilder,
 		transaction.NewCSVEntryFactory,
 		filesystem.NewCSVReader,
 		filesystem.NewCSVWriter,
@@ -38,7 +38,7 @@ var (
 
 		wire.Bind(new(auth.ClientInterface), new(*auth.Client)),
 		wire.Bind(new(portfolio.ReaderInterface), new(*websocket.Reader)),
-		wire.Bind(new(transaction.DetailsDeserializerInterface), new(transaction.DetailsDeserializer)),
+		wire.Bind(new(transaction.BuilderInterface), new(transaction.Builder)),
 		wire.Bind(new(filesystem.FactoryInterface), new(transaction.CSVEntryFactory)),
 	)
 
