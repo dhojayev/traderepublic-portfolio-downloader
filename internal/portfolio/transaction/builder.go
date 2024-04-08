@@ -42,9 +42,9 @@ func (b Builder) FromResponse(response details.Response) (any, error) {
 	case TypeDividendPayoutTransaction:
 		return b.BuildDividendPayout(response)
 	case TypeRoundUpTransaction:
-		return b.DeserializeBenefit(TypeRoundUp, response)
+		return b.BuildBenefit(TypeRoundUp, response)
 	case TypeSavebackTransaction:
-		return b.DeserializeBenefit(TypeSaveback, response)
+		return b.BuildBenefit(TypeSaveback, response)
 	case TypeUnsupported, TypeCardPaymentTransaction:
 		return Purchase{}, ErrUnsupportedResponse
 	default:
@@ -129,7 +129,7 @@ func (b Builder) BuildDividendPayout(response details.Response) (DividendPayout,
 	return NewDividendPayout(NewSale(0, 0, purchase)), nil
 }
 
-func (b Builder) DeserializeBenefit(benefitType string, response details.Response) (Benefit, error) {
+func (b Builder) BuildBenefit(benefitType string, response details.Response) (Benefit, error) {
 	purchase, err := b.BuildPurchase(response)
 	if err != nil {
 		return Benefit{}, err
