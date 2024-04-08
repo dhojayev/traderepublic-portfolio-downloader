@@ -52,6 +52,7 @@ It is important to understand that this application does nothing more than Trade
 
 * Support of including "interest received" transactions
 * Support of including "lending" transactions
+* Calculating miscelaneous values based on data from TR: invested amount, taxable amount, etc
 * Identifying stock transactions
 * Downloading and storing PDF files attached to each transaction
 * Source code test coverage
@@ -144,25 +145,26 @@ Mar 28 12:02:27.379 [INFO] All data processed
 
 ### CSV file fields
 
-| Field               | Description                                                               |
-| ------------------- | ------------------------------------------------------------------------- |
-| **ID**              | Transaction UUID                                                          |
-| **Status**          | Transaction status (should always be `executed`)                          |
-| **Timestamp**       | Date and time of transaction execution, e.g.: `30 Nov 23 10:22 +0000`     |
-| **Type**            | Transaction type, one of: `Purchase, Sale, Dividends, Round Up, Saveback` |
-| **Asset type**      | Asset type, one of: `ETF, Cryptocurrency, Lending, Other`                 |
-| **Name**            | Asset name, e.g.: `Bitcoin`                                               |
-| **Instrument**      | Instrument ISIN, e.g.: `IE00BK1PV551`                                     |
-| **Shares**          | Number of shares in transaction                                           |
-| **Rate**            | Price per share in EUR                                                    |
-| **Realized yield**  | Realized yield in percentage                                              |
-| **Realized PnL**    | Realized profit or loss amount in EUR (negative is loss)                  |
-| **Commission**      | Commission paid to Trade Republic for the transaction in EUR              |
-| **Debit**           | Amount debited from the deposited amount in EUR                           |
-| **Credit**          | Amount credited to the deposited amount in EUR                            |
-| **Invested amount** | Amount that was invested (or taken out from portfolio) in EUR             |
+| Field              | Description                                                               |
+| ------------------ | ------------------------------------------------------------------------- |
+| **ID**             | Transaction UUID                                                          |
+| **Status**         | Transaction status (should always be `executed`)                          |
+| **Timestamp**      | Date and time of transaction execution, e.g.: `30 Nov 23 10:22 +0000`     |
+| **Type**           | Transaction type, one of: `Purchase, Sale, Dividends, Round Up, Saveback` |
+| **Asset type**     | Asset type, one of: `ETF, Cryptocurrency, Lending, Other`                 |
+| **Name**           | Asset name, e.g.: `Bitcoin`                                               |
+| **Instrument**     | Instrument ISIN, e.g.: `IE00BK1PV551`                                     |
+| **Shares**         | Number of shares in transaction (negative when sold)                      |
+| **Rate**           | Price per share in EUR                                                    |
+| **Realized yield** | Realized yield in percentage                                              |
+| **Realized PnL**   | Realized profit or loss amount in EUR (negative is loss)                  |
+| **Commission**     | Commission paid to Trade Republic for the transaction in EUR              |
+| **Debit**          | Amount debited from the deposited amount in EUR                           |
+| **Credit**         | Amount credited to the deposited amount in EUR                            |
 
 Example CSV output can be viewed here: [transactions.csv](./assets/transactions.csv)
+
+**All values saved into the CSV file are taken "as is" from Trade Republic (except for making them negative in respective cases).**
 
 ## Troubleshooting
 

@@ -19,7 +19,7 @@ type CSVEntry struct {
 	Commission     float64
 	Debit          float64
 	Credit         float64
-	InvestedAmount float64 `csv:"Invested amount"`
+	InvestedAmount float64 `csv:"-"`
 }
 
 func NewCSVEntry(
