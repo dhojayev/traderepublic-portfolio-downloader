@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	responsesBaseDir string = "responses"
+	responsesBaseDir = "responses"
 )
 
 func main() {
@@ -39,6 +39,10 @@ func main() {
 	}
 
 	if !args.LocalMode {
+		if args.PhoneNumber == "" {
+			logger.Panic("phone number is required when not in local mode")
+		}
+
 		input, err := util.ReadPassword("pin")
 		if err != nil {
 			logger.Panic(err)

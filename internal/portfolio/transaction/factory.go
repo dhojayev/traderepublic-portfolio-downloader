@@ -38,7 +38,7 @@ func (f CSVEntryFactory) FromPurchase(purchase Purchase) filesystem.CSVEntry {
 	investedAmount := purchase.MonetaryValues.Total - purchase.MonetaryValues.Commission
 
 	return filesystem.NewCSVEntry(
-		purchase.BaseTransaction.ID,
+		purchase.BaseTransaction.UUID,
 		purchase.BaseTransaction.Status,
 		purchase.BaseTransaction.Type,
 		purchase.Asset.Type,
@@ -60,7 +60,7 @@ func (f CSVEntryFactory) FromSale(sale Sale) filesystem.CSVEntry {
 	investedAmount := -(sale.MonetaryValues.Total - sale.Profit + sale.Purchase.MonetaryValues.Commission)
 
 	return filesystem.NewCSVEntry(
-		sale.BaseTransaction.ID,
+		sale.BaseTransaction.UUID,
 		sale.BaseTransaction.Status,
 		sale.BaseTransaction.Type,
 		sale.Asset.Type,
@@ -86,7 +86,7 @@ func (f CSVEntryFactory) FromBenefit(benefit Benefit) filesystem.CSVEntry {
 	}
 
 	return filesystem.NewCSVEntry(
-		benefit.BaseTransaction.ID,
+		benefit.BaseTransaction.UUID,
 		benefit.BaseTransaction.Status,
 		benefit.BaseTransaction.Type,
 		benefit.Asset.Type,
@@ -106,7 +106,7 @@ func (f CSVEntryFactory) FromBenefit(benefit Benefit) filesystem.CSVEntry {
 
 func (f CSVEntryFactory) FromDividendPayout(payout DividendPayout) filesystem.CSVEntry {
 	return filesystem.NewCSVEntry(
-		payout.BaseTransaction.ID,
+		payout.BaseTransaction.UUID,
 		payout.BaseTransaction.Status,
 		payout.BaseTransaction.Type,
 		payout.Asset.Type,
