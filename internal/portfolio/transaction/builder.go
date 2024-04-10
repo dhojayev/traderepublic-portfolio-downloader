@@ -13,7 +13,7 @@ import (
 var ErrUnsupportedResponse = errors.New("unsupported response")
 
 type BuilderInterface interface {
-	FromResponse(response details.Response) (any, error)
+	FromResponse(response details.Response) (Transaction, error)
 }
 
 type Builder struct {
@@ -28,10 +28,10 @@ func NewBuilder(resolver TypeResolver, logger *log.Logger) Builder {
 	}
 }
 
-func (b Builder) FromResponse(response details.Response) (any, error) {
+func (b Builder) FromResponse(response details.Response) (Transaction, error) {
 	resolvedType, err := b.resolver.Resolve(response)
 	if err != nil {
-		return Purchase{}, fmt.Errorf("resolver error: %w", err)
+		return Transaction{}, fmt.Errorf("resolver error: %w", err)
 	}
 
 	switch resolvedType {
@@ -52,34 +52,34 @@ func (b Builder) FromResponse(response details.Response) (any, error) {
 	}
 }
 
-func (b Builder) BuildPurchase(response details.Response) (Purchase, error) {
+func (b Builder) BuildPurchase(response details.Response) (Transaction, error) {
 	transaction, err := b.BuildBaseTransaction(response)
 	if err != nil {
-		return Purchase{}, err
+		return Transaction{}, err
 	}
 
 	asset, err := b.BuildAsset(response)
 	if err != nil {
-		return Purchase{}, err
+		return Transaction{}, err
 	}
 
 	monetaryValues, err := b.BuildMonetaryValues(response)
 	if err != nil {
-		return Purchase{}, err
+		return Transaction{}, err
 	}
 
 	documents, err := b.BuildDocuments(response)
 	if err != nil {
-		return Purchase{}, err
+		return Transaction{}, err
 	}
 
-	return NewPurchase(transaction, asset, monetaryValues, documents), nil
+	return NewTransaction(transaction, asset, monetaryValues, documents), nil
 }
 
-func (b Builder) BuildSaleTransaction(response details.Response) (Sale, error) {
+func (b Builder) BuildSaleTransaction(response details.Response) (Transaction, error) {
 	purchase, err := b.BuildPurchase(response)
 	if err != nil {
-		return Sale{}, err
+		return Transaction{}, err
 	}
 
 	sale := NewSale(0, 0, purchase)

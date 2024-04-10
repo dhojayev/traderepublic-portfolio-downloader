@@ -13,26 +13,29 @@ import (
 const csvFilename = "transactions.csv"
 
 type Processor struct {
-	builder   BuilderInterface
-	factory   filesystem.FactoryInterface
-	csvReader filesystem.CSVReader
-	csvWriter filesystem.CSVWriter
-	logger    *log.Logger
+	builder    BuilderInterface
+	repository *Repository
+	factory    filesystem.FactoryInterface
+	csvReader  filesystem.CSVReader
+	csvWriter  filesystem.CSVWriter
+	logger     *log.Logger
 }
 
 func NewProcessor(
 	builder BuilderInterface,
+	repository *Repository,
 	factory filesystem.FactoryInterface,
 	csvReader filesystem.CSVReader,
 	csvWriter filesystem.CSVWriter,
 	logger *log.Logger,
 ) Processor {
 	return Processor{
-		builder:   builder,
-		factory:   factory,
-		csvReader: csvReader,
-		csvWriter: csvWriter,
-		logger:    logger,
+		builder:    builder,
+		repository: repository,
+		factory:    factory,
+		csvReader:  csvReader,
+		csvWriter:  csvWriter,
+		logger:     logger,
 	}
 }
 
@@ -60,6 +63,10 @@ func (p Processor) Process(response details.Response) error {
 	}
 
 	p.logger.WithField("transaction", transaction).Trace("supported transaction detected")
+
+	if err := p.repository.Create(transaction); err != nil {
+		return fmt.Errorf("could not create on repo: %w", err)
+	}
 
 	entry, err := p.factory.Make(transaction)
 	if err != nil {

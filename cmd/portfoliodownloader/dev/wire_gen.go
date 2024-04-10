@@ -13,6 +13,7 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/websocket"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/database"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
@@ -29,10 +30,18 @@ func CreateLocalApp(baseDir string, logger *logrus.Logger) (portfoliodownloader.
 	detailsClient := details.NewClient(jsonReader)
 	typeResolver := transaction.NewTypeResolver(logger)
 	builder := transaction.NewBuilder(typeResolver, logger)
+	db, err := database.NewSQLiteOnFS()
+	if err != nil {
+		return portfoliodownloader.App{}, err
+	}
+	repository, err := transaction.NewRepository(db, logger)
+	if err != nil {
+		return portfoliodownloader.App{}, err
+	}
 	csvEntryFactory := transaction.NewCSVEntryFactory(logger)
 	csvReader := filesystem.NewCSVReader(logger)
 	csvWriter := filesystem.NewCSVWriter(logger)
-	processor := transaction.NewProcessor(builder, csvEntryFactory, csvReader, csvWriter, logger)
+	processor := transaction.NewProcessor(builder, repository, csvEntryFactory, csvReader, csvWriter, logger)
 	app := portfoliodownloader.NewApp(client, detailsClient, processor, logger)
 	return app, nil
 }
@@ -52,10 +61,18 @@ func CreateRemoteApp(phoneNumber auth.PhoneNumber, pin auth.Pin, logger *logrus.
 	detailsClient := details.NewClient(reader)
 	typeResolver := transaction.NewTypeResolver(logger)
 	builder := transaction.NewBuilder(typeResolver, logger)
+	db, err := database.NewSQLiteOnFS()
+	if err != nil {
+		return portfoliodownloader.App{}, err
+	}
+	repository, err := transaction.NewRepository(db, logger)
+	if err != nil {
+		return portfoliodownloader.App{}, err
+	}
 	csvEntryFactory := transaction.NewCSVEntryFactory(logger)
 	csvReader := filesystem.NewCSVReader(logger)
 	csvWriter := filesystem.NewCSVWriter(logger)
-	processor := transaction.NewProcessor(builder, csvEntryFactory, csvReader, csvWriter, logger)
+	processor := transaction.NewProcessor(builder, repository, csvEntryFactory, csvReader, csvWriter, logger)
 	app := portfoliodownloader.NewApp(transactionsClient, detailsClient, processor, logger)
 	return app, nil
 }
@@ -63,7 +80,7 @@ func CreateRemoteApp(phoneNumber auth.PhoneNumber, pin auth.Pin, logger *logrus.
 // wire.go:
 
 var (
-	DefaultSet = wire.NewSet(portfoliodownloader.NewApp, transactions.NewClient, details.NewClient, transaction.NewTypeResolver, transaction.NewBuilder, transaction.NewCSVEntryFactory, filesystem.NewCSVReader, filesystem.NewCSVWriter, transaction.NewProcessor, wire.Bind(new(transaction.BuilderInterface), new(transaction.Builder)), wire.Bind(new(filesystem.FactoryInterface), new(transaction.CSVEntryFactory)))
+	DefaultSet = wire.NewSet(portfoliodownloader.NewApp, transactions.NewClient, details.NewClient, transaction.NewTypeResolver, transaction.NewBuilder, database.NewSQLiteOnFS, transaction.NewRepository, transaction.NewCSVEntryFactory, filesystem.NewCSVReader, filesystem.NewCSVWriter, transaction.NewProcessor, wire.Bind(new(transaction.BuilderInterface), new(transaction.Builder)), wire.Bind(new(filesystem.FactoryInterface), new(transaction.CSVEntryFactory)))
 
 	RemoteSet = wire.NewSet(
 		DefaultSet, api.NewClient, auth.NewClient, filesystem.NewJSONWriter, websocket.NewReader, wire.Bind(new(auth.ClientInterface), new(*auth.Client)), wire.Bind(new(writer.Interface), new(filesystem.JSONWriter)), wire.Bind(new(portfolio.ReaderInterface), new(*websocket.Reader)),

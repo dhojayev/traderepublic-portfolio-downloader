@@ -3,6 +3,8 @@ package transaction
 import (
 	"strings"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 const (
@@ -24,11 +26,61 @@ const (
 	instrumentSuffixAcc     = "(Acc)"
 )
 
+type Transaction struct {
+	gorm.Model
+
+	UUID      string
+	Type      string
+	Timestamp time.Time
+	Status    string
+
+	AssetID int
+	Asset   Asset
+
+	MonetaryValuesID int
+	MonetaryValues   MonetaryValues
+
+	Documents []Document `gorm:"-"`
+}
+
+func NewTransaction(
+	uuid string,
+	transactionType string,
+	timestamp time.Time,
+	status string,
+	asset Asset,
+	monetaryValues MonetaryValues,
+	documents []Document,
+) Transaction {
+	return Transaction{
+		Model:          gorm.Model{},
+		UUID:           uuid,
+		Type:           TypePurchase,
+		Timestamp:      timestamp,
+		Status:         status,
+		Asset:          asset,
+		MonetaryValues: monetaryValues,
+		Documents:      documents,
+	}
+}
+
 type Purchase struct {
-	BaseTransaction BaseTransaction
-	Asset           Asset
-	MonetaryValues  MonetaryValues
-	Documents       []Document
+	gorm.Model
+
+	BaseTransactionID int
+	BaseTransaction   BaseTransaction
+
+	AssetID int
+	Asset   Asset
+
+	MonetaryValuesID int
+	MonetaryValues   MonetaryValues
+
+	Documents []Document `gorm:"-"`
+}
+
+func (p Purchase) Type() string {
+	return p.Type()
 }
 
 func NewPurchase(
@@ -48,6 +100,8 @@ func NewPurchase(
 }
 
 type Sale struct {
+	gorm.Model
+
 	Purchase
 	Yield  float64
 	Profit float64
@@ -67,6 +121,8 @@ func NewSale(
 }
 
 type Benefit struct {
+	gorm.Model
+
 	Purchase
 }
 
@@ -83,6 +139,8 @@ func NewBenefit(benefitType string, purchase Purchase) Benefit {
 }
 
 type DividendPayout struct {
+	gorm.Model
+
 	Sale
 }
 
@@ -90,12 +148,14 @@ func NewDividendPayout(sale Sale) DividendPayout {
 	sale.BaseTransaction.Type = TypeDividendPayout
 
 	return DividendPayout{
-		sale,
+		Sale: sale,
 	}
 }
 
 type BaseTransaction struct {
-	ID        string
+	gorm.Model
+
+	UUID      string
 	Type      string
 	Timestamp time.Time
 	Status    string
@@ -103,13 +163,15 @@ type BaseTransaction struct {
 
 func NewBaseTransaction(id, status string, timestamp time.Time) BaseTransaction {
 	return BaseTransaction{
-		ID:        id,
+		UUID:      id,
 		Timestamp: timestamp,
 		Status:    status,
 	}
 }
 
 type Asset struct {
+	gorm.Model
+
 	Type       string
 	Instrument string
 	Name       string
@@ -137,6 +199,10 @@ func NewAsset(instrument, name string, shares float64) Asset {
 }
 
 type MonetaryValues struct {
+	gorm.Model
+
+	Yield      float64
+	Profit     float64
 	Rate       float64
 	Commission float64
 	Total      float64
