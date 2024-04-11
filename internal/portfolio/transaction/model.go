@@ -26,87 +26,15 @@ const (
 	isinSuffixAcc     = "(Acc)"
 )
 
-type Purchase struct {
-	gorm.Model
-
-	TransactionID int
-	Transaction   Transaction
-}
-
-func NewPurchase(transaction Transaction) Purchase {
-	transaction.Type = TypePurchase
-
-	return Purchase{
-		Transaction: transaction,
-	}
-}
-
-type Sale struct {
-	gorm.Model
-
-	Yield  float64
-	Profit float64
-
-	TransactionID int
-	Transaction   Transaction
-}
-
-func NewSale(
-	yield, profit float64,
-	transaction Transaction,
-) Sale {
-	transaction.Type = TypeSale
-
-	return Sale{
-		Yield:       yield,
-		Profit:      profit,
-		Transaction: transaction,
-	}
-}
-
-type Benefit struct {
-	gorm.Model
-
-	TransactionID int
-	Transaction   Transaction
-}
-
-func NewBenefit(benefitType string, transaction Transaction) Benefit {
-	transaction.Type = benefitType
-
-	return Benefit{
-		Transaction: transaction,
-	}
-}
-
-func (b Benefit) IsTypeRoundUp() bool {
-	return b.Transaction.Type == TypeRoundUp
-}
-
-type DividendPayout struct {
-	gorm.Model
-
-	Profit float64
-
-	TransactionID int
-	Transaction   Transaction
-}
-
-func NewDividendPayout(profit float64, transaction Transaction) DividendPayout {
-	transaction.Type = TypeDividendPayout
-
-	return DividendPayout{
-		Profit:      profit,
-		Transaction: transaction,
-	}
-}
-
 type Transaction struct {
-	gorm.Model
+	UUID string `gorm:"primaryKey"`
 
-	UUID       string
-	Type       string
-	Timestamp  time.Time
+	InstrumentID int
+	Instrument   Instrument
+	Documents    []Document `gorm:"-"`
+
+	Type       string    `gorm:"index"`
+	Timestamp  time.Time `gorm:"index"`
 	Status     string
 	Yield      float64
 	Profit     float64
@@ -114,11 +42,9 @@ type Transaction struct {
 	Rate       float64
 	Commission float64
 	Total      float64
-
-	InstrumentID int
-	Instrument   Instrument
-
-	Documents []Document `gorm:"-"`
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
+	DeletedAt  gorm.DeletedAt `gorm:"index"`
 }
 
 func NewTransaction(
@@ -147,7 +73,7 @@ func NewTransaction(
 type Instrument struct {
 	gorm.Model
 
-	ISIN string
+	ISIN string `gorm:"index"`
 	Name string
 }
 
