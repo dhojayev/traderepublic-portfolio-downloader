@@ -14,204 +14,161 @@ const (
 	TypeRoundUp        = "Round up"
 	TypeSaveback       = "Saveback"
 
-	AssetTypeStocks         = "Stocks"
-	AssetTypeETF            = "ETF"
-	AssetTypeCryptocurrency = "Cryptocurrency"
-	AssetTypeLending        = "Lending"
-	AssetTypeOther          = "Other"
+	InstrumentTypeStocks         = "Stocks"
+	InstrumentTypeETF            = "ETF"
+	InstrumentTypeCryptocurrency = "Cryptocurrency"
+	InstrumentTypeLending        = "Lending"
+	InstrumentTypeOther          = "Other"
 
-	instrumentPrefixLending = "XS"
-	instrumentPrefixCrypto  = "XF000"
-	instrumentSuffixDist    = "(Dist)"
-	instrumentSuffixAcc     = "(Acc)"
+	isinPrefixLending = "XS"
+	isinPrefixCrypto  = "XF000"
+	isinSuffixDist    = "(Dist)"
+	isinSuffixAcc     = "(Acc)"
 )
-
-type Transaction struct {
-	gorm.Model
-
-	UUID      string
-	Type      string
-	Timestamp time.Time
-	Status    string
-
-	AssetID int
-	Asset   Asset
-
-	MonetaryValuesID int
-	MonetaryValues   MonetaryValues
-
-	Documents []Document `gorm:"-"`
-}
-
-func NewTransaction(
-	uuid string,
-	transactionType string,
-	timestamp time.Time,
-	status string,
-	asset Asset,
-	monetaryValues MonetaryValues,
-	documents []Document,
-) Transaction {
-	return Transaction{
-		Model:          gorm.Model{},
-		UUID:           uuid,
-		Type:           TypePurchase,
-		Timestamp:      timestamp,
-		Status:         status,
-		Asset:          asset,
-		MonetaryValues: monetaryValues,
-		Documents:      documents,
-	}
-}
 
 type Purchase struct {
 	gorm.Model
 
-	BaseTransactionID int
-	BaseTransaction   BaseTransaction
-
-	AssetID int
-	Asset   Asset
-
-	MonetaryValuesID int
-	MonetaryValues   MonetaryValues
-
-	Documents []Document `gorm:"-"`
+	TransactionID int
+	Transaction   Transaction
 }
 
-func (p Purchase) Type() string {
-	return p.Type()
-}
-
-func NewPurchase(
-	transaction BaseTransaction,
-	asset Asset,
-	monetaryValues MonetaryValues,
-	documents []Document,
-) Purchase {
+func NewPurchase(transaction Transaction) Purchase {
 	transaction.Type = TypePurchase
 
 	return Purchase{
-		BaseTransaction: transaction,
-		Asset:           asset,
-		MonetaryValues:  monetaryValues,
-		Documents:       documents,
+		Transaction: transaction,
 	}
 }
 
 type Sale struct {
 	gorm.Model
 
-	Purchase
 	Yield  float64
 	Profit float64
+
+	TransactionID int
+	Transaction   Transaction
 }
 
 func NewSale(
 	yield, profit float64,
-	purchase Purchase,
+	transaction Transaction,
 ) Sale {
-	purchase.BaseTransaction.Type = TypeSale
+	transaction.Type = TypeSale
 
 	return Sale{
-		Purchase: purchase,
-		Yield:    yield,
-		Profit:   profit,
+		Yield:       yield,
+		Profit:      profit,
+		Transaction: transaction,
 	}
 }
 
 type Benefit struct {
 	gorm.Model
 
-	Purchase
+	TransactionID int
+	Transaction   Transaction
+}
+
+func NewBenefit(benefitType string, transaction Transaction) Benefit {
+	transaction.Type = benefitType
+
+	return Benefit{
+		Transaction: transaction,
+	}
 }
 
 func (b Benefit) IsTypeRoundUp() bool {
-	return b.BaseTransaction.Type == TypeRoundUp
-}
-
-func NewBenefit(benefitType string, purchase Purchase) Benefit {
-	purchase.BaseTransaction.Type = benefitType
-
-	return Benefit{
-		Purchase: purchase,
-	}
+	return b.Transaction.Type == TypeRoundUp
 }
 
 type DividendPayout struct {
 	gorm.Model
 
-	Sale
+	Profit float64
+
+	TransactionID int
+	Transaction   Transaction
 }
 
-func NewDividendPayout(sale Sale) DividendPayout {
-	sale.BaseTransaction.Type = TypeDividendPayout
+func NewDividendPayout(profit float64, transaction Transaction) DividendPayout {
+	transaction.Type = TypeDividendPayout
 
 	return DividendPayout{
-		Sale: sale,
+		Profit:      profit,
+		Transaction: transaction,
 	}
 }
 
-type BaseTransaction struct {
+type Transaction struct {
 	gorm.Model
 
-	UUID      string
-	Type      string
-	Timestamp time.Time
-	Status    string
-}
-
-func NewBaseTransaction(id, status string, timestamp time.Time) BaseTransaction {
-	return BaseTransaction{
-		UUID:      id,
-		Timestamp: timestamp,
-		Status:    status,
-	}
-}
-
-type Asset struct {
-	gorm.Model
-
+	UUID       string
 	Type       string
-	Instrument string
-	Name       string
-	Shares     float64
-}
-
-func NewAsset(instrument, name string, shares float64) Asset {
-	assetType := AssetTypeOther
-
-	switch {
-	case strings.HasSuffix(name, instrumentSuffixDist), strings.HasSuffix(name, instrumentSuffixAcc):
-		assetType = AssetTypeETF
-	case strings.HasPrefix(instrument, instrumentPrefixCrypto):
-		assetType = AssetTypeCryptocurrency
-	case strings.HasPrefix(instrument, instrumentPrefixLending):
-		assetType = AssetTypeLending
-	}
-
-	return Asset{
-		Type:       assetType,
-		Instrument: instrument,
-		Name:       name,
-		Shares:     shares,
-	}
-}
-
-type MonetaryValues struct {
-	gorm.Model
-
+	Timestamp  time.Time
+	Status     string
 	Yield      float64
 	Profit     float64
+	Shares     float64
 	Rate       float64
 	Commission float64
 	Total      float64
+
+	InstrumentID int
+	Instrument   Instrument
+
+	Documents []Document `gorm:"-"`
 }
 
-func NewMonetaryValues(rate, commission, total float64) MonetaryValues {
-	return MonetaryValues{
+func NewTransaction(
+	uuid, transactionType, status string,
+	yield, profit, shares, rate, commission, total float64,
+	timestamp time.Time,
+	instrument Instrument,
+	documents []Document,
+) Transaction {
+	return Transaction{
+		UUID:       uuid,
+		Type:       transactionType,
+		Timestamp:  timestamp,
+		Status:     status,
+		Yield:      yield,
+		Profit:     profit,
+		Shares:     shares,
 		Rate:       rate,
 		Commission: commission,
 		Total:      total,
+		Instrument: instrument,
+		Documents:  documents,
+	}
+}
+
+type Instrument struct {
+	gorm.Model
+
+	ISIN string
+	Name string
+}
+
+func (i Instrument) Type() string {
+	instrumentType := InstrumentTypeOther
+
+	switch {
+	case strings.HasSuffix(i.Name, isinSuffixDist), strings.HasSuffix(i.Name, isinSuffixAcc):
+		instrumentType = InstrumentTypeETF
+	case strings.HasPrefix(i.ISIN, isinPrefixCrypto):
+		instrumentType = InstrumentTypeCryptocurrency
+	case strings.HasPrefix(i.ISIN, isinPrefixLending):
+		instrumentType = InstrumentTypeLending
+	}
+
+	return instrumentType
+}
+
+func NewInstrument(isin, name string) Instrument {
+	return Instrument{
+		ISIN: isin,
+		Name: name,
 	}
 }

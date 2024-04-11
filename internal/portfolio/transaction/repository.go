@@ -12,13 +12,13 @@ type Repository struct {
 	logger *log.Logger
 }
 
-func NewRepository(db *gorm.DB, logger *log.Logger) (*Repository, error) {
-	if err := db.AutoMigrate(&Purchase{}, &Sale{}, &Benefit{}, &DividendPayout{}); err != nil {
+func NewRepository(database *gorm.DB, logger *log.Logger) (*Repository, error) {
+	if err := database.AutoMigrate(&Transaction{}, &Instrument{}); err != nil {
 		return nil, fmt.Errorf("could not auto-migrate: %w", err)
 	}
 
 	return &Repository{
-		db:     db,
+		db:     database,
 		logger: logger,
 	}, nil
 }

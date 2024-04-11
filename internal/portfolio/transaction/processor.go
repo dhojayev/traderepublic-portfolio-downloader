@@ -15,7 +15,7 @@ const csvFilename = "transactions.csv"
 type Processor struct {
 	builder    BuilderInterface
 	repository *Repository
-	factory    filesystem.FactoryInterface
+	factory    CSVEntryFactory
 	csvReader  filesystem.CSVReader
 	csvWriter  filesystem.CSVWriter
 	logger     *log.Logger
@@ -24,7 +24,7 @@ type Processor struct {
 func NewProcessor(
 	builder BuilderInterface,
 	repository *Repository,
-	factory filesystem.FactoryInterface,
+	factory CSVEntryFactory,
 	csvReader filesystem.CSVReader,
 	csvWriter filesystem.CSVWriter,
 	logger *log.Logger,
@@ -62,9 +62,9 @@ func (p Processor) Process(response details.Response) error {
 		return fmt.Errorf("deserializer error: %w", err)
 	}
 
-	p.logger.WithField("transaction", transaction).Trace("supported transaction detected")
+	p.logger.WithField("transaction", transaction).Debug("supported transaction detected")
 
-	if err := p.repository.Create(transaction); err != nil {
+	if err := p.repository.Create(&transaction); err != nil {
 		return fmt.Errorf("could not create on repo: %w", err)
 	}
 

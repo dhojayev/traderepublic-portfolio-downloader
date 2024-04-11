@@ -35,218 +35,192 @@ func (b Builder) FromResponse(response details.Response) (Transaction, error) {
 	}
 
 	switch resolvedType {
-	case TypeSaleTransaction:
-		return b.BuildSaleTransaction(response)
 	case TypePurchaseTransaction:
-		return b.BuildPurchase(response)
+		return b.Build(TypePurchase, response)
+	case TypeSaleTransaction:
+		return b.Build(TypeSale, response)
 	case TypeDividendPayoutTransaction:
-		return b.BuildDividendPayout(response)
+		return b.Build(TypeDividendPayout, response)
 	case TypeRoundUpTransaction:
-		return b.BuildBenefit(TypeRoundUp, response)
+		return b.Build(TypeRoundUp, response)
 	case TypeSavebackTransaction:
-		return b.BuildBenefit(TypeSaveback, response)
+		return b.Build(TypeSaveback, response)
 	case TypeUnsupported, TypeCardPaymentTransaction:
-		return Purchase{}, ErrUnsupportedResponse
-	default:
-		return Purchase{}, ErrUnsupportedResponse
 	}
+
+	return Transaction{}, ErrUnsupportedResponse
 }
 
-func (b Builder) BuildPurchase(response details.Response) (Transaction, error) {
-	transaction, err := b.BuildBaseTransaction(response)
-	if err != nil {
-		return Transaction{}, err
+func (b Builder) Build(transactionType string, response details.Response) (Transaction, error) {
+	var err error
+
+	transaction := Transaction{
+		UUID: response.ID,
+		Type: transactionType,
 	}
 
-	asset, err := b.BuildAsset(response)
+	transaction.Status, transaction.Instrument.ISIN, transaction.Timestamp, err = b.GetHeaderData(response)
 	if err != nil {
-		return Transaction{}, err
+		return transaction, err
 	}
 
-	monetaryValues, err := b.BuildMonetaryValues(response)
+	transaction.Instrument.Name, err = b.GetOverviewData(response)
 	if err != nil {
-		return Transaction{}, err
+		return transaction, err
 	}
 
-	documents, err := b.BuildDocuments(response)
+	transaction.Yield, transaction.Profit, _ = b.GetPerformanceData(response)
+
+	transaction.Shares, transaction.Rate, transaction.Commission, transaction.Total, err = b.GetTransactionData(response)
 	if err != nil {
-		return Transaction{}, err
+		return transaction, err
 	}
 
-	return NewTransaction(transaction, asset, monetaryValues, documents), nil
+	return transaction, nil
 }
 
-func (b Builder) BuildSaleTransaction(response details.Response) (Transaction, error) {
-	purchase, err := b.BuildPurchase(response)
-	if err != nil {
-		return Transaction{}, err
+// Returns Status, ISIN, Timestamp and error.
+func (b Builder) GetHeaderData(response details.Response) (string, string, time.Time, error) {
+	var status, isin string
 
-	}
+	var timestamp time.Time
 
-	sale := NewSale(0, 0, purchase)
-
-	performance, err := response.PerformanceSection()
-	if err != nil {
-		if errors.Is(err, details.ErrSectionNotFound) {
-			return sale, nil
-		}
-
-		return sale, fmt.Errorf("could get performance section: %w", err)
-	}
-
-	yield, err := performance.Yield()
-	if err != nil {
-		return sale, fmt.Errorf("could get yield: %w", err)
-	}
-
-	yieldParsed, err := ParseFloatWithComma(yield.Detail.Text, yield.Detail.IsTrendNegative())
-	if err != nil {
-		return sale, fmt.Errorf("could not parse float value from yield: %w", err)
-	}
-
-	sale.Yield = yieldParsed
-
-	profit, err := performance.Profit()
-	if err != nil {
-		return sale, fmt.Errorf("could get profit: %w", err)
-	}
-
-	profitParsed, err := ParseFloatWithComma(profit.Detail.Text, profit.Detail.IsTrendNegative())
-	if err != nil {
-		return sale, fmt.Errorf("could not parse float value from profit: %w", err)
-	}
-
-	sale.Profit = profitParsed
-
-	return sale, nil
-}
-
-func (b Builder) BuildDividendPayout(response details.Response) (DividendPayout, error) {
-	purchase, err := b.BuildPurchase(response)
-	if err != nil {
-		return DividendPayout{}, err
-	}
-
-	return NewDividendPayout(NewSale(0, 0, purchase)), nil
-}
-
-func (b Builder) BuildBenefit(benefitType string, response details.Response) (Benefit, error) {
-	purchase, err := b.BuildPurchase(response)
-	if err != nil {
-		return Benefit{}, err
-	}
-
-	return NewBenefit(benefitType, purchase), nil
-}
-
-func (b Builder) BuildBaseTransaction(response details.Response) (BaseTransaction, error) {
 	header, err := response.HeaderSection()
 	if err != nil {
-		return BaseTransaction{}, fmt.Errorf("could not get transaction header %w", err)
+		return status, isin, timestamp, fmt.Errorf("could not get details header %w", err)
 	}
 
-	timestamp, err := time.Parse("2006-01-02T15:04:05-0700", header.Data.Timestamp)
+	status = header.Data.Status
+
+	timestamp, err = time.Parse("2006-01-02T15:04:05-0700", header.Data.Timestamp)
 	if err != nil {
-		return BaseTransaction{}, fmt.Errorf("could not parse timestamp: %w", err)
+		b.logger.Debugf("could not parse details timestamp: %s", err)
 	}
 
-	return NewBaseTransaction(response.ID, header.Data.Status, timestamp), nil
+	isin, _ = header.Action.Payload.(string)
+	if isin == "" {
+		isin, _ = ExtractInstrumentNameFromIcon(header.Data.Icon)
+	}
+
+	return status, isin, timestamp, nil
 }
 
-//nolint:cyclop
-func (b Builder) BuildAsset(response details.Response) (Asset, error) {
+// Returns Instrument name and error.
+func (b Builder) GetOverviewData(response details.Response) (string, error) {
+	var instrumentName string
+
 	overview, err := response.OverviewSection()
 	if err != nil {
-		return Asset{}, fmt.Errorf("error getting overview: %w", err)
+		return instrumentName, fmt.Errorf("error getting overview: %w", err)
 	}
 
 	asset, err := overview.Asset()
 	if err != nil {
-		return Asset{}, fmt.Errorf("error getting asset: %w", err)
+		return instrumentName, fmt.Errorf("error getting overview asset: %w", err)
 	}
 
-	header, err := response.HeaderSection()
-	if err != nil {
-		return Asset{}, fmt.Errorf("error getting transaction header: %w", err)
-	}
+	instrumentName = asset.Detail.Text
 
-	instrument, _ := header.Action.Payload.(string)
-	if instrument == "" {
-		instrument, _ = ExtractInstrumentNameFromIcon(header.Data.Icon)
-	}
-
-	transactionSection, err := response.TransactionSection()
-	if err != nil {
-		return Asset{}, fmt.Errorf("could not get transaction section: %w", err)
-	}
-
-	shares, err := transactionSection.Shares()
-	if err != nil {
-		if errors.Is(err, details.ErrSectionDataEntryNotFound) {
-			return Asset{}, fmt.Errorf("could not get shares: %w", ErrUnsupportedResponse)
-		}
-
-		return Asset{}, fmt.Errorf("could not get shares: %w", err)
-	}
-
-	sharesParsed, err := ParseFloatWithComma(shares.Detail.Text, shares.Detail.IsTrendNegative())
-	if err != nil {
-		return Asset{}, fmt.Errorf("could not parse float value from shares: %w", err)
-	}
-
-	if shares.HasSharesWithPeriod() {
-		sharesParsed, err = ParseFloatWithPeriod(shares.Detail.Text)
-		if err != nil {
-			return Asset{}, fmt.Errorf("could not parse float value from shares: %w", err)
-		}
-	}
-
-	return NewAsset(instrument, asset.Detail.Text, sharesParsed), nil
+	return instrumentName, nil
 }
 
-func (b Builder) BuildMonetaryValues(response details.Response) (MonetaryValues, error) {
+// Returns Yield, Profit and error.
+func (b Builder) GetPerformanceData(response details.Response) (float64, float64, error) {
+	var yield, profit float64
+
+	performance, err := response.PerformanceSection()
+	if err != nil {
+		return yield, profit, fmt.Errorf("could get performance section: %w", err)
+	}
+
+	yieldData, err := performance.Yield()
+	if err != nil {
+		b.logger.Debugf("could get yield: %s", err)
+	}
+
+	yield, err = ParseFloatWithComma(yieldData.Detail.Text, yieldData.Detail.IsTrendNegative())
+	if err != nil {
+		b.logger.Debugf("could not parse float value from yield: %s", err)
+	}
+
+	profitData, err := performance.Profit()
+	if err != nil {
+		b.logger.Debugf("could get profit: %s", err)
+	}
+
+	profit, err = ParseFloatWithComma(profitData.Detail.Text, profitData.Detail.IsTrendNegative())
+	if err != nil {
+		b.logger.Debugf("could not parse float value from profit: %s", err)
+	}
+
+	return yield, profit, nil
+}
+
+// Returns Shares, Rate, Commission, Total and error.
+//
+//nolint:cyclop,funlen
+func (b Builder) GetTransactionData(response details.Response) (float64, float64, float64, float64, error) {
+	var shares, rate, commission, total float64
+
 	transactionSection, err := response.TransactionSection()
 	if err != nil {
-		return MonetaryValues{}, fmt.Errorf("could not get transaction section: %w", err)
+		return shares, rate, commission, total, fmt.Errorf("could not get transaction section: %w", err)
 	}
 
-	rate, err := transactionSection.Rate()
+	sharesData, err := transactionSection.Shares()
 	if err != nil {
-		return MonetaryValues{}, fmt.Errorf("could not get rate: %w", err)
+		b.logger.Debugf("could not get shares: %s", err)
 	}
 
-	rateParsed, err := ParseFloatWithComma(rate.Detail.Text, rate.Detail.IsTrendNegative())
+	shares, err = ParseFloatWithComma(sharesData.Detail.Text, sharesData.Detail.IsTrendNegative())
 	if err != nil {
-		return MonetaryValues{}, fmt.Errorf("could not parse float value from rate: %w", err)
+		b.logger.Debugf("could not parse float value from shares: %s", err)
 	}
 
-	commission, err := transactionSection.Commission()
+	if sharesData.HasSharesWithPeriod() {
+		shares, err = ParseFloatWithPeriod(sharesData.Detail.Text)
+		if err != nil {
+			b.logger.Debugf("could not parse float value from shares: %s", err)
+		}
+	}
+
+	rateData, err := transactionSection.Rate()
+	if err != nil {
+		b.logger.Debugf("could not get rate: %s", err)
+	}
+
+	rate, err = ParseFloatWithComma(rateData.Detail.Text, rateData.Detail.IsTrendNegative())
+	if err != nil {
+		b.logger.Debugf("could not parse float value from rate: %s", err)
+	}
+
+	commissionData, err := transactionSection.Commission()
 	if err != nil {
 		if !errors.Is(err, details.ErrSectionDataEntryNotFound) {
-			return MonetaryValues{}, fmt.Errorf("could not get commission: %w", err)
+			b.logger.Debugf("could not get commission: %s", err)
 		}
 	}
 
-	commissionParsed, err := ParseFloatWithComma(commission.Detail.Text, commission.Detail.IsTrendNegative())
+	commission, err = ParseFloatWithComma(commissionData.Detail.Text, commissionData.Detail.IsTrendNegative())
 	if err != nil {
 		if !errors.Is(err, ErrNoMatch) {
-			return MonetaryValues{}, fmt.Errorf("could not parse float value from commission: %w", err)
+			b.logger.Debugf("could not parse float value from commission: %s", err)
 		}
 
-		commissionParsed = 0
+		commission = 0
 	}
 
-	total, err := transactionSection.Total()
+	totalData, err := transactionSection.Total()
 	if err != nil {
-		return MonetaryValues{}, fmt.Errorf("could not get total: %w", err)
+		b.logger.Debugf("could not get total: %s", err)
 	}
 
-	totalParsed, err := ParseFloatWithComma(total.Detail.Text, total.Detail.IsTrendNegative())
+	total, err = ParseFloatWithComma(totalData.Detail.Text, totalData.Detail.IsTrendNegative())
 	if err != nil {
-		return MonetaryValues{}, fmt.Errorf("could not parse float value from total: %w", err)
+		b.logger.Debugf("could not parse float value from total: %s", err)
 	}
 
-	return NewMonetaryValues(rateParsed, commissionParsed, totalParsed), nil
+	return shares, rate, commission, total, nil
 }
 
 func (b Builder) BuildDocuments(response details.Response) ([]Document, error) {
