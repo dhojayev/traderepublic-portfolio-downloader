@@ -14,18 +14,13 @@ var ErrUnsupportedResponse = errors.New("unsupported response")
 
 type BuilderInterface interface {
 	FromResponse(response details.Response) (Transaction, error)
-type BuilderInterface interface {
-	FromResponse(response details.Response) (Transaction, error)
 }
 
-type Builder struct {
 type Builder struct {
 	resolver TypeResolver
 	logger   *log.Logger
 }
 
-func NewBuilder(resolver TypeResolver, logger *log.Logger) Builder {
-	return Builder{
 func NewBuilder(resolver TypeResolver, logger *log.Logger) Builder {
 	return Builder{
 		resolver: resolver,
@@ -35,28 +30,20 @@ func NewBuilder(resolver TypeResolver, logger *log.Logger) Builder {
 
 func (b Builder) FromResponse(response details.Response) (Transaction, error) {
 	resolvedType, err := b.resolver.Resolve(response)
-func (b Builder) FromResponse(response details.Response) (Transaction, error) {
-	resolvedType, err := b.resolver.Resolve(response)
 	if err != nil {
-		return Transaction{}, fmt.Errorf("resolver error: %w", err)
 		return Transaction{}, fmt.Errorf("resolver error: %w", err)
 	}
 
 	switch resolvedType {
 	case TypeSaleTransaction:
 		return b.BuildSaleTransaction(response)
-		return b.BuildSaleTransaction(response)
 	case TypePurchaseTransaction:
-		return b.BuildPurchase(response)
 		return b.BuildPurchase(response)
 	case TypeDividendPayoutTransaction:
 		return b.BuildDividendPayout(response)
-		return b.BuildDividendPayout(response)
 	case TypeRoundUpTransaction:
 		return b.BuildBenefit(TypeRoundUp, response)
-		return b.BuildBenefit(TypeRoundUp, response)
 	case TypeSavebackTransaction:
-		return b.BuildBenefit(TypeSaveback, response)
 		return b.BuildBenefit(TypeSaveback, response)
 	case TypeUnsupported, TypeCardPaymentTransaction:
 		return Purchase{}, ErrUnsupportedResponse
@@ -67,45 +54,33 @@ func (b Builder) FromResponse(response details.Response) (Transaction, error) {
 
 func (b Builder) BuildPurchase(response details.Response) (Transaction, error) {
 	transaction, err := b.BuildBaseTransaction(response)
-func (b Builder) BuildPurchase(response details.Response) (Transaction, error) {
-	transaction, err := b.BuildBaseTransaction(response)
 	if err != nil {
-		return Transaction{}, err
 		return Transaction{}, err
 	}
 
 	asset, err := b.BuildAsset(response)
-	asset, err := b.BuildAsset(response)
 	if err != nil {
-		return Transaction{}, err
 		return Transaction{}, err
 	}
 
 	monetaryValues, err := b.BuildMonetaryValues(response)
-	monetaryValues, err := b.BuildMonetaryValues(response)
 	if err != nil {
-		return Transaction{}, err
 		return Transaction{}, err
 	}
 
 	documents, err := b.BuildDocuments(response)
-	documents, err := b.BuildDocuments(response)
 	if err != nil {
-		return Transaction{}, err
 		return Transaction{}, err
 	}
 
-	return NewTransaction(transaction, asset, monetaryValues, documents), nil
 	return NewTransaction(transaction, asset, monetaryValues, documents), nil
 }
 
 func (b Builder) BuildSaleTransaction(response details.Response) (Transaction, error) {
 	purchase, err := b.BuildPurchase(response)
-func (b Builder) BuildSaleTransaction(response details.Response) (Transaction, error) {
-	purchase, err := b.BuildPurchase(response)
 	if err != nil {
 		return Transaction{}, err
-		return Transaction{}, err
+
 	}
 
 	sale := NewSale(0, 0, purchase)
@@ -148,8 +123,6 @@ func (b Builder) BuildSaleTransaction(response details.Response) (Transaction, e
 
 func (b Builder) BuildDividendPayout(response details.Response) (DividendPayout, error) {
 	purchase, err := b.BuildPurchase(response)
-func (b Builder) BuildDividendPayout(response details.Response) (DividendPayout, error) {
-	purchase, err := b.BuildPurchase(response)
 	if err != nil {
 		return DividendPayout{}, err
 	}
@@ -159,8 +132,6 @@ func (b Builder) BuildDividendPayout(response details.Response) (DividendPayout,
 
 func (b Builder) BuildBenefit(benefitType string, response details.Response) (Benefit, error) {
 	purchase, err := b.BuildPurchase(response)
-func (b Builder) BuildBenefit(benefitType string, response details.Response) (Benefit, error) {
-	purchase, err := b.BuildPurchase(response)
 	if err != nil {
 		return Benefit{}, err
 	}
@@ -168,7 +139,6 @@ func (b Builder) BuildBenefit(benefitType string, response details.Response) (Be
 	return NewBenefit(benefitType, purchase), nil
 }
 
-func (b Builder) BuildBaseTransaction(response details.Response) (BaseTransaction, error) {
 func (b Builder) BuildBaseTransaction(response details.Response) (BaseTransaction, error) {
 	header, err := response.HeaderSection()
 	if err != nil {
@@ -184,7 +154,6 @@ func (b Builder) BuildBaseTransaction(response details.Response) (BaseTransactio
 }
 
 //nolint:cyclop
-func (b Builder) BuildAsset(response details.Response) (Asset, error) {
 func (b Builder) BuildAsset(response details.Response) (Asset, error) {
 	overview, err := response.OverviewSection()
 	if err != nil {
@@ -236,7 +205,6 @@ func (b Builder) BuildAsset(response details.Response) (Asset, error) {
 }
 
 func (b Builder) BuildMonetaryValues(response details.Response) (MonetaryValues, error) {
-func (b Builder) BuildMonetaryValues(response details.Response) (MonetaryValues, error) {
 	transactionSection, err := response.TransactionSection()
 	if err != nil {
 		return MonetaryValues{}, fmt.Errorf("could not get transaction section: %w", err)
@@ -281,7 +249,6 @@ func (b Builder) BuildMonetaryValues(response details.Response) (MonetaryValues,
 	return NewMonetaryValues(rateParsed, commissionParsed, totalParsed), nil
 }
 
-func (b Builder) BuildDocuments(response details.Response) ([]Document, error) {
 func (b Builder) BuildDocuments(response details.Response) ([]Document, error) {
 	documents := make([]Document, 0)
 

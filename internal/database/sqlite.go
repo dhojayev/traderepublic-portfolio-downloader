@@ -5,6 +5,7 @@ import (
 
 	"gorm.io/driver/sqlite"
 
+	// register sqlite3 driver
 	_ "github.com/mattn/go-sqlite3"
 	"gorm.io/gorm"
 )
