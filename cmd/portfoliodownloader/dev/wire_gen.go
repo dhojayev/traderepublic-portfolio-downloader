@@ -28,11 +28,11 @@ func CreateLocalApp(baseDir string, logger *logrus.Logger) (portfoliodownloader.
 	client := transactions.NewClient(jsonReader)
 	detailsClient := details.NewClient(jsonReader)
 	typeResolver := transaction.NewTypeResolver(logger)
-	detailsDeserializer := transaction.NewDetailsDeserializer(typeResolver, logger)
+	builder := transaction.NewBuilder(typeResolver, logger)
 	csvEntryFactory := transaction.NewCSVEntryFactory(logger)
 	csvReader := filesystem.NewCSVReader(logger)
 	csvWriter := filesystem.NewCSVWriter(logger)
-	processor := transaction.NewProcessor(detailsDeserializer, csvEntryFactory, csvReader, csvWriter, logger)
+	processor := transaction.NewProcessor(builder, csvEntryFactory, csvReader, csvWriter, logger)
 	app := portfoliodownloader.NewApp(client, detailsClient, processor, logger)
 	return app, nil
 }
@@ -51,11 +51,11 @@ func CreateRemoteApp(phoneNumber auth.PhoneNumber, pin auth.Pin, logger *logrus.
 	transactionsClient := transactions.NewClient(reader)
 	detailsClient := details.NewClient(reader)
 	typeResolver := transaction.NewTypeResolver(logger)
-	detailsDeserializer := transaction.NewDetailsDeserializer(typeResolver, logger)
+	builder := transaction.NewBuilder(typeResolver, logger)
 	csvEntryFactory := transaction.NewCSVEntryFactory(logger)
 	csvReader := filesystem.NewCSVReader(logger)
 	csvWriter := filesystem.NewCSVWriter(logger)
-	processor := transaction.NewProcessor(detailsDeserializer, csvEntryFactory, csvReader, csvWriter, logger)
+	processor := transaction.NewProcessor(builder, csvEntryFactory, csvReader, csvWriter, logger)
 	app := portfoliodownloader.NewApp(transactionsClient, detailsClient, processor, logger)
 	return app, nil
 }
@@ -63,7 +63,7 @@ func CreateRemoteApp(phoneNumber auth.PhoneNumber, pin auth.Pin, logger *logrus.
 // wire.go:
 
 var (
-	DefaultSet = wire.NewSet(portfoliodownloader.NewApp, transactions.NewClient, details.NewClient, transaction.NewTypeResolver, transaction.NewDetailsDeserializer, transaction.NewCSVEntryFactory, filesystem.NewCSVReader, filesystem.NewCSVWriter, transaction.NewProcessor, wire.Bind(new(transaction.DetailsDeserializerInterface), new(transaction.DetailsDeserializer)), wire.Bind(new(filesystem.FactoryInterface), new(transaction.CSVEntryFactory)))
+	DefaultSet = wire.NewSet(portfoliodownloader.NewApp, transactions.NewClient, details.NewClient, transaction.NewTypeResolver, transaction.NewBuilder, transaction.NewCSVEntryFactory, filesystem.NewCSVReader, filesystem.NewCSVWriter, transaction.NewProcessor, wire.Bind(new(transaction.BuilderInterface), new(transaction.Builder)), wire.Bind(new(filesystem.FactoryInterface), new(transaction.CSVEntryFactory)))
 
 	RemoteSet = wire.NewSet(
 		DefaultSet, api.NewClient, auth.NewClient, filesystem.NewJSONWriter, websocket.NewReader, wire.Bind(new(auth.ClientInterface), new(*auth.Client)), wire.Bind(new(writer.Interface), new(filesystem.JSONWriter)), wire.Bind(new(portfolio.ReaderInterface), new(*websocket.Reader)),

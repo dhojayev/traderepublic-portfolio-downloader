@@ -13,26 +13,26 @@ import (
 const csvFilename = "transactions.csv"
 
 type Processor struct {
-	deserializer DetailsDeserializerInterface
-	factory      filesystem.FactoryInterface
-	csvReader    filesystem.CSVReader
-	csvWriter    filesystem.CSVWriter
-	logger       *log.Logger
+	builder   BuilderInterface
+	factory   filesystem.FactoryInterface
+	csvReader filesystem.CSVReader
+	csvWriter filesystem.CSVWriter
+	logger    *log.Logger
 }
 
 func NewProcessor(
-	deserializer DetailsDeserializerInterface,
+	builder BuilderInterface,
 	factory filesystem.FactoryInterface,
 	csvReader filesystem.CSVReader,
 	csvWriter filesystem.CSVWriter,
 	logger *log.Logger,
 ) Processor {
 	return Processor{
-		deserializer: deserializer,
-		factory:      factory,
-		csvReader:    csvReader,
-		csvWriter:    csvWriter,
-		logger:       logger,
+		builder:   builder,
+		factory:   factory,
+		csvReader: csvReader,
+		csvWriter: csvWriter,
+		logger:    logger,
 	}
 }
 
@@ -48,7 +48,7 @@ func (p Processor) Process(response details.Response) error {
 		}
 	}
 
-	transaction, err := p.deserializer.Deserialize(response)
+	transaction, err := p.builder.FromResponse(response)
 	if err != nil {
 		if errors.Is(err, ErrUnsupportedResponse) {
 			p.logger.WithField("id", response.ID).Debug(err)

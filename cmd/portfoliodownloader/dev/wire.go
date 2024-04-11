@@ -27,13 +27,13 @@ var (
 		transactions.NewClient,
 		details.NewClient,
 		transaction.NewTypeResolver,
-		transaction.NewDetailsDeserializer,
+		transaction.NewBuilder,
 		transaction.NewCSVEntryFactory,
 		filesystem.NewCSVReader,
 		filesystem.NewCSVWriter,
 		transaction.NewProcessor,
 
-		wire.Bind(new(transaction.DetailsDeserializerInterface), new(transaction.DetailsDeserializer)),
+		wire.Bind(new(transaction.BuilderInterface), new(transaction.Builder)),
 		wire.Bind(new(filesystem.FactoryInterface), new(transaction.CSVEntryFactory)),
 	)
 

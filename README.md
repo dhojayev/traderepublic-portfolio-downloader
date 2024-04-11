@@ -72,11 +72,12 @@ section according to the table below:
 | ------- | ------------ | ------------------------------------ | --------------------- |
 | macOS   | amd64        | Apple devices using Intel CPU        | *-darwin-amd64.tar.gz |
 | macOS   | arm64        | Apple devices using M1 SoC and newer | *-darwin-arm64.tar.gz |
-| Windows | x86          | 32-Bit Windows                       | *-windows-386.zip     |
 | Windows | amd64        | 64-Bit Windows                       | *-windows-amd64.zip   |
-| Linux   | x86          | 32-Bit linux distro                  | *-linux-386.tar.gz    |
 | Linux   | amd64        | 64-Bit linux distro                  | *-linux-amd64.tar.gz  |
 | Linux   | arm64        | linux distro for ARM processors      | *-linux-arm64.tar.gz  |
+
+
+*Users using macOS may require to allow running the binary since it has not been signed.*
 
 ### Running the app
 

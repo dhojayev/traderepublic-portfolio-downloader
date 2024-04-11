@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-var ErrNoMatch = errors.New("value did not patch the pattern")
+var ErrNoMatch = errors.New("value did not match the pattern")
 
 func ExtractInstrumentNameFromIcon(src string) (string, error) {
 	pattern := regexp.MustCompile(`.*[^/]/(.*)/.*`)
