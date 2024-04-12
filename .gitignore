@@ -1,6 +1,7 @@
 *_mock.go
+*.csv
+*.db
 /.session
 /.refresh
-/transactions.csv
 /responses
 vendor

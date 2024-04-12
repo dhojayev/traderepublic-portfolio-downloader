@@ -15,6 +15,7 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/websocket"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/database"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
@@ -27,6 +28,8 @@ var (
 		transactions.NewClient,
 		details.NewClient,
 		transaction.NewTypeResolver,
+		database.NewSQLiteOnFS,
+		transaction.NewRepository,
 		transaction.NewBuilder,
 		transaction.NewCSVEntryFactory,
 		filesystem.NewCSVReader,
@@ -39,7 +42,6 @@ var (
 		wire.Bind(new(auth.ClientInterface), new(*auth.Client)),
 		wire.Bind(new(portfolio.ReaderInterface), new(*websocket.Reader)),
 		wire.Bind(new(transaction.BuilderInterface), new(transaction.Builder)),
-		wire.Bind(new(filesystem.FactoryInterface), new(transaction.CSVEntryFactory)),
 	)
 
 	NonWritingSet = wire.NewSet(

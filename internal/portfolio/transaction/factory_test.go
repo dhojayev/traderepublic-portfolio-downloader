@@ -15,15 +15,14 @@ func TestFromPurchase(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {
-		purchase Purchase
-		expected filesystem.CSVEntry
+		transaction Transaction
+		expected    filesystem.CSVEntry
 	}{
 		// purchased for 501 (including 1 eur commission)
 		{
-			purchase: NewPurchase(
-				NewBaseTransaction("test-id", "test-status", time.Now()),
-				NewAsset("test-instrument", "test-asset-name", 5.186721),
-				NewMonetaryValues(96.40, 1, 501),
+			transaction: NewTransaction(
+				"test-id", TypePurchase, "test-status", 0, 0, 5.186721, 96.40, 1, 501, time.Now(),
+				NewInstrument("test-instrument", "test-asset-name"),
 				[]Document{NewDocument("test-doc-id", "test-url", "test-date", "test-title")},
 			),
 			expected: filesystem.NewCSVEntry(
@@ -50,8 +49,9 @@ func TestFromPurchase(t *testing.T) {
 	factory := NewCSVEntryFactory(log.New())
 
 	for _, testCase := range testCases {
-		actual := factory.FromPurchase(testCase.purchase)
+		actual, err := factory.Make(testCase.transaction)
 
+		assert.Nil(err)
 		assertFloat64Fields(assert, testCase.expected, actual)
 	}
 }
@@ -60,20 +60,15 @@ func TestFromSale(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {
-		sale     Sale
-		expected filesystem.CSVEntry
+		transaction Transaction
+		expected    filesystem.CSVEntry
 	}{
 		// purchased for 258 (including 2 commissions of 1 eur), sold with profit.
 		{
-			sale: NewSale(
-				43.9,
-				113.25,
-				NewPurchase(
-					NewBaseTransaction("test-id", "test-status", time.Now()),
-					NewAsset("test-instrument", "test-asset-name", 56.065306),
-					NewMonetaryValues(6.62, 1, 370.25),
-					[]Document{NewDocument("test-doc-id", "test-url", "test-date", "test-title")},
-				),
+			transaction: NewTransaction(
+				"test-id", TypeSale, "test-status", 43.9, 113.25, 56.065306, 6.62, 1, 370.25, time.Now(),
+				NewInstrument("test-instrument", "test-asset-name"),
+				[]Document{NewDocument("test-doc-id", "test-url", "test-date", "test-title")},
 			),
 			expected: filesystem.NewCSVEntry(
 				"test-id",
@@ -95,15 +90,10 @@ func TestFromSale(t *testing.T) {
 		},
 		// purchased for 1829.55 (including 5 commissions of 1 eur), sold with loss.
 		{
-			sale: NewSale(
-				-0.62,
-				-11.28,
-				NewPurchase(
-					NewBaseTransaction("test-id", "test-status", time.Now()),
-					NewAsset("test-instrument", "test-asset-name", 21.272454),
-					NewMonetaryValues(85.48, 1, 1817.27),
-					[]Document{NewDocument("test-doc-id", "test-url", "test-date", "test-title")},
-				),
+			transaction: NewTransaction(
+				"test-id", TypeSale, "test-status", -0.62, -11.28, 21.272454, 85.48, 1, 1817.27, time.Now(),
+				NewInstrument("test-instrument", "test-asset-name"),
+				[]Document{NewDocument("test-doc-id", "test-url", "test-date", "test-title")},
 			),
 			expected: filesystem.NewCSVEntry(
 				"test-id",
@@ -129,8 +119,9 @@ func TestFromSale(t *testing.T) {
 	factory := NewCSVEntryFactory(log.New())
 
 	for _, testCase := range testCases {
-		actual := factory.FromSale(testCase.sale)
+		actual, err := factory.Make(testCase.transaction)
 
+		assert.Nil(err)
 		assertFloat64Fields(assert, testCase.expected, actual)
 	}
 }

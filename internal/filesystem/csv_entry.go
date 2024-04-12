@@ -45,7 +45,3 @@ func NewCSVEntry(
 		InvestedAmount: investedAmount,
 	}
 }
-
-type FactoryInterface interface {
-	Make(valueObject any) (CSVEntry, error)
-}

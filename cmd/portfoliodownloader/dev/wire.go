@@ -12,6 +12,7 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/websocket"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/database"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
@@ -28,13 +29,14 @@ var (
 		details.NewClient,
 		transaction.NewTypeResolver,
 		transaction.NewBuilder,
+		database.NewSQLiteOnFS,
+		transaction.NewRepository,
 		transaction.NewCSVEntryFactory,
 		filesystem.NewCSVReader,
 		filesystem.NewCSVWriter,
 		transaction.NewProcessor,
 
 		wire.Bind(new(transaction.BuilderInterface), new(transaction.Builder)),
-		wire.Bind(new(filesystem.FactoryInterface), new(transaction.CSVEntryFactory)),
 	)
 
 	RemoteSet = wire.NewSet(
