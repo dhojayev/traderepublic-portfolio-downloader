@@ -2,22 +2,25 @@ package database
 
 import (
 	"fmt"
+	"reflect"
 
 	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
-type RepositoryInterface interface {
-	Create(model any) error
+type RepositoryInterface[M comparable] interface {
+	Create(model M) error
 }
 
-type Repository struct {
+type Repository[M comparable] struct {
 	db     *gorm.DB
 	logger *log.Logger
 }
 
-func NewRepository(model any, database *gorm.DB, logger *log.Logger) (*Repository, error) {
-	repository := &Repository{
+func NewRepository[M comparable](database *gorm.DB, logger *log.Logger) (*Repository[M], error) {
+	var model M
+
+	repository := &Repository[M]{
 		db:     database,
 		logger: logger,
 	}
@@ -26,17 +29,17 @@ func NewRepository(model any, database *gorm.DB, logger *log.Logger) (*Repositor
 		return nil, fmt.Errorf("could not auto-migrate: %w", err)
 	}
 
-	repository.logger.WithField("model", model).Trace("initialized repository for model")
+	repository.logger.WithField("model", reflect.TypeOf(model)).Debug("initialized repository for model")
 
 	return repository, nil
 }
 
-func (r *Repository) Create(model any) error {
+func (r *Repository[M]) Create(model M) error {
 	r.logger.WithField("model", model).Trace("saving to db")
 
-	result := r.db.Create(model)
+	result := r.db.Save(model)
 	if result.Error != nil {
-		return fmt.Errorf("failed creating: %w", result.Error)
+		return fmt.Errorf("failed saving: %w", result.Error)
 	}
 
 	r.logger.WithFields(log.Fields{

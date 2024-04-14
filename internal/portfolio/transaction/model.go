@@ -3,8 +3,6 @@ package transaction
 import (
 	"strings"
 	"time"
-
-	"gorm.io/gorm"
 )
 
 const (
@@ -29,9 +27,9 @@ const (
 type Model struct {
 	UUID string `gorm:"primaryKey"`
 
-	InstrumentID int
-	Instrument   Instrument
-	Documents    []Document `gorm:"-"`
+	InstrumentISIN string
+	Instrument     Instrument
+	Documents      []Document `gorm:"-"`
 
 	Type       string    `gorm:"index"`
 	Timestamp  time.Time `gorm:"index"`
@@ -42,9 +40,8 @@ type Model struct {
 	Rate       float64
 	Commission float64
 	Total      float64
-	CreatedAt  time.Time
-	UpdatedAt  time.Time
-	DeletedAt  gorm.DeletedAt `gorm:"index"`
+	CreatedAt  time.Time `gorm:"index"`
+	UpdatedAt  time.Time `gorm:"index"`
 }
 
 func NewTransaction(
@@ -70,10 +67,12 @@ func NewTransaction(
 	}
 }
 
-type Instrument struct {
-	gorm.Model
+func (Model) TableName() string {
+	return "transactions"
+}
 
-	ISIN string `gorm:"index"`
+type Instrument struct {
+	ISIN string `gorm:"primaryKey"`
 	Name string
 }
 
