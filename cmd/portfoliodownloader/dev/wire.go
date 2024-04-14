@@ -37,6 +37,7 @@ var (
 		transaction.NewProcessor,
 
 		wire.Bind(new(transaction.BuilderInterface), new(transaction.Builder)),
+		wire.Bind(new(transaction.RepositoryInterface), new(*transaction.Repository)),
 	)
 
 	RemoteSet = wire.NewSet(

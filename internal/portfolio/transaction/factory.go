@@ -20,7 +20,7 @@ func NewCSVEntryFactory(logger *log.Logger) CSVEntryFactory {
 	}
 }
 
-func (f CSVEntryFactory) Make(transaction Transaction) (filesystem.CSVEntry, error) {
+func (f CSVEntryFactory) Make(transaction Model) (filesystem.CSVEntry, error) {
 	var debit, credit, investedAmount float64
 
 	yield := transaction.Yield

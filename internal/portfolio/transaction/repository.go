@@ -3,37 +3,24 @@ package transaction
 import (
 	"fmt"
 
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/database"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
+type RepositoryInterface interface {
+	database.RepositoryInterface
+}
+
 type Repository struct {
-	db     *gorm.DB
-	logger *log.Logger
+	*database.Repository
 }
 
-func NewRepository(database *gorm.DB, logger *log.Logger) (*Repository, error) {
-	if err := database.AutoMigrate(&Transaction{}, &Instrument{}); err != nil {
-		return nil, fmt.Errorf("could not auto-migrate: %w", err)
+func NewRepository(db *gorm.DB, logger *log.Logger) (*Repository, error) {
+	baseRepo, err := database.NewRepository(&Model{}, db, logger)
+	if err != nil {
+		return &Repository{}, fmt.Errorf("could not create base repo: %w", err)
 	}
 
-	return &Repository{
-		db:     database,
-		logger: logger,
-	}, nil
-}
-
-func (r *Repository) Create(transaction *Transaction) error {
-	r.logger.WithField("model", transaction).Trace("saving to db")
-
-	result := r.db.Create(transaction)
-	if result.Error != nil {
-		return fmt.Errorf("failed creating: %w", result.Error)
-	}
-
-	r.logger.WithFields(log.Fields{
-		"row affected": result.RowsAffected,
-	}).Debug("saved entry to db")
-
-	return nil
+	return &Repository{baseRepo}, nil
 }

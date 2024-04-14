@@ -80,7 +80,7 @@ func CreateRemoteApp(phoneNumber auth.PhoneNumber, pin auth.Pin, logger *logrus.
 // wire.go:
 
 var (
-	DefaultSet = wire.NewSet(portfoliodownloader.NewApp, transactions.NewClient, details.NewClient, transaction.NewTypeResolver, transaction.NewBuilder, database.NewSQLiteOnFS, transaction.NewRepository, transaction.NewCSVEntryFactory, filesystem.NewCSVReader, filesystem.NewCSVWriter, transaction.NewProcessor, wire.Bind(new(transaction.BuilderInterface), new(transaction.Builder)))
+	DefaultSet = wire.NewSet(portfoliodownloader.NewApp, transactions.NewClient, details.NewClient, transaction.NewTypeResolver, transaction.NewBuilder, database.NewSQLiteOnFS, transaction.NewRepository, transaction.NewCSVEntryFactory, filesystem.NewCSVReader, filesystem.NewCSVWriter, transaction.NewProcessor, wire.Bind(new(transaction.BuilderInterface), new(transaction.Builder)), wire.Bind(new(transaction.RepositoryInterface), new(*transaction.Repository)))
 
 	RemoteSet = wire.NewSet(
 		DefaultSet, api.NewClient, auth.NewClient, filesystem.NewJSONWriter, websocket.NewReader, wire.Bind(new(auth.ClientInterface), new(*auth.Client)), wire.Bind(new(writer.Interface), new(filesystem.JSONWriter)), wire.Bind(new(portfolio.ReaderInterface), new(*websocket.Reader)),

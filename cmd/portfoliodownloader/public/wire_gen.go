@@ -89,7 +89,7 @@ func CreateWritingApp(phoneNumber auth.PhoneNumber, pin auth.Pin, logger *logrus
 // wire.go:
 
 var (
-	DefaultSet = wire.NewSet(portfoliodownloader.NewApp, transactions.NewClient, details.NewClient, transaction.NewTypeResolver, database.NewSQLiteOnFS, transaction.NewRepository, transaction.NewBuilder, transaction.NewCSVEntryFactory, filesystem.NewCSVReader, filesystem.NewCSVWriter, transaction.NewProcessor, api.NewClient, auth.NewClient, websocket.NewReader, wire.Bind(new(auth.ClientInterface), new(*auth.Client)), wire.Bind(new(portfolio.ReaderInterface), new(*websocket.Reader)), wire.Bind(new(transaction.BuilderInterface), new(transaction.Builder)))
+	DefaultSet = wire.NewSet(portfoliodownloader.NewApp, transactions.NewClient, details.NewClient, transaction.NewTypeResolver, database.NewSQLiteOnFS, transaction.NewRepository, transaction.NewBuilder, transaction.NewCSVEntryFactory, filesystem.NewCSVReader, filesystem.NewCSVWriter, transaction.NewProcessor, api.NewClient, auth.NewClient, websocket.NewReader, wire.Bind(new(auth.ClientInterface), new(*auth.Client)), wire.Bind(new(portfolio.ReaderInterface), new(*websocket.Reader)), wire.Bind(new(transaction.BuilderInterface), new(transaction.Builder)), wire.Bind(new(transaction.RepositoryInterface), new(*transaction.Repository)))
 
 	NonWritingSet = wire.NewSet(
 		DefaultSet, writer.NewNilWriter, wire.Bind(new(writer.Interface), new(writer.NilWriter)),

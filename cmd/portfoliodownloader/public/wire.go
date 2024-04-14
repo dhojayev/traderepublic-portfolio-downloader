@@ -42,6 +42,7 @@ var (
 		wire.Bind(new(auth.ClientInterface), new(*auth.Client)),
 		wire.Bind(new(portfolio.ReaderInterface), new(*websocket.Reader)),
 		wire.Bind(new(transaction.BuilderInterface), new(transaction.Builder)),
+		wire.Bind(new(transaction.RepositoryInterface), new(*transaction.Repository)),
 	)
 
 	NonWritingSet = wire.NewSet(

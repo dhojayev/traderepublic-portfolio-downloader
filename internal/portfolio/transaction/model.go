@@ -26,7 +26,7 @@ const (
 	isinSuffixAcc     = "(Acc)"
 )
 
-type Transaction struct {
+type Model struct {
 	UUID string `gorm:"primaryKey"`
 
 	InstrumentID int
@@ -53,8 +53,8 @@ func NewTransaction(
 	timestamp time.Time,
 	instrument Instrument,
 	documents []Document,
-) Transaction {
-	return Transaction{
+) Model {
+	return Model{
 		UUID:       uuid,
 		Type:       transactionType,
 		Timestamp:  timestamp,

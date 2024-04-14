@@ -14,7 +14,7 @@ const csvFilename = "transactions.csv"
 
 type Processor struct {
 	builder    BuilderInterface
-	repository *Repository
+	repository RepositoryInterface
 	factory    CSVEntryFactory
 	csvReader  filesystem.CSVReader
 	csvWriter  filesystem.CSVWriter
@@ -23,7 +23,7 @@ type Processor struct {
 
 func NewProcessor(
 	builder BuilderInterface,
-	repository *Repository,
+	repository RepositoryInterface,
 	factory CSVEntryFactory,
 	csvReader filesystem.CSVReader,
 	csvWriter filesystem.CSVWriter,
