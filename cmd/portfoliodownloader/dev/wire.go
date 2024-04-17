@@ -17,6 +17,7 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/writer"
+	"gorm.io/gorm"
 
 	"github.com/google/wire"
 	log "github.com/sirupsen/logrus"
@@ -30,13 +31,16 @@ var (
 		transaction.NewTypeResolver,
 		transaction.NewBuilder,
 		database.NewSQLiteOnFS,
-		transaction.NewRepository,
 		transaction.NewCSVEntryFactory,
 		filesystem.NewCSVReader,
 		filesystem.NewCSVWriter,
 		transaction.NewProcessor,
+		ProvideTransactionRepository,
+		ProvideInstrumentRepository,
 
 		wire.Bind(new(transaction.BuilderInterface), new(transaction.Builder)),
+		wire.Bind(new(transaction.RepositoryInterface), new(*database.Repository[*transaction.Model])),
+		wire.Bind(new(transaction.InstrumentRepositoryInterface), new(*database.Repository[*transaction.Instrument])),
 	)
 
 	RemoteSet = wire.NewSet(
@@ -71,4 +75,12 @@ func CreateRemoteApp(phoneNumber auth.PhoneNumber, pin auth.Pin, logger *log.Log
 	wire.Build(RemoteSet)
 
 	return portfoliodownloader.App{}, nil
+}
+
+func ProvideTransactionRepository(db *gorm.DB, logger *log.Logger) (*database.Repository[*transaction.Model], error) {
+	return database.NewRepository[*transaction.Model](db, logger)
+}
+
+func ProvideInstrumentRepository(db *gorm.DB, logger *log.Logger) (*database.Repository[*transaction.Instrument], error) {
+	return database.NewRepository[*transaction.Instrument](db, logger)
 }

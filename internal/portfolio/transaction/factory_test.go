@@ -15,7 +15,7 @@ func TestFromPurchase(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {
-		transaction Transaction
+		transaction Model
 		expected    filesystem.CSVEntry
 	}{
 		// purchased for 501 (including 1 eur commission)
@@ -60,7 +60,7 @@ func TestFromSale(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {
-		transaction Transaction
+		transaction Model
 		expected    filesystem.CSVEntry
 	}{
 		// purchased for 258 (including 2 commissions of 1 eur), sold with profit.

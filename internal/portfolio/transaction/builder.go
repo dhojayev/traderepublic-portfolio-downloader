@@ -13,7 +13,7 @@ import (
 var ErrUnsupportedResponse = errors.New("unsupported response")
 
 type BuilderInterface interface {
-	FromResponse(response details.Response) (Transaction, error)
+	FromResponse(response details.Response) (Model, error)
 }
 
 type Builder struct {
@@ -28,10 +28,10 @@ func NewBuilder(resolver TypeResolver, logger *log.Logger) Builder {
 	}
 }
 
-func (b Builder) FromResponse(response details.Response) (Transaction, error) {
+func (b Builder) FromResponse(response details.Response) (Model, error) {
 	resolvedType, err := b.resolver.Resolve(response)
 	if err != nil {
-		return Transaction{}, fmt.Errorf("resolver error: %w", err)
+		return Model{}, fmt.Errorf("resolver error: %w", err)
 	}
 
 	switch resolvedType {
@@ -48,13 +48,13 @@ func (b Builder) FromResponse(response details.Response) (Transaction, error) {
 	case TypeUnsupported, TypeCardPaymentTransaction:
 	}
 
-	return Transaction{}, ErrUnsupportedResponse
+	return Model{}, ErrUnsupportedResponse
 }
 
-func (b Builder) Build(transactionType string, response details.Response) (Transaction, error) {
+func (b Builder) Build(transactionType string, response details.Response) (Model, error) {
 	var err error
 
-	transaction := Transaction{
+	transaction := Model{
 		UUID: response.ID,
 		Type: transactionType,
 	}

@@ -8,6 +8,7 @@ package main
 import (
 	"github.com/google/wire"
 	log "github.com/sirupsen/logrus"
+	"gorm.io/gorm"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/cmd/portfoliodownloader"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api"
@@ -28,8 +29,7 @@ var (
 		transactions.NewClient,
 		details.NewClient,
 		transaction.NewTypeResolver,
-		database.NewSQLiteOnFS,
-		transaction.NewRepository,
+		database.NewSQLiteInMemory,
 		transaction.NewBuilder,
 		transaction.NewCSVEntryFactory,
 		filesystem.NewCSVReader,
@@ -38,10 +38,14 @@ var (
 		api.NewClient,
 		auth.NewClient,
 		websocket.NewReader,
+		ProvideTransactionRepository,
+		ProvideInstrumentRepository,
 
 		wire.Bind(new(auth.ClientInterface), new(*auth.Client)),
 		wire.Bind(new(portfolio.ReaderInterface), new(*websocket.Reader)),
 		wire.Bind(new(transaction.BuilderInterface), new(transaction.Builder)),
+		wire.Bind(new(transaction.RepositoryInterface), new(*database.Repository[*transaction.Model])),
+		wire.Bind(new(transaction.InstrumentRepositoryInterface), new(*database.Repository[*transaction.Instrument])),
 	)
 
 	NonWritingSet = wire.NewSet(
@@ -69,4 +73,12 @@ func CreateWritingApp(phoneNumber auth.PhoneNumber, pin auth.Pin, logger *log.Lo
 	wire.Build(WritingSet)
 
 	return portfoliodownloader.App{}, nil
+}
+
+func ProvideTransactionRepository(db *gorm.DB, logger *log.Logger) (*database.Repository[*transaction.Model], error) {
+	return database.NewRepository[*transaction.Model](db, logger)
+}
+
+func ProvideInstrumentRepository(db *gorm.DB, logger *log.Logger) (*database.Repository[*transaction.Instrument], error) {
+	return database.NewRepository[*transaction.Instrument](db, logger)
 }

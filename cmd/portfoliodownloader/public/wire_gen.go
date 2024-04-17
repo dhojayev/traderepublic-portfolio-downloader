@@ -20,6 +20,7 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/writer"
 	"github.com/google/wire"
 	"github.com/sirupsen/logrus"
+	"gorm.io/gorm"
 )
 
 // Injectors from wire.go:
@@ -39,11 +40,11 @@ func CreateNonWritingApp(phoneNumber auth.PhoneNumber, pin auth.Pin, logger *log
 	detailsClient := details.NewClient(reader)
 	typeResolver := transaction.NewTypeResolver(logger)
 	builder := transaction.NewBuilder(typeResolver, logger)
-	db, err := database.NewSQLiteOnFS()
+	db, err := database.NewSQLiteInMemory()
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
-	repository, err := transaction.NewRepository(db, logger)
+	repository, err := ProvideTransactionRepository(db, logger)
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
@@ -70,11 +71,11 @@ func CreateWritingApp(phoneNumber auth.PhoneNumber, pin auth.Pin, logger *logrus
 	detailsClient := details.NewClient(reader)
 	typeResolver := transaction.NewTypeResolver(logger)
 	builder := transaction.NewBuilder(typeResolver, logger)
-	db, err := database.NewSQLiteOnFS()
+	db, err := database.NewSQLiteInMemory()
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
-	repository, err := transaction.NewRepository(db, logger)
+	repository, err := ProvideTransactionRepository(db, logger)
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
@@ -89,7 +90,9 @@ func CreateWritingApp(phoneNumber auth.PhoneNumber, pin auth.Pin, logger *logrus
 // wire.go:
 
 var (
-	DefaultSet = wire.NewSet(portfoliodownloader.NewApp, transactions.NewClient, details.NewClient, transaction.NewTypeResolver, database.NewSQLiteOnFS, transaction.NewRepository, transaction.NewBuilder, transaction.NewCSVEntryFactory, filesystem.NewCSVReader, filesystem.NewCSVWriter, transaction.NewProcessor, api.NewClient, auth.NewClient, websocket.NewReader, wire.Bind(new(auth.ClientInterface), new(*auth.Client)), wire.Bind(new(portfolio.ReaderInterface), new(*websocket.Reader)), wire.Bind(new(transaction.BuilderInterface), new(transaction.Builder)))
+	DefaultSet = wire.NewSet(portfoliodownloader.NewApp, transactions.NewClient, details.NewClient, transaction.NewTypeResolver, database.NewSQLiteInMemory, transaction.NewBuilder, transaction.NewCSVEntryFactory, filesystem.NewCSVReader, filesystem.NewCSVWriter, transaction.NewProcessor, api.NewClient, auth.NewClient, websocket.NewReader, ProvideTransactionRepository,
+		ProvideInstrumentRepository, wire.Bind(new(auth.ClientInterface), new(*auth.Client)), wire.Bind(new(portfolio.ReaderInterface), new(*websocket.Reader)), wire.Bind(new(transaction.BuilderInterface), new(transaction.Builder)), wire.Bind(new(transaction.RepositoryInterface), new(*database.Repository[*transaction.Model])), wire.Bind(new(transaction.InstrumentRepositoryInterface), new(*database.Repository[*transaction.Instrument])),
+	)
 
 	NonWritingSet = wire.NewSet(
 		DefaultSet, writer.NewNilWriter, wire.Bind(new(writer.Interface), new(writer.NilWriter)),
@@ -99,3 +102,11 @@ var (
 		DefaultSet, filesystem.NewJSONWriter, wire.Bind(new(writer.Interface), new(filesystem.JSONWriter)),
 	)
 )
+
+func ProvideTransactionRepository(db *gorm.DB, logger *logrus.Logger) (*database.Repository[*transaction.Model], error) {
+	return database.NewRepository[*transaction.Model](db, logger)
+}
+
+func ProvideInstrumentRepository(db *gorm.DB, logger *logrus.Logger) (*database.Repository[*transaction.Instrument], error) {
+	return database.NewRepository[*transaction.Instrument](db, logger)
+}

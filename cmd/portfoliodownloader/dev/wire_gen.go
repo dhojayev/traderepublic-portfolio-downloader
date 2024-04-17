@@ -20,6 +20,7 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/writer"
 	"github.com/google/wire"
 	"github.com/sirupsen/logrus"
+	"gorm.io/gorm"
 )
 
 // Injectors from wire.go:
@@ -34,7 +35,7 @@ func CreateLocalApp(baseDir string, logger *logrus.Logger) (portfoliodownloader.
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
-	repository, err := transaction.NewRepository(db, logger)
+	repository, err := ProvideTransactionRepository(db, logger)
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
@@ -65,7 +66,7 @@ func CreateRemoteApp(phoneNumber auth.PhoneNumber, pin auth.Pin, logger *logrus.
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
-	repository, err := transaction.NewRepository(db, logger)
+	repository, err := ProvideTransactionRepository(db, logger)
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
@@ -80,7 +81,9 @@ func CreateRemoteApp(phoneNumber auth.PhoneNumber, pin auth.Pin, logger *logrus.
 // wire.go:
 
 var (
-	DefaultSet = wire.NewSet(portfoliodownloader.NewApp, transactions.NewClient, details.NewClient, transaction.NewTypeResolver, transaction.NewBuilder, database.NewSQLiteOnFS, transaction.NewRepository, transaction.NewCSVEntryFactory, filesystem.NewCSVReader, filesystem.NewCSVWriter, transaction.NewProcessor, wire.Bind(new(transaction.BuilderInterface), new(transaction.Builder)))
+	DefaultSet = wire.NewSet(portfoliodownloader.NewApp, transactions.NewClient, details.NewClient, transaction.NewTypeResolver, transaction.NewBuilder, database.NewSQLiteOnFS, transaction.NewCSVEntryFactory, filesystem.NewCSVReader, filesystem.NewCSVWriter, transaction.NewProcessor, ProvideTransactionRepository,
+		ProvideInstrumentRepository, wire.Bind(new(transaction.BuilderInterface), new(transaction.Builder)), wire.Bind(new(transaction.RepositoryInterface), new(*database.Repository[*transaction.Model])), wire.Bind(new(transaction.InstrumentRepositoryInterface), new(*database.Repository[*transaction.Instrument])),
+	)
 
 	RemoteSet = wire.NewSet(
 		DefaultSet, api.NewClient, auth.NewClient, filesystem.NewJSONWriter, websocket.NewReader, wire.Bind(new(auth.ClientInterface), new(*auth.Client)), wire.Bind(new(writer.Interface), new(filesystem.JSONWriter)), wire.Bind(new(portfolio.ReaderInterface), new(*websocket.Reader)),
@@ -90,3 +93,11 @@ var (
 		DefaultSet, writer.NewNilWriter, filesystem.NewJSONReader, wire.Bind(new(writer.Interface), new(writer.NilWriter)), wire.Bind(new(portfolio.ReaderInterface), new(filesystem.JSONReader)),
 	)
 )
+
+func ProvideTransactionRepository(db *gorm.DB, logger *logrus.Logger) (*database.Repository[*transaction.Model], error) {
+	return database.NewRepository[*transaction.Model](db, logger)
+}
+
+func ProvideInstrumentRepository(db *gorm.DB, logger *logrus.Logger) (*database.Repository[*transaction.Instrument], error) {
+	return database.NewRepository[*transaction.Instrument](db, logger)
+}
