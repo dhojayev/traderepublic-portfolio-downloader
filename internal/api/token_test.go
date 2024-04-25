@@ -1,9 +1,10 @@
-package api
+package api_test
 
 import (
 	"net/http"
 	"testing"
 
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -55,7 +56,7 @@ func TestNewTokenFromHeader(t *testing.T) {
 	assert := assert.New(t)
 
 	for _, testCase := range testCases {
-		token, err := NewTokenFromHeader("session", testCase.header)
+		token, err := api.NewTokenFromHeader("session", testCase.header)
 
 		if !testCase.mustReturnErr {
 			assert.Nil(err)
