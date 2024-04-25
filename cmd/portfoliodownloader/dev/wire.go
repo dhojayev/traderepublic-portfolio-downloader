@@ -51,7 +51,7 @@ var (
 		websocket.NewReader,
 
 		wire.Bind(new(auth.ClientInterface), new(*auth.Client)),
-		wire.Bind(new(writer.Interface), new(filesystem.JSONWriter)),
+		wire.Bind(new(writer.Interface), new(*filesystem.JSONWriter)),
 		wire.Bind(new(portfolio.ReaderInterface), new(*websocket.Reader)),
 	)
 
@@ -61,7 +61,7 @@ var (
 		filesystem.NewJSONReader,
 
 		wire.Bind(new(writer.Interface), new(writer.NilWriter)),
-		wire.Bind(new(portfolio.ReaderInterface), new(filesystem.JSONReader)),
+		wire.Bind(new(portfolio.ReaderInterface), new(*filesystem.JSONReader)),
 	)
 )
 

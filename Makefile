@@ -1,6 +1,6 @@
 .PHONY: all init generate lint test build-darwin-amd64 build-darwin-arm64 build-windows-386 build-windows-amd64 build-linux-386 build-linux-amd64 build-linux-arm64
 
-all: generate lint test
+all: lint test
 
 init:
 	go run -mod=mod github.com/google/wire/cmd/wire ./...

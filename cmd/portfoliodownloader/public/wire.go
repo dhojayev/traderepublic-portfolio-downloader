@@ -59,7 +59,7 @@ var (
 		DefaultSet,
 		filesystem.NewJSONWriter,
 
-		wire.Bind(new(writer.Interface), new(filesystem.JSONWriter)),
+		wire.Bind(new(writer.Interface), new(*filesystem.JSONWriter)),
 	)
 )
 
