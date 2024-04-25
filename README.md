@@ -85,10 +85,7 @@ All available arguments and flags:
 
 ```shell
 ➜  traderepublic-portfolio-downloader git:(main) ✗ ./bin/portfoliodownloader --help
-Usage: portfoliodownloader [--write-responses] [--debug] [--trace] PHONENUMBER
-
-Positional arguments:
-  PHONENUMBER            Phone number in international format: +49xxxxxxxxxxxxx
+Usage: portfoliodownloader [--write-responses] [--debug] [--trace]
 
 Options:
   --write-responses, -w
