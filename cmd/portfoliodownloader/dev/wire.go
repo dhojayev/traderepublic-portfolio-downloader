@@ -12,6 +12,7 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/websocket"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/console"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/database"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio"
@@ -47,12 +48,15 @@ var (
 		DefaultSet,
 		api.NewClient,
 		auth.NewClient,
-		filesystem.NewJSONWriter,
+		console.NewAuthService,
 		websocket.NewReader,
+		filesystem.NewJSONWriter,
 
 		wire.Bind(new(auth.ClientInterface), new(*auth.Client)),
-		wire.Bind(new(writer.Interface), new(filesystem.JSONWriter)),
+		wire.Bind(new(console.AuthServiceInterface), new(*console.AuthService)),
 		wire.Bind(new(portfolio.ReaderInterface), new(*websocket.Reader)),
+
+		wire.Bind(new(writer.Interface), new(filesystem.JSONWriter)),
 	)
 
 	LocalSet = wire.NewSet(
@@ -71,7 +75,7 @@ func CreateLocalApp(baseDir string, logger *log.Logger) (portfoliodownloader.App
 	return portfoliodownloader.App{}, nil
 }
 
-func CreateRemoteApp(phoneNumber auth.PhoneNumber, pin auth.Pin, logger *log.Logger) (portfoliodownloader.App, error) {
+func CreateRemoteApp(logger *log.Logger) (portfoliodownloader.App, error) {
 	wire.Build(RemoteSet)
 
 	return portfoliodownloader.App{}, nil

@@ -6,8 +6,6 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/auth"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/util"
 )
 
 func main() {
@@ -30,20 +28,13 @@ func main() {
 		logger.Panic(err)
 	}
 
-	input, err := util.ReadPassword("pin")
-	if err != nil {
-		logger.Panic(err)
-	}
-
-	pin := auth.Pin(input)
-
-	application, err := CreateNonWritingApp(args.PhoneNumber, pin, logger)
+	application, err := CreateNonWritingApp(logger)
 	if err != nil {
 		logger.Panic(err)
 	}
 
 	if args.WriteResponseFiles {
-		application, err = CreateWritingApp(args.PhoneNumber, pin, logger)
+		application, err = CreateWritingApp(logger)
 		if err != nil {
 			logger.Panic(err)
 		}

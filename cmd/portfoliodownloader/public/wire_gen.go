@@ -13,6 +13,7 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/websocket"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/console"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/database"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio"
@@ -25,14 +26,15 @@ import (
 
 // Injectors from wire.go:
 
-func CreateNonWritingApp(phoneNumber auth.PhoneNumber, pin auth.Pin, logger *logrus.Logger) (portfoliodownloader.App, error) {
+func CreateNonWritingApp(logger *logrus.Logger) (portfoliodownloader.App, error) {
 	client := api.NewClient(logger)
-	authClient, err := auth.NewClient(phoneNumber, pin, client, logger)
+	authClient, err := auth.NewClient(client, logger)
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
+	authService := console.NewAuthService(authClient)
 	nilWriter := writer.NewNilWriter()
-	reader, err := websocket.NewReader(authClient, nilWriter, logger)
+	reader, err := websocket.NewReader(authService, nilWriter, logger)
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
@@ -56,14 +58,15 @@ func CreateNonWritingApp(phoneNumber auth.PhoneNumber, pin auth.Pin, logger *log
 	return app, nil
 }
 
-func CreateWritingApp(phoneNumber auth.PhoneNumber, pin auth.Pin, logger *logrus.Logger) (portfoliodownloader.App, error) {
+func CreateWritingApp(logger *logrus.Logger) (portfoliodownloader.App, error) {
 	client := api.NewClient(logger)
-	authClient, err := auth.NewClient(phoneNumber, pin, client, logger)
+	authClient, err := auth.NewClient(client, logger)
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
+	authService := console.NewAuthService(authClient)
 	jsonWriter := filesystem.NewJSONWriter(logger)
-	reader, err := websocket.NewReader(authClient, jsonWriter, logger)
+	reader, err := websocket.NewReader(authService, jsonWriter, logger)
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
@@ -90,8 +93,8 @@ func CreateWritingApp(phoneNumber auth.PhoneNumber, pin auth.Pin, logger *logrus
 // wire.go:
 
 var (
-	DefaultSet = wire.NewSet(portfoliodownloader.NewApp, transactions.NewClient, details.NewClient, transaction.NewTypeResolver, database.NewSQLiteInMemory, transaction.NewBuilder, transaction.NewCSVEntryFactory, filesystem.NewCSVReader, filesystem.NewCSVWriter, transaction.NewProcessor, api.NewClient, auth.NewClient, websocket.NewReader, ProvideTransactionRepository,
-		ProvideInstrumentRepository, wire.Bind(new(auth.ClientInterface), new(*auth.Client)), wire.Bind(new(portfolio.ReaderInterface), new(*websocket.Reader)), wire.Bind(new(transaction.BuilderInterface), new(transaction.Builder)), wire.Bind(new(transaction.RepositoryInterface), new(*database.Repository[*transaction.Model])), wire.Bind(new(transaction.InstrumentRepositoryInterface), new(*database.Repository[*transaction.Instrument])),
+	DefaultSet = wire.NewSet(api.NewClient, auth.NewClient, console.NewAuthService, websocket.NewReader, portfoliodownloader.NewApp, transactions.NewClient, details.NewClient, transaction.NewTypeResolver, database.NewSQLiteInMemory, transaction.NewBuilder, transaction.NewCSVEntryFactory, filesystem.NewCSVReader, filesystem.NewCSVWriter, transaction.NewProcessor, ProvideTransactionRepository,
+		ProvideInstrumentRepository, wire.Bind(new(auth.ClientInterface), new(*auth.Client)), wire.Bind(new(console.AuthServiceInterface), new(*console.AuthService)), wire.Bind(new(portfolio.ReaderInterface), new(*websocket.Reader)), wire.Bind(new(transaction.BuilderInterface), new(transaction.Builder)), wire.Bind(new(transaction.RepositoryInterface), new(*database.Repository[*transaction.Model])), wire.Bind(new(transaction.InstrumentRepositoryInterface), new(*database.Repository[*transaction.Instrument])),
 	)
 
 	NonWritingSet = wire.NewSet(

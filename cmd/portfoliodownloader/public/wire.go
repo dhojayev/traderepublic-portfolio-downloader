@@ -16,6 +16,7 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/websocket"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/console"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/database"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio"
@@ -25,6 +26,11 @@ import (
 
 var (
 	DefaultSet = wire.NewSet(
+		api.NewClient,
+		auth.NewClient,
+		console.NewAuthService,
+		websocket.NewReader,
+
 		portfoliodownloader.NewApp,
 		transactions.NewClient,
 		details.NewClient,
@@ -35,14 +41,13 @@ var (
 		filesystem.NewCSVReader,
 		filesystem.NewCSVWriter,
 		transaction.NewProcessor,
-		api.NewClient,
-		auth.NewClient,
-		websocket.NewReader,
 		ProvideTransactionRepository,
 		ProvideInstrumentRepository,
 
 		wire.Bind(new(auth.ClientInterface), new(*auth.Client)),
+		wire.Bind(new(console.AuthServiceInterface), new(*console.AuthService)),
 		wire.Bind(new(portfolio.ReaderInterface), new(*websocket.Reader)),
+
 		wire.Bind(new(transaction.BuilderInterface), new(transaction.Builder)),
 		wire.Bind(new(transaction.RepositoryInterface), new(*database.Repository[*transaction.Model])),
 		wire.Bind(new(transaction.InstrumentRepositoryInterface), new(*database.Repository[*transaction.Instrument])),
@@ -63,13 +68,13 @@ var (
 	)
 )
 
-func CreateNonWritingApp(phoneNumber auth.PhoneNumber, pin auth.Pin, logger *log.Logger) (portfoliodownloader.App, error) {
+func CreateNonWritingApp(logger *log.Logger) (portfoliodownloader.App, error) {
 	wire.Build(NonWritingSet)
 
 	return portfoliodownloader.App{}, nil
 }
 
-func CreateWritingApp(phoneNumber auth.PhoneNumber, pin auth.Pin, logger *log.Logger) (portfoliodownloader.App, error) {
+func CreateWritingApp(logger *log.Logger) (portfoliodownloader.App, error) {
 	wire.Build(WritingSet)
 
 	return portfoliodownloader.App{}, nil

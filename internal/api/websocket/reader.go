@@ -9,9 +9,8 @@ import (
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/auth"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/header"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/cmd"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/console"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/writer"
 )
@@ -21,18 +20,18 @@ const (
 )
 
 type Reader struct {
-	authClient auth.ClientInterface
-	writer     writer.Interface
-	logger     *log.Logger
-	conn       *websocket.Conn
-	subID      uint
+	authService console.AuthServiceInterface
+	writer      writer.Interface
+	logger      *log.Logger
+	conn        *websocket.Conn
+	subID       uint
 }
 
-func NewReader(authClient auth.ClientInterface, writer writer.Interface, logger *log.Logger) (*Reader, error) {
+func NewReader(authService console.AuthServiceInterface, writer writer.Interface, logger *log.Logger) (*Reader, error) {
 	client := &Reader{
-		authClient: authClient,
-		writer:     writer,
-		logger:     logger,
+		authService: authService,
+		writer:      writer,
+		logger:      logger,
 	}
 
 	return client, client.connect()
@@ -114,7 +113,7 @@ func (r *Reader) Read(dataType string, dataMap map[string]any) (portfolio.Output
 			continue
 		case message.HasErrorState():
 			if message.HasAuthErrMsg() {
-				if loginErr := cmd.Login(r.authClient); loginErr != nil {
+				if loginErr := r.authService.Login(); loginErr != nil {
 					return message, fmt.Errorf("could not re-login: %w", loginErr)
 				}
 
@@ -139,7 +138,7 @@ func (r *Reader) Read(dataType string, dataMap map[string]any) (portfolio.Output
 func (r *Reader) createWritableDataBytes(dataType string, dataMap map[string]any) ([]byte, error) {
 	data := dataMap
 	data["type"] = dataType
-	data["token"] = r.authClient.SessionToken().Value()
+	data["token"] = r.authService.SessionToken().Value()
 
 	dataBytes, err := json.Marshal(data)
 	if err != nil {

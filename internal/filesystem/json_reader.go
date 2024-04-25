@@ -25,8 +25,7 @@ func NewJSONReader(baseDir string, logger *log.Logger) JSONReader {
 	}
 }
 
-//nolint:ireturn
-func (r JSONReader) Read(dataType string, data map[string]any) (portfolio.OutputDataInterface, error) {
+func (r JSONReader) Read(dataType string, data map[string]any) (portfolio.OutputDataInterface, error) { //nolint:ireturn
 	id, found := data["id"]
 	if !found {
 		cursor, found := r.cursors[dataType]
