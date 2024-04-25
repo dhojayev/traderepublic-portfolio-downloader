@@ -99,40 +99,48 @@ Options:
 
 ```
 
-After downloading a binary for respective OS simply run it in terminal by providing your phone number as an argument:
+After downloading a binary for respective OS simply run it in terminal:
 
 ```shell
-➜  traderepublic-portfolio-downloader git:(main) ✗ ./bin/portfoliodownloader +49xxxxxxxxxxxx
-Enter pin:
+➜  traderepublic-portfolio-downloader git:(main) ✗ ./bin/portfoliodownloader
+Enter phone number in international format (+49xxxxxxxxxxxxx): 
+```
+
+Enter your registered mobile number in international format as requested:
+
+```shell
+➜  traderepublic-portfolio-downloader git:(main) ✗ ./bin/portfoliodownloader
+Enter phone number in international format (+49xxxxxxxxxxxxx): 
++491234567890
 ```
 
 Provide your pin and hit enter:
 
 ```shell
-➜  traderepublic-portfolio-downloader git:(main) ✗ ./bin/portfoliodownloader +49xxxxxxxxxxxx
+➜  traderepublic-portfolio-downloader git:(main) ✗ ./bin/portfoliodownloader
+Enter phone number in international format (+49xxxxxxxxxxxxx): 
++491234567890
 Enter pin:
-Mar 28 12:01:32.249 [INFO] Downloading transactions
-Enter 2FA token:
 ```
 
 Enter OTP that you received from Trade Republic and hit enter:
 
 ```shell
-➜  traderepublic-portfolio-downloader git:(main) ✗ ./bin/portfoliodownloader +49xxxxxxxxxxxx
+➜  traderepublic-portfolio-downloader git:(main) ✗ ./bin/portfoliodownloader
+Enter phone number in international format (+49xxxxxxxxxxxxx): 
++491234567890
 Enter pin:
-Mar 28 12:01:32.249 [INFO] Downloading transactions
 Enter 2FA token:
-1111
 ```
 
 You will see the progress of download and processing:
 
 ```shell
-➜  traderepublic-portfolio-downloader git:(main) ✗ ./bin/portfoliodownloader +49xxxxxxxxxxxx
+➜  traderepublic-portfolio-downloader git:(main) ✗ ./bin/portfoliodownloader
+Enter phone number in international format (+49xxxxxxxxxxxxx): 
++491234567890
 Enter pin:
-Mar 28 12:01:32.249 [INFO] Downloading transactions
 Enter 2FA token:
-1111
 Mar 28 12:02:09.385 [INFO] 247 transaction downloaded
 Mar 28 12:02:09.385 [INFO] [id:xxxxxxx-xxxxx-xxxxx-xxxxx-xxxx] Fetching transaction details
 Mar 28 12:02:09.413 [INFO] [id:xxxxxxx-xxxxx-xxxxx-xxxxx-xxxx] Processing transaction details
