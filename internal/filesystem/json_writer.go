@@ -5,8 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"strconv"
-	"time"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -18,16 +16,18 @@ const (
 )
 
 type JSONWriter struct {
-	logger *log.Logger
+	logger  *log.Logger
+	cursors map[string]uint
 }
 
-func NewJSONWriter(logger *log.Logger) JSONWriter {
-	return JSONWriter{
-		logger: logger,
+func NewJSONWriter(logger *log.Logger) *JSONWriter {
+	return &JSONWriter{
+		logger:  logger,
+		cursors: map[string]uint{},
 	}
 }
 
-func (w JSONWriter) Bytes(dir string, data []byte) error {
+func (w *JSONWriter) Bytes(dir string, data []byte) error {
 	if dir == "" {
 		return errors.New("writer: dir cannot be empty")
 	}
@@ -38,21 +38,37 @@ func (w JSONWriter) Bytes(dir string, data []byte) error {
 		return fmt.Errorf("could not unmarshal data bytes to write to file: %w", err)
 	}
 
-	t := time.Now()
-	filename := strconv.Itoa(int(t.UnixNano()))
-	idVal, found := dataMap["id"]
-
-	if found {
-		id, ok := idVal.(string)
-		if ok {
-			filename = id
-		}
+	filename, err := w.GenerateFilename(dir, dataMap)
+	if err != nil {
+		return err
 	}
 
 	return w.write(dir, filename, dataMap)
 }
 
-func (w JSONWriter) write(dir, filename string, dataMap map[string]any) error {
+func (w *JSONWriter) GenerateFilename(dir string, dataMap map[string]any) (string, error) {
+	idVal, found := dataMap["id"]
+
+	if found {
+		id, ok := idVal.(string)
+		if !ok {
+			return "", errors.New("could not convert id into string")
+		}
+
+		return id, nil
+	}
+
+	cursor, found := w.cursors[dir]
+	if !found {
+		cursor = 1
+	}
+
+	w.cursors[dir] = cursor + 1
+
+	return fmt.Sprintf("page-%d", cursor), nil
+}
+
+func (w *JSONWriter) write(dir, filename string, dataMap map[string]any) error {
 	data, err := json.MarshalIndent(dataMap, "", "  ")
 	if err != nil {
 		return fmt.Errorf("could not marshal data bytes to write to file: %w", err)
@@ -79,7 +95,7 @@ func (w JSONWriter) write(dir, filename string, dataMap map[string]any) error {
 	return nil
 }
 
-func (w JSONWriter) createDir(destDir string) error {
+func (w *JSONWriter) createDir(destDir string) error {
 	_, err := os.Stat(destDir)
 	if err == nil {
 		return nil
