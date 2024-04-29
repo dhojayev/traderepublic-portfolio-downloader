@@ -88,11 +88,11 @@ var (
 	)
 
 	RemoteSet = wire.NewSet(
-		DefaultSet, api.NewClient, auth.NewClient, console.NewAuthService, websocket.NewReader, filesystem.NewJSONWriter, wire.Bind(new(auth.ClientInterface), new(*auth.Client)), wire.Bind(new(console.AuthServiceInterface), new(*console.AuthService)), wire.Bind(new(portfolio.ReaderInterface), new(*websocket.Reader)), wire.Bind(new(writer.Interface), new(filesystem.JSONWriter)),
+		DefaultSet, api.NewClient, auth.NewClient, console.NewAuthService, websocket.NewReader, filesystem.NewJSONWriter, wire.Bind(new(auth.ClientInterface), new(*auth.Client)), wire.Bind(new(console.AuthServiceInterface), new(*console.AuthService)), wire.Bind(new(portfolio.ReaderInterface), new(*websocket.Reader)), wire.Bind(new(writer.Interface), new(*filesystem.JSONWriter)),
 	)
 
 	LocalSet = wire.NewSet(
-		DefaultSet, writer.NewNilWriter, filesystem.NewJSONReader, wire.Bind(new(writer.Interface), new(writer.NilWriter)), wire.Bind(new(portfolio.ReaderInterface), new(filesystem.JSONReader)),
+		DefaultSet, writer.NewNilWriter, filesystem.NewJSONReader, wire.Bind(new(writer.Interface), new(writer.NilWriter)), wire.Bind(new(portfolio.ReaderInterface), new(*filesystem.JSONReader)),
 	)
 )
 

@@ -1,4 +1,4 @@
-package transaction
+package transaction_test
 
 import (
 	"strconv"
@@ -7,6 +7,7 @@ import (
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
 	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 )
@@ -15,15 +16,15 @@ func TestFromPurchase(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {
-		transaction Model
-		expected    filesystem.CSVEntry
+		trn      transaction.Model
+		expected filesystem.CSVEntry
 	}{
 		// purchased for 501 (including 1 eur commission)
 		{
-			transaction: NewTransaction(
-				"test-id", TypePurchase, "test-status", 0, 0, 5.186721, 96.40, 1, 501, time.Now(),
-				NewInstrument("test-instrument", "test-asset-name"),
-				[]Document{NewDocument("test-doc-id", "test-url", "test-date", "test-title")},
+			trn: transaction.NewTransaction(
+				"test-id", transaction.TypePurchase, "test-status", 0, 0, 5.186721, 96.40, 1, 501, time.Now(),
+				transaction.NewInstrument("test-instrument", "test-asset-name"),
+				[]transaction.Document{transaction.NewDocument("test-doc-id", "test-url", "test-date", "test-title")},
 			),
 			expected: filesystem.NewCSVEntry(
 				"test-id",
@@ -46,10 +47,10 @@ func TestFromPurchase(t *testing.T) {
 	}
 
 	assert := assert.New(t)
-	factory := NewCSVEntryFactory(log.New())
+	factory := transaction.NewCSVEntryFactory(log.New())
 
 	for _, testCase := range testCases {
-		actual, err := factory.Make(testCase.transaction)
+		actual, err := factory.Make(testCase.trn)
 
 		assert.Nil(err)
 		assertFloat64Fields(assert, testCase.expected, actual)
@@ -60,15 +61,15 @@ func TestFromSale(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {
-		transaction Model
-		expected    filesystem.CSVEntry
+		trn      transaction.Model
+		expected filesystem.CSVEntry
 	}{
 		// purchased for 258 (including 2 commissions of 1 eur), sold with profit.
 		{
-			transaction: NewTransaction(
-				"test-id", TypeSale, "test-status", 43.9, 113.25, 56.065306, 6.62, 1, 370.25, time.Now(),
-				NewInstrument("test-instrument", "test-asset-name"),
-				[]Document{NewDocument("test-doc-id", "test-url", "test-date", "test-title")},
+			trn: transaction.NewTransaction(
+				"test-id", transaction.TypeSale, "test-status", 43.9, 113.25, 56.065306, 6.62, 1, 370.25, time.Now(),
+				transaction.NewInstrument("test-instrument", "test-asset-name"),
+				[]transaction.Document{transaction.NewDocument("test-doc-id", "test-url", "test-date", "test-title")},
 			),
 			expected: filesystem.NewCSVEntry(
 				"test-id",
@@ -90,10 +91,10 @@ func TestFromSale(t *testing.T) {
 		},
 		// purchased for 1829.55 (including 5 commissions of 1 eur), sold with loss.
 		{
-			transaction: NewTransaction(
-				"test-id", TypeSale, "test-status", -0.62, -11.28, 21.272454, 85.48, 1, 1817.27, time.Now(),
-				NewInstrument("test-instrument", "test-asset-name"),
-				[]Document{NewDocument("test-doc-id", "test-url", "test-date", "test-title")},
+			trn: transaction.NewTransaction(
+				"test-id", transaction.TypeSale, "test-status", -0.62, -11.28, 21.272454, 85.48, 1, 1817.27, time.Now(),
+				transaction.NewInstrument("test-instrument", "test-asset-name"),
+				[]transaction.Document{transaction.NewDocument("test-doc-id", "test-url", "test-date", "test-title")},
 			),
 			expected: filesystem.NewCSVEntry(
 				"test-id",
@@ -116,10 +117,10 @@ func TestFromSale(t *testing.T) {
 	}
 
 	assert := assert.New(t)
-	factory := NewCSVEntryFactory(log.New())
+	factory := transaction.NewCSVEntryFactory(log.New())
 
 	for _, testCase := range testCases {
-		actual, err := factory.Make(testCase.transaction)
+		actual, err := factory.Make(testCase.trn)
 
 		assert.Nil(err)
 		assertFloat64Fields(assert, testCase.expected, actual)

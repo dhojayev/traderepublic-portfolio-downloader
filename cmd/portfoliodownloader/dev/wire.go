@@ -56,7 +56,7 @@ var (
 		wire.Bind(new(console.AuthServiceInterface), new(*console.AuthService)),
 		wire.Bind(new(portfolio.ReaderInterface), new(*websocket.Reader)),
 
-		wire.Bind(new(writer.Interface), new(filesystem.JSONWriter)),
+		wire.Bind(new(writer.Interface), new(*filesystem.JSONWriter)),
 	)
 
 	LocalSet = wire.NewSet(
@@ -65,7 +65,7 @@ var (
 		filesystem.NewJSONReader,
 
 		wire.Bind(new(writer.Interface), new(writer.NilWriter)),
-		wire.Bind(new(portfolio.ReaderInterface), new(filesystem.JSONReader)),
+		wire.Bind(new(portfolio.ReaderInterface), new(*filesystem.JSONReader)),
 	)
 )
 

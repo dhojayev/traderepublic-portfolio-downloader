@@ -2,9 +2,7 @@ package filesystem
 
 import (
 	"fmt"
-	"io/fs"
 	"os"
-	"strings"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio"
 
@@ -17,43 +15,26 @@ type JSONReader struct {
 	cursors map[string]uint
 }
 
-func NewJSONReader(baseDir string, logger *log.Logger) JSONReader {
-	return JSONReader{
+func NewJSONReader(baseDir string, logger *log.Logger) *JSONReader {
+	return &JSONReader{
 		baseDir: baseDir,
 		logger:  logger,
 		cursors: map[string]uint{},
 	}
 }
 
-func (r JSONReader) Read(dataType string, data map[string]any) (portfolio.OutputDataInterface, error) { //nolint:ireturn
+//nolint:ireturn
+func (r *JSONReader) Read(dataType string, data map[string]any) (portfolio.OutputDataInterface, error) {
 	id, found := data["id"]
 	if !found {
 		cursor, found := r.cursors[dataType]
 		if !found {
-			cursor = 0
-			r.cursors[dataType] = cursor
+			cursor = 1
 		}
 
-		entries, err := os.ReadDir(fmt.Sprintf("%s/%s", r.baseDir, dataType))
-		if err != nil {
-			return OutputData{}, fmt.Errorf("could not read dir: %w", err)
-		}
+		r.cursors[dataType] = cursor + 1
 
-		var filteredEntries []fs.DirEntry
-
-		for _, entry := range entries {
-			if entry.IsDir() || !strings.Contains(entry.Name(), ".json") {
-				continue
-			}
-
-			filteredEntries = append(filteredEntries, entry)
-		}
-
-		entry := filteredEntries[cursor]
-		filepath := fmt.Sprintf("%s/%s/%s", r.baseDir, dataType, entry.Name())
-		r.cursors[dataType]++
-
-		return r.read(filepath)
+		return r.read(fmt.Sprintf("%s/%s/page-%d.json", r.baseDir, dataType, cursor))
 	}
 
 	filepath := fmt.Sprintf("%s/%s/%s.json", r.baseDir, dataType, id)
@@ -61,7 +42,7 @@ func (r JSONReader) Read(dataType string, data map[string]any) (portfolio.Output
 	return r.read(filepath)
 }
 
-func (r JSONReader) read(filepath string) (OutputData, error) {
+func (r *JSONReader) read(filepath string) (OutputData, error) {
 	fileContents, err := os.ReadFile(filepath)
 	if err != nil {
 		return OutputData{}, fmt.Errorf("could not read filepath: %w", err)
@@ -70,9 +51,8 @@ func (r JSONReader) read(filepath string) (OutputData, error) {
 	r.logger.
 		WithFields(log.Fields{
 			"filepath": filepath,
-			"contents": string(fileContents),
 		}).
-		Trace("read file contents")
+		Debug("read file contents")
 
 	return OutputData{data: fileContents}, nil
 }

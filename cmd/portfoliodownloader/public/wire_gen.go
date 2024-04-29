@@ -102,7 +102,7 @@ var (
 	)
 
 	WritingSet = wire.NewSet(
-		DefaultSet, filesystem.NewJSONWriter, wire.Bind(new(writer.Interface), new(filesystem.JSONWriter)),
+		DefaultSet, filesystem.NewJSONWriter, wire.Bind(new(writer.Interface), new(*filesystem.JSONWriter)),
 	)
 )
 
