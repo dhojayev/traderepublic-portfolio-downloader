@@ -3,6 +3,8 @@ package transaction
 import (
 	"strings"
 	"time"
+
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
 )
 
 const (
@@ -29,7 +31,7 @@ type Model struct {
 
 	InstrumentISIN string
 	Instrument     Instrument
-	Documents      []Document `gorm:"-"`
+	Documents      []document.Model `gorm:"-"`
 
 	Type       string    `gorm:"index"`
 	Timestamp  time.Time `gorm:"index"`
@@ -49,7 +51,7 @@ func NewTransaction(
 	yield, profit, shares, rate, commission, total float64,
 	timestamp time.Time,
 	instrument Instrument,
-	documents []Document,
+	documents []document.Model,
 ) Model {
 	return Model{
 		UUID:       uuid,

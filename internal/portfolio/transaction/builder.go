@@ -8,6 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
 )
 
 var ErrUnsupportedResponse = errors.New("unsupported response")
@@ -230,21 +231,21 @@ func (b Builder) GetTransactionData(response details.Response) (float64, float64
 	return shares, rate, commission, total, nil
 }
 
-func (b Builder) BuildDocuments(response details.Response) ([]Document, error) {
-	documents := make([]Document, 0)
+func (b Builder) BuildDocuments(response details.Response) ([]document.Model, error) {
+	documents := make([]document.Model, 0)
 
 	documentsSection, err := response.DocumentsSection()
 	if err != nil {
 		return documents, fmt.Errorf("could not get documents section: %w", err)
 	}
 
-	for _, document := range documentsSection.Data {
-		url, ok := document.Action.Payload.(string)
+	for _, doc := range documentsSection.Data {
+		url, ok := doc.Action.Payload.(string)
 		if !ok {
 			continue
 		}
 
-		documents = append(documents, NewDocument(document.ID, url, document.Detail, document.Title))
+		documents = append(documents, document.NewModel(doc.ID, url, doc.Detail, doc.Title))
 	}
 
 	return documents, nil

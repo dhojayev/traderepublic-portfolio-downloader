@@ -10,6 +10,7 @@ import (
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
 )
 
@@ -26,11 +27,11 @@ func TestBuilder_BuildDocuments(t *testing.T) {
 
 	testCases := []struct {
 		filepath string
-		expected []transaction.Document
+		expected []document.Model
 	}{
 		{
 			filepath: "../../../tests/data/transaction-details/documents-section-variant-1.json",
-			expected: []transaction.Document{
+			expected: []document.Model{
 				{
 					ID:    "58acfbab-45fe-4be1-8ec3-3901a6eabf36",
 					URL:   "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/2023/12/11/138c562b/pb3204932049320940329402394032.pdf",
@@ -47,7 +48,7 @@ func TestBuilder_BuildDocuments(t *testing.T) {
 		},
 		{
 			filepath: "../../../tests/data/transaction-details/documents-section-variant-2.json",
-			expected: []transaction.Document{
+			expected: []document.Model{
 				{
 					ID:    "51f4e1cf-30ac-4c6b-92cb-afb5bba19e20",
 					URL:   "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/2024/3/25/9234rjd23/pb12390210938921839218123012.pdf",

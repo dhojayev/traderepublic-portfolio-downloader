@@ -4,8 +4,9 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api"
 )
 
 func TestNewTokenFromHeader(t *testing.T) {
@@ -53,16 +54,14 @@ func TestNewTokenFromHeader(t *testing.T) {
 		},
 	}
 
-	assert := assert.New(t)
-
 	for _, testCase := range testCases {
 		token, err := api.NewTokenFromHeader("session", testCase.header)
 
 		if !testCase.mustReturnErr {
-			assert.Nil(err)
+			assert.Nil(t, err)
 		}
 
-		assert.Equal("session", token.Name())
-		assert.Equal(testCase.expected, token.Value())
+		assert.Equal(t, "session", token.Name())
+		assert.Equal(t, testCase.expected, token.Value())
 	}
 }
