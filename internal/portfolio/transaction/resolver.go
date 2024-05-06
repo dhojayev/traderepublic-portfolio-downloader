@@ -1,3 +1,5 @@
+//go:generate go run -mod=mod go.uber.org/mock/mockgen -source=resolver.go -destination resolver_mock.go -package=transaction
+
 package transaction
 
 import (
@@ -19,6 +21,10 @@ const (
 )
 
 type Type int
+
+type TypeResolverInterface interface {
+	Resolve(response details.Response) (Type, error)
+}
 
 type TypeResolver struct {
 	logger *log.Logger

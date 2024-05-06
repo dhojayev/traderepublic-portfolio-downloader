@@ -3,7 +3,8 @@ package transaction
 import (
 	"fmt"
 
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
+	"github.com/cavaliergopher/grab/v3"
+	log "github.com/sirupsen/logrus"
 )
 
 type Document struct {
@@ -22,27 +23,19 @@ func NewDocument(id, url, date, title string) Document {
 	}
 }
 
-func CreateDocumentsFromResponse(resp details.Response) ([]Document, error) {
-	documents := make([]Document, 0)
+type DocumentDownloader struct {
+	logger *log.Logger
+}
 
-	documentsSection, err := resp.DocumentsSection()
+func NewDocumentDownloader(logger *log.Logger) DocumentDownloader {
+	return DocumentDownloader{logger: logger}
+}
+
+func (d DocumentDownloader) Download(destDir string, document Document) (string, error) {
+	resp, err := grab.Get(destDir, document.URL)
 	if err != nil {
-		return documents, fmt.Errorf("could not get documents for id %s: %w", resp.ID, err)
+		return "", fmt.Errorf("could not download document: %w", err)
 	}
 
-	for _, document := range documentsSection.Data {
-		url, ok := document.Action.Payload.(string)
-		if !ok {
-			continue
-		}
-
-		documents = append(documents, Document{
-			ID:    document.ID,
-			URL:   url,
-			Date:  document.Detail,
-			Title: document.Title,
-		})
-	}
-
-	return documents, nil
+	return resp.Filename, nil
 }

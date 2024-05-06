@@ -6,6 +6,8 @@
 package main
 
 import (
+	"gorm.io/gorm"
+
 	"github.com/dhojayev/traderepublic-portfolio-downloader/cmd/portfoliodownloader"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/auth"
@@ -18,7 +20,6 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/writer"
-	"gorm.io/gorm"
 
 	"github.com/google/wire"
 	log "github.com/sirupsen/logrus"
@@ -39,6 +40,7 @@ var (
 		ProvideTransactionRepository,
 		ProvideInstrumentRepository,
 
+		wire.Bind(new(transaction.TypeResolverInterface), new(transaction.TypeResolver)),
 		wire.Bind(new(transaction.BuilderInterface), new(transaction.Builder)),
 		wire.Bind(new(transaction.RepositoryInterface), new(*database.Repository[*transaction.Model])),
 		wire.Bind(new(transaction.InstrumentRepositoryInterface), new(*database.Repository[*transaction.Instrument])),

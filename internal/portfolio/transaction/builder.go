@@ -17,11 +17,11 @@ type BuilderInterface interface {
 }
 
 type Builder struct {
-	resolver TypeResolver
+	resolver TypeResolverInterface
 	logger   *log.Logger
 }
 
-func NewBuilder(resolver TypeResolver, logger *log.Logger) Builder {
+func NewBuilder(resolver TypeResolverInterface, logger *log.Logger) Builder {
 	return Builder{
 		resolver: resolver,
 		logger:   logger,
@@ -76,10 +76,17 @@ func (b Builder) Build(transactionType string, response details.Response) (Model
 		return transaction, err
 	}
 
+	documents, err := b.BuildDocuments(response)
+	if err != nil {
+		return transaction, err
+	}
+
+	transaction.Documents = documents
+
 	return transaction, nil
 }
 
-// Returns Status, ISIN, Timestamp and error.
+// GetHeaderData Returns Status, ISIN, Timestamp and error.
 func (b Builder) GetHeaderData(response details.Response) (string, string, time.Time, error) {
 	var status, isin string
 
@@ -105,7 +112,7 @@ func (b Builder) GetHeaderData(response details.Response) (string, string, time.
 	return status, isin, timestamp, nil
 }
 
-// Returns Instrument name and error.
+// GetOverviewData Returns Instrument name and error.
 func (b Builder) GetOverviewData(response details.Response) (string, error) {
 	var instrumentName string
 
@@ -124,7 +131,7 @@ func (b Builder) GetOverviewData(response details.Response) (string, error) {
 	return instrumentName, nil
 }
 
-// Returns Yield, Profit and error.
+// GetPerformanceData Returns Yield, Profit and error.
 func (b Builder) GetPerformanceData(response details.Response) (float64, float64, error) {
 	var yield, profit float64
 
@@ -156,7 +163,7 @@ func (b Builder) GetPerformanceData(response details.Response) (float64, float64
 	return yield, profit, nil
 }
 
-// Returns Shares, Rate, Commission, Total and error.
+// GetTransactionData Returns Shares, Rate, Commission, Total and error.
 //
 //nolint:cyclop,funlen
 func (b Builder) GetTransactionData(response details.Response) (float64, float64, float64, float64, error) {
@@ -237,12 +244,7 @@ func (b Builder) BuildDocuments(response details.Response) ([]Document, error) {
 			continue
 		}
 
-		documents = append(documents, Document{
-			ID:    document.ID,
-			URL:   url,
-			Date:  document.Detail,
-			Title: document.Title,
-		})
+		documents = append(documents, NewDocument(document.ID, url, document.Detail, document.Title))
 	}
 
 	return documents, nil
