@@ -23,7 +23,7 @@ type (
 )
 
 type ClientInterface interface {
-	Login() (api.LoginResponse, error)
+	Login(phoneNumber, pin string) (api.LoginResponse, error)
 	ProvideOTP(processID, otp string) error
 	SessionToken() api.Token
 }
@@ -31,18 +31,14 @@ type ClientInterface interface {
 type Client struct {
 	apiClient    api.Client
 	logger       *log.Logger
-	phoneNumber  PhoneNumber
-	pin          Pin
 	sessionToken api.Token
 	refreshToken api.Token
 }
 
-func NewClient(phoneNumber PhoneNumber, pin Pin, apiClient api.Client, logger *log.Logger) (*Client, error) {
+func NewClient(apiClient api.Client, logger *log.Logger) (*Client, error) {
 	client := &Client{
-		phoneNumber: phoneNumber,
-		pin:         pin,
-		apiClient:   apiClient,
-		logger:      logger,
+		apiClient: apiClient,
+		logger:    logger,
 	}
 
 	sessionToken, err := api.NewTokenFromFile(api.TokenNameSession)
@@ -72,11 +68,11 @@ func NewClient(phoneNumber PhoneNumber, pin Pin, apiClient api.Client, logger *l
 	return client, nil
 }
 
-func (c *Client) Login() (api.LoginResponse, error) {
+func (c *Client) Login(phoneNumber, pin string) (api.LoginResponse, error) {
 	resp, sessionToken, err := c.apiClient.Login(
 		api.LoginRequest{
-			PhoneNumber: string(c.phoneNumber),
-			Pin:         string(c.pin),
+			PhoneNumber: phoneNumber,
+			Pin:         pin,
 		},
 		c.refreshToken,
 	)

@@ -6,8 +6,6 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/auth"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/util"
 )
 
 const (
@@ -39,18 +37,7 @@ func main() {
 	}
 
 	if !args.LocalMode {
-		if args.PhoneNumber == "" {
-			logger.Panic("phone number is required when not in local mode")
-		}
-
-		input, err := util.ReadPassword("pin")
-		if err != nil {
-			logger.Panic(err)
-		}
-
-		pin := auth.Pin(input)
-
-		application, err = CreateRemoteApp(args.PhoneNumber, pin, logger)
+		application, err = CreateRemoteApp(logger)
 		if err != nil {
 			logger.Panic(err)
 		}
