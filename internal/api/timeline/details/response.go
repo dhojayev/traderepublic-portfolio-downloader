@@ -20,6 +20,7 @@ const (
 	overviewDataTitleOrderType            = "Orderart"
 	overviewDataTitleOrderTypeAlt         = "Auftragsart"
 	overviewDataTitleAsset                = "Asset"
+	overviewdataTitleProduct              = "Produkt"
 	transactionDataTitleShares            = "Anteile"
 	transactionDataTitleStocks            = "Aktien"
 	transactionDataTitleRate              = "Aktienkurs"
