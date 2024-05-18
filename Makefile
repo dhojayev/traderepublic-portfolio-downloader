@@ -23,6 +23,9 @@ build-darwin-arm64:
 build-windows-amd64:
 	GOOS=windows GOARCH=amd64 go build -v -o /tmp/portfoliodownloader.exe ./cmd/portfoliodownloader/public
 
+build-windows-arm64:
+	GOOS=windows GOARCH=arm64 go build -v -o /tmp/portfoliodownloader.exe ./cmd/portfoliodownloader/public
+
 build-linux-amd64:
 	GOOS=linux GOARCH=amd64 go build -v -o /tmp/portfoliodownloader ./cmd/portfoliodownloader/public
 

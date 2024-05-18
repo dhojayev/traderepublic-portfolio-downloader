@@ -19,9 +19,7 @@ jobs:
       matrix:
         goos: [ linux, windows, darwin ]
         goarch: [ amd64, arm64 ]
-        exclude:
-          - goarch: arm64
-            goos: windows
+    
     steps:
       - uses: actions/checkout@v4
 
@@ -36,7 +34,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           goos: ${{ matrix.goos }}
           goarch: ${{ matrix.goarch }}
-          goversion: "1.22.1"
+          goversion: "1.22.3"
           project_path: "./cmd/portfoliodownloader/public"
           binary_name: "portfoliodownloader"
           extra_files: LICENSE README.md

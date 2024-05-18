@@ -1,7 +1,6 @@
-version: '3'
 services:
   go:
-    image: golang:1.22.1-alpine
+    image: golang:1.22.3-alpine
     restart: no
     stdin_open: true
     tty: true
