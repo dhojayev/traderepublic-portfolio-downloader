@@ -26,7 +26,6 @@ linters:
     - gocyclo
     - godot
     - godox
-    - gomnd
     - gomoddirectives
     - goprintffuncname
     - gosec
@@ -37,6 +36,7 @@ linters:
     - lll
     - makezero
     - misspell
+    - mnd
     - musttag
     - nestif
     - nilerr
