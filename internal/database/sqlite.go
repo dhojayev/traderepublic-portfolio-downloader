@@ -3,10 +3,8 @@ package database
 import (
 	"fmt"
 
-	"gorm.io/driver/sqlite"
+	"github.com/glebarez/sqlite"
 
-	// register sqlite3 driver.
-	_ "github.com/mattn/go-sqlite3"
 	"gorm.io/gorm"
 )
 
@@ -17,7 +15,7 @@ func NewSQLiteOnFS() (*gorm.DB, error) {
 }
 
 func NewSQLiteInMemory() (*gorm.DB, error) {
-	return newSQLite("file::memory:?cache=shared")
+	return newSQLite(":memory:?_pragma=foreign_keys(1)")
 }
 
 func newSQLite(dsn string) (*gorm.DB, error) {

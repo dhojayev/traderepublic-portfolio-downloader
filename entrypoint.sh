@@ -1,5 +1,7 @@
 #! /bin/sh
 
+set -ex
+
 apk add -u --no-cache tzdata make
 
 go mod vendor
