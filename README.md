@@ -9,7 +9,7 @@ portfolio assets but no analytics of what has been sold and how much of profit h
 
 After researching couple of solutions that fulfill similar requirements were discovered, however, some
 are pretty outdated and do not benefit from new endpoints (actually websocket message types, but let's call
-them here that way for simplicity), some are very limit in fullfiling the main requirements: tracking purchases and sales of assets.
+them here that way for simplicity), some are very limited in fullfiling the main requirements: tracking purchases and sales of assets.
 
 Main disadvantages of existing solutions in our opinion were:
 
@@ -28,7 +28,7 @@ A few requirements and limitations were set intially when planning this project 
 * Making it opensource to allow others to contribute and audit
 * No configuration file requirements (all input requested in console)
 * No dependencies (such as SQL databases, etc) to enable non-techs using the app "AS IS"
-* Writing results into a CSV file to be able to build formulas, filter, etc. the data
+* Writing results into a CSV file to be able to build formulas, filter the data, etc.
 * No security information storage (except for session and refresh tokens) on host machine
 * **No data should leave the host machine**
 
@@ -52,32 +52,35 @@ It is important to understand that this application does nothing more than Trade
 
 * Support of including "interest received" transactions
 * Support of including "lending" transactions
-* Calculating miscelaneous values based on data from TR: invested amount, taxable amount, etc
-* Identifying stock transactions
 * Downloading and storing PDF files attached to each transaction
+* Identifying stock transactions
+* Writing data into an sqlite file on the filesystem
+* Calculating miscelaneous values based on data from TR: invested amount, taxable amount, earliest date of non-taxable sale of Crypto assets, etc
 * Source code test coverage
 
 **What (maybe) will follow:**
 
 * Writing data into an SQL database for using it in custom applications
+* Frontend application to better visualize all transactions in a user-friendly way. More details will follow once (or if) the development starts.
 
 ## Usage
 
-### Choosing binary for your OS and architecture:
+### Choosing the right binary for your OS and architecture:
 
 Download one of the binaries from [releases](https://github.com/dhojayev/traderepublic-portfolio-downloader/releases)
 section according to the table below:
 
-| OS      | Architecture | Description                          | File to download      |
-| ------- | ------------ | ------------------------------------ | --------------------- |
-| macOS   | amd64        | Apple devices using Intel CPU        | *-darwin-amd64.tar.gz |
-| macOS   | arm64        | Apple devices using M1 SoC and newer | *-darwin-arm64.tar.gz |
-| Windows | amd64        | 64-Bit Windows                       | *-windows-amd64.zip   |
-| Linux   | amd64        | 64-Bit linux distro                  | *-linux-amd64.tar.gz  |
-| Linux   | arm64        | linux distro for ARM processors      | *-linux-arm64.tar.gz  |
+| OS      | Architecture | Description                                            | File to download      |
+| ------- | ------------ | ------------------------------------------------------ | --------------------- |
+| macOS   | amd64        | Apple devices using Intel CPU                          | *-darwin-amd64.tar.gz |
+| macOS   | arm64        | Apple devices using Apple Silicon (Apple M1 and newer) | *-darwin-arm64.tar.gz |
+| Windows | amd64        | 64-Bit Windows                                         | *-windows-amd64.zip   |
+| Windows | arm64        | Windows for ARM                                        | *-windows-arm64.zip   |
+| Linux   | amd64        | 64-Bit linux distro                                    | *-linux-amd64.tar.gz  |
+| Linux   | arm64        | linux distro for ARM processors                        | *-linux-arm64.tar.gz  |
 
 
-*Users using macOS may require to allow running the binary since it has not been signed.*
+*Users using Windows and macOS may get a warning message before running the binary since it has not been signed.*
 
 ### Running the app
 
@@ -162,8 +165,8 @@ Mar 28 12:02:27.379 [INFO] All data processed
 | **Instrument**     | Instrument ISIN, e.g.: `IE00BK1PV551`                                     |
 | **Shares**         | Number of shares in transaction (negative when sold)                      |
 | **Rate**           | Price per share in EUR                                                    |
-| **Realized yield** | Realized yield in percentage                                              |
-| **Realized PnL**   | Realized profit or loss amount in EUR (negative is loss)                  |
+| **Realized yield** | Realized yield in percentage (negative if loss)                           |
+| **Realized PnL**   | Realized profit or loss amount in EUR (negative if loss)                  |
 | **Commission**     | Commission paid to Trade Republic for the transaction in EUR              |
 | **Debit**          | Amount debited from the deposited amount in EUR                           |
 | **Credit**         | Amount credited to the deposited amount in EUR                            |
