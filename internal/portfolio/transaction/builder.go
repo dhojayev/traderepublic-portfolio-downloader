@@ -7,6 +7,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
 )
@@ -105,7 +106,7 @@ func (b Builder) GetHeaderData(response details.Response) (string, string, strin
 	status = header.Data.Status
 	icon = header.Data.Icon
 
-	timestamp, err = time.Parse("2006-01-02T15:04:05-0700", header.Data.Timestamp)
+	timestamp, err = time.Parse(internal.DefaultTimeFormat, header.Data.Timestamp)
 	if err != nil {
 		b.logger.Debugf("could not parse details timestamp: %s", err)
 	}
@@ -128,11 +129,22 @@ func (b Builder) GetOverviewData(response details.Response) (string, error) {
 	}
 
 	asset, err := overview.Asset()
-	if err != nil {
+	if err == nil {
+		instrumentName = asset.Detail.Text
+
+		return instrumentName, nil
+	}
+
+	if !errors.Is(err, details.ErrSectionDataEntryNotFound) {
 		return instrumentName, fmt.Errorf("error getting overview asset: %w", err)
 	}
 
-	instrumentName = asset.Detail.Text
+	underlyingAsset, err := overview.UnderlyingAsset()
+	if err != nil {
+		return instrumentName, fmt.Errorf("error getting overview underlying asset: %w", err)
+	}
+
+	instrumentName = underlyingAsset.Detail.Text
 
 	return instrumentName, nil
 }
