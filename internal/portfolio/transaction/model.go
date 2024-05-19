@@ -1,6 +1,7 @@
 package transaction
 
 import (
+	"fmt"
 	"strings"
 	"time"
 )
@@ -74,6 +75,7 @@ func (Model) TableName() string {
 type Instrument struct {
 	ISIN string `gorm:"primaryKey"`
 	Name string
+	Icon string
 }
 
 func (i Instrument) Type() string {
@@ -91,9 +93,14 @@ func (i Instrument) Type() string {
 	return instrumentType
 }
 
-func NewInstrument(isin, name string) Instrument {
+func (i Instrument) IconURL() string {
+	return fmt.Sprintf("https://assets.traderepublic.com/img/%s/light.min.svg", i.Icon)
+}
+
+func NewInstrument(isin, name, icon string) Instrument {
 	return Instrument{
 		ISIN: isin,
 		Name: name,
+		Icon: icon,
 	}
 }

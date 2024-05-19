@@ -59,7 +59,11 @@ func (b Builder) Build(transactionType string, response details.Response) (Model
 		Type: transactionType,
 	}
 
-	transaction.Status, transaction.Instrument.ISIN, transaction.Timestamp, err = b.GetHeaderData(response)
+	transaction.Status,
+		transaction.Instrument.ISIN,
+		transaction.Instrument.Icon,
+		transaction.Timestamp,
+		err = b.GetHeaderData(response)
 	if err != nil {
 		return transaction, err
 	}
@@ -79,18 +83,19 @@ func (b Builder) Build(transactionType string, response details.Response) (Model
 	return transaction, nil
 }
 
-// Returns Status, ISIN, Timestamp and error.
-func (b Builder) GetHeaderData(response details.Response) (string, string, time.Time, error) {
-	var status, isin string
+// Returns Status, ISIN, Instrument Icon, Timestamp and error.
+func (b Builder) GetHeaderData(response details.Response) (string, string, string, time.Time, error) {
+	var status, isin, icon string
 
 	var timestamp time.Time
 
 	header, err := response.HeaderSection()
 	if err != nil {
-		return status, isin, timestamp, fmt.Errorf("could not get details header %w", err)
+		return status, isin, icon, timestamp, fmt.Errorf("could not get details header %w", err)
 	}
 
 	status = header.Data.Status
+	icon = header.Data.Icon
 
 	timestamp, err = time.Parse("2006-01-02T15:04:05-0700", header.Data.Timestamp)
 	if err != nil {
@@ -99,10 +104,10 @@ func (b Builder) GetHeaderData(response details.Response) (string, string, time.
 
 	isin, _ = header.Action.Payload.(string)
 	if isin == "" {
-		isin, _ = ExtractInstrumentNameFromIcon(header.Data.Icon)
+		isin, _ = ExtractInstrumentNameFromIcon(icon)
 	}
 
-	return status, isin, timestamp, nil
+	return status, isin, icon, timestamp, nil
 }
 
 // Returns Instrument name and error.
