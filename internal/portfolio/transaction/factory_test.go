@@ -25,7 +25,7 @@ func TestFromPurchase(t *testing.T) {
 		{
 			trn: transaction.NewTransaction(
 				"test-id", transaction.TypePurchase, "test-status", 0, 0, 5.186721, 96.40, 1, 501, time.Now(),
-				transaction.NewInstrument("test-instrument", "test-asset-name"),
+				transaction.NewInstrument("test-instrument", "test-asset-name", ""),
 				[]document.Model{document.NewModel("test-doc-id", "test-url", "test-date", "test-title")},
 			),
 			expected: filesystem.NewCSVEntry(
@@ -69,7 +69,7 @@ func TestFromSale(t *testing.T) {
 		{
 			trn: transaction.NewTransaction(
 				"test-id", transaction.TypeSale, "test-status", 43.9, 113.25, 56.065306, 6.62, 1, 370.25, time.Now(),
-				transaction.NewInstrument("test-instrument", "test-asset-name"),
+				transaction.NewInstrument("test-instrument", "test-asset-name", ""),
 				[]document.Model{document.NewModel("test-doc-id", "test-url", "test-date", "test-title")},
 			),
 			expected: filesystem.NewCSVEntry(
@@ -94,7 +94,7 @@ func TestFromSale(t *testing.T) {
 		{
 			trn: transaction.NewTransaction(
 				"test-id", transaction.TypeSale, "test-status", -0.62, -11.28, 21.272454, 85.48, 1, 1817.27, time.Now(),
-				transaction.NewInstrument("test-instrument", "test-asset-name"),
+				transaction.NewInstrument("test-instrument", "test-asset-name", ""),
 				[]document.Model{document.NewModel("test-doc-id", "test-url", "test-date", "test-title")},
 			),
 			expected: filesystem.NewCSVEntry(
