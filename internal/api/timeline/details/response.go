@@ -22,7 +22,8 @@ const (
 	overviewDataTitleOrderType            = "Orderart"
 	overviewDataTitleOrderTypeAlt         = "Auftragsart"
 	overviewDataTitleAsset                = "Asset"
-	overviewdataTitleProduct              = "Produkt"
+	overviewDataTitleProduct              = "Produkt"
+	overviewDataTitleUnderlyingAsset      = "Basiswert"
 	transactionDataTitleShares            = "Anteile"
 	transactionDataTitleStocks            = "Aktien"
 	transactionDataTitleRate              = "Aktienkurs"
@@ -164,6 +165,14 @@ func (r ResponseSectionTypeTable) OrderType() (ResponseSectionTypeTableData, err
 
 func (r ResponseSectionTypeTable) Asset() (ResponseSectionTypeTableData, error) {
 	return r.findDataByTitle(overviewDataTitleAsset)
+}
+
+func (r ResponseSectionTypeTable) Product() (ResponseSectionTypeTableData, error) {
+	return r.findDataByTitle(overviewDataTitleProduct)
+}
+
+func (r ResponseSectionTypeTable) UnderlyingAsset() (ResponseSectionTypeTableData, error) {
+	return r.findDataByTitle(overviewDataTitleUnderlyingAsset)
 }
 
 func (r ResponseSectionTypeTable) Shares() (ResponseSectionTypeTableData, error) {

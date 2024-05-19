@@ -120,11 +120,22 @@ func (b Builder) GetOverviewData(response details.Response) (string, error) {
 	}
 
 	asset, err := overview.Asset()
-	if err != nil {
+	if err == nil {
+		instrumentName = asset.Detail.Text
+
+		return instrumentName, nil
+	}
+
+	if !errors.Is(err, details.ErrSectionDataEntryNotFound) {
 		return instrumentName, fmt.Errorf("error getting overview asset: %w", err)
 	}
 
-	instrumentName = asset.Detail.Text
+	underlyingAsset, err := overview.UnderlyingAsset()
+	if err != nil {
+		return instrumentName, fmt.Errorf("error getting overview underlying asset: %w", err)
+	}
+
+	instrumentName = underlyingAsset.Detail.Text
 
 	return instrumentName, nil
 }
