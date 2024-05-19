@@ -66,11 +66,6 @@ func (b Builder) Build(transactionType string, response details.Response) (Model
 		transaction.Instrument.Icon,
 		transaction.Timestamp,
 		err = b.GetHeaderData(response)
-	transaction.Status,
-		transaction.Instrument.ISIN,
-		transaction.Instrument.Icon,
-		transaction.Timestamp,
-		err = b.GetHeaderData(response)
 	if err != nil {
 		return transaction, err
 	}
@@ -106,11 +101,9 @@ func (b Builder) GetHeaderData(response details.Response) (string, string, strin
 	header, err := response.HeaderSection()
 	if err != nil {
 		return status, isin, icon, timestamp, fmt.Errorf("could not get details header %w", err)
-		return status, isin, icon, timestamp, fmt.Errorf("could not get details header %w", err)
 	}
 
 	status = header.Data.Status
-	icon = header.Data.Icon
 	icon = header.Data.Icon
 
 	timestamp, err = time.Parse(internal.DefaultTimeFormat, header.Data.Timestamp)
@@ -121,10 +114,8 @@ func (b Builder) GetHeaderData(response details.Response) (string, string, strin
 	isin, _ = header.Action.Payload.(string)
 	if isin == "" {
 		isin, _ = ExtractInstrumentNameFromIcon(icon)
-		isin, _ = ExtractInstrumentNameFromIcon(icon)
 	}
 
-	return status, isin, icon, timestamp, nil
 	return status, isin, icon, timestamp, nil
 }
 
@@ -145,22 +136,9 @@ func (b Builder) GetOverviewData(response details.Response) (string, error) {
 	}
 
 	if !errors.Is(err, details.ErrSectionDataEntryNotFound) {
-	if err == nil {
-		instrumentName = asset.Detail.Text
-
-		return instrumentName, nil
-	}
-
-	if !errors.Is(err, details.ErrSectionDataEntryNotFound) {
 		return instrumentName, fmt.Errorf("error getting overview asset: %w", err)
 	}
 
-	underlyingAsset, err := overview.UnderlyingAsset()
-	if err != nil {
-		return instrumentName, fmt.Errorf("error getting overview underlying asset: %w", err)
-	}
-
-	instrumentName = underlyingAsset.Detail.Text
 	underlyingAsset, err := overview.UnderlyingAsset()
 	if err != nil {
 		return instrumentName, fmt.Errorf("error getting overview underlying asset: %w", err)
