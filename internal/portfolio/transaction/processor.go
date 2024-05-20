@@ -59,7 +59,7 @@ func (p Processor) Process(response details.Response) error {
 			return ErrUnsupportedResponse
 		}
 
-		return fmt.Errorf("deserializer error: %w", err)
+		return fmt.Errorf("builder error: %w", err)
 	}
 
 	p.logger.WithField("transaction", transaction).Debug("supported transaction detected")

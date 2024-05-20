@@ -11,6 +11,8 @@ import (
 	_ "time/tzdata"
 )
 
+const DefaultTimeFormat = "2006-01-02T15:04:05-0700"
+
 func GetRuntimeTimezone(logger *log.Logger) error {
 	timezoneName, err := tzlocal.RuntimeTZ()
 	if err != nil {
