@@ -13,10 +13,10 @@ them here that way for simplicity), some are very limited in fullfiling the main
 
 Main disadvantages of existing solutions in our opinion were:
 
-* Reseting paired device (which is annoying if you use the mobile app regularly)
-* Requiring OCR for getting transaction details (reading from transaction PDF documents)
-* Using outdated endpoints to fetch data (no support of newly introduced "Save-back" and "Round up" transactions)
-* Being written in python (which is not the main language of programming of ours)
+* Reseting paired device (which is annoying if you use the mobile app regularly);
+* Requiring OCR for getting transaction details (reading from transaction PDF documents);
+* Using outdated endpoints to fetch data (no support of newly introduced "Save-back" and "Round up" transactions);
+* Being written in python (which is not the main language of programming of ours);
 
 ## Implementation
 
@@ -24,23 +24,24 @@ Main disadvantages of existing solutions in our opinion were:
 
 A few requirements and limitations were set intially when planning this project which we strictly follow:
 
-* It should be written in go and compiled as a binary for all major platforms and architectures
-* Making it opensource to allow others to contribute and audit
-* No configuration file requirements (all input requested in console)
-* No dependencies (such as SQL databases, etc) to enable non-techs using the app "AS IS"
-* Writing results into a CSV file to be able to build formulas, filter the data, etc.
-* No security information storage (except for session and refresh tokens) on host machine
-* **No data should leave the host machine**
+* It should be written in go and compiled as a binary for all major platforms and architectures;
+* Making it opensource to allow others to contribute and audit;
+* No configuration file requirements (all input requested in console);
+* No dependencies (such as SQL databases, etc) to enable non-techs using the app "AS IS";
+* Writing results into a CSV file to be able to build formulas, filter the data, etc.;
+* No security information storage (except for session and refresh tokens) on host machine;
+* **No data should leave the host machine;**
 
 It is important to understand that this application does nothing more than Trade Republic's official frontend application would do:
 
-* Authenticates using the same API endpoints
-* Retrieves the data using the same websocket address
+* Authenticates using the same API endpoints;
+* Retrieves the data using the same websocket address;
 
 ### Currently supported functionality
 
 * Creating CSV file with all transaction (except for "interest received" transaction for now). This includes:
   * purchase and sale of ETFs, stocks, cryptocurrency;
+  * limited support of purchase of derivatives;
   * dividends received from ETFs and stocks;
   * benefits received suchs as round up and save-back;
 * Inserting new data into the CSV file
@@ -50,18 +51,18 @@ It is important to understand that this application does nothing more than Trade
 
 **What is coming:**
 
-* Support of including "interest received" transactions
-* Support of including "lending" transactions
-* Downloading and storing PDF files attached to each transaction
-* Identifying stock transactions
-* Writing data into an sqlite file on the filesystem
-* Calculating miscelaneous values based on data from TR: invested amount, taxable amount, earliest date of non-taxable sale of Crypto assets, etc
-* Source code test coverage
+* Support of including "interest received" transactions;
+* Support of including "lending" transactions;
+* Downloading and storing PDF files attached to each transaction;
+* Identifying stock transactions;
+* Writing data into an sqlite file on the filesystem;
+* Calculating miscelaneous values based on data from TR: invested amount, taxable amount, earliest date of non-taxable sale of Crypto assets, etc;
+* Source code test coverage;
 
 **What (maybe) will follow:**
 
-* Writing data into an SQL database for using it in custom applications
-* Frontend application to better visualize all transactions in a user-friendly way. More details will follow once (or if) the development starts.
+* Writing data into an SQL database for using it in custom applications;
+* Frontend application to better visualize all transactions in a user-friendly way. More details will follow once (or if) the development starts;
 
 ## Usage
 

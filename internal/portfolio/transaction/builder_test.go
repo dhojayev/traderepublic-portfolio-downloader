@@ -84,12 +84,12 @@ func TestBuildPurchaseTransactions(t *testing.T) {
 				return content{data: fileContents}, err
 			})
 
-		transactionDetails, err := detailsClient.Get("2d7c03e4-15f9-4427-88d2-0586c5b057d2")
+		transactionDetails, err := detailsClient.Get("b20e367c-5542-4fab-9fd6-6faa5e7ab582")
 		assert.Nil(t, err)
 
-		transactionModel, err := builder.FromResponse(transactionDetails)
+		actual, err := builder.FromResponse(transactionDetails)
 		assert.Nil(t, err)
-		assert.Equal(t, testCase.expected, transactionModel)
+		assert.Equal(t, testCase.expected, actual)
 	}
 }
 
@@ -153,9 +153,9 @@ func TestBuilder_BuildDocuments(t *testing.T) {
 		transactionDetails, err := detailsClient.Get("2d7c03e4-15f9-4427-88d2-0586c5b057d2")
 		assert.Nil(t, err)
 
-		documents, err := builder.BuildDocuments(transactionDetails)
+		actual, err := builder.BuildDocuments(transactionDetails)
 		assert.Nil(t, err)
-		assert.Len(t, documents, len(testCase.expected))
-		assert.Equal(t, testCase.expected, documents)
+		assert.Len(t, actual, len(testCase.expected))
+		assert.Equal(t, testCase.expected, actual)
 	}
 }
