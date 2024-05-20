@@ -89,3 +89,4 @@ issues:
         linters:
           - funlen
           - lll
+          - wrapcheck

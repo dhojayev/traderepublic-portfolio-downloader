@@ -11,8 +11,6 @@ const (
 	sectionTitleOverview                  = "Übersicht"
 	sectionTitlePerformance               = "Performance"
 	sectionTitleTransaction               = "Transaktion"
-	sectionTitleDocuments                 = "Dokumente"
-	sectionTitleDocumentsAlt              = "Documents"
 	sectionTypeHeader                     = "header"
 	sectionTypeTable                      = "table"
 	sectionTypeHorizontalTable            = "horizontalTable"
@@ -86,10 +84,7 @@ func (r Response) TransactionSection() (ResponseSectionTypeTable, error) {
 func (r Response) DocumentsSection() (ResponseSectionTypeDocuments, error) {
 	var section ResponseSectionTypeDocuments
 
-	err := r.UnmarshalSection(sectionTitleDocuments, sectionTypeDocuments, &section)
-	if errors.Is(err, ErrSectionNotFound) {
-		err = r.UnmarshalSection(sectionTitleDocumentsAlt, sectionTypeDocuments, &section)
-	}
+	err := r.UnmarshalSection("", sectionTypeDocuments, &section)
 
 	return section, err
 }

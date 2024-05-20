@@ -48,6 +48,7 @@ var (
 		wire.Bind(new(console.AuthServiceInterface), new(*console.AuthService)),
 		wire.Bind(new(portfolio.ReaderInterface), new(*websocket.Reader)),
 
+		wire.Bind(new(transaction.TypeResolverInterface), new(transaction.TypeResolver)),
 		wire.Bind(new(transaction.BuilderInterface), new(transaction.Builder)),
 		wire.Bind(new(transaction.RepositoryInterface), new(*database.Repository[*transaction.Model])),
 		wire.Bind(new(transaction.InstrumentRepositoryInterface), new(*database.Repository[*transaction.Instrument])),
