@@ -12,7 +12,7 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
 )
 
-var ErrUnsupportedResponse = errors.New("unsupported response")
+var ErrUnsupportedType = errors.New("unsupported response")
 
 type BuilderInterface interface {
 	FromResponse(response details.Response) (Model, error)
@@ -31,9 +31,15 @@ func NewBuilder(resolver TypeResolverInterface, logger *log.Logger) Builder {
 }
 
 func (b Builder) FromResponse(response details.Response) (Model, error) {
+	var model Model
+
 	resolvedType, err := b.resolver.Resolve(response)
 	if err != nil {
-		return Model{}, fmt.Errorf("resolver error: %w", err)
+		if errors.Is(err, ErrUnsupportedResponse) {
+			return model, ErrUnsupportedType
+		}
+
+		return model, fmt.Errorf("resolver error: %w", err)
 	}
 
 	switch resolvedType {
@@ -50,7 +56,7 @@ func (b Builder) FromResponse(response details.Response) (Model, error) {
 	case TypeUnsupported, TypeCardPaymentTransaction:
 	}
 
-	return Model{}, ErrUnsupportedResponse
+	return model, ErrUnsupportedType
 }
 
 func (b Builder) Build(transactionType string, response details.Response) (Model, error) {

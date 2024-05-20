@@ -3,12 +3,15 @@
 package transaction
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
 
 	log "github.com/sirupsen/logrus"
 )
+
+var ErrUnsupportedResponse = errors.New("could not resolve transaction type")
 
 const (
 	TypeUnsupported Type = iota
@@ -18,6 +21,8 @@ const (
 	TypeRoundUpTransaction
 	TypeSavebackTransaction
 	TypeCardPaymentTransaction
+	TypeDepositTransaction
+	TypeDepositInterestReceivedTransaction
 )
 
 type Type int
@@ -44,13 +49,24 @@ func (r TypeResolver) Resolve(response details.Response) (Type, error) {
 
 	logFields := log.Fields{"id": response.ID}
 
-	orderType, err := overview.OrderType()
-	if err != nil {
-		event, err := overview.Event()
-		if err != nil {
-			return TypeUnsupported, fmt.Errorf("overview contains no order type nor event: %w: %w", ErrUnsupportedResponse, err)
-		}
+	_, receivedFromErr := overview.ReceivedFrom()
+	_, depositErr := overview.Deposit()
+	_, yoyErr := overview.YoY()
+	orderType, orderTypeErr := overview.OrderType()
+	event, eventErr := overview.Event()
 
+	switch {
+	case receivedFromErr == nil, depositErr == nil:
+		r.logger.WithFields(logFields).Debug("deposit transaction resolved")
+
+		return TypeDepositTransaction, nil
+	case yoyErr == nil:
+		r.logger.WithFields(logFields).Debug("interest received transaction resolved")
+
+		return TypeDepositInterestReceivedTransaction, nil
+	case orderTypeErr == nil:
+		return r.ResolveByOrderType(orderType, logFields)
+	case eventErr == nil:
 		if !event.IsEventPayout() {
 			return TypeUnsupported, fmt.Errorf("%w: %w", ErrUnsupportedResponse, err)
 		}
@@ -60,24 +76,28 @@ func (r TypeResolver) Resolve(response details.Response) (Type, error) {
 		return TypeDividendPayoutTransaction, nil
 	}
 
+	return TypeUnsupported, ErrUnsupportedResponse
+}
+
+func (r TypeResolver) ResolveByOrderType(order details.ResponseSectionTypeTableData, logFields log.Fields) (Type, error) {
 	switch {
-	case orderType.IsOrderTypeSale():
+	case order.IsOrderTypeSale():
 		r.logger.WithFields(logFields).Debug("sale transaction resolved")
 
 		return TypeSaleTransaction, nil
-	case orderType.IsOrderTypePurchase():
+	case order.IsOrderTypePurchase():
 		r.logger.WithFields(logFields).Debug("purchase transaction resolved")
 
 		return TypePurchaseTransaction, nil
-	case orderType.IsOrderTypeRoundUp():
+	case order.IsOrderTypeRoundUp():
 		r.logger.WithFields(logFields).Debug("round up transaction resolved")
 
 		return TypeRoundUpTransaction, nil
-	case orderType.IsOrderTypeSaveback():
+	case order.IsOrderTypeSaveback():
 		r.logger.WithFields(logFields).Debug("saveback transaction resolved")
 
 		return TypeSavebackTransaction, nil
 	}
 
-	return TypeUnsupported, fmt.Errorf("could not resolve transaction type: %w", err)
+	return TypeUnsupported, errors.New("could not resolve transaction type from order")
 }

@@ -19,9 +19,14 @@ const (
 	overviewDataTitleEvent                = "Ereignis"
 	overviewDataTitleOrderType            = "Orderart"
 	overviewDataTitleOrderTypeAlt         = "Auftragsart"
+	overviewDataTitleOrderTypeAlt2        = "Ordertyp"
 	overviewDataTitleAsset                = "Asset"
 	overviewDataTitleProduct              = "Produkt"
 	overviewDataTitleUnderlyingAsset      = "Basiswert"
+	overviewDataTitleReceivedFrom         = "Von"
+	overviewDataTitleIBAN                 = "IBAN"
+	overviewDataTitleDeposit              = "Zahlung"
+	overviewDataTitleYoY                  = "Jahressatz"
 	transactionDataTitleShares            = "Anteile"
 	transactionDataTitleStocks            = "Aktien"
 	transactionDataTitleRate              = "Aktienkurs"
@@ -155,7 +160,12 @@ func (r ResponseSectionTypeTable) OrderType() (ResponseSectionTypeTableData, err
 		return data, nil
 	}
 
-	return r.findDataByTitle(overviewDataTitleOrderTypeAlt)
+	data, err = r.findDataByTitle(overviewDataTitleOrderTypeAlt)
+	if err == nil {
+		return data, nil
+	}
+
+	return r.findDataByTitle(overviewDataTitleOrderTypeAlt2)
 }
 
 func (r ResponseSectionTypeTable) Asset() (ResponseSectionTypeTableData, error) {
@@ -168,6 +178,22 @@ func (r ResponseSectionTypeTable) Product() (ResponseSectionTypeTableData, error
 
 func (r ResponseSectionTypeTable) UnderlyingAsset() (ResponseSectionTypeTableData, error) {
 	return r.findDataByTitle(overviewDataTitleUnderlyingAsset)
+}
+
+func (r ResponseSectionTypeTable) ReceivedFrom() (ResponseSectionTypeTableData, error) {
+	return r.findDataByTitle(overviewDataTitleReceivedFrom)
+}
+
+func (r ResponseSectionTypeTable) IBAN() (ResponseSectionTypeTableData, error) {
+	return r.findDataByTitle(overviewDataTitleIBAN)
+}
+
+func (r ResponseSectionTypeTable) Deposit() (ResponseSectionTypeTableData, error) {
+	return r.findDataByTitle(overviewDataTitleDeposit)
+}
+
+func (r ResponseSectionTypeTable) YoY() (ResponseSectionTypeTableData, error) {
+	return r.findDataByTitle(overviewDataTitleYoY)
 }
 
 func (r ResponseSectionTypeTable) Shares() (ResponseSectionTypeTableData, error) {
