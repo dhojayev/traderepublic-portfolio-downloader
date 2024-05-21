@@ -31,7 +31,7 @@ var (
 		transactions.NewClient,
 		details.NewClient,
 		details.NewTypeResolver,
-		transaction.NewBuilder,
+		transaction.NewModelBuilderFactory,
 		database.NewSQLiteOnFS,
 		transaction.NewCSVEntryFactory,
 		filesystem.NewCSVReader,
@@ -41,7 +41,7 @@ var (
 		ProvideInstrumentRepository,
 
 		wire.Bind(new(details.TypeResolverInterface), new(details.TypeResolver)),
-		wire.Bind(new(transaction.BuilderInterface), new(transaction.Builder)),
+		wire.Bind(new(transaction.ModelBuilderFactoryInterface), new(transaction.ModelBuilderFactory)),
 		wire.Bind(new(transaction.RepositoryInterface), new(*database.Repository[*transaction.Model])),
 		wire.Bind(new(transaction.InstrumentRepositoryInterface), new(*database.Repository[*transaction.Instrument])),
 	)

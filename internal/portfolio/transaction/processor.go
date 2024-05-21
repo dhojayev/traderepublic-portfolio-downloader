@@ -13,7 +13,7 @@ import (
 const csvFilename = "transactions.csv"
 
 type Processor struct {
-	builder         BuilderInterface
+	builderFactory  ModelBuilderFactoryInterface
 	transactionRepo RepositoryInterface
 	factory         CSVEntryFactory
 	csvReader       filesystem.CSVReader
@@ -22,7 +22,7 @@ type Processor struct {
 }
 
 func NewProcessor(
-	builder BuilderInterface,
+	builderFactory ModelBuilderFactoryInterface,
 	transactionRepo RepositoryInterface,
 	factory CSVEntryFactory,
 	csvReader filesystem.CSVReader,
@@ -30,7 +30,7 @@ func NewProcessor(
 	logger *log.Logger,
 ) Processor {
 	return Processor{
-		builder:         builder,
+		builderFactory:  builderFactory,
 		transactionRepo: transactionRepo,
 		factory:         factory,
 		csvReader:       csvReader,
@@ -51,7 +51,7 @@ func (p Processor) Process(response details.Response) error {
 		}
 	}
 
-	transaction, err := p.builder.FromResponse(response)
+	builder, err := p.builderFactory.Create(response)
 	if err != nil {
 		if errors.Is(err, details.ErrUnsupportedResponse) {
 			p.logger.WithField("id", response.ID).Debug(err)
@@ -59,8 +59,14 @@ func (p Processor) Process(response details.Response) error {
 			return details.ErrUnsupportedResponse
 		}
 
+		return fmt.Errorf("builder factory error: %w", err)
+	}
+
+	transaction, err := builder.Build()
+	if err != nil {
 		return fmt.Errorf("builder error: %w", err)
 	}
+	
 
 	p.logger.WithField("transaction", transaction).Debug("supported transaction detected")
 

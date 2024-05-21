@@ -40,8 +40,8 @@ var (
 	detectors = map[Type]TesterFunc{
 		TypePurchaseTransaction:                PurchaseDetector,
 		TypeSaleTransaction:                    SaleDetector,
-		TypeDepositTransaction:                 DepositDetector,
-		TypeDepositInterestReceivedTransaction: InterestReceivedDetector,
+		// TypeDepositTransaction:                 DepositDetector,
+		// TypeDepositInterestReceivedTransaction: InterestReceivedDetector,
 		TypeRoundUpTransaction:                 RoundUpDetector,
 		TypeSavebackTransaction:                SavebackDetector,
 		TypeDividendPayoutTransaction:          DividendPayoutDetector,
