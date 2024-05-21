@@ -34,17 +34,19 @@ func (f ModelBuilderFactory) Create(response details.Response) (ModelBuilderInte
 		return nil, fmt.Errorf("resolver errors: %w", err)
 	}
 
+	baseBuilder := BaseModelBuilder{response: response, logger: f.logger}
+
 	switch responseType {
 	case details.TypePurchaseTransaction:
-		return PurchaseBuilder{ModelBuilder{response: response, logger: f.logger}}, nil
+		return PurchaseBuilder{baseBuilder}, nil
 	case details.TypeSaleTransaction:
-		return SaleBuilder{PurchaseBuilder{ModelBuilder{response: response, logger: f.logger}}}, nil
+		return SaleBuilder{PurchaseBuilder{baseBuilder}}, nil
 	case details.TypeDividendPayoutTransaction:
-		return DividendPayoutBuilder{SaleBuilder{PurchaseBuilder{ModelBuilder{response: response, logger: f.logger}}}}, nil
+		return DividendPayoutBuilder{SaleBuilder{PurchaseBuilder{baseBuilder}}}, nil
 	case details.TypeRoundUpTransaction:
-		return RoundUpBuilder{PurchaseBuilder{ModelBuilder{response: response, logger: f.logger}}}, nil
+		return RoundUpBuilder{PurchaseBuilder{baseBuilder}}, nil
 	case details.TypeSavebackTransaction:
-		return SavebackBuilder{PurchaseBuilder{ModelBuilder{response: response, logger: f.logger}}}, nil
+		return SavebackBuilder{PurchaseBuilder{baseBuilder}}, nil
 	case
 		details.TypeUnsupported,
 		details.TypeCardPaymentTransaction,
@@ -60,12 +62,12 @@ type ModelBuilderInterface interface {
 	Build() (Model, error)
 }
 
-type ModelBuilder struct {
+type BaseModelBuilder struct {
 	response details.Response
 	logger   *log.Logger
 }
 
-func (b ModelBuilder) ExtractStatus() (string, error) {
+func (b BaseModelBuilder) ExtractStatus() (string, error) {
 	header, err := b.response.HeaderSection()
 	if err != nil {
 		return "", fmt.Errorf("could not get header section: %w", err)
@@ -74,7 +76,7 @@ func (b ModelBuilder) ExtractStatus() (string, error) {
 	return header.Data.Status, nil
 }
 
-func (b ModelBuilder) ExtractInstrumentIcon() (string, error) {
+func (b BaseModelBuilder) ExtractInstrumentIcon() (string, error) {
 	header, err := b.response.HeaderSection()
 	if err != nil {
 		return "", fmt.Errorf("could not get header section: %w", err)
@@ -83,7 +85,7 @@ func (b ModelBuilder) ExtractInstrumentIcon() (string, error) {
 	return header.Data.Icon, nil
 }
 
-func (b ModelBuilder) ExtractTimestamp() (time.Time, error) {
+func (b BaseModelBuilder) ExtractTimestamp() (time.Time, error) {
 	header, err := b.response.HeaderSection()
 	if err != nil {
 		return time.Time{}, fmt.Errorf("could not get header section: %w", err)
@@ -97,7 +99,7 @@ func (b ModelBuilder) ExtractTimestamp() (time.Time, error) {
 	return timestamp, nil
 }
 
-func (b ModelBuilder) ExtractInstrumentISIN() (string, error) {
+func (b BaseModelBuilder) ExtractInstrumentISIN() (string, error) {
 	header, err := b.response.HeaderSection()
 	if err != nil {
 		return "", fmt.Errorf("could not get header section: %w", err)
@@ -111,7 +113,7 @@ func (b ModelBuilder) ExtractInstrumentISIN() (string, error) {
 	return isin, nil
 }
 
-func (b ModelBuilder) ExtractInstrumentName() (string, error) {
+func (b BaseModelBuilder) ExtractInstrumentName() (string, error) {
 	overview, err := b.response.OverviewSection()
 	if err != nil {
 		return "", fmt.Errorf("could not get overview section: %w", err)
@@ -134,7 +136,7 @@ func (b ModelBuilder) ExtractInstrumentName() (string, error) {
 	return underlyingAsset.Detail.Text, nil
 }
 
-func (b ModelBuilder) ExtractYield() (float64, error) {
+func (b BaseModelBuilder) ExtractYield() (float64, error) {
 	performance, err := b.response.PerformanceSection()
 	if err != nil {
 		return 0, fmt.Errorf("could not get performance section: %w", err)
@@ -153,7 +155,7 @@ func (b ModelBuilder) ExtractYield() (float64, error) {
 	return yield, nil
 }
 
-func (b ModelBuilder) ExtractProfit() (float64, error) {
+func (b BaseModelBuilder) ExtractProfit() (float64, error) {
 	performance, err := b.response.PerformanceSection()
 	if err != nil {
 		return 0, fmt.Errorf("could not get performance section: %w", err)
@@ -172,7 +174,7 @@ func (b ModelBuilder) ExtractProfit() (float64, error) {
 	return profit, nil
 }
 
-func (b ModelBuilder) ExtractSharesAmount() (float64, error) {
+func (b BaseModelBuilder) ExtractSharesAmount() (float64, error) {
 	transactionSection, err := b.response.TransactionSection()
 	if err != nil {
 		return 0, fmt.Errorf("could not get transaction section: %w", err)
@@ -198,7 +200,7 @@ func (b ModelBuilder) ExtractSharesAmount() (float64, error) {
 	return shares, nil
 }
 
-func (b ModelBuilder) ExtractRateValue() (float64, error) {
+func (b BaseModelBuilder) ExtractRateValue() (float64, error) {
 	transactionSection, err := b.response.TransactionSection()
 	if err != nil {
 		return 0, fmt.Errorf("could not get transaction section: %w", err)
@@ -217,7 +219,7 @@ func (b ModelBuilder) ExtractRateValue() (float64, error) {
 	return rate, nil
 }
 
-func (b ModelBuilder) ExtractCommissionAmount() (float64, error) {
+func (b BaseModelBuilder) ExtractCommissionAmount() (float64, error) {
 	transactionSection, err := b.response.TransactionSection()
 	if err != nil {
 		return 0, fmt.Errorf("could not get transaction section: %w", err)
@@ -242,7 +244,7 @@ func (b ModelBuilder) ExtractCommissionAmount() (float64, error) {
 	return commission, nil
 }
 
-func (b ModelBuilder) ExtractTotalAmount() (float64, error) {
+func (b BaseModelBuilder) ExtractTotalAmount() (float64, error) {
 	transactionSection, err := b.response.TransactionSection()
 	if err != nil {
 		return 0, fmt.Errorf("could not get transaction section: %w", err)
@@ -261,7 +263,7 @@ func (b ModelBuilder) ExtractTotalAmount() (float64, error) {
 	return total, nil
 }
 
-func (b ModelBuilder) BuildDocuments() ([]document.Model, error) {
+func (b BaseModelBuilder) BuildDocuments() ([]document.Model, error) {
 	documents := make([]document.Model, 0)
 
 	documentsSection, err := b.response.DocumentsSection()
@@ -282,7 +284,7 @@ func (b ModelBuilder) BuildDocuments() ([]document.Model, error) {
 }
 
 type PurchaseBuilder struct {
-	ModelBuilder
+	BaseModelBuilder
 }
 
 func (b PurchaseBuilder) Build() (Model, error) {
