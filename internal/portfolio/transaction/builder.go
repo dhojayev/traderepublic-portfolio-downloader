@@ -43,17 +43,21 @@ func (b Builder) FromResponse(response details.Response) (Model, error) {
 	}
 
 	switch resolvedType {
-	case TypePurchaseTransaction:
+	case details.TypePurchaseTransaction:
 		return b.Build(TypePurchase, response)
-	case TypeSaleTransaction:
+	case details.TypeSaleTransaction:
 		return b.Build(TypeSale, response)
-	case TypeDividendPayoutTransaction:
+	case details.TypeDividendPayoutTransaction:
 		return b.Build(TypeDividendPayout, response)
-	case TypeRoundUpTransaction:
+	case details.TypeRoundUpTransaction:
 		return b.Build(TypeRoundUp, response)
-	case TypeSavebackTransaction:
+	case details.TypeSavebackTransaction:
 		return b.Build(TypeSaveback, response)
-	case TypeUnsupported, TypeCardPaymentTransaction:
+	case 
+	details.TypeUnsupported, 
+	details.TypeCardPaymentTransaction, 
+	details.TypeDepositTransaction, 
+	details.TypeDepositInterestReceivedTransaction:
 	}
 
 	return model, ErrUnsupportedType
@@ -166,7 +170,7 @@ func (b Builder) GetPerformanceData(response details.Response) (float64, float64
 
 	yieldData, err := performance.Yield()
 	if err != nil {
-		b.logger.Debugf("could get yield: %s", err)
+		b.logger.Debugf("could not get yield: %s", err)
 	}
 
 	yield, err = ParseFloatWithComma(yieldData.Detail.Text, yieldData.Detail.IsTrendNegative())
