@@ -53,10 +53,10 @@ func (p Processor) Process(response details.Response) error {
 
 	transaction, err := p.builder.FromResponse(response)
 	if err != nil {
-		if errors.Is(err, ErrUnsupportedResponse) {
+		if errors.Is(err, details.ErrUnsupportedResponse) {
 			p.logger.WithField("id", response.ID).Debug(err)
 
-			return ErrUnsupportedResponse
+			return details.ErrUnsupportedResponse
 		}
 
 		return fmt.Errorf("builder error: %w", err)

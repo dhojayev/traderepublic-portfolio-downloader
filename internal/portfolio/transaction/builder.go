@@ -19,11 +19,11 @@ type BuilderInterface interface {
 }
 
 type Builder struct {
-	resolver TypeResolverInterface
+	resolver details.TypeResolverInterface
 	logger   *log.Logger
 }
 
-func NewBuilder(resolver TypeResolverInterface, logger *log.Logger) Builder {
+func NewBuilder(resolver details.TypeResolverInterface, logger *log.Logger) Builder {
 	return Builder{
 		resolver: resolver,
 		logger:   logger,
@@ -35,7 +35,7 @@ func (b Builder) FromResponse(response details.Response) (Model, error) {
 
 	resolvedType, err := b.resolver.Resolve(response)
 	if err != nil {
-		if errors.Is(err, ErrUnsupportedResponse) {
+		if errors.Is(err, details.ErrUnsupportedResponse) {
 			return model, ErrUnsupportedType
 		}
 
@@ -53,11 +53,11 @@ func (b Builder) FromResponse(response details.Response) (Model, error) {
 		return b.Build(TypeRoundUp, response)
 	case details.TypeSavebackTransaction:
 		return b.Build(TypeSaveback, response)
-	case 
-	details.TypeUnsupported, 
-	details.TypeCardPaymentTransaction, 
-	details.TypeDepositTransaction, 
-	details.TypeDepositInterestReceivedTransaction:
+	case
+		details.TypeUnsupported,
+		details.TypeCardPaymentTransaction,
+		details.TypeDepositTransaction,
+		details.TypeDepositInterestReceivedTransaction:
 	}
 
 	return model, ErrUnsupportedType

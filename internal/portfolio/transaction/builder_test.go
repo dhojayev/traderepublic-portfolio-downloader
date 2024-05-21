@@ -71,7 +71,7 @@ func TestBuildPurchaseTransactions(t *testing.T) {
 	controller := gomock.NewController(t)
 	readerMock := portfolio.NewMockReaderInterface(controller)
 	detailsClient := details.NewClient(readerMock)
-	resolver := transaction.NewTypeResolver(log.New())
+	resolver := details.NewTypeResolver(log.New())
 	builder := transaction.NewBuilder(resolver, log.New())
 
 	for _, testCase := range testCases {
@@ -137,7 +137,7 @@ func TestBuilder_BuildDocuments(t *testing.T) {
 	controller := gomock.NewController(t)
 	readerMock := portfolio.NewMockReaderInterface(controller)
 	detailsClient := details.NewClient(readerMock)
-	resolverMock := transaction.NewMockTypeResolverInterface(controller)
+	resolverMock := details.NewMockTypeResolverInterface(controller)
 	builder := transaction.NewBuilder(resolverMock, log.New())
 
 	for _, testCase := range testCases {

@@ -30,7 +30,7 @@ var (
 		portfoliodownloader.NewApp,
 		transactions.NewClient,
 		details.NewClient,
-		transaction.NewTypeResolver,
+		details.NewTypeResolver,
 		transaction.NewBuilder,
 		database.NewSQLiteOnFS,
 		transaction.NewCSVEntryFactory,
@@ -40,7 +40,7 @@ var (
 		ProvideTransactionRepository,
 		ProvideInstrumentRepository,
 
-		wire.Bind(new(transaction.TypeResolverInterface), new(transaction.TypeResolver)),
+		wire.Bind(new(details.TypeResolverInterface), new(details.TypeResolver)),
 		wire.Bind(new(transaction.BuilderInterface), new(transaction.Builder)),
 		wire.Bind(new(transaction.RepositoryInterface), new(*database.Repository[*transaction.Model])),
 		wire.Bind(new(transaction.InstrumentRepositoryInterface), new(*database.Repository[*transaction.Instrument])),

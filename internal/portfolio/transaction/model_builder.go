@@ -16,18 +16,18 @@ type ModelBuilderFactoryInterface interface {
 }
 
 type ModelBuilderFactory struct {
-	resolver TypeResolverInterface
+	resolver details.TypeResolverInterface
 	logger   *log.Logger
 }
 
-func NewModelBuilderFactory(resolver TypeResolverInterface, logger *log.Logger) ModelBuilderFactory {
+func NewModelBuilderFactory(resolver details.TypeResolverInterface, logger *log.Logger) ModelBuilderFactory {
 	return ModelBuilderFactory{
 		resolver: resolver,
 		logger:   logger,
 	}
 }
 
-//nolint: ireturn
+//nolint:ireturn
 func (f ModelBuilderFactory) Create(response details.Response) (ModelBuilderInterface, error) {
 	responseType, err := f.resolver.Resolve(response)
 	if err != nil {

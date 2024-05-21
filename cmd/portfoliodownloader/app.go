@@ -65,7 +65,7 @@ func (a App) Run() error {
 		a.logger.WithFields(infoFields).Info("Processing transaction details")
 
 		if err := a.transactionProcessor.Process(transactionDetails); err != nil {
-			if errors.Is(err, transaction.ErrUnsupportedResponse) {
+			if errors.Is(err, details.ErrUnsupportedResponse) {
 				a.logger.WithFields(infoFields).Info("Unsupported transaction skipped")
 
 				continue
