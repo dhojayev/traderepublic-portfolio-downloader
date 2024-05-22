@@ -45,7 +45,11 @@ jobs:
           check-latest: true
 
       - name: Public ${{ matrix.goos }}-${{ matrix.goarch }}
-        run: GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -v -o /tmp/portfoliodownloader ./cmd/portfoliodownloader/public
+        run: make build-${{ matrix.goos }}-${{ matrix.goarch }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          path: /tmp/portfoliodownloader/public
 
       - name: Dev ${{ matrix.goos }}-${{ matrix.goarch }}
-        run: GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -v -o /tmp/portfoliodownloader-dev ./cmd/portfoliodownloader/dev
+        run: GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -v -o /tmp/portfoliodownloader/dev/portfoliodownloader-${{ matrix.goos }}-${{ matrix.goarch }} ./cmd/portfoliodownloader/dev
