@@ -40,7 +40,7 @@ func NewProcessor(
 	}
 }
 
-func (p Processor) Process(eventType transactions.EventType, response details.ResponseNew) error {
+func (p Processor) Process(eventType transactions.EventType, response details.Response) error {
 	csvEntries, err := p.csvReader.Read(csvFilename)
 	if err != nil {
 		return fmt.Errorf("csv reader read error: %w", err)

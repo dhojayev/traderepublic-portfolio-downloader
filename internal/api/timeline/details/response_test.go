@@ -18,14 +18,14 @@ func TestResponseContents(t *testing.T) {
 
 	testCases := []struct {
 		filepath                 string
-		expectedHeaderSection    details.ResponseSectionTypeHeaderNew
-		expectedTableSections    []details.ResponseSectionTypeTableNew
-		expectedDocumentsSection details.ResponseSectionTypeDocumentsNew
+		expectedHeaderSection    details.ResponseSectionTypeHeader
+		expectedTableSections    details.ResponseSectionsTypeTable
+		expectedDocumentsSection details.ResponseSectionTypeDocuments
 	}{
 		{
 			filepath: "../../../../tests/data/transaction-details/payment-inbound-01.json",
-			expectedHeaderSection: details.ResponseSectionTypeHeaderNew{
-				Data: details.ResponseSectionTypeHeaderDataNew{
+			expectedHeaderSection: details.ResponseSectionTypeHeader{
+				Data: details.ResponseSectionTypeHeaderData{
 					Icon:      "logos/timeline_plus_circle/v2",
 					Status:    "executed",
 					Timestamp: "2023-05-21T08:25:53.360+0000",
@@ -33,11 +33,11 @@ func TestResponseContents(t *testing.T) {
 				Title: "Du hast 200,00 € erhalten",
 				Type:  "header",
 			},
-			expectedTableSections: []details.ResponseSectionTypeTableNew{
+			expectedTableSections: details.ResponseSectionsTypeTable{
 				{
-					Data: []details.ResponseSectionTypeTableDataNew{
+					Data: []details.ResponseSectionTypeTableData{
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								FunctionalStyle: "EXECUTED",
 								Text:            "Abgeschlossen",
 								Type:            "status",
@@ -46,7 +46,7 @@ func TestResponseContents(t *testing.T) {
 							Title: "Status",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								Text: "John Doe",
 								Type: "text",
 							},
@@ -54,7 +54,7 @@ func TestResponseContents(t *testing.T) {
 							Title: "Von",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								Text: "DE78 0000 0000 0000 0000 00",
 								Type: "text",
 							},
@@ -69,8 +69,8 @@ func TestResponseContents(t *testing.T) {
 		},
 		{
 			filepath: "../../../../tests/data/transaction-details/payment-inbound-sepa-direct-debit-01.json",
-			expectedHeaderSection: details.ResponseSectionTypeHeaderNew{
-				Data: details.ResponseSectionTypeHeaderDataNew{
+			expectedHeaderSection: details.ResponseSectionTypeHeader{
+				Data: details.ResponseSectionTypeHeaderData{
 					Icon:      "logos/timeline_plus_circle/v2",
 					Status:    "executed",
 					Timestamp: "2023-07-23T21:05:22.543+0000",
@@ -78,11 +78,11 @@ func TestResponseContents(t *testing.T) {
 				Title: "Du hast 500,00 € per Lastschrift hinzugefügt",
 				Type:  "header",
 			},
-			expectedTableSections: []details.ResponseSectionTypeTableNew{
+			expectedTableSections: details.ResponseSectionsTypeTable{
 				{
-					Data: []details.ResponseSectionTypeTableDataNew{
+					Data: []details.ResponseSectionTypeTableData{
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								FunctionalStyle: "EXECUTED",
 								Text:            "Ausgeführt",
 								Type:            "status",
@@ -91,7 +91,7 @@ func TestResponseContents(t *testing.T) {
 							Title: "Status",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								Text: "Lastschrift",
 								Type: "text",
 							},
@@ -103,9 +103,9 @@ func TestResponseContents(t *testing.T) {
 					Type:  "table",
 				},
 				{
-					Data: []details.ResponseSectionTypeTableDataNew{
+					Data: []details.ResponseSectionTypeTableData{
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								Text: "Gratis",
 								Type: "text",
 							},
@@ -113,7 +113,7 @@ func TestResponseContents(t *testing.T) {
 							Title: "Gebühr",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								Text: "500,00 €",
 								Type: "text",
 							},
@@ -125,10 +125,10 @@ func TestResponseContents(t *testing.T) {
 					Type:  "table",
 				},
 			},
-			expectedDocumentsSection: details.ResponseSectionTypeDocumentsNew{
-				Data: []details.ResponseSectionTypeDocumentDataNew{
+			expectedDocumentsSection: details.ResponseSectionTypeDocuments{
+				Data: []details.ResponseSectionTypeDocumentData{
 					{
-						Action: details.ResponseActionNew{
+						Action: details.ResponseAction{
 							Payload: "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
 							Type:    "browserModal",
 						},
@@ -144,8 +144,8 @@ func TestResponseContents(t *testing.T) {
 		},
 		{
 			filepath: "../../../../tests/data/transaction-details/interest-payout-created-01.json",
-			expectedHeaderSection: details.ResponseSectionTypeHeaderNew{
-				Data: details.ResponseSectionTypeHeaderDataNew{
+			expectedHeaderSection: details.ResponseSectionTypeHeader{
+				Data: details.ResponseSectionTypeHeaderData{
 					Icon:      "logos/timeline_interest_new/v2",
 					Status:    "executed",
 					Timestamp: "2023-11-06T11:22:52.544+0000",
@@ -153,11 +153,11 @@ func TestResponseContents(t *testing.T) {
 				Title: "Du hast 0,07 EUR erhalten",
 				Type:  "header",
 			},
-			expectedTableSections: []details.ResponseSectionTypeTableNew{
+			expectedTableSections: details.ResponseSectionsTypeTable{
 				{
-					Data: []details.ResponseSectionTypeTableDataNew{
+					Data: []details.ResponseSectionTypeTableData{
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								FunctionalStyle: "EXECUTED",
 								Text:            "Abgeschlossen",
 								Type:            "status",
@@ -166,7 +166,7 @@ func TestResponseContents(t *testing.T) {
 							Title: "Status",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								Text: "283,33 €",
 								Type: "text",
 							},
@@ -174,7 +174,7 @@ func TestResponseContents(t *testing.T) {
 							Title: "Durchschnittssaldo",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								Text: "2 %",
 								Type: "text",
 							},
@@ -182,7 +182,7 @@ func TestResponseContents(t *testing.T) {
 							Title: "Jahressatz",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								Text: "Guthaben",
 								Type: "text",
 							},
@@ -194,9 +194,9 @@ func TestResponseContents(t *testing.T) {
 					Type:  "table",
 				},
 				{
-					Data: []details.ResponseSectionTypeTableDataNew{
+					Data: []details.ResponseSectionTypeTableData{
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								Text: "+ 0,09 €",
 								Type: "text",
 							},
@@ -204,7 +204,7 @@ func TestResponseContents(t *testing.T) {
 							Title: "Angefallen",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								Text: "0,02 €",
 								Type: "text",
 							},
@@ -212,7 +212,7 @@ func TestResponseContents(t *testing.T) {
 							Title: "Steuern",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								Text: "+ 0,07 €",
 								Type: "text",
 							},
@@ -224,10 +224,10 @@ func TestResponseContents(t *testing.T) {
 					Type:  "table",
 				},
 			},
-			expectedDocumentsSection: details.ResponseSectionTypeDocumentsNew{
-				Data: []details.ResponseSectionTypeDocumentDataNew{
+			expectedDocumentsSection: details.ResponseSectionTypeDocuments{
+				Data: []details.ResponseSectionTypeDocumentData{
 					{
-						Action: details.ResponseActionNew{
+						Action: details.ResponseAction{
 							Payload: "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
 							Type:    "browserModal",
 						},
@@ -243,12 +243,12 @@ func TestResponseContents(t *testing.T) {
 		},
 		{
 			filepath: "../../../../tests/data/transaction-details/savings-plan-executed-01.json",
-			expectedHeaderSection: details.ResponseSectionTypeHeaderNew{
-				Action: details.ResponseActionNew{
+			expectedHeaderSection: details.ResponseSectionTypeHeader{
+				Action: details.ResponseAction{
 					Payload: "IE00BK1PV551",
 					Type:    "instrumentDetail",
 				},
-				Data: details.ResponseSectionTypeHeaderDataNew{
+				Data: details.ResponseSectionTypeHeaderData{
 					Icon:      "logos/IE00BK1PV551/v2",
 					Status:    "executed",
 					Timestamp: "2023-11-11T13:40:59.926+0000",
@@ -256,11 +256,11 @@ func TestResponseContents(t *testing.T) {
 				Title: "Du hast 500,00 € investiert",
 				Type:  "header",
 			},
-			expectedTableSections: []details.ResponseSectionTypeTableNew{
+			expectedTableSections: details.ResponseSectionsTypeTable{
 				{
-					Data: []details.ResponseSectionTypeTableDataNew{
+					Data: []details.ResponseSectionTypeTableData{
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								FunctionalStyle: "EXECUTED",
 								Text:            "Ausgeführt",
 								Type:            "status",
@@ -269,7 +269,7 @@ func TestResponseContents(t *testing.T) {
 							Title: "Status",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								Text: "Sparplan",
 								Type: "text",
 							},
@@ -277,7 +277,7 @@ func TestResponseContents(t *testing.T) {
 							Title: "Orderart",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								Text: "MSCI World USD (Dist)",
 								Type: "text",
 							},
@@ -285,7 +285,7 @@ func TestResponseContents(t *testing.T) {
 							Title: "Asset",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								Icon: "logos/bank_commerzbank/v2",
 								Text: "·· 0000",
 								Type: "iconWithText",
@@ -298,10 +298,10 @@ func TestResponseContents(t *testing.T) {
 					Type:  "table",
 				},
 				{
-					Data: []details.ResponseSectionTypeTableDataNew{
+					Data: []details.ResponseSectionTypeTableData{
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
-								Action: details.ResponseActionNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
+								Action: details.ResponseAction{
 									Payload: map[string]any{
 										"savingsPlanId": "f9c615ca-959c-4cf1-b8b9-10541673fba5",
 									},
@@ -323,9 +323,9 @@ func TestResponseContents(t *testing.T) {
 					Type:  "table",
 				},
 				{
-					Data: []details.ResponseSectionTypeTableDataNew{
+					Data: []details.ResponseSectionTypeTableData{
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								Text: "6,887811",
 								Type: "text",
 							},
@@ -333,7 +333,7 @@ func TestResponseContents(t *testing.T) {
 							Title: "Anteile",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								Text: "72,592 €",
 								Type: "text",
 							},
@@ -341,7 +341,7 @@ func TestResponseContents(t *testing.T) {
 							Title: "Anteilspreis",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								Text: "Gratis",
 								Type: "text",
 							},
@@ -349,7 +349,7 @@ func TestResponseContents(t *testing.T) {
 							Title: "Gebühr",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								Text: "500,00 €",
 								Type: "text",
 							},
@@ -361,10 +361,10 @@ func TestResponseContents(t *testing.T) {
 					Type:  "table",
 				},
 			},
-			expectedDocumentsSection: details.ResponseSectionTypeDocumentsNew{
-				Data: []details.ResponseSectionTypeDocumentDataNew{
+			expectedDocumentsSection: details.ResponseSectionTypeDocuments{
+				Data: []details.ResponseSectionTypeDocumentData{
 					{
-						Action: details.ResponseActionNew{
+						Action: details.ResponseAction{
 							Payload: "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
 							Type:    "browserModal",
 						},
@@ -380,12 +380,12 @@ func TestResponseContents(t *testing.T) {
 		},
 		{
 			filepath: "../../../../tests/data/transaction-details/order-executed-01.json",
-			expectedHeaderSection: details.ResponseSectionTypeHeaderNew{
-				Action: details.ResponseActionNew{
+			expectedHeaderSection: details.ResponseSectionTypeHeader{
+				Action: details.ResponseAction{
 					Payload: "DE000A0F5UF5",
 					Type:    "instrumentDetail",
 				},
-				Data: details.ResponseSectionTypeHeaderDataNew{
+				Data: details.ResponseSectionTypeHeaderData{
 					Icon:      "logos/DE000A0F5UF5/v2",
 					Status:    "executed",
 					Timestamp: "2023-11-23T15:45:24.252+0000",
@@ -393,11 +393,11 @@ func TestResponseContents(t *testing.T) {
 				Title: "Du hast 136,14 €  investiert",
 				Type:  "header",
 			},
-			expectedTableSections: []details.ResponseSectionTypeTableNew{
+			expectedTableSections: details.ResponseSectionsTypeTable{
 				{
-					Data: []details.ResponseSectionTypeTableDataNew{
+					Data: []details.ResponseSectionTypeTableData{
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								FunctionalStyle: "EXECUTED",
 								Text:            "Ausgeführt",
 								Type:            "status",
@@ -406,7 +406,7 @@ func TestResponseContents(t *testing.T) {
 							Title: "Status",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								Text: "Kauf",
 								Type: "text",
 							},
@@ -414,7 +414,7 @@ func TestResponseContents(t *testing.T) {
 							Title: "Orderart",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								Text: "NASDAQ100 USD (Dist)",
 								Type: "text",
 							},
@@ -426,9 +426,9 @@ func TestResponseContents(t *testing.T) {
 					Type:  "table",
 				},
 				{
-					Data: []details.ResponseSectionTypeTableDataNew{
+					Data: []details.ResponseSectionTypeTableData{
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								Text: "1",
 								Type: "text",
 							},
@@ -436,7 +436,7 @@ func TestResponseContents(t *testing.T) {
 							Title: "Anteile",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								Text: "135,14 €",
 								Type: "text",
 							},
@@ -444,7 +444,7 @@ func TestResponseContents(t *testing.T) {
 							Title: "Aktienkurs",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								Text: "1,00 €",
 								Type: "text",
 							},
@@ -452,7 +452,7 @@ func TestResponseContents(t *testing.T) {
 							Title: "Gebühr",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								Text: "136,14 €",
 								Type: "text",
 							},
@@ -464,10 +464,10 @@ func TestResponseContents(t *testing.T) {
 					Type:  "table",
 				},
 			},
-			expectedDocumentsSection: details.ResponseSectionTypeDocumentsNew{
-				Data: []details.ResponseSectionTypeDocumentDataNew{
+			expectedDocumentsSection: details.ResponseSectionTypeDocuments{
+				Data: []details.ResponseSectionTypeDocumentData{
 					{
-						Action: details.ResponseActionNew{
+						Action: details.ResponseAction{
 							Payload: "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
 							Type:    "browserModal",
 						},
@@ -477,7 +477,7 @@ func TestResponseContents(t *testing.T) {
 						Title:       "Abrechnung",
 					},
 					{
-						Action: details.ResponseActionNew{
+						Action: details.ResponseAction{
 							Payload: "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
 							Type:    "browserModal",
 						},
@@ -487,7 +487,7 @@ func TestResponseContents(t *testing.T) {
 						Title:       "Basisinformationsblatt",
 					},
 					{
-						Action: details.ResponseActionNew{
+						Action: details.ResponseAction{
 							Payload: "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
 							Type:    "browserModal",
 						},
@@ -503,8 +503,8 @@ func TestResponseContents(t *testing.T) {
 		},
 		{
 			filepath: "../../../../tests/data/transaction-details/credit-01.json",
-			expectedHeaderSection: details.ResponseSectionTypeHeaderNew{
-				Data: details.ResponseSectionTypeHeaderDataNew{
+			expectedHeaderSection: details.ResponseSectionTypeHeader{
+				Data: details.ResponseSectionTypeHeaderData{
 					Icon:      "logos/IE00BK1PV551/v2",
 					Status:    "executed",
 					Timestamp: "2023-12-13T12:44:28.857+0000",
@@ -512,11 +512,11 @@ func TestResponseContents(t *testing.T) {
 				Title: "Du hast 2,94 € erhalten",
 				Type:  "header",
 			},
-			expectedTableSections: []details.ResponseSectionTypeTableNew{
+			expectedTableSections: details.ResponseSectionsTypeTable{
 				{
-					Data: []details.ResponseSectionTypeTableDataNew{
+					Data: []details.ResponseSectionTypeTableData{
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								Text: "Ausschüttung",
 								Type: "text",
 							},
@@ -524,7 +524,7 @@ func TestResponseContents(t *testing.T) {
 							Title: "Ereignis",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								Text: "MSCI World USD (Dist)",
 								Type: "text",
 							},
@@ -536,9 +536,9 @@ func TestResponseContents(t *testing.T) {
 					Type:  "table",
 				},
 				{
-					Data: []details.ResponseSectionTypeTableDataNew{
+					Data: []details.ResponseSectionTypeTableData{
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								Text: "10,344033",
 								Type: "text",
 							},
@@ -546,7 +546,7 @@ func TestResponseContents(t *testing.T) {
 							Title: "Anteile",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								Text: "0,28 €",
 								Type: "text",
 							},
@@ -554,7 +554,7 @@ func TestResponseContents(t *testing.T) {
 							Title: "Dividende je Aktie",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								Text: "+ 2,94 €",
 								Type: "text",
 							},
@@ -566,10 +566,10 @@ func TestResponseContents(t *testing.T) {
 					Type:  "table",
 				},
 			},
-			expectedDocumentsSection: details.ResponseSectionTypeDocumentsNew{
-				Data: []details.ResponseSectionTypeDocumentDataNew{
+			expectedDocumentsSection: details.ResponseSectionTypeDocuments{
+				Data: []details.ResponseSectionTypeDocumentData{
 					{
-						Action: details.ResponseActionNew{
+						Action: details.ResponseAction{
 							Payload: "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
 							Type:    "browserModal",
 						},
@@ -585,12 +585,12 @@ func TestResponseContents(t *testing.T) {
 		},
 		{
 			filepath: "../../../../tests/data/transaction-details/benefits-spare-change-execution-01.json",
-			expectedHeaderSection: details.ResponseSectionTypeHeaderNew{
-				Action: details.ResponseActionNew{
+			expectedHeaderSection: details.ResponseSectionTypeHeader{
+				Action: details.ResponseAction{
 					Payload: "DE000A0F5UF5",
 					Type:    "instrumentDetail",
 				},
-				Data: details.ResponseSectionTypeHeaderDataNew{
+				Data: details.ResponseSectionTypeHeaderData{
 					Icon:      "logos/DE000A0F5UF5/v2",
 					Status:    "executed",
 					Timestamp: "2024-01-04T12:26:52.110+0000",
@@ -598,11 +598,11 @@ func TestResponseContents(t *testing.T) {
 				Title: "Du hast 1,09 € investiert",
 				Type:  "header",
 			},
-			expectedTableSections: []details.ResponseSectionTypeTableNew{
+			expectedTableSections: details.ResponseSectionsTypeTable{
 				{
-					Data: []details.ResponseSectionTypeTableDataNew{
+					Data: []details.ResponseSectionTypeTableData{
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								FunctionalStyle: "EXECUTED",
 								Text:            "Ausgeführt",
 								Type:            "status",
@@ -611,7 +611,7 @@ func TestResponseContents(t *testing.T) {
 							Title: "Status",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								Text: "Round up",
 								Type: "text",
 							},
@@ -619,7 +619,7 @@ func TestResponseContents(t *testing.T) {
 							Title: "Ordertyp",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								Text: "NASDAQ100 USD (Dist)",
 								Type: "text",
 							},
@@ -631,9 +631,9 @@ func TestResponseContents(t *testing.T) {
 					Type:  "table",
 				},
 				{
-					Data: []details.ResponseSectionTypeTableDataNew{
+					Data: []details.ResponseSectionTypeTableData{
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								Text: "0.006882",
 								Type: "text",
 							},
@@ -641,7 +641,7 @@ func TestResponseContents(t *testing.T) {
 							Title: "Aktien",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								Text: "158,38 €",
 								Type: "text",
 							},
@@ -649,7 +649,7 @@ func TestResponseContents(t *testing.T) {
 							Title: "Aktienkurs",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								Text: "Kostenlos",
 								Type: "text",
 							},
@@ -657,7 +657,7 @@ func TestResponseContents(t *testing.T) {
 							Title: "Gebühr",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetailNew{
+							Detail: details.ResponseSectionTypeTableDataDetail{
 								Text: "1,09 €",
 								Type: "text",
 							},
@@ -669,10 +669,10 @@ func TestResponseContents(t *testing.T) {
 					Type:  "table",
 				},
 			},
-			expectedDocumentsSection: details.ResponseSectionTypeDocumentsNew{
-				Data: []details.ResponseSectionTypeDocumentDataNew{
+			expectedDocumentsSection: details.ResponseSectionTypeDocuments{
+				Data: []details.ResponseSectionTypeDocumentData{
 					{
-						Action: details.ResponseActionNew{
+						Action: details.ResponseAction{
 							Payload: "https://traderepublic-postbox-platform-production.s3.eu-central-1.amazonaws.com/timeline/postbox",
 							Type:    "browserModal",
 						},
@@ -681,7 +681,7 @@ func TestResponseContents(t *testing.T) {
 						Title:       "Deaktivierung",
 					},
 					{
-						Action: details.ResponseActionNew{
+						Action: details.ResponseAction{
 							Payload: "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox",
 							Type:    "browserModal",
 						},
@@ -690,7 +690,7 @@ func TestResponseContents(t *testing.T) {
 						Title:       "Abrechnung Ausführung",
 					},
 					{
-						Action: details.ResponseActionNew{
+						Action: details.ResponseAction{
 							Payload: "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox",
 							Type:    "browserModal",
 						},
@@ -733,7 +733,7 @@ func TestResponseContents(t *testing.T) {
 		assert.Equal(t, testCase.expectedTableSections, tableSections)
 
 		// do not compare documents section if no expected value provided.
-		if !reflect.DeepEqual(testCase.expectedDocumentsSection, details.ResponseSectionTypeDocumentsNew{}) {
+		if !reflect.DeepEqual(testCase.expectedDocumentsSection, details.ResponseSectionTypeDocuments{}) {
 			documentsSection, err := actual.SectionTypeDocuments()
 			assert.Nil(t, err)
 

@@ -27,10 +27,10 @@ const (
 
 var ErrUnsupportedResponse = errors.New("could not resolve transaction type")
 
-type TesterFunc func(transactions.EventType, ResponseNew) bool
+type TesterFunc func(transactions.EventType, Response) bool
 
 type TypeResolverInterface interface {
-	Resolve(eventType transactions.EventType, response ResponseNew) (Type, error)
+	Resolve(eventType transactions.EventType, response Response) (Type, error)
 }
 
 type TypeResolver struct {
@@ -41,19 +41,21 @@ type TypeResolver struct {
 func NewTypeResolver(logger *log.Logger) TypeResolver {
 	return TypeResolver{
 		detectors: map[Type]TesterFunc{
-			TypePurchaseTransaction: PurchaseDetector,
-			TypeSaleTransaction:     SaleDetector,
 			// TypeDepositTransaction:                 DepositDetector,
 			// TypeInterestReceivedTransaction: InterestReceivedDetector,
 			TypeRoundUpTransaction:        RoundUpDetector,
 			TypeSavebackTransaction:       SavebackDetector,
 			TypeDividendPayoutTransaction: DividendPayoutDetector,
+
+			// Detectors with the highest performance hit should be listed in the bottom.
+			TypePurchaseTransaction: PurchaseDetector,
+			TypeSaleTransaction:     SaleDetector,
 		},
 		logger: logger,
 	}
 }
 
-func (r TypeResolver) Resolve(eventType transactions.EventType, response ResponseNew) (Type, error) {
+func (r TypeResolver) Resolve(eventType transactions.EventType, response Response) (Type, error) {
 	for detectedType, detector := range r.detectors {
 		if !detector(eventType, response) {
 			continue
@@ -67,7 +69,7 @@ func (r TypeResolver) Resolve(eventType transactions.EventType, response Respons
 	return TypeUnsupported, ErrUnsupportedResponse
 }
 
-func PurchaseDetector(eventType transactions.EventType, response ResponseNew) bool {
+func PurchaseDetector(eventType transactions.EventType, response Response) bool {
 	if eventType == transactions.EvenTypeSavingsPlanExecuted {
 		return true
 	}
@@ -94,7 +96,7 @@ func PurchaseDetector(eventType transactions.EventType, response ResponseNew) bo
 	return strings.Contains(orderType.Detail.Text, orderTypeTextsPurchase)
 }
 
-func SaleDetector(eventType transactions.EventType, response ResponseNew) bool {
+func SaleDetector(eventType transactions.EventType, response Response) bool {
 	if eventType != transactions.EventTypeOrderExecuted {
 		return false
 	}
@@ -117,23 +119,23 @@ func SaleDetector(eventType transactions.EventType, response ResponseNew) bool {
 	return strings.Contains(orderType.Detail.Text, orderTypeTextsSale)
 }
 
-func RoundUpDetector(eventType transactions.EventType, _ ResponseNew) bool {
+func RoundUpDetector(eventType transactions.EventType, _ Response) bool {
 	return eventType == transactions.EventTypeBenefitsSpareChangeExecution
 }
 
-func SavebackDetector(eventType transactions.EventType, _ ResponseNew) bool {
+func SavebackDetector(eventType transactions.EventType, _ Response) bool {
 	return eventType == transactions.EventTypeBenefitsSavebackExecution
 }
 
-func DepositDetector(eventType transactions.EventType, _ ResponseNew) bool {
+func DepositDetector(eventType transactions.EventType, _ Response) bool {
 	return eventType == transactions.EventTypePaymentInbound ||
 		eventType == transactions.EventTypePaymentInboundSepaDirectDebit
 }
 
-func InterestReceivedDetector(eventType transactions.EventType, _ ResponseNew) bool {
+func InterestReceivedDetector(eventType transactions.EventType, _ Response) bool {
 	return eventType == transactions.EventTypeInterestPayoutCreated
 }
 
-func DividendPayoutDetector(eventType transactions.EventType, _ ResponseNew) bool {
+func DividendPayoutDetector(eventType transactions.EventType, _ Response) bool {
 	return eventType == transactions.EvenTypeCredit
 }

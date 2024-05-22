@@ -21,8 +21,8 @@ func NewClient(retriever portfolio.ReaderInterface) Client {
 	}
 }
 
-func (c *Client) Get(eventID string) (ResponseNew, error) {
-	var response ResponseNew
+func (c *Client) Get(eventID string) (Response, error) {
+	var response Response
 
 	msg, err := c.retriever.Read(dataType, map[string]any{"id": eventID})
 	if err != nil {

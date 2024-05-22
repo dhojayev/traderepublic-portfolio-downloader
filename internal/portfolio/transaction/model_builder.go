@@ -17,7 +17,7 @@ import (
 var ErrUnsupportedType = errors.New("unsupported response")
 
 type ModelBuilderFactoryInterface interface {
-	Create(eventType transactions.EventType, response details.ResponseNew) (ModelBuilderInterface, error)
+	Create(eventType transactions.EventType, response details.Response) (ModelBuilderInterface, error)
 }
 
 type ModelBuilderFactory struct {
@@ -33,7 +33,10 @@ func NewModelBuilderFactory(resolver details.TypeResolverInterface, logger *log.
 }
 
 //nolint:ireturn
-func (f ModelBuilderFactory) Create(eventType transactions.EventType, response details.ResponseNew) (ModelBuilderInterface, error) {
+func (f ModelBuilderFactory) Create(
+	eventType transactions.EventType,
+	response details.Response,
+) (ModelBuilderInterface, error) {
 	responseType, err := f.resolver.Resolve(eventType, response)
 	if err != nil {
 		if errors.Is(err, details.ErrUnsupportedResponse) {
@@ -72,7 +75,7 @@ type ModelBuilderInterface interface {
 }
 
 type BaseModelBuilder struct {
-	response details.ResponseNew
+	response details.Response
 	logger   *log.Logger
 }
 
@@ -271,7 +274,10 @@ func (b BaseModelBuilder) ExtractCommissionAmount() (float64, error) {
 		}
 	}
 
-	commission, err := ParseFloatWithComma(commissionData.Detail.Text, commissionData.Detail.Trend == details.TrendNegative)
+	commission, err := ParseFloatWithComma(
+		commissionData.Detail.Text,
+		commissionData.Detail.Trend == details.TrendNegative,
+	)
 	if err != nil {
 		if !errors.Is(err, ErrNoMatch) {
 			b.logger.Debugf("could not parse transaction section commission to float: %s", err)

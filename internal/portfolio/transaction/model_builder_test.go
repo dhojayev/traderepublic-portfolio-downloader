@@ -11,6 +11,7 @@ import (
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
@@ -23,11 +24,13 @@ func TestPurchaseBuilderBuild(t *testing.T) {
 	expectedTime, _ := time.Parse(internal.DefaultTimeFormat, "2022-03-29T09:43:31.570+0000")
 
 	testCases := []struct {
-		filepath string
-		expected transaction.Model
+		filepath  string
+		eventType transactions.EventType
+		expected  transaction.Model
 	}{
 		{
-			filepath: "../../../tests/data/transaction-details/securities-settlement-variant-1.json",
+			filepath:  "../../../tests/data/transaction-details/order-executed-04.json",
+			eventType: transactions.EventTypeOrderExecuted,
 			expected: transaction.Model{
 				UUID: "b20e367c-5542-4fab-9fd6-6faa5e7ab582",
 				Instrument: transaction.Instrument{
@@ -82,7 +85,7 @@ func TestPurchaseBuilderBuild(t *testing.T) {
 		response, err := detailsClient.Get("b20e367c-5542-4fab-9fd6-6faa5e7ab582")
 		assert.Nil(t, err)
 
-		builder, err := builderFactory.Create(response)
+		builder, err := builderFactory.Create(testCase.eventType, response)
 		assert.Nil(t, err)
 
 		actual, err := builder.Build()
@@ -95,37 +98,51 @@ func TestPurchaseBuilderBuildDocuments(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {
-		filepath string
-		expected []document.Model
+		filepath  string
+		eventType transactions.EventType
+		expected  []document.Model
 	}{
 		{
-			filepath: "../../../tests/data/transaction-details/documents-section-variant-1.json",
+			filepath:  "../../../tests/data/transaction-details/order-executed-03.json",
+			eventType: transactions.EventTypeOrderExecuted,
 			expected: []document.Model{
 				{
-					ID:    "58acfbab-45fe-4be1-8ec3-3901a6eabf36",
-					URL:   "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/2023/12/11/138c562b/pb3204932049320940329402394032.pdf",
-					Date:  "22.11.2023",
+					ID:    "f17b2237-0e32-410e-b38b-8638600ffbb0",
+					URL:   "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox",
+					Date:  "11.03.2024",
 					Title: "Abrechnung",
 				},
 				{
-					ID:    "3076d454-edcc-4653-a170-31bcd06164c1",
-					URL:   "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/2023/12/11/12mn31292/pb32492394319490103012312.pdf",
-					Date:  "23.11.2023",
+					ID:    "3c214355-dc5a-488a-b780-b28fb66b66c8",
+					URL:   "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox",
+					Date:  "27.02.2024",
+					Title: "Auftragsbestätigung",
+				},
+				{
+					ID:    "21a13acc-7f3c-4156-8365-be8089006ac4",
+					URL:   "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox",
+					Date:  "12.02.2024",
 					Title: "Kosteninformation",
 				},
 			},
 		},
 		{
-			filepath: "../../../tests/data/transaction-details/documents-section-variant-2.json",
+			filepath:  "../../../tests/data/transaction-details/benefits-spare-change-execution-01.json",
+			eventType: transactions.EventTypeBenefitsSpareChangeExecution,
 			expected: []document.Model{
 				{
-					ID:    "51f4e1cf-30ac-4c6b-92cb-afb5bba19e20",
-					URL:   "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/2024/3/25/9234rjd23/pb12390210938921839218123012.pdf",
+					ID:    "9df4c2e1-0de2-4900-aa8c-af5371ed58f6",
+					URL:   "https://traderepublic-postbox-platform-production.s3.eu-central-1.amazonaws.com/timeline/postbox",
+					Title: "Deaktivierung",
+				},
+				{
+					ID:    "3a8ebf86-a2bb-463e-8bfd-28fd705359ff",
+					URL:   "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox",
 					Title: "Abrechnung Ausführung",
 				},
 				{
-					ID:    "3fc1e7e6-2fa9-43bf-af6e-6f8e9f744226",
-					URL:   "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/2024/3/25/234391d/pb1234991203901249023902.pdf",
+					ID:    "e2dfa755-e039-45c7-b7bb-1ac024844f75",
+					URL:   "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox",
 					Title: "Kosteninformation",
 				},
 			},
@@ -152,7 +169,7 @@ func TestPurchaseBuilderBuildDocuments(t *testing.T) {
 		response, err := detailsClient.Get("2d7c03e4-15f9-4427-88d2-0586c5b057d2")
 		assert.Nil(t, err)
 
-		builder, err := builderFactory.Create(response)
+		builder, err := builderFactory.Create(testCase.eventType, response)
 		assert.Nil(t, err)
 
 		model, err := builder.Build()
