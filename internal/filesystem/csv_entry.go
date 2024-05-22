@@ -19,12 +19,13 @@ type CSVEntry struct {
 	Commission     float64
 	Debit          float64
 	Credit         float64
+	DepositAmount  float64 `csv:"Deposit amount"`
 	InvestedAmount float64 `csv:"-"`
 }
 
 func NewCSVEntry(
 	id, status, transactionType, assetType, name, instrument string,
-	shares, rate, yield, profit, commission, debit, credit, investedAmount float64,
+	shares, rate, yield, profit, commission, debit, credit, depositAmount, investedAmount float64,
 	timestamp internal.DateTime,
 ) CSVEntry {
 	return CSVEntry{
@@ -42,6 +43,7 @@ func NewCSVEntry(
 		Commission:     commission,
 		Debit:          debit,
 		Credit:         credit,
+		DepositAmount:  depositAmount,
 		InvestedAmount: investedAmount,
 	}
 }

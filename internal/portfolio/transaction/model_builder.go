@@ -59,10 +59,11 @@ func (f ModelBuilderFactory) Create(
 		return RoundUpBuilder{PurchaseBuilder{baseBuilder}}, nil
 	case details.TypeSavebackTransaction:
 		return SavebackBuilder{PurchaseBuilder{baseBuilder}}, nil
+	case details.TypeDepositTransaction:
+		return DepositBuilder{baseBuilder}, nil
 	case
 		details.TypeUnsupported,
 		details.TypeCardPaymentTransaction,
-		details.TypeDepositTransaction,
 		details.TypeInterestReceivedTransaction:
 		return nil, ErrUnsupportedType
 	}
@@ -457,6 +458,48 @@ func (b DividendPayoutBuilder) Build() (Model, error) {
 	}
 
 	model.Type = TypeDividendPayout
+
+	return model, nil
+}
+
+type DepositBuilder struct {
+	BaseModelBuilder
+}
+
+func (b DepositBuilder) Build() (Model, error) {
+	var err error
+
+	model := Model{
+		UUID: b.response.ID,
+		Type: TypeDeposit,
+	}
+
+	model.Status, err = b.ExtractStatus()
+	if err != nil {
+		return model, err
+	}
+
+	model.Timestamp, err = b.ExtractTimestamp()
+	if err != nil {
+		return model, err
+	}
+
+	header, err := b.response.SectionTypeHeader()
+	if err != nil {
+		return model, fmt.Errorf("could not get header section: %w", err)
+	}
+
+	depositAmountStr, err := ParseNumericValueFromString(header.Title)
+	if err != nil {
+		return model, err
+	}
+
+	model.DepositAmount, err = ParseFloatWithComma(depositAmountStr, false)
+	if err != nil {
+		return model, err
+	}
+
+	model.Documents, _ = b.BuildDocuments()
 
 	return model, nil
 }

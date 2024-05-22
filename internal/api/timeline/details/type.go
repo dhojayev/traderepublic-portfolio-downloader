@@ -41,11 +41,11 @@ type TypeResolver struct {
 func NewTypeResolver(logger *log.Logger) TypeResolver {
 	return TypeResolver{
 		detectors: map[Type]TesterFunc{
-			// TypeDepositTransaction:                 DepositDetector,
-			// TypeInterestReceivedTransaction: InterestReceivedDetector,
-			TypeRoundUpTransaction:        RoundUpDetector,
-			TypeSavebackTransaction:       SavebackDetector,
-			TypeDividendPayoutTransaction: DividendPayoutDetector,
+			TypeDepositTransaction:          DepositDetector,
+			TypeInterestReceivedTransaction: InterestReceivedDetector,
+			TypeRoundUpTransaction:          RoundUpDetector,
+			TypeSavebackTransaction:         SavebackDetector,
+			TypeDividendPayoutTransaction:   DividendPayoutDetector,
 
 			// Detectors with the highest performance hit should be listed in the bottom.
 			TypePurchaseTransaction: PurchaseDetector,

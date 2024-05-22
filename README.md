@@ -40,7 +40,9 @@ It is important to understand that this application does nothing more than Trade
 ### Currently supported functionality
 
 * Creating CSV file with all transaction (except for "interest received" transaction for now). This includes:
+  * deposit transactions;
   * purchase and sale of ETFs, stocks, cryptocurrency;
+  * interest received transactions;
   * limited support of purchase of derivatives;
   * dividends received from ETFs and stocks;
   * benefits received suchs as round up and save-back;
@@ -51,7 +53,6 @@ It is important to understand that this application does nothing more than Trade
 
 **What is coming:**
 
-* Support of including "interest received" transactions;
 * Support of including "lending" transactions;
 * Downloading and storing PDF files attached to each transaction;
 * Identifying stock transactions;

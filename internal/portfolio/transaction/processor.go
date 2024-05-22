@@ -55,7 +55,7 @@ func (p Processor) Process(eventType transactions.EventType, response details.Re
 	builder, err := p.builderFactory.Create(eventType, response)
 	if err != nil {
 		if errors.Is(err, ErrUnsupportedType) {
-			p.logger.WithField("id", response.ID).Debug(err)
+			p.logger.WithField("id", response.ID).Debugf("builder factory error: %s", err)
 
 			return ErrUnsupportedType
 		}
@@ -67,8 +67,6 @@ func (p Processor) Process(eventType transactions.EventType, response details.Re
 	if err != nil {
 		return fmt.Errorf("builder error: %w", err)
 	}
-
-	p.logger.WithField("transaction", transaction).Debug("supported transaction detected")
 
 	if err := p.transactionRepo.Create(&transaction); err != nil {
 		return fmt.Errorf("could not create on repo: %w", err)
