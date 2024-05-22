@@ -33,6 +33,7 @@ var (
 
 		portfoliodownloader.NewApp,
 		transactions.NewClient,
+		transactions.NewEventTypeResolver,
 		details.NewClient,
 		details.NewTypeResolver,
 		database.NewSQLiteInMemory,
@@ -48,6 +49,7 @@ var (
 		wire.Bind(new(console.AuthServiceInterface), new(*console.AuthService)),
 		wire.Bind(new(portfolio.ReaderInterface), new(*websocket.Reader)),
 
+		wire.Bind(new(transactions.EventTypeResolverInterface), new(transactions.EventTypeResolver)),
 		wire.Bind(new(details.TypeResolverInterface), new(details.TypeResolver)),
 		wire.Bind(new(transaction.ModelBuilderFactoryInterface), new(transaction.ModelBuilderFactory)),
 		wire.Bind(new(transaction.RepositoryInterface), new(*database.Repository[*transaction.Model])),

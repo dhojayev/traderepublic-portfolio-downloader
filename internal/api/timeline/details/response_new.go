@@ -15,9 +15,25 @@ const (
 )
 
 var (
-	ErrSectionContainsNoType = errors.New("section contains no type")
-	ErrSectionTypeNotFound   = errors.New("section type not found")
+	ErrSectionContainsNoType    = errors.New("section contains no type")
+	ErrSectionTypeNotFound      = errors.New("section type not found")
+	ErrSectionTitleNotFound     = errors.New("section title not found")
+	ErrSectionDataTitleNotFound = errors.New("section data title not found")
 )
+
+type ResponseSectionsTypeTable []ResponseSectionTypeTableNew
+
+func (s ResponseSectionsTypeTable) FindByTitle(title string) (ResponseSectionTypeTableNew, error) {
+	for _, section := range s {
+		if section.Title != title {
+			continue
+		}
+
+		return section, nil
+	}
+
+	return ResponseSectionTypeTableNew{}, ErrSectionTitleNotFound
+}
 
 type ResponseNew struct {
 	ID       string           `json:"id"`
@@ -38,8 +54,8 @@ func (r ResponseNew) SectionTypeHeader() (ResponseSectionTypeHeaderNew, error) {
 	return sections[0], nil
 }
 
-func (r ResponseNew) SectionsTypeTable() ([]ResponseSectionTypeTableNew, error) {
-	var sections []ResponseSectionTypeTableNew
+func (r ResponseNew) SectionsTypeTable() (ResponseSectionsTypeTable, error) {
+	var sections ResponseSectionsTypeTable
 
 	if err := r.deserializeSections(ResponseSectionTypeValueTable, &sections); err != nil {
 		return sections, err
@@ -106,6 +122,18 @@ type ResponseSectionTypeTableNew struct {
 	Data  []ResponseSectionTypeTableDataNew `json:"data"`
 	Title string                            `json:"title"`
 	Type  string                            `json:"type"`
+}
+
+func (s ResponseSectionTypeTableNew) GetDataByTitle(title string) (ResponseSectionTypeTableDataNew, error) {
+	for _, data := range s.Data {
+		if data.Title != title {
+			continue
+		}
+
+		return data, nil
+	}
+
+	return ResponseSectionTypeTableDataNew{}, ErrSectionDataTitleNotFound
 }
 
 type ResponseSectionTypeDocumentsNew struct {

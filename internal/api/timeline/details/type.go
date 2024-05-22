@@ -4,8 +4,11 @@ package details
 
 import (
 	"errors"
+	"strings"
 
 	log "github.com/sirupsen/logrus"
+
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
 )
 
 type Type string
@@ -24,10 +27,10 @@ const (
 
 var ErrUnsupportedResponse = errors.New("could not resolve transaction type")
 
-type TesterFunc func(Response) bool
+type TesterFunc func(transactions.EventType, ResponseNew) bool
 
 type TypeResolverInterface interface {
-	Resolve(response Response) (Type, error)
+	Resolve(eventType transactions.EventType, response ResponseNew) (Type, error)
 }
 
 type TypeResolver struct {
@@ -50,9 +53,9 @@ func NewTypeResolver(logger *log.Logger) TypeResolver {
 	}
 }
 
-func (r TypeResolver) Resolve(response Response) (Type, error) {
+func (r TypeResolver) Resolve(eventType transactions.EventType, response ResponseNew) (Type, error) {
 	for detectedType, detector := range r.detectors {
-		if !detector(response) {
+		if !detector(eventType, response) {
 			continue
 		}
 
@@ -64,99 +67,72 @@ func (r TypeResolver) Resolve(response Response) (Type, error) {
 	return TypeUnsupported, ErrUnsupportedResponse
 }
 
-func PurchaseDetector(response Response) bool {
-	overview, err := response.OverviewSection()
-	if err != nil {
-		return false
-	}
-
-	orderType, err := overview.OrderType()
-	if err != nil {
-		return false
-	}
-
-	return orderType.IsOrderTypePurchase()
-}
-
-func SaleDetector(response Response) bool {
-	overview, err := response.OverviewSection()
-	if err != nil {
-		return false
-	}
-
-	orderType, err := overview.OrderType()
-	if err != nil {
-		return false
-	}
-
-	return orderType.IsOrderTypeSale()
-}
-
-func RoundUpDetector(response Response) bool {
-	overview, err := response.OverviewSection()
-	if err != nil {
-		return false
-	}
-
-	orderType, err := overview.OrderType()
-	if err != nil {
-		return false
-	}
-
-	return orderType.IsOrderTypeRoundUp()
-}
-
-func SavebackDetector(response Response) bool {
-	overview, err := response.OverviewSection()
-	if err != nil {
-		return false
-	}
-
-	orderType, err := overview.OrderType()
-	if err != nil {
-		return false
-	}
-
-	return orderType.IsOrderTypeSaveback()
-}
-
-func DepositDetector(response Response) bool {
-	overview, err := response.OverviewSection()
-	if err != nil {
-		return false
-	}
-
-	_, err = overview.ReceivedFrom()
-	if err == nil {
+func PurchaseDetector(eventType transactions.EventType, response ResponseNew) bool {
+	if eventType == transactions.EvenTypeSavingsPlanExecuted {
 		return true
 	}
 
-	_, err = overview.Deposit()
+	if eventType != transactions.EventTypeOrderExecuted {
+		return false
+	}
 
-	return err == nil
+	tableSections, err := response.SectionsTypeTable()
+	if err != nil {
+		return false
+	}
+
+	overviewSection, err := tableSections.FindByTitle(sectionTitleOverview)
+	if err != nil {
+		return false
+	}
+
+	orderType, err := overviewSection.GetDataByTitle(overviewDataTitleOrderType)
+	if err != nil {
+		return false
+	}
+
+	return strings.Contains(orderType.Detail.Text, orderTypeTextsPurchase)
 }
 
-func InterestReceivedDetector(response Response) bool {
-	overview, err := response.OverviewSection()
+func SaleDetector(eventType transactions.EventType, response ResponseNew) bool {
+	if eventType != transactions.EventTypeOrderExecuted {
+		return false
+	}
+
+	tableSections, err := response.SectionsTypeTable()
 	if err != nil {
 		return false
 	}
 
-	_, err = overview.YoY()
+	overviewSection, err := tableSections.FindByTitle(sectionTitleOverview)
+	if err != nil {
+		return false
+	}
 
-	return err == nil
+	orderType, err := overviewSection.GetDataByTitle(overviewDataTitleOrderType)
+	if err != nil {
+		return false
+	}
+
+	return strings.Contains(orderType.Detail.Text, orderTypeTextsSale)
 }
 
-func DividendPayoutDetector(response Response) bool {
-	overview, err := response.OverviewSection()
-	if err != nil {
-		return false
-	}
+func RoundUpDetector(eventType transactions.EventType, _ ResponseNew) bool {
+	return eventType == transactions.EventTypeBenefitsSpareChangeExecution
+}
 
-	event, err := overview.Event()
-	if err != nil {
-		return false
-	}
+func SavebackDetector(eventType transactions.EventType, _ ResponseNew) bool {
+	return eventType == transactions.EventTypeBenefitsSavebackExecution
+}
 
-	return event.IsEventPayout()
+func DepositDetector(eventType transactions.EventType, _ ResponseNew) bool {
+	return eventType == transactions.EventTypePaymentInbound || eventType == transactions.EventTypePaymentInboundSepaDirectDebit
+}
+
+func InterestReceivedDetector(eventType transactions.EventType, _ ResponseNew) bool {
+	return eventType == transactions.EventTypeInterestPayoutCreated
+}
+
+func DividendPayoutDetector(eventType transactions.EventType, _ ResponseNew) bool {
+	return eventType == transactions.EvenTypeCredit
 }

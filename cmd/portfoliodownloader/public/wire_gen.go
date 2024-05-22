@@ -39,6 +39,7 @@ func CreateNonWritingApp(logger *logrus.Logger) (portfoliodownloader.App, error)
 		return portfoliodownloader.App{}, err
 	}
 	transactionsClient := transactions.NewClient(reader)
+	eventTypeResolver := transactions.NewEventTypeResolver(logger)
 	detailsClient := details.NewClient(reader)
 	typeResolver := details.NewTypeResolver(logger)
 	modelBuilderFactory := transaction.NewModelBuilderFactory(typeResolver, logger)
@@ -54,7 +55,7 @@ func CreateNonWritingApp(logger *logrus.Logger) (portfoliodownloader.App, error)
 	csvReader := filesystem.NewCSVReader(logger)
 	csvWriter := filesystem.NewCSVWriter(logger)
 	processor := transaction.NewProcessor(modelBuilderFactory, repository, csvEntryFactory, csvReader, csvWriter, logger)
-	app := portfoliodownloader.NewApp(transactionsClient, detailsClient, processor, logger)
+	app := portfoliodownloader.NewApp(transactionsClient, eventTypeResolver, detailsClient, processor, logger)
 	return app, nil
 }
 
@@ -71,6 +72,7 @@ func CreateWritingApp(logger *logrus.Logger) (portfoliodownloader.App, error) {
 		return portfoliodownloader.App{}, err
 	}
 	transactionsClient := transactions.NewClient(reader)
+	eventTypeResolver := transactions.NewEventTypeResolver(logger)
 	detailsClient := details.NewClient(reader)
 	typeResolver := details.NewTypeResolver(logger)
 	modelBuilderFactory := transaction.NewModelBuilderFactory(typeResolver, logger)
@@ -86,15 +88,15 @@ func CreateWritingApp(logger *logrus.Logger) (portfoliodownloader.App, error) {
 	csvReader := filesystem.NewCSVReader(logger)
 	csvWriter := filesystem.NewCSVWriter(logger)
 	processor := transaction.NewProcessor(modelBuilderFactory, repository, csvEntryFactory, csvReader, csvWriter, logger)
-	app := portfoliodownloader.NewApp(transactionsClient, detailsClient, processor, logger)
+	app := portfoliodownloader.NewApp(transactionsClient, eventTypeResolver, detailsClient, processor, logger)
 	return app, nil
 }
 
 // wire.go:
 
 var (
-	DefaultSet = wire.NewSet(api.NewClient, auth.NewClient, console.NewAuthService, websocket.NewReader, portfoliodownloader.NewApp, transactions.NewClient, details.NewClient, details.NewTypeResolver, database.NewSQLiteInMemory, transaction.NewModelBuilderFactory, transaction.NewCSVEntryFactory, filesystem.NewCSVReader, filesystem.NewCSVWriter, transaction.NewProcessor, ProvideTransactionRepository,
-		ProvideInstrumentRepository, wire.Bind(new(auth.ClientInterface), new(*auth.Client)), wire.Bind(new(console.AuthServiceInterface), new(*console.AuthService)), wire.Bind(new(portfolio.ReaderInterface), new(*websocket.Reader)), wire.Bind(new(details.TypeResolverInterface), new(details.TypeResolver)), wire.Bind(new(transaction.ModelBuilderFactoryInterface), new(transaction.ModelBuilderFactory)), wire.Bind(new(transaction.RepositoryInterface), new(*database.Repository[*transaction.Model])), wire.Bind(new(transaction.InstrumentRepositoryInterface), new(*database.Repository[*transaction.Instrument])),
+	DefaultSet = wire.NewSet(api.NewClient, auth.NewClient, console.NewAuthService, websocket.NewReader, portfoliodownloader.NewApp, transactions.NewClient, transactions.NewEventTypeResolver, details.NewClient, details.NewTypeResolver, database.NewSQLiteInMemory, transaction.NewModelBuilderFactory, transaction.NewCSVEntryFactory, filesystem.NewCSVReader, filesystem.NewCSVWriter, transaction.NewProcessor, ProvideTransactionRepository,
+		ProvideInstrumentRepository, wire.Bind(new(auth.ClientInterface), new(*auth.Client)), wire.Bind(new(console.AuthServiceInterface), new(*console.AuthService)), wire.Bind(new(portfolio.ReaderInterface), new(*websocket.Reader)), wire.Bind(new(transactions.EventTypeResolverInterface), new(transactions.EventTypeResolver)), wire.Bind(new(details.TypeResolverInterface), new(details.TypeResolver)), wire.Bind(new(transaction.ModelBuilderFactoryInterface), new(transaction.ModelBuilderFactory)), wire.Bind(new(transaction.RepositoryInterface), new(*database.Repository[*transaction.Model])), wire.Bind(new(transaction.InstrumentRepositoryInterface), new(*database.Repository[*transaction.Instrument])),
 	)
 
 	NonWritingSet = wire.NewSet(

@@ -12,6 +12,7 @@ package details
 import (
 	reflect "reflect"
 
+	transactions "github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -39,16 +40,16 @@ func (m *MockTypeResolverInterface) EXPECT() *MockTypeResolverInterfaceMockRecor
 }
 
 // Resolve mocks base method.
-func (m *MockTypeResolverInterface) Resolve(response Response) (Type, error) {
+func (m *MockTypeResolverInterface) Resolve(eventType transactions.EventType, response ResponseNew) (Type, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Resolve", response)
+	ret := m.ctrl.Call(m, "Resolve", eventType, response)
 	ret0, _ := ret[0].(Type)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Resolve indicates an expected call of Resolve.
-func (mr *MockTypeResolverInterfaceMockRecorder) Resolve(response any) *gomock.Call {
+func (mr *MockTypeResolverInterfaceMockRecorder) Resolve(eventType, response any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Resolve", reflect.TypeOf((*MockTypeResolverInterface)(nil).Resolve), response)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Resolve", reflect.TypeOf((*MockTypeResolverInterface)(nil).Resolve), eventType, response)
 }

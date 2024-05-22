@@ -29,6 +29,7 @@ var (
 	DefaultSet = wire.NewSet(
 		portfoliodownloader.NewApp,
 		transactions.NewClient,
+		transactions.NewEventTypeResolver,
 		details.NewClient,
 		details.NewTypeResolver,
 		transaction.NewModelBuilderFactory,
@@ -40,6 +41,7 @@ var (
 		ProvideTransactionRepository,
 		ProvideInstrumentRepository,
 
+		wire.Bind(new(transactions.EventTypeResolverInterface), new(transactions.EventTypeResolver)),
 		wire.Bind(new(details.TypeResolverInterface), new(details.TypeResolver)),
 		wire.Bind(new(transaction.ModelBuilderFactoryInterface), new(transaction.ModelBuilderFactory)),
 		wire.Bind(new(transaction.RepositoryInterface), new(*database.Repository[*transaction.Model])),

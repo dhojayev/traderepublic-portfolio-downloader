@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 
 	log "github.com/sirupsen/logrus"
@@ -39,19 +40,19 @@ func NewProcessor(
 	}
 }
 
-func (p Processor) Process(response details.Response) error {
-	entries, err := p.csvReader.Read(csvFilename)
+func (p Processor) Process(eventType transactions.EventType, response details.Response) error {
+	csvEntries, err := p.csvReader.Read(csvFilename)
 	if err != nil {
 		return fmt.Errorf("csv reader read error: %w", err)
 	}
 
-	for _, entry := range entries {
+	for _, entry := range csvEntries {
 		if entry.ID == response.ID {
 			return nil
 		}
 	}
 
-	builder, err := p.builderFactory.Create(response)
+	builder, err := p.builderFactory.Create(eventType, response)
 	if err != nil {
 		if errors.Is(err, ErrUnsupportedType) {
 			p.logger.WithField("id", response.ID).Debug(err)

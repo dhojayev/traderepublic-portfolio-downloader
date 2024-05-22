@@ -9,11 +9,12 @@ import (
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
 )
 
 type ModelBuilderFactoryInterface interface {
-	Create(response details.Response) (ModelBuilderInterface, error)
+	Create(eventType transactions.EventType, response details.Response) (ModelBuilderInterface, error)
 }
 
 type ModelBuilderFactory struct {
@@ -29,7 +30,7 @@ func NewModelBuilderFactory(resolver details.TypeResolverInterface, logger *log.
 }
 
 //nolint:ireturn
-func (f ModelBuilderFactory) Create(response details.Response) (ModelBuilderInterface, error) {
+func (f ModelBuilderFactory) Create(eventType transactions.EventType, response details.Response) (ModelBuilderInterface, error) {
 	responseType, err := f.resolver.Resolve(response)
 	if err != nil {
 		if errors.Is(err, details.ErrUnsupportedResponse) {
