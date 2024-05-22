@@ -53,10 +53,10 @@ func (p Processor) Process(response details.Response) error {
 
 	builder, err := p.builderFactory.Create(response)
 	if err != nil {
-		if errors.Is(err, details.ErrUnsupportedResponse) {
+		if errors.Is(err, ErrUnsupportedType) {
 			p.logger.WithField("id", response.ID).Debug(err)
 
-			return details.ErrUnsupportedResponse
+			return ErrUnsupportedType
 		}
 
 		return fmt.Errorf("builder factory error: %w", err)
@@ -66,7 +66,6 @@ func (p Processor) Process(response details.Response) error {
 	if err != nil {
 		return fmt.Errorf("builder error: %w", err)
 	}
-	
 
 	p.logger.WithField("transaction", transaction).Debug("supported transaction detected")
 

@@ -1,4 +1,3 @@
-*_mock.go
 *.csv
 *.db
 /.session

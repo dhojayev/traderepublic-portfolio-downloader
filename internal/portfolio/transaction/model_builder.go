@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"time"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
-	log "github.com/sirupsen/logrus"
 )
 
 type ModelBuilderFactoryInterface interface {
@@ -31,7 +32,11 @@ func NewModelBuilderFactory(resolver details.TypeResolverInterface, logger *log.
 func (f ModelBuilderFactory) Create(response details.Response) (ModelBuilderInterface, error) {
 	responseType, err := f.resolver.Resolve(response)
 	if err != nil {
-		return nil, fmt.Errorf("resolver errors: %w", err)
+		if errors.Is(err, details.ErrUnsupportedResponse) {
+			return nil, ErrUnsupportedType
+		}
+
+		return nil, fmt.Errorf("resolver error: %w", err)
 	}
 
 	baseBuilder := BaseModelBuilder{response: response, logger: f.logger}
@@ -42,7 +47,7 @@ func (f ModelBuilderFactory) Create(response details.Response) (ModelBuilderInte
 	case details.TypeSaleTransaction:
 		return SaleBuilder{PurchaseBuilder{baseBuilder}}, nil
 	case details.TypeDividendPayoutTransaction:
-		return DividendPayoutBuilder{SaleBuilder{PurchaseBuilder{baseBuilder}}}, nil
+		return DividendPayoutBuilder{PurchaseBuilder{baseBuilder}}, nil
 	case details.TypeRoundUpTransaction:
 		return RoundUpBuilder{PurchaseBuilder{baseBuilder}}, nil
 	case details.TypeSavebackTransaction:
@@ -51,7 +56,7 @@ func (f ModelBuilderFactory) Create(response details.Response) (ModelBuilderInte
 		details.TypeUnsupported,
 		details.TypeCardPaymentTransaction,
 		details.TypeDepositTransaction,
-		details.TypeDepositInterestReceivedTransaction:
+		details.TypeInterestReceivedTransaction:
 		return nil, ErrUnsupportedType
 	}
 
@@ -397,11 +402,11 @@ func (b SavebackBuilder) Build() (Model, error) {
 }
 
 type DividendPayoutBuilder struct {
-	SaleBuilder
+	PurchaseBuilder
 }
 
 func (b DividendPayoutBuilder) Build() (Model, error) {
-	model, err := b.SaleBuilder.Build()
+	model, err := b.PurchaseBuilder.Build()
 	if err != nil {
 		return model, err
 	}

@@ -57,7 +57,7 @@ func (b Builder) FromResponse(response details.Response) (Model, error) {
 		details.TypeUnsupported,
 		details.TypeCardPaymentTransaction,
 		details.TypeDepositTransaction,
-		details.TypeDepositInterestReceivedTransaction:
+		details.TypeInterestReceivedTransaction:
 	}
 
 	return model, ErrUnsupportedType

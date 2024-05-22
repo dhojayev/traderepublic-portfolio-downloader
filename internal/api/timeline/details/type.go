@@ -8,47 +8,21 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type Type int
+type Type string
 
 const (
-	TypeUnsupported Type = iota
-	TypeSaleTransaction
-	TypePurchaseTransaction
-	TypeDividendPayoutTransaction
-	TypeRoundUpTransaction
-	TypeSavebackTransaction
-	TypeCardPaymentTransaction
-	TypeDepositTransaction
-	TypeDepositInterestReceivedTransaction
+	TypeUnsupported                 Type = "Unsupported"
+	TypeSaleTransaction             Type = "Sale"
+	TypePurchaseTransaction         Type = "Purchase"
+	TypeDividendPayoutTransaction   Type = "Dividend payout"
+	TypeRoundUpTransaction          Type = "Round up"
+	TypeSavebackTransaction         Type = "Saveback"
+	TypeCardPaymentTransaction      Type = "Card payment"
+	TypeDepositTransaction          Type = "Deposit"
+	TypeInterestReceivedTransaction Type = "Interest received"
 )
 
-var (
-	//nolint: gochecknoglobals
-	typeReadableNameMap = map[Type]string{
-		TypeUnsupported:                        "unsupported",
-		TypeSaleTransaction:                    "sale",
-		TypePurchaseTransaction:                "purchase",
-		TypeDividendPayoutTransaction:          "dividend payout",
-		TypeRoundUpTransaction:                 "round up",
-		TypeSavebackTransaction:                "saveback",
-		TypeCardPaymentTransaction:             "card payment",
-		TypeDepositTransaction:                 "deposit",
-		TypeDepositInterestReceivedTransaction: "interest received",
-	}
-
-	//nolint: gochecknoglobals
-	detectors = map[Type]TesterFunc{
-		TypePurchaseTransaction:                PurchaseDetector,
-		TypeSaleTransaction:                    SaleDetector,
-		// TypeDepositTransaction:                 DepositDetector,
-		// TypeDepositInterestReceivedTransaction: InterestReceivedDetector,
-		TypeRoundUpTransaction:                 RoundUpDetector,
-		TypeSavebackTransaction:                SavebackDetector,
-		TypeDividendPayoutTransaction:          DividendPayoutDetector,
-	}
-
-	ErrUnsupportedResponse = errors.New("could not resolve transaction type")
-)
+var ErrUnsupportedResponse = errors.New("could not resolve transaction type")
 
 type TesterFunc func(Response) bool
 
@@ -57,22 +31,32 @@ type TypeResolverInterface interface {
 }
 
 type TypeResolver struct {
-	logger *log.Logger
+	detectors map[Type]TesterFunc
+	logger    *log.Logger
 }
 
 func NewTypeResolver(logger *log.Logger) TypeResolver {
 	return TypeResolver{
+		detectors: map[Type]TesterFunc{
+			TypePurchaseTransaction: PurchaseDetector,
+			TypeSaleTransaction:     SaleDetector,
+			// TypeDepositTransaction:                 DepositDetector,
+			// TypeInterestReceivedTransaction: InterestReceivedDetector,
+			TypeRoundUpTransaction:        RoundUpDetector,
+			TypeSavebackTransaction:       SavebackDetector,
+			TypeDividendPayoutTransaction: DividendPayoutDetector,
+		},
 		logger: logger,
 	}
 }
 
 func (r TypeResolver) Resolve(response Response) (Type, error) {
-	for detectedType, detector := range detectors {
+	for detectedType, detector := range r.detectors {
 		if !detector(response) {
 			continue
 		}
 
-		r.logger.WithField("id", response.ID).Debugf("%#v transaction resolved", typeReadableNameMap[detectedType])
+		r.logger.WithField("id", response.ID).Debugf("%s transaction resolved", detectedType)
 
 		return detectedType, nil
 	}
