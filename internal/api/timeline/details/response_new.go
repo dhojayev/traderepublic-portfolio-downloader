@@ -6,6 +6,8 @@ import (
 	"fmt"
 )
 
+// TODO add support of: TAX_REFUND
+
 const (
 	ResponseSectionTypeValueHeader    = "header"
 	ResponseSectionTypeValueTable     = "table"

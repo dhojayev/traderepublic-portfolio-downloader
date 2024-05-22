@@ -501,6 +501,208 @@ func TestResponseContents(t *testing.T) {
 				Type:  "documents",
 			},
 		},
+		{
+			filepath: "../../../../tests/data/transaction-details/credit-01.json",
+			expectedHeaderSection: details.ResponseSectionTypeHeaderNew{
+				Data: details.ResponseSectionTypeHeaderDataNew{
+					Icon:      "logos/IE00BK1PV551/v2",
+					Status:    "executed",
+					Timestamp: "2023-12-13T12:44:28.857+0000",
+				},
+				Title: "Du hast 2,94 € erhalten",
+				Type:  "header",
+			},
+			expectedTableSections: []details.ResponseSectionTypeTableNew{
+				{
+					Data: []details.ResponseSectionTypeTableDataNew{
+						{
+							Detail: details.ResponseSectionTypeTableDataDetailNew{
+								Text: "Ausschüttung",
+								Type: "text",
+							},
+							Style: "plain",
+							Title: "Ereignis",
+						},
+						{
+							Detail: details.ResponseSectionTypeTableDataDetailNew{
+								Text: "MSCI World USD (Dist)",
+								Type: "text",
+							},
+							Style: "plain",
+							Title: "Asset",
+						},
+					},
+					Title: "Übersicht",
+					Type:  "table",
+				},
+				{
+					Data: []details.ResponseSectionTypeTableDataNew{
+						{
+							Detail: details.ResponseSectionTypeTableDataDetailNew{
+								Text: "10,344033",
+								Type: "text",
+							},
+							Style: "plain",
+							Title: "Anteile",
+						},
+						{
+							Detail: details.ResponseSectionTypeTableDataDetailNew{
+								Text: "0,28 €",
+								Type: "text",
+							},
+							Style: "plain",
+							Title: "Dividende je Aktie",
+						},
+						{
+							Detail: details.ResponseSectionTypeTableDataDetailNew{
+								Text: "+ 2,94 €",
+								Type: "text",
+							},
+							Style: "highlighted",
+							Title: "Gesamt",
+						},
+					},
+					Title: "Transaktion",
+					Type:  "table",
+				},
+			},
+			expectedDocumentsSection: details.ResponseSectionTypeDocumentsNew{
+				Data: []details.ResponseSectionTypeDocumentDataNew{
+					{
+						Action: details.ResponseActionNew{
+							Payload: "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
+							Type:    "browserModal",
+						},
+						Detail:      "13.12.2023",
+						ID:          "df244c67-8907-4365-bb89-ce26e1fadea5",
+						PostboxType: "INCOME",
+						Title:       "Abrechnung",
+					},
+				},
+				Title: "Dokumente",
+				Type:  "documents",
+			},
+		},
+		{
+			filepath: "../../../../tests/data/transaction-details/benefits-spare-change-execution-01.json",
+			expectedHeaderSection: details.ResponseSectionTypeHeaderNew{
+				Action: details.ResponseActionNew{
+					Payload: "DE000A0F5UF5",
+					Type:    "instrumentDetail",
+				},
+				Data: details.ResponseSectionTypeHeaderDataNew{
+					Icon:      "logos/DE000A0F5UF5/v2",
+					Status:    "executed",
+					Timestamp: "2024-01-04T12:26:52.110+0000",
+				},
+				Title: "Du hast 1,09 € investiert",
+				Type:  "header",
+			},
+			expectedTableSections: []details.ResponseSectionTypeTableNew{
+				{
+					Data: []details.ResponseSectionTypeTableDataNew{
+						{
+							Detail: details.ResponseSectionTypeTableDataDetailNew{
+								FunctionalStyle: "EXECUTED",
+								Text:            "Ausgeführt",
+								Type:            "status",
+							},
+							Style: "plain",
+							Title: "Status",
+						},
+						{
+							Detail: details.ResponseSectionTypeTableDataDetailNew{
+								Text: "Round up",
+								Type: "text",
+							},
+							Style: "plain",
+							Title: "Ordertyp",
+						},
+						{
+							Detail: details.ResponseSectionTypeTableDataDetailNew{
+								Text: "NASDAQ100 USD (Dist)",
+								Type: "text",
+							},
+							Style: "plain",
+							Title: "Asset",
+						},
+					},
+					Title: "Übersicht",
+					Type:  "table",
+				},
+				{
+					Data: []details.ResponseSectionTypeTableDataNew{
+						{
+							Detail: details.ResponseSectionTypeTableDataDetailNew{
+								Text: "0.006882",
+								Type: "text",
+							},
+							Style: "plain",
+							Title: "Aktien",
+						},
+						{
+							Detail: details.ResponseSectionTypeTableDataDetailNew{
+								Text: "158,38 €",
+								Type: "text",
+							},
+							Style: "plain",
+							Title: "Aktienkurs",
+						},
+						{
+							Detail: details.ResponseSectionTypeTableDataDetailNew{
+								Text: "Kostenlos",
+								Type: "text",
+							},
+							Style: "plain",
+							Title: "Gebühr",
+						},
+						{
+							Detail: details.ResponseSectionTypeTableDataDetailNew{
+								Text: "1,09 €",
+								Type: "text",
+							},
+							Style: "plain",
+							Title: "Gesamt",
+						},
+					},
+					Title: "Transaktion",
+					Type:  "table",
+				},
+			},
+			expectedDocumentsSection: details.ResponseSectionTypeDocumentsNew{
+				Data: []details.ResponseSectionTypeDocumentDataNew{
+					{
+						Action: details.ResponseActionNew{
+							Payload: "https://traderepublic-postbox-platform-production.s3.eu-central-1.amazonaws.com/timeline/postbox",
+							Type:    "browserModal",
+						},
+						ID:          "9df4c2e1-0de2-4900-aa8c-af5371ed58f6",
+						PostboxType: "BENEFIT_DEACTIVATED",
+						Title:       "Deaktivierung",
+					},
+					{
+						Action: details.ResponseActionNew{
+							Payload: "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox",
+							Type:    "browserModal",
+						},
+						ID:          "3a8ebf86-a2bb-463e-8bfd-28fd705359ff",
+						PostboxType: "SAVINGS_PLAN_EXECUTED_V2",
+						Title:       "Abrechnung Ausführung",
+					},
+					{
+						Action: details.ResponseActionNew{
+							Payload: "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox",
+							Type:    "browserModal",
+						},
+						ID:          "e2dfa755-e039-45c7-b7bb-1ac024844f75",
+						PostboxType: "COSTS_INFO_SAVINGS_PLAN_V2",
+						Title:       "Kosteninformation",
+					},
+				},
+				Title: "Documents",
+				Type:  "documents",
+			},
+		},
 	}
 
 	controller := gomock.NewController(t)
