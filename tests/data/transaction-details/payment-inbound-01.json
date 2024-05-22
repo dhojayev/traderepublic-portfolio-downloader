@@ -1,0 +1,52 @@
+{
+  "id": "1ae661c0-b3f1-4a81-a909-79567161b014",
+  "sections": [
+    {
+      "action": null,
+      "data": {
+        "icon": "logos/timeline_plus_circle/v2",
+        "status": "executed",
+        "subtitleText": null,
+        "timestamp": "2023-05-21T08:25:53.360+0000"
+      },
+      "title": "Du hast 200,00 € erhalten",
+      "type": "header"
+    },
+    {
+      "action": null,
+      "data": [
+        {
+          "detail": {
+            "functionalStyle": "EXECUTED",
+            "text": "Abgeschlossen",
+            "type": "status"
+          },
+          "style": "plain",
+          "title": "Status"
+        },
+        {
+          "detail": {
+            "action": null,
+            "text": "John Doe",
+            "trend": null,
+            "type": "text"
+          },
+          "style": "plain",
+          "title": "Von"
+        },
+        {
+          "detail": {
+            "action": null,
+            "text": "DE78 0000 0000 0000 0000 00",
+            "trend": null,
+            "type": "text"
+          },
+          "style": "plain",
+          "title": "IBAN"
+        }
+      ],
+      "title": "Übersicht",
+      "type": "table"
+    }
+  ]
+}
