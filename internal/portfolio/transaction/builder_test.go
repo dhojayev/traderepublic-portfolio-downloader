@@ -5,23 +5,17 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
 	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
+
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
 )
-
-type content struct {
-	data []byte
-}
-
-func (c content) Data() []byte {
-	return c.data
-}
 
 func TestBuildPurchaseTransactions(t *testing.T) {
 	t.Parallel()
@@ -81,7 +75,7 @@ func TestBuildPurchaseTransactions(t *testing.T) {
 			DoAndReturn(func(_ string, _ map[string]any) (portfolio.OutputDataInterface, error) {
 				fileContents, err := os.ReadFile(testCase.filepath)
 
-				return content{data: fileContents}, err
+				return filesystem.NewOutputData(fileContents), err
 			})
 
 		transactionDetails, err := detailsClient.Get("b20e367c-5542-4fab-9fd6-6faa5e7ab582")
@@ -147,7 +141,7 @@ func TestBuilder_BuildDocuments(t *testing.T) {
 			DoAndReturn(func(_ string, _ map[string]any) (portfolio.OutputDataInterface, error) {
 				fileContents, err := os.ReadFile(testCase.filepath)
 
-				return content{data: fileContents}, err
+				return filesystem.NewOutputData(fileContents), err
 			})
 
 		transactionDetails, err := detailsClient.Get("2d7c03e4-15f9-4427-88d2-0586c5b057d2")

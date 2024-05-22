@@ -142,7 +142,12 @@ type ResponseSectionTypeDocumentDataNew struct {
 type ResponseSectionTypeTableDataDetailNew struct {
 	Action          ResponseActionNew `json:"action"`
 	FunctionalStyle string            `json:"functionalStyle"`
+	Amount          string            `json:"amount"`
 	Icon            string            `json:"icon"`
+	Status          string            `json:"status"`
+	Subtitle        string            `json:"subtitle"`
+	Timestamp       string            `json:"timestamp"`
+	Title           string            `json:"title"`
 	Text            string            `json:"text"`
 	Trend           string            `json:"trend"`
 	Type            string            `json:"type"`

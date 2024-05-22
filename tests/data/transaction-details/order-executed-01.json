@@ -1,0 +1,139 @@
+{
+  "id": "1d9ad3b5-e65c-41f6-9c7d-96baa2a2ecad",
+  "sections": [
+    {
+      "action": {
+        "payload": "DE000A0F5UF5",
+        "type": "instrumentDetail"
+      },
+      "data": {
+        "icon": "logos/DE000A0F5UF5/v2",
+        "status": "executed",
+        "subtitleText": null,
+        "timestamp": "2023-11-23T15:45:24.252+0000"
+      },
+      "title": "Du hast 136,14 €  investiert",
+      "type": "header"
+    },
+    {
+      "action": null,
+      "data": [
+        {
+          "detail": {
+            "functionalStyle": "EXECUTED",
+            "text": "Ausgeführt",
+            "type": "status"
+          },
+          "style": "plain",
+          "title": "Status"
+        },
+        {
+          "detail": {
+            "action": null,
+            "text": "Kauf",
+            "trend": null,
+            "type": "text"
+          },
+          "style": "plain",
+          "title": "Orderart"
+        },
+        {
+          "detail": {
+            "action": null,
+            "text": "NASDAQ100 USD (Dist)",
+            "trend": null,
+            "type": "text"
+          },
+          "style": "plain",
+          "title": "Asset"
+        }
+      ],
+      "title": "Übersicht",
+      "type": "table"
+    },
+    {
+      "action": null,
+      "data": [
+        {
+          "detail": {
+            "action": null,
+            "text": "1",
+            "trend": null,
+            "type": "text"
+          },
+          "style": "plain",
+          "title": "Anteile"
+        },
+        {
+          "detail": {
+            "action": null,
+            "text": "135,14 €",
+            "trend": null,
+            "type": "text"
+          },
+          "style": "plain",
+          "title": "Aktienkurs"
+        },
+        {
+          "detail": {
+            "action": null,
+            "text": "1,00 €",
+            "trend": null,
+            "type": "text"
+          },
+          "style": "plain",
+          "title": "Gebühr"
+        },
+        {
+          "detail": {
+            "action": null,
+            "text": "136,14 €",
+            "trend": null,
+            "type": "text"
+          },
+          "style": "highlighted",
+          "title": "Gesamt"
+        }
+      ],
+      "title": "Transaktion",
+      "type": "table"
+    },
+    {
+      "action": null,
+      "data": [
+        {
+          "action": {
+            "payload": "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
+            "type": "browserModal"
+          },
+          "detail": "23.11.2023",
+          "id": "c9a1c524-1c54-4689-8b2f-0f1bcbb91c9d",
+          "postboxType": "SECURITIES_SETTLEMENT",
+          "title": "Abrechnung"
+        },
+        {
+          "action": {
+            "payload": "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
+            "type": "browserModal"
+          },
+          "detail": "23.11.2023",
+          "id": "b26233a9-ee80-4da9-8404-08e722fe830b",
+          "postboxType": "INFO",
+          "title": "Basisinformationsblatt"
+        },
+        {
+          "action": {
+            "payload": "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
+            "type": "browserModal"
+          },
+          "detail": "23.11.2023",
+          "id": "b582015c-7a5c-47d0-8d33-6391d414cdc7",
+          "postboxType": "COSTS_INFO_BUY_V2",
+          "title": "Kosteninformation"
+        }
+      ],
+      "title": "Dokumente",
+      "type": "documents"
+    }
+  ]
+}
