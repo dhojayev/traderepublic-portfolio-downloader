@@ -81,7 +81,7 @@ func PurchaseDetector(eventType transactions.EventType, response ResponseNew) bo
 		return false
 	}
 
-	overviewSection, err := tableSections.FindByTitle(sectionTitleOverview)
+	overviewSection, err := tableSections.FindByTitle(SectionTitleOverview)
 	if err != nil {
 		return false
 	}
@@ -104,7 +104,7 @@ func SaleDetector(eventType transactions.EventType, response ResponseNew) bool {
 		return false
 	}
 
-	overviewSection, err := tableSections.FindByTitle(sectionTitleOverview)
+	overviewSection, err := tableSections.FindByTitle(SectionTitleOverview)
 	if err != nil {
 		return false
 	}
@@ -126,7 +126,8 @@ func SavebackDetector(eventType transactions.EventType, _ ResponseNew) bool {
 }
 
 func DepositDetector(eventType transactions.EventType, _ ResponseNew) bool {
-	return eventType == transactions.EventTypePaymentInbound || eventType == transactions.EventTypePaymentInboundSepaDirectDebit
+	return eventType == transactions.EventTypePaymentInbound ||
+		eventType == transactions.EventTypePaymentInboundSepaDirectDebit
 }
 
 func InterestReceivedDetector(eventType transactions.EventType, _ ResponseNew) bool {

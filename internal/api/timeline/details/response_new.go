@@ -9,9 +9,10 @@ import (
 // TODO add support of: TAX_REFUND
 
 const (
-	ResponseSectionTypeValueHeader    = "header"
-	ResponseSectionTypeValueTable     = "table"
-	ResponseSectionTypeValueDocuments = "documents"
+	ResponseSectionTypeValueHeader          = "header"
+	ResponseSectionTypeValueTable           = "table"
+	ResponseSectionTypeValueHorizontalTable = "horizontalTable"
+	ResponseSectionTypeValueDocuments       = "documents"
 )
 
 var (
@@ -32,7 +33,7 @@ func (s ResponseSectionsTypeTable) FindByTitle(title string) (ResponseSectionTyp
 		return section, nil
 	}
 
-	return ResponseSectionTypeTableNew{}, ErrSectionTitleNotFound
+	return ResponseSectionTypeTableNew{}, fmt.Errorf("%w (%s)", ErrSectionTitleNotFound, title)
 }
 
 type ResponseNew struct {
@@ -58,6 +59,16 @@ func (r ResponseNew) SectionsTypeTable() (ResponseSectionsTypeTable, error) {
 	var sections ResponseSectionsTypeTable
 
 	if err := r.deserializeSections(ResponseSectionTypeValueTable, &sections); err != nil {
+		return sections, err
+	}
+
+	return sections, nil
+}
+
+func (r ResponseNew) SectionsTypeHorizontalTable() (ResponseSectionsTypeTable, error) {
+	var sections ResponseSectionsTypeTable
+
+	if err := r.deserializeSections(ResponseSectionTypeValueHorizontalTable, &sections); err != nil {
 		return sections, err
 	}
 
@@ -133,7 +144,7 @@ func (s ResponseSectionTypeTableNew) GetDataByTitle(title string) (ResponseSecti
 		return data, nil
 	}
 
-	return ResponseSectionTypeTableDataNew{}, ErrSectionDataTitleNotFound
+	return ResponseSectionTypeTableDataNew{}, fmt.Errorf("%w (%s)", ErrSectionDataTitleNotFound, title)
 }
 
 type ResponseSectionTypeDocumentsNew struct {
