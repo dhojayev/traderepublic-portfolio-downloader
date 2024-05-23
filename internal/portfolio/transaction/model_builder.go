@@ -64,7 +64,7 @@ func (f ModelBuilderFactory) Create(
 	case
 		details.TypeUnsupported,
 		details.TypeCardPaymentTransaction,
-		details.TypeInterestReceivedTransaction:
+		details.TypeInterestPayoutTransaction:
 		return nil, ErrUnsupportedType
 	}
 
@@ -244,9 +244,27 @@ func (b BaseModelBuilder) ExtractRateValue() (float64, error) {
 		return 0, fmt.Errorf("could not get transaction section: %w", err)
 	}
 
-	rateData, err := transactionSection.GetDataByTitle(details.TransactionDataTitleRate)
+	var rateData details.ResponseSectionTypeTableData
+
+	titles := []string{
+		details.TransactionDataTitleRate,
+		details.TransactionDataTitleRateAlt,
+		details.TransactionDataTitleRateAlt2,
+	}
+
+	for _, title := range titles {
+		rateData, err = transactionSection.GetDataByTitle(title)
+		if err == nil {
+			break
+		}
+	}
+
 	if err != nil {
-		b.logger.Debugf("could not get transaction section: %s", err)
+		rateData, err = transactionSection.GetDataByTitle(details.TransactionDataTitleRateAlt)
+		if err != nil {
+			return 0, fmt.Errorf(
+				"could not get transaction section rate (%s): %w", titles, err)
+		}
 	}
 
 	rate, err := ParseFloatWithComma(rateData.Detail.Text, rateData.Detail.Trend == details.TrendNegative)
@@ -312,6 +330,30 @@ func (b BaseModelBuilder) ExtractTotalAmount() (float64, error) {
 	}
 
 	return total, nil
+}
+
+func (b BaseModelBuilder) ExtractTaxAmount() (float64, error) {
+	tableSections, err := b.response.SectionsTypeTable()
+	if err != nil {
+		return 0, fmt.Errorf("could not get table sections: %w", err)
+	}
+
+	transactionSection, err := tableSections.FindByTitle(details.SectionTitleTransaction)
+	if err != nil {
+		return 0, fmt.Errorf("could not get transaction section: %w", err)
+	}
+
+	taxData, err := transactionSection.GetDataByTitle(details.TransactionDataTitleTax)
+	if err != nil {
+		b.logger.Debugf("could not get transaction section tax amount: %s", err)
+	}
+
+	taxAmount, err := ParseFloatWithComma(taxData.Detail.Text, false)
+	if err != nil {
+		b.logger.Debugf("could not parse transaction section tax amount to float: %s", err)
+	}
+
+	return taxAmount, nil
 }
 
 func (b BaseModelBuilder) BuildDocuments() ([]document.Model, error) {
@@ -403,6 +445,11 @@ func (b SaleBuilder) Build() (Model, error) {
 	}
 
 	model.Type = TypeSale
+
+	model.TaxAmount, err = b.ExtractTaxAmount()
+	if err != nil {
+		return model, err
+	}
 
 	model.Yield, err = b.ExtractYield()
 	if err != nil {

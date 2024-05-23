@@ -14,15 +14,15 @@ import (
 type Type string
 
 const (
-	TypeUnsupported                 Type = "Unsupported"
-	TypeSaleTransaction             Type = "Sale"
-	TypePurchaseTransaction         Type = "Purchase"
-	TypeDividendPayoutTransaction   Type = "Dividend payout"
-	TypeRoundUpTransaction          Type = "Round up"
-	TypeSavebackTransaction         Type = "Saveback"
-	TypeCardPaymentTransaction      Type = "Card payment"
-	TypeDepositTransaction          Type = "Deposit"
-	TypeInterestReceivedTransaction Type = "Interest received"
+	TypeUnsupported               Type = "Unsupported"
+	TypeSaleTransaction           Type = "Sale"
+	TypePurchaseTransaction       Type = "Purchase"
+	TypeDividendPayoutTransaction Type = "Dividend payout"
+	TypeRoundUpTransaction        Type = "Round up"
+	TypeSavebackTransaction       Type = "Saveback"
+	TypeCardPaymentTransaction    Type = "Card payment"
+	TypeDepositTransaction        Type = "Deposit"
+	TypeInterestPayoutTransaction Type = "Interest payout"
 )
 
 var ErrUnsupportedResponse = errors.New("could not resolve transaction type")
@@ -41,11 +41,11 @@ type TypeResolver struct {
 func NewTypeResolver(logger *log.Logger) TypeResolver {
 	return TypeResolver{
 		detectors: map[Type]TesterFunc{
-			TypeDepositTransaction:          DepositDetector,
-			TypeInterestReceivedTransaction: InterestReceivedDetector,
-			TypeRoundUpTransaction:          RoundUpDetector,
-			TypeSavebackTransaction:         SavebackDetector,
-			TypeDividendPayoutTransaction:   DividendPayoutDetector,
+			TypeDepositTransaction:        DepositDetector,
+			TypeInterestPayoutTransaction: InterestPayoutDetector,
+			TypeRoundUpTransaction:        RoundUpDetector,
+			TypeSavebackTransaction:       SavebackDetector,
+			TypeDividendPayoutTransaction: DividendPayoutDetector,
 
 			// Detectors with the highest performance hit should be listed in the bottom.
 			TypePurchaseTransaction: PurchaseDetector,
@@ -88,12 +88,12 @@ func PurchaseDetector(eventType transactions.EventType, response Response) bool 
 		return false
 	}
 
-	orderType, err := overviewSection.GetDataByTitle(overviewDataTitleOrderType)
+	orderType, err := overviewSection.GetDataByTitle(OverviewDataTitleOrderType)
 	if err != nil {
 		return false
 	}
 
-	return strings.Contains(orderType.Detail.Text, orderTypeTextsPurchase)
+	return strings.Contains(orderType.Detail.Text, OrderTypeTextsPurchase)
 }
 
 func SaleDetector(eventType transactions.EventType, response Response) bool {
@@ -111,12 +111,12 @@ func SaleDetector(eventType transactions.EventType, response Response) bool {
 		return false
 	}
 
-	orderType, err := overviewSection.GetDataByTitle(overviewDataTitleOrderType)
+	orderType, err := overviewSection.GetDataByTitle(OverviewDataTitleOrderType)
 	if err != nil {
 		return false
 	}
 
-	return strings.Contains(orderType.Detail.Text, orderTypeTextsSale)
+	return strings.Contains(orderType.Detail.Text, OrderTypeTextsSale)
 }
 
 func RoundUpDetector(eventType transactions.EventType, _ Response) bool {
@@ -132,7 +132,7 @@ func DepositDetector(eventType transactions.EventType, _ Response) bool {
 		eventType == transactions.EventTypePaymentInboundSepaDirectDebit
 }
 
-func InterestReceivedDetector(eventType transactions.EventType, _ Response) bool {
+func InterestPayoutDetector(eventType transactions.EventType, _ Response) bool {
 	return eventType == transactions.EventTypeInterestPayoutCreated
 }
 

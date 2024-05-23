@@ -21,7 +21,7 @@ func NewCSVEntryFactory(logger *log.Logger) CSVEntryFactory {
 }
 
 func (f CSVEntryFactory) Make(transaction Model) (filesystem.CSVEntry, error) {
-	var debit, credit, depositAmount, investedAmount float64
+	var debit, credit, taxAmount, depositAmount, investedAmount float64
 
 	yield := transaction.Yield
 	profit := transaction.Profit
@@ -36,6 +36,7 @@ func (f CSVEntryFactory) Make(transaction Model) (filesystem.CSVEntry, error) {
 	case TypeSale:
 		shares = -shares
 		credit = transaction.Total
+		taxAmount = transaction.TaxAmount
 		investedAmount = -(transaction.Total - transaction.Profit + transaction.Commission)
 	case TypeSaveback:
 
@@ -68,6 +69,7 @@ func (f CSVEntryFactory) Make(transaction Model) (filesystem.CSVEntry, error) {
 		commission,
 		debit,
 		credit,
+		taxAmount,
 		depositAmount,
 		investedAmount,
 		internal.DateTime{Time: transaction.Timestamp},

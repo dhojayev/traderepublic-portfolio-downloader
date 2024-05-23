@@ -157,7 +157,7 @@ Mar 28 12:02:27.379 [INFO] All data processed
 ### CSV file fields
 
 | Field              | Description                                                               |
-| ------------------ | ------------------------------------------------------------------------- |
+|--------------------|---------------------------------------------------------------------------|
 | **ID**             | Transaction UUID                                                          |
 | **Status**         | Transaction status (should always be `executed`)                          |
 | **Timestamp**      | Date and time of transaction execution, e.g.: `30 Nov 23 10:22 +0000`     |
@@ -172,6 +172,8 @@ Mar 28 12:02:27.379 [INFO] All data processed
 | **Commission**     | Commission paid to Trade Republic for the transaction in EUR              |
 | **Debit**          | Amount debited from the deposited amount in EUR                           |
 | **Credit**         | Amount credited to the deposited amount in EUR                            |
+| **Tax amount**     | Tax applied to this transaction in EUR                                    |
+| **Deposit amount** | Amount deposited in EUR                                                   |
 
 Example CSV output can be viewed here: [transactions.csv](./assets/transactions.csv)
 
