@@ -1,6 +1,7 @@
 package transaction_test
 
 import (
+	"fmt"
 	"os"
 	"testing"
 	"time"
@@ -72,7 +73,7 @@ func TestPurchaseBuilderBuild(t *testing.T) {
 	resolver := details.NewTypeResolver(logger)
 	builderFactory := transaction.NewModelBuilderFactory(resolver, logger)
 
-	for _, testCase := range testCases {
+	for i, testCase := range testCases {
 		readerMock.
 			EXPECT().
 			Read("timelineDetailV2", gomock.Any()).
@@ -83,14 +84,14 @@ func TestPurchaseBuilderBuild(t *testing.T) {
 			})
 
 		response, err := detailsClient.Get("b20e367c-5542-4fab-9fd6-6faa5e7ab582")
-		assert.Nil(t, err)
+		assert.NoError(t, err, fmt.Sprintf("case %d", i))
 
 		builder, err := builderFactory.Create(testCase.eventType, response)
-		assert.Nil(t, err)
+		assert.NoError(t, err, fmt.Sprintf("case %d", i))
 
 		actual, err := builder.Build()
-		assert.Nil(t, err)
-		assert.Equal(t, testCase.expected, actual)
+		assert.NoError(t, err, fmt.Sprintf("case %d", i))
+		assert.Equal(t, testCase.expected, actual, fmt.Sprintf("case %d", i))
 	}
 }
 
@@ -156,7 +157,7 @@ func TestPurchaseBuilderBuildDocuments(t *testing.T) {
 	resolver := details.NewTypeResolver(logger)
 	builderFactory := transaction.NewModelBuilderFactory(resolver, logger)
 
-	for _, testCase := range testCases {
+	for i, testCase := range testCases {
 		readerMock.
 			EXPECT().
 			Read("timelineDetailV2", gomock.Any()).
@@ -167,16 +168,16 @@ func TestPurchaseBuilderBuildDocuments(t *testing.T) {
 			})
 
 		response, err := detailsClient.Get("2d7c03e4-15f9-4427-88d2-0586c5b057d2")
-		assert.Nil(t, err)
+		assert.NoError(t, err, fmt.Sprintf("case %d", i))
 
 		builder, err := builderFactory.Create(testCase.eventType, response)
-		assert.Nil(t, err)
+		assert.NoError(t, err, fmt.Sprintf("case %d", i))
 
 		model, err := builder.Build()
-		assert.Nil(t, err)
+		assert.NoError(t, err, fmt.Sprintf("case %d", i))
 
 		actual := model.Documents
-		assert.Len(t, actual, len(testCase.expected))
-		assert.Equal(t, testCase.expected, actual)
+		assert.Len(t, actual, len(testCase.expected), fmt.Sprintf("case %d", i))
+		assert.Equal(t, testCase.expected, actual, fmt.Sprintf("case %d", i))
 	}
 }

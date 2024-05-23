@@ -35,20 +35,6 @@ var (
 	ErrSectionDataTitleNotFound = errors.New("section data title not found")
 )
 
-type ResponseSectionsTypeTable []ResponseSectionTypeTable
-
-func (s ResponseSectionsTypeTable) FindByTitle(title string) (ResponseSectionTypeTable, error) {
-	for _, section := range s {
-		if section.Title != title {
-			continue
-		}
-
-		return section, nil
-	}
-
-	return ResponseSectionTypeTable{}, fmt.Errorf("%w (%s)", ErrSectionTitleNotFound, title)
-}
-
 type Response struct {
 	ID       string           `json:"id"`
 	Sections []map[string]any `json:"sections"`
@@ -158,6 +144,20 @@ func (s ResponseSectionTypeTable) GetDataByTitle(title string) (ResponseSectionT
 	}
 
 	return ResponseSectionTypeTableData{}, fmt.Errorf("%w (%s)", ErrSectionDataTitleNotFound, title)
+}
+
+type ResponseSectionsTypeTable []ResponseSectionTypeTable
+
+func (s ResponseSectionsTypeTable) FindByTitle(title string) (ResponseSectionTypeTable, error) {
+	for _, section := range s {
+		if section.Title != title {
+			continue
+		}
+
+		return section, nil
+	}
+
+	return ResponseSectionTypeTable{}, fmt.Errorf("%w (%s)", ErrSectionTitleNotFound, title)
 }
 
 type ResponseSectionTypeDocuments struct {

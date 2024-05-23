@@ -1,6 +1,7 @@
 package api_test
 
 import (
+	"fmt"
 	"net/http"
 	"testing"
 
@@ -54,14 +55,14 @@ func TestNewTokenFromHeader(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range testCases {
+	for i, testCase := range testCases {
 		token, err := api.NewTokenFromHeader("session", testCase.header)
 
 		if !testCase.mustReturnErr {
-			assert.Nil(t, err)
+			assert.NoError(t, err, fmt.Sprintf("case %d", i))
 		}
 
-		assert.Equal(t, "session", token.Name())
-		assert.Equal(t, testCase.expected, token.Value())
+		assert.Equal(t, "session", token.Name(), fmt.Sprintf("case %d", i))
+		assert.Equal(t, testCase.expected, token.Value(), fmt.Sprintf("case %d", i))
 	}
 }

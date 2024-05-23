@@ -1,6 +1,7 @@
 package transaction_test
 
 import (
+	"fmt"
 	"strconv"
 	"testing"
 	"time"
@@ -24,7 +25,7 @@ func TestFromPurchase(t *testing.T) {
 		// purchased for 501 (including 1 eur commission)
 		{
 			trn: transaction.NewTransaction(
-				"test-id", transaction.TypePurchase, "test-status", 0, 0, 5.186721, 96.40, 1, 501, 0, time.Now(),
+				"test-id", transaction.TypePurchase, "test-status", 0, 0, 5.186721, 96.40, 1, 501, 0, 0, time.Now(),
 				transaction.NewInstrument("test-instrument", "test-asset-name", ""),
 				[]document.Model{document.NewModel("test-doc-id", "test-url", "test-date", "test-title")},
 			),
@@ -51,11 +52,11 @@ func TestFromPurchase(t *testing.T) {
 
 	factory := transaction.NewCSVEntryFactory(log.New())
 
-	for _, testCase := range testCases {
+	for i, testCase := range testCases {
 		actual, err := factory.Make(testCase.trn)
 
-		assert.Nil(t, err)
-		assertFloat64Fields(t, testCase.expected, actual)
+		assert.NoError(t, err, fmt.Sprintf("case %d", i))
+		assertFloat64Fields(t, testCase.expected, actual, fmt.Sprintf("case %d", i))
 	}
 }
 
@@ -69,7 +70,7 @@ func TestFromSale(t *testing.T) {
 		// purchased for 258 (including 2 commissions of 1 eur), sold with profit.
 		{
 			trn: transaction.NewTransaction(
-				"test-id", transaction.TypeSale, "test-status", 43.9, 113.25, 56.065306, 6.62, 1, 370.25, 0, time.Now(),
+				"test-id", transaction.TypeSale, "test-status", 43.9, 113.25, 56.065306, 6.62, 1, 370.25, 0, 0, time.Now(),
 				transaction.NewInstrument("test-instrument", "test-asset-name", ""),
 				[]document.Model{document.NewModel("test-doc-id", "test-url", "test-date", "test-title")},
 			),
@@ -95,7 +96,7 @@ func TestFromSale(t *testing.T) {
 		// purchased for 1829.55 (including 5 commissions of 1 eur), sold with loss.
 		{
 			trn: transaction.NewTransaction(
-				"test-id", transaction.TypeSale, "test-status", -0.62, -11.28, 21.272454, 85.48, 1, 1817.27, 0, time.Now(),
+				"test-id", transaction.TypeSale, "test-status", -0.62, -11.28, 21.272454, 85.48, 1, 1817.27, 0, 0, time.Now(),
 				transaction.NewInstrument("test-instrument", "test-asset-name", ""),
 				[]document.Model{document.NewModel("test-doc-id", "test-url", "test-date", "test-title")},
 			),
@@ -122,26 +123,74 @@ func TestFromSale(t *testing.T) {
 
 	factory := transaction.NewCSVEntryFactory(log.New())
 
-	for _, testCase := range testCases {
+	for i, testCase := range testCases {
 		actual, err := factory.Make(testCase.trn)
 
-		assert.Nil(t, err)
-		assertFloat64Fields(t, testCase.expected, actual)
+		assert.NoError(t, err, fmt.Sprintf("case %d", i))
+		assertFloat64Fields(t, testCase.expected, actual, fmt.Sprintf("case %d", i))
 	}
 }
 
 // helper to assert float64 fields.
-func assertFloat64Fields(t *testing.T, expected, actual filesystem.CSVEntry) {
+func assertFloat64Fields(t *testing.T, expected, actual filesystem.CSVEntry, msgAndArgs ...any) {
 	t.Helper()
 
-	assert.Equal(t, floatToStr(expected.Shares), floatToStr(actual.Shares), "shares amount does not match")
-	assert.Equal(t, floatToStr(expected.Rate), floatToStr(actual.Rate), "rate does not match")
-	assert.Equal(t, floatToStr(expected.Commission), floatToStr(actual.Commission), "commission amount does not match")
-	assert.Equal(t, floatToStr(expected.Yield), floatToStr(actual.Yield), "yield does not match")
-	assert.Equal(t, floatToStr(expected.Profit), floatToStr(actual.Profit), "profit does not match")
-	assert.Equal(t, floatToStr(expected.Debit), floatToStr(actual.Debit), "debit amount does not match")
-	assert.Equal(t, floatToStr(expected.Credit), floatToStr(actual.Credit), "credit amount does not match")
-	assert.Equal(t, floatToStr(expected.InvestedAmount), floatToStr(actual.InvestedAmount), "invested amount does not match")
+	assert.Equal(
+		t,
+		floatToStr(expected.Shares),
+		floatToStr(actual.Shares),
+		"shares amount does not match",
+		msgAndArgs,
+	)
+	assert.Equal(
+		t,
+		floatToStr(expected.Rate),
+		floatToStr(actual.Rate),
+		"rate does not match",
+		msgAndArgs,
+	)
+	assert.Equal(
+		t,
+		floatToStr(expected.Commission),
+		floatToStr(actual.Commission),
+		"commission amount does not match",
+		msgAndArgs,
+	)
+	assert.Equal(
+		t,
+		floatToStr(expected.Yield),
+		floatToStr(actual.Yield),
+		"yield does not match",
+		msgAndArgs,
+	)
+	assert.Equal(
+		t,
+		floatToStr(expected.Profit),
+		floatToStr(actual.Profit),
+		"profit does not match",
+		msgAndArgs,
+	)
+	assert.Equal(
+		t,
+		floatToStr(expected.Debit),
+		floatToStr(actual.Debit),
+		"debit amount does not match",
+		msgAndArgs,
+	)
+	assert.Equal(
+		t,
+		floatToStr(expected.Credit),
+		floatToStr(actual.Credit),
+		"credit amount does not match",
+		msgAndArgs,
+	)
+	assert.Equal(
+		t,
+		floatToStr(expected.InvestedAmount),
+		floatToStr(actual.InvestedAmount),
+		"invested amount does not match",
+		msgAndArgs,
+	)
 }
 
 // converts float64 to string to simplify assertions since data written into CSV will be in string anyway.

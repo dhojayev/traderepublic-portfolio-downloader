@@ -1,6 +1,7 @@
 package details_test
 
 import (
+	"fmt"
 	"os"
 	"reflect"
 	"testing"
@@ -709,7 +710,7 @@ func TestResponseContents(t *testing.T) {
 	readerMock := portfolio.NewMockReaderInterface(controller)
 	client := details.NewClient(readerMock)
 
-	for _, testCase := range testCases {
+	for i, testCase := range testCases {
 		readerMock.
 			EXPECT().
 			Read("timelineDetailV2", gomock.Any()).
@@ -720,24 +721,24 @@ func TestResponseContents(t *testing.T) {
 			})
 
 		actual, err := client.Get("1ae661c0-b3f1-4a81-a909-79567161b014")
-		assert.Nil(t, err)
+		assert.NoError(t, err, fmt.Sprintf("case %d", i))
 
 		headerSection, err := actual.SectionTypeHeader()
-		assert.Nil(t, err)
+		assert.NoError(t, err, fmt.Sprintf("case %d", i))
 
 		assert.Equal(t, testCase.expectedHeaderSection, headerSection)
 
 		tableSections, err := actual.SectionsTypeTable()
-		assert.Nil(t, err)
+		assert.NoError(t, err, fmt.Sprintf("case %d", i))
 
-		assert.Equal(t, testCase.expectedTableSections, tableSections)
+		assert.Equal(t, testCase.expectedTableSections, tableSections, fmt.Sprintf("case %d", i))
 
 		// do not compare documents section if no expected value provided.
 		if !reflect.DeepEqual(testCase.expectedDocumentsSection, details.ResponseSectionTypeDocuments{}) {
 			documentsSection, err := actual.SectionTypeDocuments()
-			assert.Nil(t, err)
+			assert.NoError(t, err, fmt.Sprintf("case %d", i))
 
-			assert.Equal(t, testCase.expectedDocumentsSection, documentsSection)
+			assert.Equal(t, testCase.expectedDocumentsSection, documentsSection, fmt.Sprintf("case %d", i))
 		}
 	}
 }
