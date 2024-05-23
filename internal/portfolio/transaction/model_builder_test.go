@@ -22,7 +22,9 @@ import (
 func TestPurchaseBuilderBuild(t *testing.T) {
 	t.Parallel()
 
-	expectedTime, _ := time.Parse(internal.DefaultTimeFormat, "2022-03-29T09:43:31.570+0000")
+	expectedTimes := make([]time.Time, 2)
+	expectedTimes[0], _ = time.Parse(internal.DefaultTimeFormat, "2022-03-29T09:43:31.570+0000")
+	expectedTimes[1], _ = time.Parse(internal.DefaultTimeFormat, "2024-01-04T12:26:52.110+0000")
 
 	testCases := []struct {
 		filepath  string
@@ -54,14 +56,47 @@ func TestPurchaseBuilderBuild(t *testing.T) {
 					},
 				},
 				Type:       transaction.TypePurchase,
-				Timestamp:  expectedTime,
+				Timestamp:  expectedTimes[0],
 				Status:     "executed",
-				Yield:      0,
-				Profit:     0,
 				Shares:     40,
 				Rate:       9.87,
 				Commission: 1,
 				Total:      395.80,
+			},
+		},
+		{
+			filepath:  "../../../tests/data/transaction-details/benefits-spare-change-execution-01.json",
+			eventType: transactions.EventTypeBenefitsSpareChangeExecution,
+			expected: transaction.Model{
+				UUID: "265cb9c0-664a-45d4-b179-3061f196dd2a",
+				Instrument: transaction.Instrument{
+					ISIN: "DE000A0F5UF5",
+					Name: "NASDAQ100 USD (Dist)",
+					Icon: "logos/DE000A0F5UF5/v2",
+				},
+				Documents: []document.Model{
+					{
+						ID:    "9df4c2e1-0de2-4900-aa8c-af5371ed58f6",
+						URL:   "https://traderepublic-postbox-platform-production.s3.eu-central-1.amazonaws.com/timeline/postbox",
+						Title: "Deaktivierung",
+					},
+					{
+						ID:    "3a8ebf86-a2bb-463e-8bfd-28fd705359ff",
+						URL:   "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox",
+						Title: "Abrechnung Ausführung",
+					},
+					{
+						ID:    "e2dfa755-e039-45c7-b7bb-1ac024844f75",
+						URL:   "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox",
+						Title: "Kosteninformation",
+					},
+				},
+				Type:      transaction.TypeRoundUp,
+				Timestamp: expectedTimes[1],
+				Status:    "executed",
+				Shares:    0.006882,
+				Rate:      158.38,
+				Total:     1.09,
 			},
 		},
 	}

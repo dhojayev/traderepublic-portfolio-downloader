@@ -3,7 +3,6 @@ package transaction
 import (
 	"errors"
 	"fmt"
-	"strings"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -167,18 +166,18 @@ func (b BaseModelBuilder) ExtractYield() (float64, error) {
 
 	yieldData, err := performance.GetDataByTitle(details.PerformanceDataTitleYield)
 	if err != nil {
-		b.logger.Debugf("could not get performance section yield: %s", err)
+		return 0, fmt.Errorf("could not get performance section yield: %w", err)
 	}
 
 	yield, err := ParseFloatWithComma(yieldData.Detail.Text, yieldData.Detail.Trend == details.TrendNegative)
 	if err != nil {
-		b.logger.Debugf("could not parse performance section yield to float: %s", err)
+		return 0, fmt.Errorf("could not parse performance section yield to float: %w", err)
 	}
 
 	return yield, nil
 }
 
-func (b BaseModelBuilder) ExtractProfit() (float64, error) {
+func (b BaseModelBuilder) ExtractProfitAndLoss() (float64, error) {
 	tableSections, err := b.response.SectionsTypeHorizontalTable()
 	if err != nil {
 		return 0, fmt.Errorf("could not get table sections: %w", err)
@@ -189,14 +188,24 @@ func (b BaseModelBuilder) ExtractProfit() (float64, error) {
 		return 0, fmt.Errorf("could not get performance section: %w", err)
 	}
 
-	profitData, err := performance.GetDataByTitle(details.PerformanceDataTitleProfit)
+	var profitData details.ResponseSectionTypeTableData
+
+	titles := []string{details.PerformanceDataTitleProfit, details.PerformanceDataTitleLoss}
+
+	for _, title := range titles {
+		profitData, err = performance.GetDataByTitle(title)
+		if err == nil {
+			break
+		}
+	}
+
 	if err != nil {
-		b.logger.Debugf("could not get performance section profit: %s", err)
+		return 0, fmt.Errorf("could not get performance section profit (%s): %w", titles, err)
 	}
 
 	profit, err := ParseFloatWithComma(profitData.Detail.Text, profitData.Detail.Trend == details.TrendNegative)
 	if err != nil {
-		b.logger.Debugf("could not parse performance section profit to float: %s", err)
+		return 0, fmt.Errorf("could not parse performance section profit to float: %w", err)
 	}
 
 	return profit, nil
@@ -213,21 +222,32 @@ func (b BaseModelBuilder) ExtractSharesAmount() (float64, error) {
 		return 0, fmt.Errorf("could not get transaction section: %w", err)
 	}
 
-	sharesData, err := transactionSection.GetDataByTitle(details.TransactionDataTitleShares)
-	if err != nil {
-		b.logger.Debugf("could not get transaction section shares: %s", err)
+	var sharesData details.ResponseSectionTypeTableData
+
+	titles := []string{
+		details.TransactionDataTitleShares,
+		details.TransactionDataTitleSharesAlt,
 	}
 
-	shares, err := ParseFloatWithComma(sharesData.Detail.Text, sharesData.Detail.Trend == details.TrendNegative)
-	if err != nil {
-		b.logger.Debugf("could not parse transaction section shares to float: %s", err)
-	}
-
-	if strings.Contains(sharesData.Detail.Text, ".") {
-		shares, err = ParseFloatWithPeriod(sharesData.Detail.Text)
-		if err != nil {
-			b.logger.Debugf("could not parse transaction section shares to float: %s", err)
+	for _, title := range titles {
+		sharesData, err = transactionSection.GetDataByTitle(title)
+		if err == nil {
+			break
 		}
+	}
+
+	if err != nil {
+		return 0, fmt.Errorf("could not get transaction section shares (%s): %w", titles, err)
+	}
+
+	shares, err := ParseFloatWithPeriod(sharesData.Detail.Text)
+	if err != nil {
+		shares, err = ParseFloatWithComma(sharesData.Detail.Text, sharesData.Detail.Trend == details.TrendNegative)
+		if err == nil {
+			return shares, nil
+		}
+
+		return 0, fmt.Errorf("could not parse transaction section shares to float: %w", err)
 	}
 
 	return shares, nil
@@ -260,16 +280,13 @@ func (b BaseModelBuilder) ExtractRateValue() (float64, error) {
 	}
 
 	if err != nil {
-		rateData, err = transactionSection.GetDataByTitle(details.TransactionDataTitleRateAlt)
-		if err != nil {
-			return 0, fmt.Errorf(
-				"could not get transaction section rate (%s): %w", titles, err)
-		}
+		return 0, fmt.Errorf(
+			"could not get transaction section rate (%s): %w", titles, err)
 	}
 
 	rate, err := ParseFloatWithComma(rateData.Detail.Text, rateData.Detail.Trend == details.TrendNegative)
 	if err != nil {
-		b.logger.Debugf("could not parse transaction section rate to float: %s", err)
+		return 0, fmt.Errorf("could not parse transaction section rate to float: %w", err)
 	}
 
 	return rate, nil
@@ -289,7 +306,7 @@ func (b BaseModelBuilder) ExtractCommissionAmount() (float64, error) {
 	commissionData, err := transactionSection.GetDataByTitle(details.TransactionDataTitleCommission)
 	if err != nil {
 		if !errors.Is(err, details.ErrSectionDataTitleNotFound) {
-			b.logger.Debugf("could not get transaction section commission: %s", err)
+			return 0, fmt.Errorf("could not get transaction section commission: %w", err)
 		}
 	}
 
@@ -299,7 +316,7 @@ func (b BaseModelBuilder) ExtractCommissionAmount() (float64, error) {
 	)
 	if err != nil {
 		if !errors.Is(err, ErrNoMatch) {
-			b.logger.Debugf("could not parse transaction section commission to float: %s", err)
+			return 0, fmt.Errorf("could not parse transaction section commission to float: %w", err)
 		}
 
 		commission = 0
@@ -321,12 +338,12 @@ func (b BaseModelBuilder) ExtractTotalAmount() (float64, error) {
 
 	totalData, err := transactionSection.GetDataByTitle(details.TransactionDataTitleTotal)
 	if err != nil {
-		b.logger.Debugf("could not get transaction section total: %s", err)
+		return 0, fmt.Errorf("could not get transaction section total: %w", err)
 	}
 
 	total, err := ParseFloatWithComma(totalData.Detail.Text, totalData.Detail.Trend == details.TrendNegative)
 	if err != nil {
-		b.logger.Debugf("could not parse transaction section total to float: %s", err)
+		return 0, fmt.Errorf("could not parse transaction section total to float: %w", err)
 	}
 
 	return total, nil
@@ -345,12 +362,12 @@ func (b BaseModelBuilder) ExtractTaxAmount() (float64, error) {
 
 	taxData, err := transactionSection.GetDataByTitle(details.TransactionDataTitleTax)
 	if err != nil {
-		b.logger.Debugf("could not get transaction section tax amount: %s", err)
+		return 0, fmt.Errorf("could not get transaction section tax amount: %w", err)
 	}
 
 	taxAmount, err := ParseFloatWithComma(taxData.Detail.Text, false)
 	if err != nil {
-		b.logger.Debugf("could not parse transaction section tax amount to float: %s", err)
+		return 0, fmt.Errorf("could not parse transaction section tax amount to float: %w", err)
 	}
 
 	return taxAmount, nil
@@ -448,7 +465,7 @@ func (b SaleBuilder) Build() (Model, error) {
 
 	model.TaxAmount, err = b.ExtractTaxAmount()
 	if err != nil {
-		return model, err
+		b.logger.WithField("id", model.UUID).Debugf("could not extract tax amount: %s", err)
 	}
 
 	model.Yield, err = b.ExtractYield()
@@ -456,7 +473,7 @@ func (b SaleBuilder) Build() (Model, error) {
 		return model, err
 	}
 
-	model.Profit, err = b.ExtractProfit()
+	model.Profit, err = b.ExtractProfitAndLoss()
 	if err != nil {
 		return model, err
 	}
