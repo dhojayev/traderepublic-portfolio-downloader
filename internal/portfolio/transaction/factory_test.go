@@ -15,7 +15,7 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
 )
 
-func TestFromPurchase(t *testing.T) {
+func TestMakePurchaseEntry(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {
@@ -56,11 +56,11 @@ func TestFromPurchase(t *testing.T) {
 		actual, err := factory.Make(testCase.trn)
 
 		assert.NoError(t, err, fmt.Sprintf("case %d", i))
-		assertFloat64Fields(t, testCase.expected, actual, fmt.Sprintf("case %d", i))
+		assertHelper(t, testCase.expected, actual, fmt.Sprintf("case %d", i))
 	}
 }
 
-func TestFromSale(t *testing.T) {
+func TestMakeSaleEntry(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {
@@ -77,7 +77,7 @@ func TestFromSale(t *testing.T) {
 			expected: filesystem.NewCSVEntry(
 				"test-id",
 				"test-status",
-				"Purchase",
+				"Sale",
 				"Other",
 				"test-asset-name",
 				"test-instrument",
@@ -103,7 +103,7 @@ func TestFromSale(t *testing.T) {
 			expected: filesystem.NewCSVEntry(
 				"test-id",
 				"test-status",
-				"Purchase",
+				"Sale",
 				"Other",
 				"test-asset-name",
 				"test-instrument",
@@ -127,13 +127,60 @@ func TestFromSale(t *testing.T) {
 		actual, err := factory.Make(testCase.trn)
 
 		assert.NoError(t, err, fmt.Sprintf("case %d", i))
-		assertFloat64Fields(t, testCase.expected, actual, fmt.Sprintf("case %d", i))
+		assertHelper(t, testCase.expected, actual, fmt.Sprintf("case %d", i))
+	}
+}
+
+func TestMakeDepositEntry(t *testing.T) {
+	t.Parallel()
+
+	testCases := []struct {
+		trn      transaction.Model
+		expected filesystem.CSVEntry
+	}{
+		// purchased for 501 (including 1 eur commission)
+		{
+			trn: transaction.NewTransaction(
+				"test-id", transaction.TypeDeposit, "test-status", 0, 0, 0, 0, 0, 123, 0, time.Now(),
+				transaction.NewInstrument("", "", ""),
+				[]document.Model{document.NewModel("test-doc-id", "test-url", "test-date", "test-title")},
+			),
+			expected: filesystem.NewCSVEntry(
+				"test-id",
+				"test-status",
+				"Deposit",
+				"Other",
+				"test-asset-name",
+				"test-instrument",
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				123,
+				0,
+				0,
+				internal.DateTime{Time: time.Now()},
+			),
+		},
+	}
+
+	factory := transaction.NewCSVEntryFactory(log.New())
+
+	for i, testCase := range testCases {
+		actual, err := factory.Make(testCase.trn)
+
+		assert.NoError(t, err, fmt.Sprintf("case %d", i))
+		assertHelper(t, testCase.expected, actual, fmt.Sprintf("case %d", i))
 	}
 }
 
 // helper to assert float64 fields.
-func assertFloat64Fields(t *testing.T, expected, actual filesystem.CSVEntry, msgAndArgs ...any) {
+func assertHelper(t *testing.T, expected, actual filesystem.CSVEntry, msgAndArgs ...any) {
 	t.Helper()
+
+	assert.Equal(t, expected.Type, actual.Type, msgAndArgs)
 
 	assert.Equal(
 		t,
