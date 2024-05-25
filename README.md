@@ -173,7 +173,6 @@ Mar 28 12:02:27.379 [INFO] All data processed
 | **Debit**          | Amount debited from the deposited amount in EUR                           |
 | **Credit**         | Amount credited to the deposited amount in EUR                            |
 | **Tax amount**     | Tax applied to this transaction in EUR                                    |
-| **Deposit amount** | Amount deposited in EUR                                                   |
 
 Example CSV output can be viewed here: [transactions.csv](./assets/transactions.csv)
 

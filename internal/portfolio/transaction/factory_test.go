@@ -25,7 +25,7 @@ func TestFromPurchase(t *testing.T) {
 		// purchased for 501 (including 1 eur commission)
 		{
 			trn: transaction.NewTransaction(
-				"test-id", transaction.TypePurchase, "test-status", 0, 0, 5.186721, 96.40, 1, 501, 0, 0, time.Now(),
+				"test-id", transaction.TypePurchase, "test-status", 0, 0, 5.186721, 96.40, 1, 501, 0, time.Now(),
 				transaction.NewInstrument("test-instrument", "test-asset-name", ""),
 				[]document.Model{document.NewModel("test-doc-id", "test-url", "test-date", "test-title")},
 			),
@@ -42,7 +42,6 @@ func TestFromPurchase(t *testing.T) {
 				0,
 				1,
 				501,
-				0,
 				0,
 				0,
 				500,
@@ -71,7 +70,7 @@ func TestFromSale(t *testing.T) {
 		// purchased for 258 (including 2 commissions of 1 eur), sold with profit.
 		{
 			trn: transaction.NewTransaction(
-				"test-id", transaction.TypeSale, "test-status", 43.9, 113.25, 56.065306, 6.62, 1, 370.25, 0, 0, time.Now(),
+				"test-id", transaction.TypeSale, "test-status", 43.9, 113.25, 56.065306, 6.62, 1, 370.25, 0, time.Now(),
 				transaction.NewInstrument("test-instrument", "test-asset-name", ""),
 				[]document.Model{document.NewModel("test-doc-id", "test-url", "test-date", "test-title")},
 			),
@@ -90,7 +89,6 @@ func TestFromSale(t *testing.T) {
 				0,
 				370.25,
 				0,
-				0,
 				-258,
 				internal.DateTime{Time: time.Now()},
 			),
@@ -98,7 +96,7 @@ func TestFromSale(t *testing.T) {
 		// purchased for 1829.55 (including 5 commissions of 1 eur), sold with loss.
 		{
 			trn: transaction.NewTransaction(
-				"test-id", transaction.TypeSale, "test-status", -0.62, -11.28, 21.272454, 85.48, 1, 1817.27, 0, 0, time.Now(),
+				"test-id", transaction.TypeSale, "test-status", -0.62, -11.28, 21.272454, 85.48, 1, 1817.27, 0, time.Now(),
 				transaction.NewInstrument("test-instrument", "test-asset-name", ""),
 				[]document.Model{document.NewModel("test-doc-id", "test-url", "test-date", "test-title")},
 			),
@@ -116,7 +114,6 @@ func TestFromSale(t *testing.T) {
 				1,
 				0,
 				1817.27,
-				0,
 				0,
 				-1829.55,
 				internal.DateTime{Time: time.Now()},

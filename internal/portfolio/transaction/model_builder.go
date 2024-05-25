@@ -553,12 +553,12 @@ func (b DepositBuilder) Build() (Model, error) {
 		return model, fmt.Errorf("could not get header section: %w", err)
 	}
 
-	depositAmountStr, err := ParseNumericValueFromString(header.Title)
+	totalAmountStr, err := ParseNumericValueFromString(header.Title)
 	if err != nil {
 		return model, err
 	}
 
-	model.DepositAmount, err = ParseFloatWithComma(depositAmountStr, false)
+	model.Total, err = ParseFloatWithComma(totalAmountStr, false)
 	if err != nil {
 		return model, err
 	}

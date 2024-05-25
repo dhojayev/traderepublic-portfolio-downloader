@@ -45,14 +45,13 @@ type Model struct {
 	Commission    float64
 	Total         float64
 	TaxAmount     float64
-	DepositAmount float64
 	CreatedAt     time.Time `gorm:"index"`
 	UpdatedAt     time.Time `gorm:"index"`
 }
 
 func NewTransaction(
 	uuid, transactionType, status string,
-	yield, profit, shares, rate, commission, total, tax, depositAmount float64,
+	yield, profit, shares, rate, commission, total, tax float64,
 	timestamp time.Time,
 	instrument Instrument,
 	documents []document.Model,
@@ -69,7 +68,6 @@ func NewTransaction(
 		Commission:    commission,
 		Total:         total,
 		TaxAmount:     tax,
-		DepositAmount: depositAmount,
 		Instrument:    instrument,
 		Documents:     documents,
 	}
