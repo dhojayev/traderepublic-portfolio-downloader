@@ -87,7 +87,10 @@ issues:
   exclude-rules:
       - path: _test\.go
         linters:
-          - dupl
           - funlen
-          - lll
           - wrapcheck
+      - path: tests/fakes/.*\.go
+        linters:
+          - gochecknoglobals
+          - lll
+          - mnd

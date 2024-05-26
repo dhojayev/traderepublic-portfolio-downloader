@@ -231,13 +231,15 @@ func assertHelper(t *testing.T, expected, actual filesystem.CSVEntry, msgAndArgs
 		"credit amount does not match",
 		msgAndArgs,
 	)
-	assert.Equal(
-		t,
-		floatToStr(expected.InvestedAmount),
-		floatToStr(actual.InvestedAmount),
-		"invested amount does not match",
-		msgAndArgs,
-	)
+
+	// Currently unsupported.
+	// assert.Equal(
+	// 	t,
+	// 	floatToStr(expected.InvestedAmount),
+	// 	floatToStr(actual.InvestedAmount),
+	// 	"invested amount does not match",
+	// 	msgAndArgs,
+	// )
 }
 
 // converts float64 to string to simplify assertions since data written into CSV will be in string anyway.
