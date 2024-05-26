@@ -160,6 +160,12 @@ var (
 				Name: "CAC",
 				Icon: "logos/FR0003500008/v2",
 			},
+			Type:       transaction.TypePurchase,
+			Status:     "executed",
+			Shares:     40,
+			Rate:       9.87,
+			Commission: 1,
+			Total:      395.80,
 			Documents: []document.Model{
 				{
 					ID:    "46e92aa7-df44-4a69-957c-183459753e66",
@@ -174,12 +180,6 @@ var (
 					Title: "Kosteninformation",
 				},
 			},
-			Type:       transaction.TypePurchase,
-			Status:     "executed",
-			Shares:     40,
-			Rate:       9.87,
-			Commission: 1,
-			Total:      395.80,
 		},
 		CSVEntry: filesystem.CSVEntry{
 			ID:         "b20e367c-5542-4fab-9fd6-6faa5e7ab582",
