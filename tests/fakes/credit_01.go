@@ -209,7 +209,6 @@ var Credit01 = tests.TestCase{
 		},
 		Type:   transaction.TypeDividendPayout,
 		Status: "executed",
-		Profit: 2.94,
 		Shares: 10.344033,
 		Rate:   0.28,
 		Total:  2.94,

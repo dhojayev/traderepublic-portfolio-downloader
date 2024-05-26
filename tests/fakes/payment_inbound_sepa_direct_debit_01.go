@@ -175,11 +175,18 @@ var PaymentInboundSepaDirectDebit01 = tests.TestCase{
 	},
 	EventType: transactions.EventTypePaymentInboundSepaDirectDebit,
 	Transaction: transaction.Model{
-		UUID:      "ddc4ed4f-0314-42cf-8a65-930da1354348",
-		Documents: []document.Model{},
-		Type:      transaction.TypeDeposit,
-		Status:    "executed",
-		Total:     500,
+		UUID:   "ddc4ed4f-0314-42cf-8a65-930da1354348",
+		Type:   transaction.TypeDeposit,
+		Status: "executed",
+		Total:  500,
+		Documents: []document.Model{
+			{
+				ID:    "cfc08704-eb56-44f1-83a0-c39aba9055ca",
+				URL:   "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
+				Date:  "23.07.2023",
+				Title: "Abrechnung Einzahlung",
+			},
+		},
 	},
 	CSVEntry: filesystem.CSVEntry{
 		ID:        "ddc4ed4f-0314-42cf-8a65-930da1354348",

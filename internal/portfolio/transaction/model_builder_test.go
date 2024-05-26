@@ -16,12 +16,19 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/tests/fakes"
 )
 
-func TestPurchaseBuilderBuild(t *testing.T) {
+func TestModelBuilderBuildSupported(t *testing.T) {
 	t.Parallel()
 
 	testCases := []tests.TestCase{
-		fakes.OrderExecuted01,
 		fakes.BenefitsSpareChangeExecution01,
+		fakes.BenefitsSavebackExecution01,
+		fakes.Credit01,
+		fakes.OrderExecuted01,
+		fakes.OrderExecuted02,
+		fakes.OrderExecuted03,
+		fakes.PaymentInbound01,
+		fakes.PaymentInboundSepaDirectDebit01,
+		fakes.SavingsPlanExecuted01,
 	}
 
 	logger := log.New()
@@ -51,12 +58,11 @@ func TestPurchaseBuilderBuild(t *testing.T) {
 	}
 }
 
-func TestPurchaseBuilderBuildDocuments(t *testing.T) {
+func TestModelBuilderBuildUnsupported(t *testing.T) {
 	t.Parallel()
 
 	testCases := []tests.TestCase{
-		fakes.OrderExecuted03,
-		fakes.BenefitsSpareChangeExecution01,
+		fakes.InterestPayoutCreated01,
 	}
 
 	logger := log.New()
@@ -74,17 +80,10 @@ func TestPurchaseBuilderBuildDocuments(t *testing.T) {
 				return filesystem.NewOutputData([]byte(testCase.ResponseJSON)), nil
 			})
 
-		response, err := detailsClient.Get("2d7c03e4-15f9-4427-88d2-0586c5b057d2")
+		response, err := detailsClient.Get("b20e367c-5542-4fab-9fd6-6faa5e7ab582")
 		assert.NoError(t, err, fmt.Sprintf("case %d", i))
 
-		builder, err := builderFactory.Create(testCase.EventType, response)
-		assert.NoError(t, err, fmt.Sprintf("case %d", i))
-
-		model, err := builder.Build()
-		assert.NoError(t, err, fmt.Sprintf("case %d", i))
-
-		actual := model.Documents
-		assert.Len(t, actual, len(testCase.Transaction.Documents), fmt.Sprintf("case %d", i))
-		assert.Equal(t, testCase.Transaction.Documents, actual, fmt.Sprintf("case %d", i))
+		_, err = builderFactory.Create(testCase.EventType, response)
+		assert.Error(t, err, fmt.Sprintf("case %d", i))
 	}
 }
