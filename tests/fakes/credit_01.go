@@ -1,8 +1,14 @@
 package fakes
 
 import (
+	"time"
+
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/tests"
 )
 
@@ -185,5 +191,44 @@ var Credit01 = tests.TestCase{
 			Type:  "documents",
 		},
 	},
-	EventType: transactions.EvenTypeCredit,
+	EventType: transactions.EventTypeCredit,
+	Transaction: transaction.Model{
+		UUID: "23cf72a9-3888-4918-898c-c3bc38346ba1",
+		Instrument: transaction.Instrument{
+			ISIN: "IE00BK1PV551",
+			Name: "MSCI World USD (Dist)",
+			Icon: "logos/IE00BK1PV551/v2",
+		},
+		Documents: []document.Model{
+			{
+				ID:    "df244c67-8907-4365-bb89-ce26e1fadea5",
+				URL:   "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
+				Date:  "13.12.2023",
+				Title: "Abrechnung",
+			},
+		},
+		Type:   transaction.TypeDividendPayout,
+		Status: "executed",
+		Profit: 2.94,
+		Shares: 10.344033,
+		Rate:   0.28,
+		Total:  2.94,
+	},
+	CSVEntry: filesystem.CSVEntry{
+		ID:         "23cf72a9-3888-4918-898c-c3bc38346ba1",
+		Status:     "executed",
+		Type:       "Dividends",
+		AssetType:  "ETF",
+		Name:       "MSCI World USD (Dist)",
+		Instrument: "IE00BK1PV551",
+		Shares:     10.344033,
+		Rate:       0.28,
+		Profit:     2.94,
+		Credit:     2.94,
+	},
+}
+
+func init() {
+	Credit01.Transaction.Timestamp, _ = time.Parse(internal.DefaultTimeFormat, "2023-12-13T12:44:28.857+0000")
+	Credit01.CSVEntry.Timestamp = internal.DateTime{Time: Credit01.Transaction.Timestamp}
 }

@@ -1,8 +1,14 @@
 package fakes
 
 import (
+	"time"
+
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/tests"
 )
 
@@ -297,5 +303,42 @@ var SavingsPlanExecuted01 = tests.TestCase{
 			Type:  "documents",
 		},
 	},
-	EventType: transactions.EvenTypeSavingsPlanExecuted,
+	EventType: transactions.EventTypeSavingsPlanExecuted,
+	Transaction: transaction.Model{
+		UUID: "7c9be07c-7b88-4a49-a4be-425094388b8e",
+		Instrument: transaction.Instrument{
+			ISIN: "IE00BK1PV551",
+			Name: "MSCI World USD (Dist)",
+			Icon: "logos/IE00BK1PV551/v2",
+		},
+		Type:   transaction.TypePurchase,
+		Status: "executed",
+		Shares: 6.887811,
+		Rate:   72.592,
+		Total:  500,
+		Documents: []document.Model{
+			{
+				ID:    "0ac3aea7-6d68-4815-8f25-9c8997ef790d",
+				URL:   "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
+				Date:  "11.11.2023",
+				Title: "Abrechnung Ausführung",
+			},
+		},
+	},
+	CSVEntry: filesystem.CSVEntry{
+		ID:         "7c9be07c-7b88-4a49-a4be-425094388b8e",
+		Status:     "executed",
+		Type:       "Purchase",
+		AssetType:  "ETF",
+		Name:       "MSCI World USD (Dist)",
+		Instrument: "IE00BK1PV551",
+		Shares:     6.887811,
+		Rate:       72.592,
+		Debit:      500,
+	},
+}
+
+func init() {
+	SavingsPlanExecuted01.Transaction.Timestamp, _ = time.Parse(internal.DefaultTimeFormat, "2023-11-11T13:40:59.926+0000")
+	SavingsPlanExecuted01.CSVEntry.Timestamp = internal.DateTime{Time: SavingsPlanExecuted01.Transaction.Timestamp}
 }

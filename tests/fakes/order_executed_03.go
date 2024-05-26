@@ -1,7 +1,11 @@
 package fakes
 
 import (
+	"time"
+
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/tests"
@@ -186,6 +190,21 @@ var OrderExecuted03 = tests.TestCase{
 	  }`,
 	EventType: transactions.EventTypeOrderExecuted,
 	Transaction: transaction.Model{
+		UUID: "a3b8e625-a6e9-4269-9529-01ebb86d69bb",
+		Instrument: transaction.Instrument{
+			ISIN: "US6701002056",
+			Name: "Novo Nordisk (ADR)",
+			Icon: "logos/US6701002056/v2",
+		},
+		Type:       transaction.TypeSale,
+		Status:     "executed",
+		Shares:     5,
+		Rate:       96.80,
+		Yield:      0.21,
+		Profit:     1.04,
+		Commission: 1,
+		Total:      482.99,
+		TaxAmount:  0.01,
 		Documents: []document.Model{
 			{
 				ID:    "f17b2237-0e32-410e-b38b-8638600ffbb0",
@@ -207,4 +226,24 @@ var OrderExecuted03 = tests.TestCase{
 			},
 		},
 	},
+	CSVEntry: filesystem.CSVEntry{
+		ID:         "a3b8e625-a6e9-4269-9529-01ebb86d69bb",
+		Status:     "executed",
+		Type:       "Sale",
+		AssetType:  "Other",
+		Name:       "Novo Nordisk (ADR)",
+		Instrument: "US6701002056",
+		Shares:     -5,
+		Rate:       96.80,
+		Yield:      0.21,
+		Profit:     1.04,
+		Commission: 1,
+		Credit:     482.99,
+		TaxAmount:  0.01,
+	},
+}
+
+func init() {
+	OrderExecuted03.Transaction.Timestamp, _ = time.Parse(internal.DefaultTimeFormat, "2024-03-11T11:23:59.448+0000")
+	OrderExecuted03.CSVEntry.Timestamp = internal.DateTime{Time: OrderExecuted03.Transaction.Timestamp}
 }

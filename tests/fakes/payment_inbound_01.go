@@ -1,8 +1,13 @@
 package fakes
 
 import (
+	"time"
+
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/tests"
 )
 
@@ -104,4 +109,22 @@ var PaymentInbound01 = tests.TestCase{
 		},
 	},
 	EventType: transactions.EventTypePaymentInbound,
+	Transaction: transaction.Model{
+		UUID:   "1ae661c0-b3f1-4a81-a909-79567161b014",
+		Type:   transaction.TypeDeposit,
+		Status: "executed",
+		Total:  200,
+	},
+	CSVEntry: filesystem.CSVEntry{
+		ID:        "1ae661c0-b3f1-4a81-a909-79567161b014",
+		Status:    "executed",
+		Type:      "Deposit",
+		AssetType: "Other",
+		Credit:    200,
+	},
+}
+
+func init() {
+	PaymentInbound01.Transaction.Timestamp, _ = time.Parse(internal.DefaultTimeFormat, "2023-05-21T08:25:53.360+0000")
+	PaymentInbound01.CSVEntry.Timestamp = internal.DateTime{Time: PaymentInbound01.Transaction.Timestamp}
 }

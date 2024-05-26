@@ -70,7 +70,7 @@ func (r TypeResolver) Resolve(eventType transactions.EventType, response Respons
 }
 
 func PurchaseDetector(eventType transactions.EventType, response Response) bool {
-	if eventType == transactions.EvenTypeSavingsPlanExecuted {
+	if eventType == transactions.EventTypeSavingsPlanExecuted {
 		return true
 	}
 
@@ -137,5 +137,5 @@ func InterestPayoutDetector(eventType transactions.EventType, _ Response) bool {
 }
 
 func DividendPayoutDetector(eventType transactions.EventType, _ Response) bool {
-	return eventType == transactions.EvenTypeCredit
+	return eventType == transactions.EventTypeCredit
 }

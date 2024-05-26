@@ -88,9 +88,11 @@ issues:
       - path: _test\.go
         linters:
           - funlen
+          - lll
           - wrapcheck
       - path: tests/fakes/.*\.go
         linters:
+          - dupl
           - gochecknoglobals
           - lll
           - mnd

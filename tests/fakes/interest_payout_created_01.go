@@ -3,6 +3,9 @@ package fakes
 import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/tests"
 )
 
@@ -297,4 +300,42 @@ var InterestPayoutCreated01 = tests.TestCase{
 		},
 	},
 	EventType: transactions.EventTypeInterestPayoutCreated,
+	Transaction: transaction.Model{
+		UUID:       "c30c2952-ff0e-4fdb-bb8c-dfe1a8c35ce6",
+		Instrument: transaction.Instrument{},
+		Type:       "",
+		Status:     "executed",
+		Yield:      0,
+		Profit:     0,
+		Shares:     0,
+		Rate:       0,
+		Commission: 0,
+		Total:      0,
+		TaxAmount:  0,
+		Documents: []document.Model{
+			{
+				ID:    "",
+				URL:   "",
+				Date:  "",
+				Title: "",
+			},
+		},
+	},
+	CSVEntry: filesystem.CSVEntry{
+		ID:             "c30c2952-ff0e-4fdb-bb8c-dfe1a8c35ce6",
+		Status:         "executed",
+		Type:           "",
+		AssetType:      "",
+		Name:           "",
+		Instrument:     "",
+		Shares:         0,
+		Rate:           0,
+		Yield:          0,
+		Profit:         0,
+		Commission:     0,
+		Debit:          0,
+		Credit:         0,
+		TaxAmount:      0,
+		InvestedAmount: 0,
+	},
 }

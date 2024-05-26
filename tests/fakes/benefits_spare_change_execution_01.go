@@ -286,13 +286,13 @@ var BenefitsSpareChangeExecution01 = tests.TestCase{
 	CSVEntry: filesystem.CSVEntry{
 		ID:         "265cb9c0-664a-45d4-b179-3061f196dd2a",
 		Status:     "executed",
-		Type:       "Round Up",
+		Type:       "Round up",
 		AssetType:  "ETF",
 		Name:       "NASDAQ100 USD (Dist)",
 		Instrument: "DE000A0F5UF5",
 		Shares:     0.006882,
 		Rate:       158.38,
-		Credit:     1.09,
+		Debit:      1.09,
 	},
 }
 
