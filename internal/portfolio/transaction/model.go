@@ -14,6 +14,7 @@ const (
 	TypeDividendPayout = "Dividends"
 	TypeRoundUp        = "Round up"
 	TypeSaveback       = "Saveback"
+	TypeDeposit        = "Deposit"
 
 	InstrumentTypeStocks         = "Stocks"
 	InstrumentTypeETF            = "ETF"
@@ -34,39 +35,41 @@ type Model struct {
 	Instrument     Instrument
 	Documents      []document.Model `gorm:"-"`
 
-	Type       string    `gorm:"index"`
-	Timestamp  time.Time `gorm:"index"`
-	Status     string
-	Yield      float64
-	Profit     float64
-	Shares     float64
-	Rate       float64
-	Commission float64
-	Total      float64
-	CreatedAt  time.Time `gorm:"index"`
-	UpdatedAt  time.Time `gorm:"index"`
+	Type          string    `gorm:"index"`
+	Timestamp     time.Time `gorm:"index"`
+	Status        string
+	Yield         float64
+	Profit        float64
+	Shares        float64
+	Rate          float64
+	Commission    float64
+	Total         float64
+	TaxAmount     float64
+	CreatedAt     time.Time `gorm:"index"`
+	UpdatedAt     time.Time `gorm:"index"`
 }
 
 func NewTransaction(
 	uuid, transactionType, status string,
-	yield, profit, shares, rate, commission, total float64,
+	yield, profit, shares, rate, commission, total, tax float64,
 	timestamp time.Time,
 	instrument Instrument,
 	documents []document.Model,
 ) Model {
 	return Model{
-		UUID:       uuid,
-		Type:       transactionType,
-		Timestamp:  timestamp,
-		Status:     status,
-		Yield:      yield,
-		Profit:     profit,
-		Shares:     shares,
-		Rate:       rate,
-		Commission: commission,
-		Total:      total,
-		Instrument: instrument,
-		Documents:  documents,
+		UUID:          uuid,
+		Type:          transactionType,
+		Timestamp:     timestamp,
+		Status:        status,
+		Yield:         yield,
+		Profit:        profit,
+		Shares:        shares,
+		Rate:          rate,
+		Commission:    commission,
+		Total:         total,
+		TaxAmount:     tax,
+		Instrument:    instrument,
+		Documents:     documents,
 	}
 }
 

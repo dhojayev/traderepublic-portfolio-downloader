@@ -105,12 +105,7 @@ func (c *Client) PostOTP(processID, otp string) (Token, Token, error) {
 		return sessionToken, refreshToken, fmt.Errorf("could not parse refresh token from header: %w", err)
 	}
 
-	c.logger.
-		WithFields(log.Fields{
-			"session": sessionToken.Value(),
-			"refresh": refreshToken.Value(),
-		}).
-		Debug("received tokens")
+	c.logger.Debug("received session and refresh tokens")
 
 	return sessionToken, refreshToken, nil
 }

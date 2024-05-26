@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 
 	log "github.com/sirupsen/logrus"
@@ -13,7 +14,7 @@ import (
 const csvFilename = "transactions.csv"
 
 type Processor struct {
-	builder         BuilderInterface
+	builderFactory  ModelBuilderFactoryInterface
 	transactionRepo RepositoryInterface
 	factory         CSVEntryFactory
 	csvReader       filesystem.CSVReader
@@ -22,7 +23,7 @@ type Processor struct {
 }
 
 func NewProcessor(
-	builder BuilderInterface,
+	builderFactory ModelBuilderFactoryInterface,
 	transactionRepo RepositoryInterface,
 	factory CSVEntryFactory,
 	csvReader filesystem.CSVReader,
@@ -30,7 +31,7 @@ func NewProcessor(
 	logger *log.Logger,
 ) Processor {
 	return Processor{
-		builder:         builder,
+		builderFactory:  builderFactory,
 		transactionRepo: transactionRepo,
 		factory:         factory,
 		csvReader:       csvReader,
@@ -39,30 +40,33 @@ func NewProcessor(
 	}
 }
 
-func (p Processor) Process(response details.Response) error {
-	entries, err := p.csvReader.Read(csvFilename)
+func (p Processor) Process(eventType transactions.EventType, response details.Response) error {
+	csvEntries, err := p.csvReader.Read(csvFilename)
 	if err != nil {
 		return fmt.Errorf("csv reader read error: %w", err)
 	}
 
-	for _, entry := range entries {
+	for _, entry := range csvEntries {
 		if entry.ID == response.ID {
 			return nil
 		}
 	}
 
-	transaction, err := p.builder.FromResponse(response)
+	builder, err := p.builderFactory.Create(eventType, response)
 	if err != nil {
-		if errors.Is(err, ErrUnsupportedResponse) {
-			p.logger.WithField("id", response.ID).Debug(err)
+		if errors.Is(err, ErrUnsupportedType) {
+			p.logger.WithField("id", response.ID).Debugf("builder factory error: %s", err)
 
-			return ErrUnsupportedResponse
+			return ErrUnsupportedType
 		}
 
-		return fmt.Errorf("builder error: %w", err)
+		return fmt.Errorf("builder factory error: %w", err)
 	}
 
-	p.logger.WithField("transaction", transaction).Debug("supported transaction detected")
+	transaction, err := builder.Build()
+	if err != nil {
+		return fmt.Errorf("builder error: %w", err)
+	}
 
 	if err := p.transactionRepo.Create(&transaction); err != nil {
 		return fmt.Errorf("could not create on repo: %w", err)

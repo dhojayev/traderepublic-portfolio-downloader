@@ -4,218 +4,143 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"strings"
 )
 
 const (
-	sectionTitleOverview                  = "Übersicht"
-	sectionTitlePerformance               = "Performance"
-	sectionTitleTransaction               = "Transaktion"
-	sectionTypeHeader                     = "header"
-	sectionTypeTable                      = "table"
-	sectionTypeHorizontalTable            = "horizontalTable"
-	sectionTypeDocuments                  = "documents"
-	overviewDataTitleStatus               = "Status"
-	overviewDataTitleEvent                = "Ereignis"
-	overviewDataTitleOrderType            = "Orderart"
-	overviewDataTitleOrderTypeAlt         = "Auftragsart"
-	overviewDataTitleAsset                = "Asset"
-	overviewDataTitleProduct              = "Produkt"
-	overviewDataTitleUnderlyingAsset      = "Basiswert"
-	transactionDataTitleShares            = "Anteile"
-	transactionDataTitleStocks            = "Aktien"
-	transactionDataTitleRate              = "Aktienkurs"
-	transactionDataTitlePrice             = "Anteilspreis"
-	transactionDataTitleDividendsPerStock = "Dividende je Aktie"
-	transactionDataTitleCommission        = "Gebühr"
-	transactionDataTitleTotal             = "Gesamt"
-	performanceDataTitleYield             = "Rendite"
-	performanceDataTitleProfit            = "Gewinn"
-	performanceDataTitleLoss              = "Verlust"
-	eventTypeTextPayout                   = "Ausschüttung"
-	orderTypeTextsSale                    = "Verkauf"
-	orderTypeTextsPurchase                = "Kauf"
-	orderTypeTextsSavingsPlan             = "Sparplan"
-	orderTypeTextsRoundUp                 = "Round up"
-	orderTypeTextsSaveback                = "Saveback"
-	trendNegative                         = "negative"
+	ResponseSectionTypeValueHeader          = "header"
+	ResponseSectionTypeValueTable           = "table"
+	ResponseSectionTypeValueHorizontalTable = "horizontalTable"
+	ResponseSectionTypeValueDocuments       = "documents"
+	SectionTitleOverview                    = "Übersicht"
+	SectionTitlePerformance                 = "Performance"
+	SectionTitleTransaction                 = "Transaktion"
+	OverviewDataTitleOrderType              = "Orderart"
+	OverviewDataTitleAsset                  = "Asset"
+	OverviewDataTitleUnderlyingAsset        = "Basiswert"
+	TransactionDataTitleShares              = "Anteile"
+	TransactionDataTitleSharesAlt           = "Aktien"
+	TransactionDataTitleRate                = "Aktienkurs"
+	TransactionDataTitleRateAlt             = "Anteilspreis"
+	TransactionDataTitleRateAlt2            = "Dividende je Aktie"
+	TransactionDataTitleCommission          = "Gebühr"
+	TransactionDataTitleTotal               = "Gesamt"
+	TransactionDataTitleTax                 = "Steuern"
+	PerformanceDataTitleYield               = "Rendite"
+	PerformanceDataTitleProfit              = "Gewinn"
+	PerformanceDataTitleLoss                = "Verlust"
+	OrderTypeTextsSale                      = "Verkauf"
+	OrderTypeTextsPurchase                  = "Kauf"
+	TrendNegative                           = "negative"
 )
 
 var (
-	ErrSectionNotFound          = errors.New("section not found")
-	ErrSectionDataEntryNotFound = errors.New("section data entry not found")
+	ErrSectionContainsNoType    = errors.New("section contains no type")
+	ErrSectionTypeNotFound      = errors.New("section type not found")
+	ErrSectionTitleNotFound     = errors.New("section title not found")
+	ErrSectionDataTitleNotFound = errors.New("section data title not found")
 )
 
 type Response struct {
-	ID       string            `json:"id"`
-	Sections []ResponseSection `json:"sections"`
+	ID       string           `json:"id"`
+	Sections []map[string]any `json:"sections"`
 }
 
-func (r Response) HeaderSection() (ResponseSectionTypeHeader, error) {
-	var section ResponseSectionTypeHeader
+func (r Response) SectionTypeHeader() (ResponseSectionTypeHeader, error) {
+	var sections []ResponseSectionTypeHeader
 
-	err := r.UnmarshalSection("", sectionTypeHeader, &section)
+	if err := r.deserializeSections(ResponseSectionTypeValueHeader, &sections); err != nil {
+		return ResponseSectionTypeHeader{}, err
+	}
 
-	return section, err
+	if len(sections) == 0 {
+		return ResponseSectionTypeHeader{}, ErrSectionTypeNotFound
+	}
+
+	return sections[0], nil
 }
 
-func (r Response) OverviewSection() (ResponseSectionTypeTable, error) {
-	var section ResponseSectionTypeTable
+func (r Response) SectionsTypeTable() (ResponseSectionsTypeTable, error) {
+	var sections ResponseSectionsTypeTable
 
-	err := r.UnmarshalSection(sectionTitleOverview, sectionTypeTable, &section)
+	if err := r.deserializeSections(ResponseSectionTypeValueTable, &sections); err != nil {
+		return sections, err
+	}
 
-	return section, err
+	return sections, nil
 }
 
-func (r Response) PerformanceSection() (ResponseSectionTypeTable, error) {
-	var section ResponseSectionTypeTable
+func (r Response) SectionsTypeHorizontalTable() (ResponseSectionsTypeTable, error) {
+	var sections ResponseSectionsTypeTable
 
-	err := r.UnmarshalSection(sectionTitlePerformance, sectionTypeHorizontalTable, &section)
+	if err := r.deserializeSections(ResponseSectionTypeValueHorizontalTable, &sections); err != nil {
+		return sections, err
+	}
 
-	return section, err
+	return sections, nil
 }
 
-func (r Response) TransactionSection() (ResponseSectionTypeTable, error) {
-	var section ResponseSectionTypeTable
+func (r Response) SectionTypeDocuments() (ResponseSectionTypeDocuments, error) {
+	var sections []ResponseSectionTypeDocuments
 
-	err := r.UnmarshalSection(sectionTitleTransaction, sectionTypeTable, &section)
+	if err := r.deserializeSections(ResponseSectionTypeValueDocuments, &sections); err != nil {
+		return ResponseSectionTypeDocuments{}, err
+	}
 
-	return section, err
+	if len(sections) == 0 {
+		return ResponseSectionTypeDocuments{}, ErrSectionTypeNotFound
+	}
+
+	return sections[0], nil
 }
 
-func (r Response) DocumentsSection() (ResponseSectionTypeDocuments, error) {
-	var section ResponseSectionTypeDocuments
+func (r Response) deserializeSections(needle string, v any) error {
+	sections := make([]map[string]any, 0)
 
-	err := r.UnmarshalSection("", sectionTypeDocuments, &section)
+	for _, section := range r.Sections {
+		sectionType, ok := section["type"]
+		if !ok {
+			return ErrSectionContainsNoType
+		}
 
-	return section, err
-}
-
-func (r Response) UnmarshalSection(sectionTitle, sectionType string, v any) error {
-	for _, s := range r.Sections {
-		if (sectionTitle != "" && s.Title != sectionTitle) || s.Type != sectionType {
+		if sectionType != needle {
 			continue
 		}
 
-		sectionBytes, err := json.Marshal(s)
-		if err != nil {
-			return fmt.Errorf("could not marshal %s section: %w", sectionTitle, err)
-		}
-
-		if err := json.Unmarshal(sectionBytes, v); err != nil {
-			return fmt.Errorf("could not unmarshal %s section: %w", sectionTitle, err)
-		}
-
-		return nil
+		sections = append(sections, section)
 	}
 
-	return ErrSectionNotFound
-}
+	if len(sections) == 0 {
+		return ErrSectionTypeNotFound
+	}
 
-type ResponseSection struct {
-	Action ResponseAction `json:"action,omitempty"`
-	Data   any            `json:"data"`
-	Title  string         `json:"title"`
-	Type   string         `json:"type"`
-}
+	sectionsBytes, err := json.Marshal(sections)
+	if err != nil {
+		return fmt.Errorf("could not marshal %s section: %w", needle, err)
+	}
 
-type ResponseAction struct {
-	Payload any    `json:"payload"`
-	Type    string `json:"type"`
+	if err = json.Unmarshal(sectionsBytes, v); err != nil {
+		return fmt.Errorf("could not unmarshal %s section: %w", needle, err)
+	}
+
+	return nil
 }
 
 type ResponseSectionTypeHeader struct {
-	ResponseSection
-	Data ResponseSectionTypeHeaderData `json:"data"`
-}
-
-type ResponseSectionTypeHeaderData struct {
-	Icon         string `json:"icon"`
-	Status       string `json:"status"`
-	SubtitleText string `json:"subtitleText,omitempty"`
-	Timestamp    string `json:"timestamp"`
+	Action ResponseAction                `json:"action"`
+	Data   ResponseSectionTypeHeaderData `json:"data"`
+	Title  string                        `json:"title"`
+	Type   string                        `json:"type"`
 }
 
 type ResponseSectionTypeTable struct {
-	ResponseSection
-	Data []ResponseSectionTypeTableData `json:"data"`
+	// Action ResponseAction                 `json:"action"`
+	Data  []ResponseSectionTypeTableData `json:"data"`
+	Title string                         `json:"title"`
+	Type  string                         `json:"type"`
 }
 
-func (r ResponseSectionTypeTable) Status() (ResponseSectionTypeTableData, error) {
-	return r.findDataByTitle(overviewDataTitleStatus)
-}
-
-func (r ResponseSectionTypeTable) Event() (ResponseSectionTypeTableData, error) {
-	return r.findDataByTitle(overviewDataTitleEvent)
-}
-
-func (r ResponseSectionTypeTable) OrderType() (ResponseSectionTypeTableData, error) {
-	data, err := r.findDataByTitle(overviewDataTitleOrderType)
-	if err == nil {
-		return data, nil
-	}
-
-	return r.findDataByTitle(overviewDataTitleOrderTypeAlt)
-}
-
-func (r ResponseSectionTypeTable) Asset() (ResponseSectionTypeTableData, error) {
-	return r.findDataByTitle(overviewDataTitleAsset)
-}
-
-func (r ResponseSectionTypeTable) Product() (ResponseSectionTypeTableData, error) {
-	return r.findDataByTitle(overviewDataTitleProduct)
-}
-
-func (r ResponseSectionTypeTable) UnderlyingAsset() (ResponseSectionTypeTableData, error) {
-	return r.findDataByTitle(overviewDataTitleUnderlyingAsset)
-}
-
-func (r ResponseSectionTypeTable) Shares() (ResponseSectionTypeTableData, error) {
-	data, err := r.findDataByTitle(transactionDataTitleShares)
-	if err == nil {
-		return data, nil
-	}
-
-	return r.findDataByTitle(transactionDataTitleStocks)
-}
-
-func (r ResponseSectionTypeTable) Rate() (ResponseSectionTypeTableData, error) {
-	data, err := r.findDataByTitle(transactionDataTitleRate)
-	if err == nil {
-		return data, nil
-	}
-
-	data, err = r.findDataByTitle(transactionDataTitlePrice)
-	if err == nil {
-		return data, nil
-	}
-
-	return r.findDataByTitle(transactionDataTitleDividendsPerStock)
-}
-
-func (r ResponseSectionTypeTable) Commission() (ResponseSectionTypeTableData, error) {
-	return r.findDataByTitle(transactionDataTitleCommission)
-}
-
-func (r ResponseSectionTypeTable) Total() (ResponseSectionTypeTableData, error) {
-	return r.findDataByTitle(transactionDataTitleTotal)
-}
-
-func (r ResponseSectionTypeTable) Yield() (ResponseSectionTypeTableData, error) {
-	return r.findDataByTitle(performanceDataTitleYield)
-}
-
-func (r ResponseSectionTypeTable) Profit() (ResponseSectionTypeTableData, error) {
-	data, err := r.findDataByTitle(performanceDataTitleProfit)
-	if err == nil {
-		return data, nil
-	}
-
-	return r.findDataByTitle(performanceDataTitleLoss)
-}
-
-func (r ResponseSectionTypeTable) findDataByTitle(title string) (ResponseSectionTypeTableData, error) {
-	for _, data := range r.Data {
+func (s ResponseSectionTypeTable) GetDataByTitle(title string) (ResponseSectionTypeTableData, error) {
+	for _, data := range s.Data {
 		if data.Title != title {
 			continue
 		}
@@ -223,7 +148,40 @@ func (r ResponseSectionTypeTable) findDataByTitle(title string) (ResponseSection
 		return data, nil
 	}
 
-	return ResponseSectionTypeTableData{}, fmt.Errorf("%w (%s)", ErrSectionDataEntryNotFound, title)
+	return ResponseSectionTypeTableData{}, fmt.Errorf("%w (%s)", ErrSectionDataTitleNotFound, title)
+}
+
+type ResponseSectionsTypeTable []ResponseSectionTypeTable
+
+func (s ResponseSectionsTypeTable) FindByTitle(title string) (ResponseSectionTypeTable, error) {
+	for _, section := range s {
+		if section.Title != title {
+			continue
+		}
+
+		return section, nil
+	}
+
+	return ResponseSectionTypeTable{}, fmt.Errorf("%w (%s)", ErrSectionTitleNotFound, title)
+}
+
+type ResponseSectionTypeDocuments struct {
+	Action ResponseAction                    `json:"action"`
+	Data   []ResponseSectionTypeDocumentData `json:"data"`
+	Title  string                            `json:"title"`
+	Type   string                            `json:"type"`
+}
+
+type ResponseAction struct {
+	Payload any    `json:"payload"`
+	Type    string `json:"type"`
+}
+
+type ResponseSectionTypeHeaderData struct {
+	Icon         string `json:"icon"`
+	Status       string `json:"status"`
+	SubtitleText string `json:"subtitleText"`
+	Timestamp    string `json:"timestamp"`
 }
 
 type ResponseSectionTypeTableData struct {
@@ -232,50 +190,24 @@ type ResponseSectionTypeTableData struct {
 	Title  string                             `json:"title"`
 }
 
-func (r ResponseSectionTypeTableData) IsOrderTypeSale() bool {
-	return strings.Contains(r.Detail.Text, orderTypeTextsSale)
-}
-
-func (r ResponseSectionTypeTableData) IsOrderTypePurchase() bool {
-	return strings.Contains(r.Detail.Text, orderTypeTextsPurchase) || r.Detail.Text == orderTypeTextsSavingsPlan
-}
-
-func (r ResponseSectionTypeTableData) IsOrderTypeRoundUp() bool {
-	return r.Detail.Text == orderTypeTextsRoundUp
-}
-
-func (r ResponseSectionTypeTableData) IsOrderTypeSaveback() bool {
-	return r.Detail.Text == orderTypeTextsSaveback
-}
-
-func (r ResponseSectionTypeTableData) IsEventPayout() bool {
-	return r.Detail.Text == eventTypeTextPayout
-}
-
-func (r ResponseSectionTypeTableData) HasSharesWithPeriod() bool {
-	return r.Title == transactionDataTitleStocks
-}
-
-type ResponseSectionTypeTableDataDetail struct {
-	Action ResponseAction `json:"action,omitempty"`
-	Text   string         `json:"text"`
-	Trend  string         `json:"trend,omitempty"`
-	Type   string         `json:"type"`
-}
-
-func (r ResponseSectionTypeTableDataDetail) IsTrendNegative() bool {
-	return r.Trend == trendNegative
-}
-
-type ResponseSectionTypeDocuments struct {
-	ResponseSection
-	Data []ResponseSectionTypeDocumentsData `json:"data"`
-}
-
-type ResponseSectionTypeDocumentsData struct {
-	Action      ResponseAction `json:"action,omitempty"`
+type ResponseSectionTypeDocumentData struct {
+	Action      ResponseAction `json:"action"`
 	Detail      string         `json:"detail"`
 	ID          string         `json:"id"`
 	PostboxType string         `json:"postboxType"`
 	Title       string         `json:"title"`
+}
+
+type ResponseSectionTypeTableDataDetail struct {
+	Action          ResponseAction `json:"action"`
+	FunctionalStyle string         `json:"functionalStyle"`
+	Amount          string         `json:"amount"`
+	Icon            string         `json:"icon"`
+	Status          string         `json:"status"`
+	Subtitle        string         `json:"subtitle"`
+	Timestamp       string         `json:"timestamp"`
+	Title           string         `json:"title"`
+	Text            string         `json:"text"`
+	Trend           string         `json:"trend"`
+	Type            string         `json:"type"`
 }

@@ -29,9 +29,10 @@ var (
 	DefaultSet = wire.NewSet(
 		portfoliodownloader.NewApp,
 		transactions.NewClient,
+		transactions.NewEventTypeResolver,
 		details.NewClient,
-		transaction.NewTypeResolver,
-		transaction.NewBuilder,
+		details.NewTypeResolver,
+		transaction.NewModelBuilderFactory,
 		database.NewSQLiteOnFS,
 		transaction.NewCSVEntryFactory,
 		filesystem.NewCSVReader,
@@ -40,8 +41,9 @@ var (
 		ProvideTransactionRepository,
 		ProvideInstrumentRepository,
 
-		wire.Bind(new(transaction.TypeResolverInterface), new(transaction.TypeResolver)),
-		wire.Bind(new(transaction.BuilderInterface), new(transaction.Builder)),
+		wire.Bind(new(transactions.EventTypeResolverInterface), new(transactions.EventTypeResolver)),
+		wire.Bind(new(details.TypeResolverInterface), new(details.TypeResolver)),
+		wire.Bind(new(transaction.ModelBuilderFactoryInterface), new(transaction.ModelBuilderFactory)),
 		wire.Bind(new(transaction.RepositoryInterface), new(*database.Repository[*transaction.Model])),
 		wire.Bind(new(transaction.InstrumentRepositoryInterface), new(*database.Repository[*transaction.Instrument])),
 	)

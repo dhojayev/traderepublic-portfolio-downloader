@@ -39,9 +39,10 @@ func CreateNonWritingApp(logger *logrus.Logger) (portfoliodownloader.App, error)
 		return portfoliodownloader.App{}, err
 	}
 	transactionsClient := transactions.NewClient(reader)
+	eventTypeResolver := transactions.NewEventTypeResolver(logger)
 	detailsClient := details.NewClient(reader)
-	typeResolver := transaction.NewTypeResolver(logger)
-	builder := transaction.NewBuilder(typeResolver, logger)
+	typeResolver := details.NewTypeResolver(logger)
+	modelBuilderFactory := transaction.NewModelBuilderFactory(typeResolver, logger)
 	db, err := database.NewSQLiteInMemory()
 	if err != nil {
 		return portfoliodownloader.App{}, err
@@ -53,8 +54,8 @@ func CreateNonWritingApp(logger *logrus.Logger) (portfoliodownloader.App, error)
 	csvEntryFactory := transaction.NewCSVEntryFactory(logger)
 	csvReader := filesystem.NewCSVReader(logger)
 	csvWriter := filesystem.NewCSVWriter(logger)
-	processor := transaction.NewProcessor(builder, repository, csvEntryFactory, csvReader, csvWriter, logger)
-	app := portfoliodownloader.NewApp(transactionsClient, detailsClient, processor, logger)
+	processor := transaction.NewProcessor(modelBuilderFactory, repository, csvEntryFactory, csvReader, csvWriter, logger)
+	app := portfoliodownloader.NewApp(transactionsClient, eventTypeResolver, detailsClient, processor, logger)
 	return app, nil
 }
 
@@ -71,9 +72,10 @@ func CreateWritingApp(logger *logrus.Logger) (portfoliodownloader.App, error) {
 		return portfoliodownloader.App{}, err
 	}
 	transactionsClient := transactions.NewClient(reader)
+	eventTypeResolver := transactions.NewEventTypeResolver(logger)
 	detailsClient := details.NewClient(reader)
-	typeResolver := transaction.NewTypeResolver(logger)
-	builder := transaction.NewBuilder(typeResolver, logger)
+	typeResolver := details.NewTypeResolver(logger)
+	modelBuilderFactory := transaction.NewModelBuilderFactory(typeResolver, logger)
 	db, err := database.NewSQLiteInMemory()
 	if err != nil {
 		return portfoliodownloader.App{}, err
@@ -85,16 +87,16 @@ func CreateWritingApp(logger *logrus.Logger) (portfoliodownloader.App, error) {
 	csvEntryFactory := transaction.NewCSVEntryFactory(logger)
 	csvReader := filesystem.NewCSVReader(logger)
 	csvWriter := filesystem.NewCSVWriter(logger)
-	processor := transaction.NewProcessor(builder, repository, csvEntryFactory, csvReader, csvWriter, logger)
-	app := portfoliodownloader.NewApp(transactionsClient, detailsClient, processor, logger)
+	processor := transaction.NewProcessor(modelBuilderFactory, repository, csvEntryFactory, csvReader, csvWriter, logger)
+	app := portfoliodownloader.NewApp(transactionsClient, eventTypeResolver, detailsClient, processor, logger)
 	return app, nil
 }
 
 // wire.go:
 
 var (
-	DefaultSet = wire.NewSet(api.NewClient, auth.NewClient, console.NewAuthService, websocket.NewReader, portfoliodownloader.NewApp, transactions.NewClient, details.NewClient, transaction.NewTypeResolver, database.NewSQLiteInMemory, transaction.NewBuilder, transaction.NewCSVEntryFactory, filesystem.NewCSVReader, filesystem.NewCSVWriter, transaction.NewProcessor, ProvideTransactionRepository,
-		ProvideInstrumentRepository, wire.Bind(new(auth.ClientInterface), new(*auth.Client)), wire.Bind(new(console.AuthServiceInterface), new(*console.AuthService)), wire.Bind(new(portfolio.ReaderInterface), new(*websocket.Reader)), wire.Bind(new(transaction.TypeResolverInterface), new(transaction.TypeResolver)), wire.Bind(new(transaction.BuilderInterface), new(transaction.Builder)), wire.Bind(new(transaction.RepositoryInterface), new(*database.Repository[*transaction.Model])), wire.Bind(new(transaction.InstrumentRepositoryInterface), new(*database.Repository[*transaction.Instrument])),
+	DefaultSet = wire.NewSet(api.NewClient, auth.NewClient, console.NewAuthService, websocket.NewReader, portfoliodownloader.NewApp, transactions.NewClient, transactions.NewEventTypeResolver, details.NewClient, details.NewTypeResolver, database.NewSQLiteInMemory, transaction.NewModelBuilderFactory, transaction.NewCSVEntryFactory, filesystem.NewCSVReader, filesystem.NewCSVWriter, transaction.NewProcessor, ProvideTransactionRepository,
+		ProvideInstrumentRepository, wire.Bind(new(auth.ClientInterface), new(*auth.Client)), wire.Bind(new(console.AuthServiceInterface), new(*console.AuthService)), wire.Bind(new(portfolio.ReaderInterface), new(*websocket.Reader)), wire.Bind(new(transactions.EventTypeResolverInterface), new(transactions.EventTypeResolver)), wire.Bind(new(details.TypeResolverInterface), new(details.TypeResolver)), wire.Bind(new(transaction.ModelBuilderFactoryInterface), new(transaction.ModelBuilderFactory)), wire.Bind(new(transaction.RepositoryInterface), new(*database.Repository[*transaction.Model])), wire.Bind(new(transaction.InstrumentRepositoryInterface), new(*database.Repository[*transaction.Instrument])),
 	)
 
 	NonWritingSet = wire.NewSet(

@@ -1,6 +1,7 @@
-ID,Status,Timestamp,Type,Asset type,Name,Instrument,Shares,Rate,Realized yield,Realized PnL,Commission,Debit,Credit
-xxxxxxxxxxxxxxxxx,executed,01 Oct 23 11:42 +0000,Purchase,ETF,MSCI World USD (Dist),IE00BK1PV551,1,72.592,0,0,0,72.592,0
-xxxxxxxxxxxxxxxxx,executed,30 Nov 23 10:22 +0000,Dividends,ETF,MSCI World USD (Dist),IE00BK1PV551,10.344033,0.28,0,2.94,0,0,2.94
-xxxxxxxxxxxxxxxxx,executed,08 Dec 23 16:07 +0000,Sale,Cryptocurrency,Ethereum,XF000ETH0019,-0.227902,2092.56,6.09,27.37,1,0,475.9
-xxxxxxxxxxxxxxxxx,executed,6 Feb 24 04:44 +0000,Round up,ETF,Core S&P 500 USD (Dist),IE0031442068,0.212071,46.54,0,0,0,9.87,0
-xxxxxxxxxxxxxxxxx,executed,01 Mar 24 09:11 +0000,Saveback,Cryptocurrency,Ethereum,XF000ETH0019,0.002456,3280.82,0,0,0,0,0
+ID,Status,Timestamp,Type,Asset type,Name,Instrument,Shares,Rate,Realized yield,Realized PnL,Commission,Debit,Credit,Tax amount
+xxxxxxxxxxxxxxxxx,executed,21 Jun 23 01:25 +0000,Deposit,Other,,,0,0,0,0,0,0,200,0
+xxxxxxxxxxxxxxxxx,executed,01 Oct 23 11:42 +0000,Purchase,ETF,MSCI World USD (Dist),IE00BK1PV551,1,72.592,0,0,0,72.592,0,0
+xxxxxxxxxxxxxxxxx,executed,30 Nov 23 10:22 +0000,Dividends,ETF,MSCI World USD (Dist),IE00BK1PV551,10.344033,0.28,0,2.94,0,0,2.94,0
+xxxxxxxxxxxxxxxxx,executed,08 Dec 23 16:07 +0000,Sale,Cryptocurrency,Ethereum,XF000ETH0019,-0.227902,2092.56,6.09,27.37,1,0,475.9,0
+xxxxxxxxxxxxxxxxx,executed,6 Feb 24 04:44 +0000,Round up,ETF,Core S&P 500 USD (Dist),IE0031442068,0.212071,46.54,0,0,0,9.87,0,0.01
+xxxxxxxxxxxxxxxxx,executed,01 Mar 24 09:11 +0000,Saveback,Cryptocurrency,Ethereum,XF000ETH0019,0.002456,3280.82,0,0,0,0,0,0

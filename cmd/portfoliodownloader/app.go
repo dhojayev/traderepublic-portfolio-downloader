@@ -14,6 +14,7 @@ import (
 
 type App struct {
 	transactionsClient    transactions.Client
+	eventTypeResolver     transactions.EventTypeResolverInterface
 	timelineDetailsClient details.Client
 	transactionProcessor  transaction.Processor
 	logger                *log.Logger
@@ -21,12 +22,14 @@ type App struct {
 
 func NewApp(
 	transactionsClient transactions.Client,
+	eventTypeResolver transactions.EventTypeResolverInterface,
 	timelineDetailsClient details.Client,
 	transactionProcessor transaction.Processor,
 	logger *log.Logger,
 ) App {
 	return App{
 		transactionsClient:    transactionsClient,
+		eventTypeResolver:     eventTypeResolver,
 		timelineDetailsClient: timelineDetailsClient,
 		transactionProcessor:  transactionProcessor,
 		logger:                logger,
@@ -51,8 +54,17 @@ func (a App) Run() error {
 		}
 
 		id := transactionResponse.Action.Payload
-		infoFields := log.Fields{
-			"id": id,
+		infoFields := log.Fields{"id": id}
+
+		eventType, err := a.eventTypeResolver.Resolve(transactionResponse)
+		if err != nil {
+			if errors.Is(err, transactions.ErrUnsupportedEventType) {
+				a.logger.WithFields(infoFields).Info("Unsupported transaction skipped")
+
+				continue
+			}
+
+			return fmt.Errorf("could not resolve transaction even type: %w", err)
 		}
 
 		a.logger.WithFields(infoFields).Info("Fetching transaction details")
@@ -64,8 +76,8 @@ func (a App) Run() error {
 
 		a.logger.WithFields(infoFields).Info("Processing transaction details")
 
-		if err := a.transactionProcessor.Process(transactionDetails); err != nil {
-			if errors.Is(err, transaction.ErrUnsupportedResponse) {
+		if err := a.transactionProcessor.Process(eventType, transactionDetails); err != nil {
+			if errors.Is(err, transaction.ErrUnsupportedType) {
 				a.logger.WithFields(infoFields).Info("Unsupported transaction skipped")
 
 				continue

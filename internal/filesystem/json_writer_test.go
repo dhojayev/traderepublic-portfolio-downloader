@@ -1,11 +1,13 @@
 package filesystem_test
 
 import (
+	"fmt"
 	"testing"
 
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 )
 
 func TestGenerateFilename(t *testing.T) {
@@ -52,15 +54,13 @@ func TestGenerateFilename(t *testing.T) {
 
 	logger := log.New()
 	writer := filesystem.NewJSONWriter(logger)
-	asrt := assert.New(t)
 
-	for _, testCase := range testCases {
+	for i, testCase := range testCases {
 		actual, err := writer.GenerateFilename(testCase.dir, testCase.dataMap)
-
-		asrt.Equal(testCase.expected, actual)
+		assert.Equal(t, testCase.expected, actual, fmt.Sprintf("case %d", i))
 
 		if testCase.hasErr {
-			asrt.NotNil(err)
+			assert.NotNil(t, err, fmt.Sprintf("case %d", i))
 		}
 	}
 }

@@ -59,3 +59,14 @@ func ParseFloatWithComma(src string, isNegative bool) (float64, error) {
 
 	return valueFloat, nil
 }
+
+func ParseNumericValueFromString(src string) (string, error) {
+	pattern := regexp.MustCompile(`(\d+\.?\d*,?\d+)`)
+	matches := pattern.FindStringSubmatch(src)
+
+	if len(matches) == 0 {
+		return "", ErrNoMatch
+	}
+
+	return matches[1], nil
+}

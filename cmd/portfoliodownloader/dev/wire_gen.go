@@ -29,9 +29,10 @@ import (
 func CreateLocalApp(baseDir string, logger *logrus.Logger) (portfoliodownloader.App, error) {
 	jsonReader := filesystem.NewJSONReader(baseDir, logger)
 	client := transactions.NewClient(jsonReader)
+	eventTypeResolver := transactions.NewEventTypeResolver(logger)
 	detailsClient := details.NewClient(jsonReader)
-	typeResolver := transaction.NewTypeResolver(logger)
-	builder := transaction.NewBuilder(typeResolver, logger)
+	typeResolver := details.NewTypeResolver(logger)
+	modelBuilderFactory := transaction.NewModelBuilderFactory(typeResolver, logger)
 	db, err := database.NewSQLiteOnFS()
 	if err != nil {
 		return portfoliodownloader.App{}, err
@@ -43,8 +44,8 @@ func CreateLocalApp(baseDir string, logger *logrus.Logger) (portfoliodownloader.
 	csvEntryFactory := transaction.NewCSVEntryFactory(logger)
 	csvReader := filesystem.NewCSVReader(logger)
 	csvWriter := filesystem.NewCSVWriter(logger)
-	processor := transaction.NewProcessor(builder, repository, csvEntryFactory, csvReader, csvWriter, logger)
-	app := portfoliodownloader.NewApp(client, detailsClient, processor, logger)
+	processor := transaction.NewProcessor(modelBuilderFactory, repository, csvEntryFactory, csvReader, csvWriter, logger)
+	app := portfoliodownloader.NewApp(client, eventTypeResolver, detailsClient, processor, logger)
 	return app, nil
 }
 
@@ -61,9 +62,10 @@ func CreateRemoteApp(logger *logrus.Logger) (portfoliodownloader.App, error) {
 		return portfoliodownloader.App{}, err
 	}
 	transactionsClient := transactions.NewClient(reader)
+	eventTypeResolver := transactions.NewEventTypeResolver(logger)
 	detailsClient := details.NewClient(reader)
-	typeResolver := transaction.NewTypeResolver(logger)
-	builder := transaction.NewBuilder(typeResolver, logger)
+	typeResolver := details.NewTypeResolver(logger)
+	modelBuilderFactory := transaction.NewModelBuilderFactory(typeResolver, logger)
 	db, err := database.NewSQLiteOnFS()
 	if err != nil {
 		return portfoliodownloader.App{}, err
@@ -75,16 +77,16 @@ func CreateRemoteApp(logger *logrus.Logger) (portfoliodownloader.App, error) {
 	csvEntryFactory := transaction.NewCSVEntryFactory(logger)
 	csvReader := filesystem.NewCSVReader(logger)
 	csvWriter := filesystem.NewCSVWriter(logger)
-	processor := transaction.NewProcessor(builder, repository, csvEntryFactory, csvReader, csvWriter, logger)
-	app := portfoliodownloader.NewApp(transactionsClient, detailsClient, processor, logger)
+	processor := transaction.NewProcessor(modelBuilderFactory, repository, csvEntryFactory, csvReader, csvWriter, logger)
+	app := portfoliodownloader.NewApp(transactionsClient, eventTypeResolver, detailsClient, processor, logger)
 	return app, nil
 }
 
 // wire.go:
 
 var (
-	DefaultSet = wire.NewSet(portfoliodownloader.NewApp, transactions.NewClient, details.NewClient, transaction.NewTypeResolver, transaction.NewBuilder, database.NewSQLiteOnFS, transaction.NewCSVEntryFactory, filesystem.NewCSVReader, filesystem.NewCSVWriter, transaction.NewProcessor, ProvideTransactionRepository,
-		ProvideInstrumentRepository, wire.Bind(new(transaction.TypeResolverInterface), new(transaction.TypeResolver)), wire.Bind(new(transaction.BuilderInterface), new(transaction.Builder)), wire.Bind(new(transaction.RepositoryInterface), new(*database.Repository[*transaction.Model])), wire.Bind(new(transaction.InstrumentRepositoryInterface), new(*database.Repository[*transaction.Instrument])),
+	DefaultSet = wire.NewSet(portfoliodownloader.NewApp, transactions.NewClient, transactions.NewEventTypeResolver, details.NewClient, details.NewTypeResolver, transaction.NewModelBuilderFactory, database.NewSQLiteOnFS, transaction.NewCSVEntryFactory, filesystem.NewCSVReader, filesystem.NewCSVWriter, transaction.NewProcessor, ProvideTransactionRepository,
+		ProvideInstrumentRepository, wire.Bind(new(transactions.EventTypeResolverInterface), new(transactions.EventTypeResolver)), wire.Bind(new(details.TypeResolverInterface), new(details.TypeResolver)), wire.Bind(new(transaction.ModelBuilderFactoryInterface), new(transaction.ModelBuilderFactory)), wire.Bind(new(transaction.RepositoryInterface), new(*database.Repository[*transaction.Model])), wire.Bind(new(transaction.InstrumentRepositoryInterface), new(*database.Repository[*transaction.Instrument])),
 	)
 
 	RemoteSet = wire.NewSet(
