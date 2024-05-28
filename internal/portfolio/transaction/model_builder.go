@@ -31,7 +31,7 @@ func NewModelBuilderFactory(resolver details.TypeResolverInterface, logger *log.
 	}
 }
 
-//nolint:ireturn
+//nolint:ireturn,cyclop
 func (f ModelBuilderFactory) Create(
 	eventType transactions.EventType,
 	response details.Response,
@@ -45,21 +45,24 @@ func (f ModelBuilderFactory) Create(
 		return nil, fmt.Errorf("resolver error: %w", err)
 	}
 
-	baseBuilder := BaseModelBuilder{response: response, logger: f.logger}
+	baseBuilder := NewBaseModelBuilder(response, f.logger)
+	purchaseBuilder := NewPurchaseBuilder(baseBuilder)
 
 	switch responseType {
 	case details.TypePurchaseTransaction:
-		return PurchaseBuilder{baseBuilder}, nil
+		return purchaseBuilder, nil
 	case details.TypeSaleTransaction:
-		return SaleBuilder{PurchaseBuilder{baseBuilder}}, nil
+		return NewSaleBuilder(purchaseBuilder), nil
 	case details.TypeDividendPayoutTransaction:
-		return DividendPayoutBuilder{PurchaseBuilder{baseBuilder}}, nil
+		return NewDividendPayoutBuilder(purchaseBuilder), nil
 	case details.TypeRoundUpTransaction:
-		return RoundUpBuilder{PurchaseBuilder{baseBuilder}}, nil
+		return NewRoundUpBuilder(purchaseBuilder), nil
 	case details.TypeSavebackTransaction:
-		return SavebackBuilder{PurchaseBuilder{baseBuilder}}, nil
+		return NewSavebackBuilder(purchaseBuilder), nil
 	case details.TypeDepositTransaction:
-		return DepositBuilder{baseBuilder}, nil
+		return NewDepositBuilder(baseBuilder), nil
+	case details.TypeWithdrawalTransaction:
+		return NewWithdrawBuilder(NewDepositBuilder(baseBuilder)), nil
 	case
 		details.TypeUnsupported,
 		details.TypeCardPaymentTransaction,
@@ -77,6 +80,10 @@ type ModelBuilderInterface interface {
 type BaseModelBuilder struct {
 	response details.Response
 	logger   *log.Logger
+}
+
+func NewBaseModelBuilder(response details.Response, logger *log.Logger) BaseModelBuilder {
+	return BaseModelBuilder{response: response, logger: logger}
 }
 
 func (b BaseModelBuilder) ExtractStatus() (string, error) {
@@ -397,6 +404,10 @@ type PurchaseBuilder struct {
 	BaseModelBuilder
 }
 
+func NewPurchaseBuilder(baseBuilder BaseModelBuilder) PurchaseBuilder {
+	return PurchaseBuilder{baseBuilder}
+}
+
 func (b PurchaseBuilder) Build() (Model, error) {
 	var err error
 
@@ -455,6 +466,10 @@ type SaleBuilder struct {
 	PurchaseBuilder
 }
 
+func NewSaleBuilder(purchaseBuilder PurchaseBuilder) SaleBuilder {
+	return SaleBuilder{purchaseBuilder}
+}
+
 func (b SaleBuilder) Build() (Model, error) {
 	model, err := b.PurchaseBuilder.Build()
 	if err != nil {
@@ -485,6 +500,10 @@ type RoundUpBuilder struct {
 	PurchaseBuilder
 }
 
+func NewRoundUpBuilder(purchaseBuilder PurchaseBuilder) RoundUpBuilder {
+	return RoundUpBuilder{purchaseBuilder}
+}
+
 func (b RoundUpBuilder) Build() (Model, error) {
 	model, err := b.PurchaseBuilder.Build()
 	if err != nil {
@@ -498,6 +517,10 @@ func (b RoundUpBuilder) Build() (Model, error) {
 
 type SavebackBuilder struct {
 	PurchaseBuilder
+}
+
+func NewSavebackBuilder(purchaseBuilder PurchaseBuilder) SavebackBuilder {
+	return SavebackBuilder{purchaseBuilder}
 }
 
 func (b SavebackBuilder) Build() (Model, error) {
@@ -515,6 +538,10 @@ type DividendPayoutBuilder struct {
 	PurchaseBuilder
 }
 
+func NewDividendPayoutBuilder(purchaseBuilder PurchaseBuilder) DividendPayoutBuilder {
+	return DividendPayoutBuilder{purchaseBuilder}
+}
+
 func (b DividendPayoutBuilder) Build() (Model, error) {
 	model, err := b.PurchaseBuilder.Build()
 	if err != nil {
@@ -528,6 +555,10 @@ func (b DividendPayoutBuilder) Build() (Model, error) {
 
 type DepositBuilder struct {
 	BaseModelBuilder
+}
+
+func NewDepositBuilder(baseBuilder BaseModelBuilder) DepositBuilder {
+	return DepositBuilder{baseBuilder}
 }
 
 func (b DepositBuilder) Build() (Model, error) {
@@ -564,6 +595,25 @@ func (b DepositBuilder) Build() (Model, error) {
 	}
 
 	model.Documents, _ = b.BuildDocuments()
+
+	return model, nil
+}
+
+type WithdrawBuilder struct {
+	DepositBuilder
+}
+
+func NewWithdrawBuilder(depositBuilder DepositBuilder) WithdrawBuilder {
+	return WithdrawBuilder{depositBuilder}
+}
+
+func (b WithdrawBuilder) Build() (Model, error) {
+	model, err := b.DepositBuilder.Build()
+	if err != nil {
+		return model, err
+	}
+
+	model.Type = TypeWithdrawal
 
 	return model, nil
 }

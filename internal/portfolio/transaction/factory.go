@@ -47,6 +47,8 @@ func (f CSVEntryFactory) Make(transaction Model) (filesystem.CSVEntry, error) {
 		credit = transaction.Total
 	case TypeDeposit:
 		credit = transaction.Total
+	case TypeWithdrawal:
+		debit = transaction.Total
 	default:
 		return filesystem.CSVEntry{}, fmt.Errorf(
 			"unsupported type '%s' received: %w",

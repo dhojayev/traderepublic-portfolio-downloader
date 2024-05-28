@@ -56,6 +56,13 @@ func (a App) Run() error {
 		id := transactionResponse.Action.Payload
 		infoFields := log.Fields{"id": id}
 
+		a.logger.WithFields(infoFields).Info("Fetching transaction details")
+
+		transactionDetails, err := a.timelineDetailsClient.Get(id)
+		if err != nil {
+			return fmt.Errorf("could not fetch transaction details: %w", err)
+		}
+
 		eventType, err := a.eventTypeResolver.Resolve(transactionResponse)
 		if err != nil {
 			if errors.Is(err, transactions.ErrUnsupportedEventType) {
@@ -65,13 +72,6 @@ func (a App) Run() error {
 			}
 
 			return fmt.Errorf("could not resolve transaction even type: %w", err)
-		}
-
-		a.logger.WithFields(infoFields).Info("Fetching transaction details")
-
-		transactionDetails, err := a.timelineDetailsClient.Get(id)
-		if err != nil {
-			return fmt.Errorf("could not fetch transaction details: %w", err)
 		}
 
 		a.logger.WithFields(infoFields).Info("Processing transaction details")

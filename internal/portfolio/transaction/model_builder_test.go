@@ -28,6 +28,7 @@ func TestModelBuilderBuildSupported(t *testing.T) {
 		fakes.OrderExecuted03,
 		fakes.PaymentInbound01,
 		fakes.PaymentInboundSepaDirectDebit01,
+		fakes.PaymentOutbound01,
 		fakes.SavingsPlanExecuted01,
 	}
 
@@ -51,6 +52,10 @@ func TestModelBuilderBuildSupported(t *testing.T) {
 
 		builder, err := builderFactory.Create(testCase.EventType, response)
 		assert.NoError(t, err, fmt.Sprintf("case %d", i))
+
+		if err != nil {
+			return
+		}
 
 		actual, err := builder.Build()
 		assert.NoError(t, err, fmt.Sprintf("case %d", i))

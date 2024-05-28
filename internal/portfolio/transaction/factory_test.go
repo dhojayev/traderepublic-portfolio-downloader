@@ -27,6 +27,7 @@ func TestMakeSupported(t *testing.T) {
 		fakes.OrderExecuted03,
 		fakes.PaymentInbound01,
 		fakes.PaymentInboundSepaDirectDebit01,
+		fakes.PaymentOutbound01,
 		fakes.SavingsPlanExecuted01,
 	}
 
@@ -36,6 +37,11 @@ func TestMakeSupported(t *testing.T) {
 		actual, err := factory.Make(testCase.Transaction)
 
 		assert.NoError(t, err, fmt.Sprintf("case %d", i))
+
+		if err != nil {
+			continue
+		}
+
 		assertHelper(t, testCase.CSVEntry, actual, i)
 	}
 }
