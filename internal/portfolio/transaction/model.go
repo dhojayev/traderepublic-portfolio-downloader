@@ -15,11 +15,13 @@ const (
 	TypeRoundUp        = "Round up"
 	TypeSaveback       = "Saveback"
 	TypeDeposit        = "Deposit"
+	TypeWithdrawal     = "Withdrawal"
 
 	InstrumentTypeStocks         = "Stocks"
 	InstrumentTypeETF            = "ETF"
 	InstrumentTypeCryptocurrency = "Cryptocurrency"
 	InstrumentTypeLending        = "Lending"
+	InstrumentTypeCash           = "Cash"
 	InstrumentTypeOther          = "Other"
 
 	isinPrefixLending = "XS"
@@ -35,18 +37,18 @@ type Model struct {
 	Instrument     Instrument
 	Documents      []document.Model `gorm:"-"`
 
-	Type          string    `gorm:"index"`
-	Timestamp     time.Time `gorm:"index"`
-	Status        string
-	Yield         float64
-	Profit        float64
-	Shares        float64
-	Rate          float64
-	Commission    float64
-	Total         float64
-	TaxAmount     float64
-	CreatedAt     time.Time `gorm:"index"`
-	UpdatedAt     time.Time `gorm:"index"`
+	Type       string    `gorm:"index"`
+	Timestamp  time.Time `gorm:"index"`
+	Status     string
+	Yield      float64
+	Profit     float64
+	Shares     float64
+	Rate       float64
+	Commission float64
+	Total      float64
+	TaxAmount  float64
+	CreatedAt  time.Time `gorm:"index"`
+	UpdatedAt  time.Time `gorm:"index"`
 }
 
 func NewTransaction(
@@ -57,19 +59,19 @@ func NewTransaction(
 	documents []document.Model,
 ) Model {
 	return Model{
-		UUID:          uuid,
-		Type:          transactionType,
-		Timestamp:     timestamp,
-		Status:        status,
-		Yield:         yield,
-		Profit:        profit,
-		Shares:        shares,
-		Rate:          rate,
-		Commission:    commission,
-		Total:         total,
-		TaxAmount:     tax,
-		Instrument:    instrument,
-		Documents:     documents,
+		UUID:       uuid,
+		Type:       transactionType,
+		Timestamp:  timestamp,
+		Status:     status,
+		Yield:      yield,
+		Profit:     profit,
+		Shares:     shares,
+		Rate:       rate,
+		Commission: commission,
+		Total:      total,
+		TaxAmount:  tax,
+		Instrument: instrument,
+		Documents:  documents,
 	}
 }
 

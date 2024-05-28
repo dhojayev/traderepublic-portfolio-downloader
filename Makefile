@@ -8,6 +8,7 @@ init:
 generate:
 	rm -f **/*_gen.go **/*_mock.go
 	go generate ./...
+	go run ./cmd/example
 	
 lint:
 	go run -mod=mod github.com/golangci/golangci-lint/cmd/golangci-lint@latest run ./... 

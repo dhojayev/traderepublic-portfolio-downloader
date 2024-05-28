@@ -22,6 +22,7 @@ const (
 	TypeSavebackTransaction       Type = "Saveback"
 	TypeCardPaymentTransaction    Type = "Card payment"
 	TypeDepositTransaction        Type = "Deposit"
+	TypeWithdrawalTransaction     Type = "Withdrawal"
 	TypeInterestPayoutTransaction Type = "Interest payout"
 )
 
@@ -46,6 +47,7 @@ func NewTypeResolver(logger *log.Logger) TypeResolver {
 			TypeRoundUpTransaction:        RoundUpDetector,
 			TypeSavebackTransaction:       SavebackDetector,
 			TypeDividendPayoutTransaction: DividendPayoutDetector,
+			TypeWithdrawalTransaction:     WithdrawalDetector,
 
 			// Detectors with the highest performance hit should be listed in the bottom.
 			TypePurchaseTransaction: PurchaseDetector,
@@ -138,4 +140,8 @@ func InterestPayoutDetector(eventType transactions.EventType, _ Response) bool {
 
 func DividendPayoutDetector(eventType transactions.EventType, _ Response) bool {
 	return eventType == transactions.EventTypeCredit
+}
+
+func WithdrawalDetector(eventType transactions.EventType, _ Response) bool {
+	return eventType == transactions.EventTypePaymentOutbound
 }

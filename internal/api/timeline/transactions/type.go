@@ -9,6 +9,7 @@ import (
 const (
 	EventTypePaymentInbound                EventType = "PAYMENT_INBOUND"
 	EventTypePaymentInboundSepaDirectDebit EventType = "PAYMENT_INBOUND_SEPA_DIRECT_DEBIT"
+	EventTypePaymentOutbound               EventType = "PAYMENT_OUTBOUND"
 	EventTypeOrderExecuted                 EventType = "ORDER_EXECUTED"
 	EventTypeSavingsPlanExecuted           EventType = "SAVINGS_PLAN_EXECUTED"
 	EventTypeInterestPayoutCreated         EventType = "INTEREST_PAYOUT_CREATED"
@@ -37,6 +38,7 @@ func NewEventTypeResolver(logger *log.Logger) EventTypeResolver {
 		supportedTypes: []EventType{
 			EventTypePaymentInbound,
 			EventTypePaymentInboundSepaDirectDebit,
+			EventTypePaymentOutbound,
 			EventTypeOrderExecuted,
 			EventTypeSavingsPlanExecuted,
 			EventTypeInterestPayoutCreated,
