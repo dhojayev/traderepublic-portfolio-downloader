@@ -181,10 +181,10 @@ var PaymentInboundSepaDirectDebit01 = tests.TestCase{
 		Total:  500,
 		Documents: []document.Model{
 			{
-				ID:    "cfc08704-eb56-44f1-83a0-c39aba9055ca",
-				URL:   "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
-				Date:  "23.07.2023",
-				Title: "Abrechnung Einzahlung",
+				ID:     "cfc08704-eb56-44f1-83a0-c39aba9055ca",
+				URL:    "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
+				Detail: "23.07.2023",
+				Title:  "Abrechnung Einzahlung",
 			},
 		},
 	},
@@ -200,4 +200,6 @@ var PaymentInboundSepaDirectDebit01 = tests.TestCase{
 func init() {
 	PaymentInboundSepaDirectDebit01.Transaction.Timestamp, _ = time.Parse(internal.DefaultTimeFormat, "2023-07-23T21:05:22.543+0000")
 	PaymentInboundSepaDirectDebit01.CSVEntry.Timestamp = internal.DateTime{Time: PaymentInboundSepaDirectDebit01.Transaction.Timestamp}
+
+	PaymentInboundSepaDirectDebit01.Transaction.Documents[0].Timestamp, _ = time.Parse(document.TimeFormat, "23.07.2023")
 }

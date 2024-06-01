@@ -207,22 +207,22 @@ var OrderExecuted03 = tests.TestCase{
 		TaxAmount:  0.01,
 		Documents: []document.Model{
 			{
-				ID:    "f17b2237-0e32-410e-b38b-8638600ffbb0",
-				URL:   "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox",
-				Date:  "11.03.2024",
-				Title: "Abrechnung",
+				ID:     "f17b2237-0e32-410e-b38b-8638600ffbb0",
+				URL:    "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox",
+				Detail: "11.03.2024",
+				Title:  "Abrechnung",
 			},
 			{
-				ID:    "3c214355-dc5a-488a-b780-b28fb66b66c8",
-				URL:   "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox",
-				Date:  "27.02.2024",
-				Title: "Auftragsbestätigung",
+				ID:     "3c214355-dc5a-488a-b780-b28fb66b66c8",
+				URL:    "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox",
+				Detail: "27.02.2024",
+				Title:  "Auftragsbestätigung",
 			},
 			{
-				ID:    "21a13acc-7f3c-4156-8365-be8089006ac4",
-				URL:   "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox",
-				Date:  "12.02.2024",
-				Title: "Kosteninformation",
+				ID:     "21a13acc-7f3c-4156-8365-be8089006ac4",
+				URL:    "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox",
+				Detail: "12.02.2024",
+				Title:  "Kosteninformation",
 			},
 		},
 	},
@@ -246,4 +246,8 @@ var OrderExecuted03 = tests.TestCase{
 func init() {
 	OrderExecuted03.Transaction.Timestamp, _ = time.Parse(internal.DefaultTimeFormat, "2024-03-11T11:23:59.448+0000")
 	OrderExecuted03.CSVEntry.Timestamp = internal.DateTime{Time: OrderExecuted03.Transaction.Timestamp}
+
+	OrderExecuted03.Transaction.Documents[0].Timestamp, _ = time.Parse(document.TimeFormat, "11.03.2024")
+	OrderExecuted03.Transaction.Documents[1].Timestamp, _ = time.Parse(document.TimeFormat, "27.02.2024")
+	OrderExecuted03.Transaction.Documents[2].Timestamp, _ = time.Parse(document.TimeFormat, "12.02.2024")
 }

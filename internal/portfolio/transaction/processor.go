@@ -7,19 +7,24 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
 
 	log "github.com/sirupsen/logrus"
 )
 
-const csvFilename = "transactions.csv"
+const (
+	csvFilename     = "./transactions.csv"
+	documentBaseDir = "./documents"
+)
 
 type Processor struct {
-	builderFactory  ModelBuilderFactoryInterface
-	transactionRepo RepositoryInterface
-	factory         CSVEntryFactory
-	csvReader       filesystem.CSVReader
-	csvWriter       filesystem.CSVWriter
-	logger          *log.Logger
+	builderFactory     ModelBuilderFactoryInterface
+	transactionRepo    RepositoryInterface
+	factory            CSVEntryFactory
+	csvReader          filesystem.CSVReader
+	csvWriter          filesystem.CSVWriter
+	documentDownloader document.DownloaderInterface
+	logger             *log.Logger
 }
 
 func NewProcessor(
@@ -28,15 +33,17 @@ func NewProcessor(
 	factory CSVEntryFactory,
 	csvReader filesystem.CSVReader,
 	csvWriter filesystem.CSVWriter,
+	documentDownloader document.DownloaderInterface,
 	logger *log.Logger,
 ) Processor {
 	return Processor{
-		builderFactory:  builderFactory,
-		transactionRepo: transactionRepo,
-		factory:         factory,
-		csvReader:       csvReader,
-		csvWriter:       csvWriter,
-		logger:          logger,
+		builderFactory:     builderFactory,
+		transactionRepo:    transactionRepo,
+		factory:            factory,
+		csvReader:          csvReader,
+		csvWriter:          csvWriter,
+		documentDownloader: documentDownloader,
+		logger:             logger,
 	}
 }
 
@@ -52,10 +59,14 @@ func (p Processor) Process(eventType transactions.EventType, response details.Re
 		}
 	}
 
+	logFields := log.Fields{
+		"id": response.ID,
+	}
+
 	builder, err := p.builderFactory.Create(eventType, response)
 	if err != nil {
 		if errors.Is(err, ErrUnsupportedType) {
-			p.logger.WithField("id", response.ID).Debugf("builder factory error: %s", err)
+			p.logger.WithFields(logFields).Debugf("builder factory error: %s", err)
 
 			return ErrUnsupportedType
 		}
@@ -79,6 +90,15 @@ func (p Processor) Process(eventType transactions.EventType, response details.Re
 
 	if err := p.csvWriter.Write(csvFilename, entry); err != nil {
 		return fmt.Errorf("could not save transaction to file: %w", err)
+	}
+
+	for _, document := range transaction.Documents {
+		destDir := fmt.Sprintf("%s/%s", documentBaseDir, transaction.UUID)
+
+		_, err = p.documentDownloader.Download(destDir, document)
+		if err != nil {
+			p.logger.WithFields(logFields).Warnf("document downloader error: %s", err)
+		}
 	}
 
 	return nil

@@ -299,4 +299,8 @@ var BenefitsSpareChangeExecution01 = tests.TestCase{
 func init() {
 	BenefitsSpareChangeExecution01.Transaction.Timestamp, _ = time.Parse(internal.DefaultTimeFormat, "2024-01-04T12:26:52.110+0000")
 	BenefitsSpareChangeExecution01.CSVEntry.Timestamp = internal.DateTime{Time: BenefitsSpareChangeExecution01.Transaction.Timestamp}
+
+	BenefitsSpareChangeExecution01.Transaction.Documents[0].Timestamp = BenefitsSpareChangeExecution01.Transaction.Timestamp
+	BenefitsSpareChangeExecution01.Transaction.Documents[1].Timestamp = BenefitsSpareChangeExecution01.Transaction.Timestamp
+	BenefitsSpareChangeExecution01.Transaction.Documents[2].Timestamp = BenefitsSpareChangeExecution01.Transaction.Timestamp
 }

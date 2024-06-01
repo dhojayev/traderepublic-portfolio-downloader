@@ -4,10 +4,13 @@ package document
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/cavaliergopher/grab/v3"
 	log "github.com/sirupsen/logrus"
 )
+
+const permDir = 0o700
 
 type DownloaderInterface interface {
 	Download(destDir string, document Model) (string, error)
@@ -22,6 +25,10 @@ func NewDownloader(logger *log.Logger) Downloader {
 }
 
 func (d Downloader) Download(destDir string, document Model) (string, error) {
+	if err := os.Mkdir(destDir, permDir); err != nil {
+		return "", fmt.Errorf("could not create download dir: %w", err)
+	}
+
 	resp, err := grab.Get(destDir, document.URL)
 	if err != nil {
 		return "", fmt.Errorf("could not download document: %w", err)

@@ -201,10 +201,10 @@ var Credit01 = tests.TestCase{
 		},
 		Documents: []document.Model{
 			{
-				ID:    "df244c67-8907-4365-bb89-ce26e1fadea5",
-				URL:   "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
-				Date:  "13.12.2023",
-				Title: "Abrechnung",
+				ID:     "df244c67-8907-4365-bb89-ce26e1fadea5",
+				URL:    "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
+				Detail: "13.12.2023",
+				Title:  "Abrechnung",
 			},
 		},
 		Type:   transaction.TypeDividendPayout,
@@ -230,4 +230,6 @@ var Credit01 = tests.TestCase{
 func init() {
 	Credit01.Transaction.Timestamp, _ = time.Parse(internal.DefaultTimeFormat, "2023-12-13T12:44:28.857+0000")
 	Credit01.CSVEntry.Timestamp = internal.DateTime{Time: Credit01.Transaction.Timestamp}
+
+	Credit01.Transaction.Documents[0].Timestamp, _ = time.Parse(document.TimeFormat, "13.12.2023")
 }

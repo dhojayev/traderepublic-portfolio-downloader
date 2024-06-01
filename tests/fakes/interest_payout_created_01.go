@@ -314,10 +314,10 @@ var InterestPayoutCreated01 = tests.TestCase{
 		TaxAmount:  0,
 		Documents: []document.Model{
 			{
-				ID:    "",
-				URL:   "",
-				Date:  "",
-				Title: "",
+				ID:     "",
+				URL:    "",
+				Detail: "",
+				Title:  "",
 			},
 		},
 	},

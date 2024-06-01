@@ -17,6 +17,7 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/database"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/writer"
 	"github.com/google/wire"
@@ -44,7 +45,8 @@ func CreateLocalApp(baseDir string, logger *logrus.Logger) (portfoliodownloader.
 	csvEntryFactory := transaction.NewCSVEntryFactory(logger)
 	csvReader := filesystem.NewCSVReader(logger)
 	csvWriter := filesystem.NewCSVWriter(logger)
-	processor := transaction.NewProcessor(modelBuilderFactory, repository, csvEntryFactory, csvReader, csvWriter, logger)
+	downloader := document.NewDownloader(logger)
+	processor := transaction.NewProcessor(modelBuilderFactory, repository, csvEntryFactory, csvReader, csvWriter, downloader, logger)
 	app := portfoliodownloader.NewApp(client, eventTypeResolver, detailsClient, processor, logger)
 	return app, nil
 }
@@ -77,7 +79,8 @@ func CreateRemoteApp(logger *logrus.Logger) (portfoliodownloader.App, error) {
 	csvEntryFactory := transaction.NewCSVEntryFactory(logger)
 	csvReader := filesystem.NewCSVReader(logger)
 	csvWriter := filesystem.NewCSVWriter(logger)
-	processor := transaction.NewProcessor(modelBuilderFactory, repository, csvEntryFactory, csvReader, csvWriter, logger)
+	downloader := document.NewDownloader(logger)
+	processor := transaction.NewProcessor(modelBuilderFactory, repository, csvEntryFactory, csvReader, csvWriter, downloader, logger)
 	app := portfoliodownloader.NewApp(transactionsClient, eventTypeResolver, detailsClient, processor, logger)
 	return app, nil
 }
@@ -86,7 +89,7 @@ func CreateRemoteApp(logger *logrus.Logger) (portfoliodownloader.App, error) {
 
 var (
 	DefaultSet = wire.NewSet(portfoliodownloader.NewApp, transactions.NewClient, transactions.NewEventTypeResolver, details.NewClient, details.NewTypeResolver, transaction.NewModelBuilderFactory, database.NewSQLiteOnFS, transaction.NewCSVEntryFactory, filesystem.NewCSVReader, filesystem.NewCSVWriter, transaction.NewProcessor, ProvideTransactionRepository,
-		ProvideInstrumentRepository, wire.Bind(new(transactions.EventTypeResolverInterface), new(transactions.EventTypeResolver)), wire.Bind(new(details.TypeResolverInterface), new(details.TypeResolver)), wire.Bind(new(transaction.ModelBuilderFactoryInterface), new(transaction.ModelBuilderFactory)), wire.Bind(new(transaction.RepositoryInterface), new(*database.Repository[*transaction.Model])), wire.Bind(new(transaction.InstrumentRepositoryInterface), new(*database.Repository[*transaction.Instrument])),
+		ProvideInstrumentRepository, document.NewDownloader, wire.Bind(new(transactions.EventTypeResolverInterface), new(transactions.EventTypeResolver)), wire.Bind(new(details.TypeResolverInterface), new(details.TypeResolver)), wire.Bind(new(transaction.ModelBuilderFactoryInterface), new(transaction.ModelBuilderFactory)), wire.Bind(new(transaction.RepositoryInterface), new(*database.Repository[*transaction.Model])), wire.Bind(new(transaction.InstrumentRepositoryInterface), new(*database.Repository[*transaction.Instrument])), wire.Bind(new(document.DownloaderInterface), new(document.Downloader)),
 	)
 
 	RemoteSet = wire.NewSet(

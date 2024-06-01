@@ -1,17 +1,23 @@
 package document
 
+import "time"
+
 type Model struct {
-	ID    string
-	URL   string
-	Date  string
-	Title string
+	ID        string
+	URL       string
+	Detail    string
+	Title     string
+	Timestamp time.Time
+	Filepath  string
 }
 
-func NewModel(id, url, date, title string) Model {
+func NewModel(id, url, detail, title, filepath string, timestamp time.Time) Model {
 	return Model{
-		ID:    id,
-		URL:   url,
-		Date:  date,
-		Title: title,
+		ID:        id,
+		URL:       url,
+		Detail:    detail,
+		Title:     title,
+		Timestamp: timestamp,
+		Filepath:  filepath,
 	}
 }
