@@ -3,9 +3,13 @@
 package document
 
 import (
+	"context"
 	"fmt"
+	"io"
+	"net/http"
+	"os"
+	"path/filepath"
 
-	"github.com/cavaliergopher/grab/v3"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -15,7 +19,7 @@ const (
 )
 
 type DownloaderInterface interface {
-	Download(baseDir string, document Model) (string, error)
+	Download(baseDir string, document Model) error
 }
 
 type Downloader struct {
@@ -26,13 +30,37 @@ func NewDownloader(logger *log.Logger) Downloader {
 	return Downloader{logger: logger}
 }
 
-func (d Downloader) Download(baseDir string, document Model) (string, error) {
+func (d Downloader) Download(baseDir string, document Model) error {
 	dest := baseDir + "/" + document.Filepath
+	dir := filepath.Dir(dest)
 
-	resp, err := grab.Get(dest, document.URL)
-	if err != nil {
-		return "", fmt.Errorf("could not download document: %w", err)
+	if err := os.MkdirAll(dir, permDir); err != nil {
+		return fmt.Errorf("could not create directory for document: %w", err)
 	}
 
-	return resp.Filename, nil
+	req, err := http.NewRequest(http.MethodGet, document.URL, nil)
+	if err != nil {
+		return fmt.Errorf("could not create request for document download: %w", err)
+	}
+
+	resp, err := http.DefaultClient.Do(req.WithContext(context.Background()))
+	if err != nil {
+		return fmt.Errorf("could not download document: %w", err)
+	}
+
+	defer resp.Body.Close()
+
+	out, err := os.Create(dest)
+	if err != nil {
+		return fmt.Errorf("could not create document file: %w", err)
+	}
+
+	defer out.Close()
+
+	_, err = io.Copy(out, resp.Body)
+	if err != nil {
+		return fmt.Errorf("could not write document file: %w", err)
+	}
+
+	return nil
 }

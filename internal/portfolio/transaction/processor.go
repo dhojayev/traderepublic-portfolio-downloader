@@ -94,7 +94,7 @@ func (p Processor) Process(eventType transactions.EventType, response details.Re
 	}
 
 	for _, document := range transaction.Documents {
-		_, err := p.documentDownloader.Download(documentBaseDir, document)
+		err = p.documentDownloader.Download(documentBaseDir, document)
 		if err == nil {
 			continue
 		}

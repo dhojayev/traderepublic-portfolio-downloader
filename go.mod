@@ -5,7 +5,6 @@ go 1.22.3
 require (
 	github.com/alexflint/go-arg v1.4.3
 	github.com/antonfisher/nested-logrus-formatter v1.3.1
-	github.com/cavaliergopher/grab/v3 v3.0.1
 	github.com/gocarina/gocsv v0.0.0-20231116093920-b87c2d0e983a
 	github.com/google/wire v0.6.0
 	github.com/gorilla/websocket v1.5.1
