@@ -1,17 +1,25 @@
 package document
 
 type Model struct {
-	ID    string
-	URL   string
-	Date  string
-	Title string
+	TransactionUUID string `gorm:"foreignKey:UUID"`
+	ID              string `gorm:"primaryKey"`
+	URL             string `gorm:"-"`
+	Detail          string
+	Title           string
+	Filepath        string
 }
 
-func NewModel(id, url, date, title string) Model {
+func NewModel(transactionUUID, id, url, detail, title, filename string) Model {
 	return Model{
-		ID:    id,
-		URL:   url,
-		Date:  date,
-		Title: title,
+		TransactionUUID: transactionUUID,
+		ID:              id,
+		URL:             url,
+		Detail:          detail,
+		Title:           title,
+		Filepath:        filename,
 	}
+}
+
+func (Model) TableName() string {
+	return "documents"
 }

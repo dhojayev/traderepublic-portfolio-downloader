@@ -318,10 +318,11 @@ var SavingsPlanExecuted01 = tests.TestCase{
 		Total:  500,
 		Documents: []document.Model{
 			{
-				ID:    "0ac3aea7-6d68-4815-8f25-9c8997ef790d",
-				URL:   "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
-				Date:  "11.11.2023",
-				Title: "Abrechnung Ausführung",
+				ID:       "0ac3aea7-6d68-4815-8f25-9c8997ef790d",
+				URL:      "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
+				Detail:   "11.11.2023",
+				Title:    "Abrechnung Ausführung",
+				Filepath: "2023-11/7c9be07c-7b88-4a49-a4be-425094388b8e/Abrechnung Ausführung.pdf",
 			},
 		},
 	},
@@ -339,6 +340,6 @@ var SavingsPlanExecuted01 = tests.TestCase{
 }
 
 func init() {
-	SavingsPlanExecuted01.Transaction.Timestamp, _ = time.Parse(internal.DefaultTimeFormat, "2023-11-11T13:40:59.926+0000")
+	SavingsPlanExecuted01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2023-11-11T13:40:59.926+0000")
 	SavingsPlanExecuted01.CSVEntry.Timestamp = internal.DateTime{Time: SavingsPlanExecuted01.Transaction.Timestamp}
 }

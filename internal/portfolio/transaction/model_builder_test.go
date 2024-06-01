@@ -11,6 +11,7 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/tests"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/tests/fakes"
@@ -37,7 +38,9 @@ func TestModelBuilderBuildSupported(t *testing.T) {
 	readerMock := portfolio.NewMockReaderInterface(controller)
 	detailsClient := details.NewClient(readerMock)
 	resolver := details.NewTypeResolver(logger)
-	builderFactory := transaction.NewModelBuilderFactory(resolver, logger)
+	documentDateResolver := document.NewDateResolver(logger)
+	documentBuilder := document.NewModelBuilder(documentDateResolver, logger)
+	builderFactory := transaction.NewModelBuilderFactory(resolver, documentBuilder, logger)
 
 	for i, testCase := range testCases {
 		readerMock.
@@ -75,7 +78,9 @@ func TestModelBuilderBuildUnsupported(t *testing.T) {
 	readerMock := portfolio.NewMockReaderInterface(controller)
 	detailsClient := details.NewClient(readerMock)
 	resolver := details.NewTypeResolver(logger)
-	builderFactory := transaction.NewModelBuilderFactory(resolver, logger)
+	documentDateResolver := document.NewDateResolver(logger)
+	documentBuilder := document.NewModelBuilder(documentDateResolver, logger)
+	builderFactory := transaction.NewModelBuilderFactory(resolver, documentBuilder, logger)
 
 	for i, testCase := range testCases {
 		readerMock.

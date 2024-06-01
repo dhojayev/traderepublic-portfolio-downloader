@@ -7,19 +7,24 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
 
 	log "github.com/sirupsen/logrus"
 )
 
-const csvFilename = "transactions.csv"
+const (
+	csvFilename     = "./transactions.csv"
+	documentBaseDir = "./documents/transactions"
+)
 
 type Processor struct {
-	builderFactory  ModelBuilderFactoryInterface
-	transactionRepo RepositoryInterface
-	factory         CSVEntryFactory
-	csvReader       filesystem.CSVReader
-	csvWriter       filesystem.CSVWriter
-	logger          *log.Logger
+	builderFactory     ModelBuilderFactoryInterface
+	transactionRepo    RepositoryInterface
+	factory            CSVEntryFactory
+	csvReader          filesystem.CSVReader
+	csvWriter          filesystem.CSVWriter
+	documentDownloader document.DownloaderInterface
+	logger             *log.Logger
 }
 
 func NewProcessor(
@@ -28,18 +33,21 @@ func NewProcessor(
 	factory CSVEntryFactory,
 	csvReader filesystem.CSVReader,
 	csvWriter filesystem.CSVWriter,
+	documentDownloader document.DownloaderInterface,
 	logger *log.Logger,
 ) Processor {
 	return Processor{
-		builderFactory:  builderFactory,
-		transactionRepo: transactionRepo,
-		factory:         factory,
-		csvReader:       csvReader,
-		csvWriter:       csvWriter,
-		logger:          logger,
+		builderFactory:     builderFactory,
+		transactionRepo:    transactionRepo,
+		factory:            factory,
+		csvReader:          csvReader,
+		csvWriter:          csvWriter,
+		documentDownloader: documentDownloader,
+		logger:             logger,
 	}
 }
 
+//nolint:cyclop,funlen
 func (p Processor) Process(eventType transactions.EventType, response details.Response) error {
 	csvEntries, err := p.csvReader.Read(csvFilename)
 	if err != nil {
@@ -52,10 +60,14 @@ func (p Processor) Process(eventType transactions.EventType, response details.Re
 		}
 	}
 
+	logFields := log.Fields{
+		"id": response.ID,
+	}
+
 	builder, err := p.builderFactory.Create(eventType, response)
 	if err != nil {
 		if errors.Is(err, ErrUnsupportedType) {
-			p.logger.WithField("id", response.ID).Debugf("builder factory error: %s", err)
+			p.logger.WithFields(logFields).Debugf("builder factory error: %s", err)
 
 			return ErrUnsupportedType
 		}
@@ -79,6 +91,23 @@ func (p Processor) Process(eventType transactions.EventType, response details.Re
 
 	if err := p.csvWriter.Write(csvFilename, entry); err != nil {
 		return fmt.Errorf("could not save transaction to file: %w", err)
+	}
+
+	for _, doc := range transaction.Documents {
+		err = p.documentDownloader.Download(documentBaseDir, doc)
+		if err == nil {
+			p.logger.WithFields(logFields).Info("Document downloaded")
+
+			continue
+		}
+
+		if errors.Is(err, document.ErrDocumentExists) {
+			p.logger.WithFields(logFields).Warn("Document already exists")
+
+			continue
+		}
+
+		p.logger.WithFields(logFields).Warnf("Document downloader error: %s", err)
 	}
 
 	return nil

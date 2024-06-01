@@ -18,6 +18,7 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/database"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/writer"
 
@@ -33,19 +34,27 @@ var (
 		details.NewClient,
 		details.NewTypeResolver,
 		transaction.NewModelBuilderFactory,
+		document.NewModelBuilder,
 		database.NewSQLiteOnFS,
 		transaction.NewCSVEntryFactory,
 		filesystem.NewCSVReader,
 		filesystem.NewCSVWriter,
 		transaction.NewProcessor,
+		document.NewDownloader,
+		document.NewDateResolver,
 		ProvideTransactionRepository,
 		ProvideInstrumentRepository,
+		ProvideDocumentRepository,
 
 		wire.Bind(new(transactions.EventTypeResolverInterface), new(transactions.EventTypeResolver)),
 		wire.Bind(new(details.TypeResolverInterface), new(details.TypeResolver)),
 		wire.Bind(new(transaction.ModelBuilderFactoryInterface), new(transaction.ModelBuilderFactory)),
+		wire.Bind(new(document.ModelBuilderInterface), new(document.ModelBuilder)),
 		wire.Bind(new(transaction.RepositoryInterface), new(*database.Repository[*transaction.Model])),
 		wire.Bind(new(transaction.InstrumentRepositoryInterface), new(*database.Repository[*transaction.Instrument])),
+		wire.Bind(new(document.DownloaderInterface), new(document.Downloader)),
+		wire.Bind(new(document.DateResolverInterface), new(document.DateResolver)),
+		wire.Bind(new(document.RepositoryInterface), new(*database.Repository[*document.Model])),
 	)
 
 	RemoteSet = wire.NewSet(
@@ -91,4 +100,8 @@ func ProvideTransactionRepository(db *gorm.DB, logger *log.Logger) (*database.Re
 
 func ProvideInstrumentRepository(db *gorm.DB, logger *log.Logger) (*database.Repository[*transaction.Instrument], error) {
 	return database.NewRepository[*transaction.Instrument](db, logger)
+}
+
+func ProvideDocumentRepository(db *gorm.DB, logger *log.Logger) (*database.Repository[*document.Model], error) {
+	return database.NewRepository[*document.Model](db, logger)
 }

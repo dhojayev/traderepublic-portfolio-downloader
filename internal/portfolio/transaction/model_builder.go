@@ -7,7 +7,6 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
@@ -20,14 +19,20 @@ type ModelBuilderFactoryInterface interface {
 }
 
 type ModelBuilderFactory struct {
-	resolver details.TypeResolverInterface
-	logger   *log.Logger
+	resolver         details.TypeResolverInterface
+	documentsBuilder document.ModelBuilderInterface
+	logger           *log.Logger
 }
 
-func NewModelBuilderFactory(resolver details.TypeResolverInterface, logger *log.Logger) ModelBuilderFactory {
+func NewModelBuilderFactory(
+	resolver details.TypeResolverInterface,
+	documentsBuilder document.ModelBuilderInterface,
+	logger *log.Logger,
+) ModelBuilderFactory {
 	return ModelBuilderFactory{
-		resolver: resolver,
-		logger:   logger,
+		resolver:         resolver,
+		documentsBuilder: documentsBuilder,
+		logger:           logger,
 	}
 }
 
@@ -45,7 +50,7 @@ func (f ModelBuilderFactory) Create(
 		return nil, fmt.Errorf("resolver error: %w", err)
 	}
 
-	baseBuilder := NewBaseModelBuilder(response, f.logger)
+	baseBuilder := NewBaseModelBuilder(response, f.documentsBuilder, f.logger)
 	purchaseBuilder := NewPurchaseBuilder(baseBuilder)
 
 	switch responseType {
@@ -78,12 +83,21 @@ type ModelBuilderInterface interface {
 }
 
 type BaseModelBuilder struct {
-	response details.Response
-	logger   *log.Logger
+	response         details.Response
+	documentsBuilder document.ModelBuilderInterface
+	logger           *log.Logger
 }
 
-func NewBaseModelBuilder(response details.Response, logger *log.Logger) BaseModelBuilder {
-	return BaseModelBuilder{response: response, logger: logger}
+func NewBaseModelBuilder(
+	response details.Response,
+	documentsBuilder document.ModelBuilderInterface,
+	logger *log.Logger,
+) BaseModelBuilder {
+	return BaseModelBuilder{
+		response:         response,
+		documentsBuilder: documentsBuilder,
+		logger:           logger,
+	}
 }
 
 func (b BaseModelBuilder) ExtractStatus() (string, error) {
@@ -110,7 +124,7 @@ func (b BaseModelBuilder) ExtractTimestamp() (time.Time, error) {
 		return time.Time{}, fmt.Errorf("could not get header section: %w", err)
 	}
 
-	timestamp, err := time.Parse(internal.DefaultTimeFormat, header.Data.Timestamp)
+	timestamp, err := time.Parse(details.ResponseTimeFormat, header.Data.Timestamp)
 	if err != nil {
 		return time.Time{}, fmt.Errorf("could not parse header section timestamp: %w", err)
 	}
@@ -380,21 +394,10 @@ func (b BaseModelBuilder) ExtractTaxAmount() (float64, error) {
 	return taxAmount, nil
 }
 
-func (b BaseModelBuilder) BuildDocuments() ([]document.Model, error) {
-	documents := make([]document.Model, 0)
-
-	documentsSection, err := b.response.SectionTypeDocuments()
+func (b BaseModelBuilder) BuildDocuments(model Model) ([]document.Model, error) {
+	documents, err := b.documentsBuilder.Build(model.UUID, model.Timestamp, b.response)
 	if err != nil {
-		return documents, fmt.Errorf("could not get documents section: %w", err)
-	}
-
-	for _, doc := range documentsSection.Data {
-		url, ok := doc.Action.Payload.(string)
-		if !ok {
-			continue
-		}
-
-		documents = append(documents, document.NewModel(doc.ID, url, doc.Detail, doc.Title))
+		return nil, fmt.Errorf("document model builder error: %w", err)
 	}
 
 	return documents, nil
@@ -457,7 +460,7 @@ func (b PurchaseBuilder) Build() (Model, error) {
 	}
 
 	model.Instrument.Icon, _ = b.ExtractInstrumentIcon()
-	model.Documents, _ = b.BuildDocuments()
+	model.Documents, _ = b.BuildDocuments(model)
 
 	return model, err
 }
@@ -594,7 +597,7 @@ func (b DepositBuilder) Build() (Model, error) {
 		return model, err
 	}
 
-	model.Documents, _ = b.BuildDocuments()
+	model.Documents, _ = b.BuildDocuments(model)
 
 	return model, nil
 }

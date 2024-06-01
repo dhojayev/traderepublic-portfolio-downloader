@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
@@ -153,16 +154,18 @@ var BenefitsSavebackExecution01 = tests.TestCase{
 		Total:  15,
 		Documents: []document.Model{
 			{
-				ID:    "3a54ce6c-7bf7-4db5-a79e-5c24dbc71594",
-				URL:   "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
-				Date:  "22.03.2024",
-				Title: "Abrechnung Ausführung",
+				ID:       "3a54ce6c-7bf7-4db5-a79e-5c24dbc71594",
+				URL:      "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
+				Detail:   "22.03.2024",
+				Title:    "Abrechnung Ausführung",
+				Filepath: "2024-03/73fc417a-62ef-4179-a85e-9f3b29224567/Abrechnung Ausführung.pdf",
 			},
 			{
-				ID:    "70776ac6-b87e-4c73-a8cb-558466234f0d",
-				URL:   "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
-				Date:  "21.03.2024",
-				Title: "Kosteninformation",
+				ID:       "70776ac6-b87e-4c73-a8cb-558466234f0d",
+				URL:      "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
+				Detail:   "21.03.2024",
+				Title:    "Kosteninformation",
+				Filepath: "2024-03/73fc417a-62ef-4179-a85e-9f3b29224567/Kosteninformation.pdf",
 			},
 		},
 	},
@@ -179,6 +182,6 @@ var BenefitsSavebackExecution01 = tests.TestCase{
 }
 
 func init() {
-	BenefitsSavebackExecution01.Transaction.Timestamp, _ = time.Parse(internal.DefaultTimeFormat, "2024-03-22T18:15:06.448+0000")
+	BenefitsSavebackExecution01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2024-03-22T18:15:06.448+0000")
 	BenefitsSavebackExecution01.CSVEntry.Timestamp = internal.DateTime{Time: BenefitsSavebackExecution01.Transaction.Timestamp}
 }

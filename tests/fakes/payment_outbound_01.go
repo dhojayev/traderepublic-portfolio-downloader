@@ -4,9 +4,9 @@ import (
 	"time"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/tests"
 )
@@ -72,7 +72,6 @@ var PaymentOutbound01 = tests.TestCase{
 		Total:     1,
 		CreatedAt: time.Time{},
 		UpdatedAt: time.Time{},
-		Documents: []document.Model{},
 	},
 	CSVEntry: filesystem.CSVEntry{
 		ID:        "a2597441-45f4-4ae2-a881-ab4a65aa0f0e",
@@ -84,6 +83,6 @@ var PaymentOutbound01 = tests.TestCase{
 }
 
 func init() {
-	PaymentOutbound01.Transaction.Timestamp, _ = time.Parse(internal.DefaultTimeFormat, "2024-01-11T08:55:22.185+0000")
+	PaymentOutbound01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2024-01-11T08:55:22.185+0000")
 	PaymentOutbound01.CSVEntry.Timestamp = internal.DateTime{Time: PaymentOutbound01.Transaction.Timestamp}
 }

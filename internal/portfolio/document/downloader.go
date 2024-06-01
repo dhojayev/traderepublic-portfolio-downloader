@@ -3,14 +3,26 @@
 package document
 
 import (
+	"context"
+	"errors"
 	"fmt"
+	"io"
+	"net/http"
+	"os"
+	"path/filepath"
 
-	"github.com/cavaliergopher/grab/v3"
 	log "github.com/sirupsen/logrus"
 )
 
+const (
+	DownloaderTimeFormat = "2006-01"
+	permDir              = 0o700
+)
+
+var ErrDocumentExists = errors.New("document exists")
+
 type DownloaderInterface interface {
-	Download(destDir string, document Model) (string, error)
+	Download(baseDir string, document Model) error
 }
 
 type Downloader struct {
@@ -21,11 +33,42 @@ func NewDownloader(logger *log.Logger) Downloader {
 	return Downloader{logger: logger}
 }
 
-func (d Downloader) Download(destDir string, document Model) (string, error) {
-	resp, err := grab.Get(destDir, document.URL)
-	if err != nil {
-		return "", fmt.Errorf("could not download document: %w", err)
+func (d Downloader) Download(baseDir string, document Model) error {
+	dest := baseDir + "/" + document.Filepath
+
+	if _, err := os.Stat(dest); err == nil {
+		return ErrDocumentExists
 	}
 
-	return resp.Filename, nil
+	dir := filepath.Dir(dest)
+
+	if err := os.MkdirAll(dir, permDir); err != nil {
+		return fmt.Errorf("could not create directory for document: %w", err)
+	}
+
+	req, err := http.NewRequest(http.MethodGet, document.URL, nil)
+	if err != nil {
+		return fmt.Errorf("could not create request for document download: %w", err)
+	}
+
+	resp, err := http.DefaultClient.Do(req.WithContext(context.Background()))
+	if err != nil {
+		return fmt.Errorf("could not download document: %w", err)
+	}
+
+	defer resp.Body.Close()
+
+	out, err := os.Create(dest)
+	if err != nil {
+		return fmt.Errorf("could not create document file: %w", err)
+	}
+
+	defer out.Close()
+
+	_, err = io.Copy(out, resp.Body)
+	if err != nil {
+		return fmt.Errorf("could not write document file: %w", err)
+	}
+
+	return nil
 }

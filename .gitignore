@@ -3,4 +3,6 @@
 /.session
 /.refresh
 /responses
+/documents
 vendor
+.DS_Store

@@ -17,6 +17,7 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/database"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/writer"
 	"github.com/google/wire"
@@ -32,8 +33,10 @@ func CreateLocalApp(baseDir string, logger *logrus.Logger) (portfoliodownloader.
 	eventTypeResolver := transactions.NewEventTypeResolver(logger)
 	detailsClient := details.NewClient(jsonReader)
 	typeResolver := details.NewTypeResolver(logger)
-	modelBuilderFactory := transaction.NewModelBuilderFactory(typeResolver, logger)
-	db, err := database.NewSQLiteOnFS()
+	dateResolver := document.NewDateResolver(logger)
+	modelBuilder := document.NewModelBuilder(dateResolver, logger)
+	modelBuilderFactory := transaction.NewModelBuilderFactory(typeResolver, modelBuilder, logger)
+	db, err := database.NewSQLiteOnFS(logger)
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
@@ -44,7 +47,8 @@ func CreateLocalApp(baseDir string, logger *logrus.Logger) (portfoliodownloader.
 	csvEntryFactory := transaction.NewCSVEntryFactory(logger)
 	csvReader := filesystem.NewCSVReader(logger)
 	csvWriter := filesystem.NewCSVWriter(logger)
-	processor := transaction.NewProcessor(modelBuilderFactory, repository, csvEntryFactory, csvReader, csvWriter, logger)
+	downloader := document.NewDownloader(logger)
+	processor := transaction.NewProcessor(modelBuilderFactory, repository, csvEntryFactory, csvReader, csvWriter, downloader, logger)
 	app := portfoliodownloader.NewApp(client, eventTypeResolver, detailsClient, processor, logger)
 	return app, nil
 }
@@ -65,8 +69,10 @@ func CreateRemoteApp(logger *logrus.Logger) (portfoliodownloader.App, error) {
 	eventTypeResolver := transactions.NewEventTypeResolver(logger)
 	detailsClient := details.NewClient(reader)
 	typeResolver := details.NewTypeResolver(logger)
-	modelBuilderFactory := transaction.NewModelBuilderFactory(typeResolver, logger)
-	db, err := database.NewSQLiteOnFS()
+	dateResolver := document.NewDateResolver(logger)
+	modelBuilder := document.NewModelBuilder(dateResolver, logger)
+	modelBuilderFactory := transaction.NewModelBuilderFactory(typeResolver, modelBuilder, logger)
+	db, err := database.NewSQLiteOnFS(logger)
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
@@ -77,7 +83,8 @@ func CreateRemoteApp(logger *logrus.Logger) (portfoliodownloader.App, error) {
 	csvEntryFactory := transaction.NewCSVEntryFactory(logger)
 	csvReader := filesystem.NewCSVReader(logger)
 	csvWriter := filesystem.NewCSVWriter(logger)
-	processor := transaction.NewProcessor(modelBuilderFactory, repository, csvEntryFactory, csvReader, csvWriter, logger)
+	downloader := document.NewDownloader(logger)
+	processor := transaction.NewProcessor(modelBuilderFactory, repository, csvEntryFactory, csvReader, csvWriter, downloader, logger)
 	app := portfoliodownloader.NewApp(transactionsClient, eventTypeResolver, detailsClient, processor, logger)
 	return app, nil
 }
@@ -85,8 +92,9 @@ func CreateRemoteApp(logger *logrus.Logger) (portfoliodownloader.App, error) {
 // wire.go:
 
 var (
-	DefaultSet = wire.NewSet(portfoliodownloader.NewApp, transactions.NewClient, transactions.NewEventTypeResolver, details.NewClient, details.NewTypeResolver, transaction.NewModelBuilderFactory, database.NewSQLiteOnFS, transaction.NewCSVEntryFactory, filesystem.NewCSVReader, filesystem.NewCSVWriter, transaction.NewProcessor, ProvideTransactionRepository,
-		ProvideInstrumentRepository, wire.Bind(new(transactions.EventTypeResolverInterface), new(transactions.EventTypeResolver)), wire.Bind(new(details.TypeResolverInterface), new(details.TypeResolver)), wire.Bind(new(transaction.ModelBuilderFactoryInterface), new(transaction.ModelBuilderFactory)), wire.Bind(new(transaction.RepositoryInterface), new(*database.Repository[*transaction.Model])), wire.Bind(new(transaction.InstrumentRepositoryInterface), new(*database.Repository[*transaction.Instrument])),
+	DefaultSet = wire.NewSet(portfoliodownloader.NewApp, transactions.NewClient, transactions.NewEventTypeResolver, details.NewClient, details.NewTypeResolver, transaction.NewModelBuilderFactory, document.NewModelBuilder, database.NewSQLiteOnFS, transaction.NewCSVEntryFactory, filesystem.NewCSVReader, filesystem.NewCSVWriter, transaction.NewProcessor, document.NewDownloader, document.NewDateResolver, ProvideTransactionRepository,
+		ProvideInstrumentRepository,
+		ProvideDocumentRepository, wire.Bind(new(transactions.EventTypeResolverInterface), new(transactions.EventTypeResolver)), wire.Bind(new(details.TypeResolverInterface), new(details.TypeResolver)), wire.Bind(new(transaction.ModelBuilderFactoryInterface), new(transaction.ModelBuilderFactory)), wire.Bind(new(document.ModelBuilderInterface), new(document.ModelBuilder)), wire.Bind(new(transaction.RepositoryInterface), new(*database.Repository[*transaction.Model])), wire.Bind(new(transaction.InstrumentRepositoryInterface), new(*database.Repository[*transaction.Instrument])), wire.Bind(new(document.DownloaderInterface), new(document.Downloader)), wire.Bind(new(document.DateResolverInterface), new(document.DateResolver)), wire.Bind(new(document.RepositoryInterface), new(*database.Repository[*document.Model])),
 	)
 
 	RemoteSet = wire.NewSet(
@@ -104,4 +112,8 @@ func ProvideTransactionRepository(db *gorm.DB, logger *logrus.Logger) (*database
 
 func ProvideInstrumentRepository(db *gorm.DB, logger *logrus.Logger) (*database.Repository[*transaction.Instrument], error) {
 	return database.NewRepository[*transaction.Instrument](db, logger)
+}
+
+func ProvideDocumentRepository(db *gorm.DB, logger *logrus.Logger) (*database.Repository[*document.Model], error) {
+	return database.NewRepository[*document.Model](db, logger)
 }
