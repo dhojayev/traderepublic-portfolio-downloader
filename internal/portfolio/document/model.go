@@ -3,21 +3,27 @@ package document
 import "time"
 
 type Model struct {
-	ID        string
-	URL       string
-	Detail    string
-	Title     string
-	Timestamp time.Time
-	Filepath  string
+	TransactionUUID string `gorm:"foreignKey:UUID"`
+	ID              string `gorm:"primaryKey"`
+	URL             string `gorm:"-"`
+	Detail          string
+	Title           string
+	Timestamp       time.Time
+	Filename        string
 }
 
-func NewModel(id, url, detail, title, filepath string, timestamp time.Time) Model {
+func NewModel(transactionUUID, id, url, detail, title, filename string, timestamp time.Time) Model {
 	return Model{
-		ID:        id,
-		URL:       url,
-		Detail:    detail,
-		Title:     title,
-		Timestamp: timestamp,
-		Filepath:  filepath,
+		TransactionUUID: transactionUUID,
+		ID:              id,
+		URL:             url,
+		Detail:          detail,
+		Title:           title,
+		Timestamp:       timestamp,
+		Filename:        filename,
 	}
+}
+
+func (Model) TableName() string {
+	return "documents"
 }

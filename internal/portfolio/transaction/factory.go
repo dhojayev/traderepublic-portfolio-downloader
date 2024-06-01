@@ -57,22 +57,16 @@ func (f CSVEntryFactory) Make(transaction Model) (filesystem.CSVEntry, error) {
 		)
 	}
 
-	return filesystem.NewCSVEntry(
-		transaction.UUID,
-		transaction.Status,
-		transaction.Type,
-		transaction.Instrument.Type(),
-		transaction.Instrument.Name,
-		transaction.Instrument.ISIN,
-		shares,
-		rate,
-		yield,
-		profit,
-		commission,
-		debit,
-		credit,
-		taxAmount,
-		investedAmount,
+	documents := make([]string, 0)
+
+	for _, doc := range transaction.Documents {
+		documents = append(documents, doc.Filename)
+	}
+
+	return filesystem.NewCSVEntry(transaction.UUID, transaction.Status, transaction.Type,
+		transaction.Instrument.Type(), transaction.Instrument.Name, transaction.Instrument.ISIN,
+		shares, rate, yield, profit, commission, debit, credit, taxAmount, investedAmount,
 		internal.DateTime{Time: transaction.Timestamp},
+		documents,
 	), nil
 }

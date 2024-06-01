@@ -395,7 +395,7 @@ func (b BaseModelBuilder) ExtractTaxAmount() (float64, error) {
 }
 
 func (b BaseModelBuilder) BuildDocuments(model Model) ([]document.Model, error) {
-	documents, err := b.documentsBuilder.Build(model.Timestamp, b.response)
+	documents, err := b.documentsBuilder.Build(model.UUID, model.Timestamp, b.response)
 	if err != nil {
 		return nil, fmt.Errorf("document model builder error: %w", err)
 	}

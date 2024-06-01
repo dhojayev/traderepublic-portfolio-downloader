@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	DownloaderTimeFormat = "2006-01-02"
+	DownloaderTimeFormat = "2006-01"
 	permDir              = 0o700
 )
 

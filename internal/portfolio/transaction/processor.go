@@ -80,6 +80,18 @@ func (p Processor) Process(eventType transactions.EventType, response details.Re
 		return fmt.Errorf("builder error: %w", err)
 	}
 
+	for i, document := range transaction.Documents {
+		filename, err := p.documentDownloader.Download(documentBaseDir, document)
+		if err != nil {
+			p.logger.WithFields(logFields).Warnf("document downloader error: %s", err)
+
+			continue
+		}
+
+		document.Filename = filename
+		transaction.Documents[i] = document
+	}
+
 	if err := p.transactionRepo.Create(&transaction); err != nil {
 		return fmt.Errorf("could not create on repo: %w", err)
 	}
@@ -91,15 +103,6 @@ func (p Processor) Process(eventType transactions.EventType, response details.Re
 
 	if err := p.csvWriter.Write(csvFilename, entry); err != nil {
 		return fmt.Errorf("could not save transaction to file: %w", err)
-	}
-
-	for _, document := range transaction.Documents {
-		destDir := fmt.Sprintf("%s/%s", documentBaseDir, transaction.UUID)
-
-		_, err = p.documentDownloader.Download(destDir, document)
-		if err != nil {
-			p.logger.WithFields(logFields).Warnf("document downloader error: %s", err)
-		}
 	}
 
 	return nil

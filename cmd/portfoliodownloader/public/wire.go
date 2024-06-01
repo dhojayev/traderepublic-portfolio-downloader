@@ -44,10 +44,11 @@ var (
 		filesystem.NewCSVReader,
 		filesystem.NewCSVWriter,
 		transaction.NewProcessor,
-		ProvideTransactionRepository,
-		ProvideInstrumentRepository,
 		document.NewDownloader,
 		document.NewDateResolver,
+		ProvideTransactionRepository,
+		ProvideInstrumentRepository,
+		ProvideDocumentRepository,
 
 		wire.Bind(new(auth.ClientInterface), new(*auth.Client)),
 		wire.Bind(new(console.AuthServiceInterface), new(*console.AuthService)),
@@ -61,6 +62,7 @@ var (
 		wire.Bind(new(transaction.InstrumentRepositoryInterface), new(*database.Repository[*transaction.Instrument])),
 		wire.Bind(new(document.DownloaderInterface), new(document.Downloader)),
 		wire.Bind(new(document.DateResolverInterface), new(document.DateResolver)),
+		wire.Bind(new(document.RepositoryInterface), new(*database.Repository[*document.Model])),
 	)
 
 	NonWritingSet = wire.NewSet(
@@ -96,4 +98,8 @@ func ProvideTransactionRepository(db *gorm.DB, logger *log.Logger) (*database.Re
 
 func ProvideInstrumentRepository(db *gorm.DB, logger *log.Logger) (*database.Repository[*transaction.Instrument], error) {
 	return database.NewRepository[*transaction.Instrument](db, logger)
+}
+
+func ProvideDocumentRepository(db *gorm.DB, logger *log.Logger) (*database.Repository[*document.Model], error) {
+	return database.NewRepository[*document.Model](db, logger)
 }

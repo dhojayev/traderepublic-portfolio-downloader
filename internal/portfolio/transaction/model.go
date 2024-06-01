@@ -33,7 +33,7 @@ const (
 type Model struct {
 	UUID string `gorm:"primaryKey"`
 
-	InstrumentISIN string
+	InstrumentISIN *string
 	Instrument     Instrument
 	Documents      []document.Model `gorm:"-"`
 

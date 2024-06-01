@@ -46,7 +46,7 @@ func CreateNonWritingApp(logger *logrus.Logger) (portfoliodownloader.App, error)
 	dateResolver := document.NewDateResolver(logger)
 	modelBuilder := document.NewModelBuilder(dateResolver, logger)
 	modelBuilderFactory := transaction.NewModelBuilderFactory(typeResolver, modelBuilder, logger)
-	db, err := database.NewSQLiteInMemory()
+	db, err := database.NewSQLiteInMemory(logger)
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
@@ -82,7 +82,7 @@ func CreateWritingApp(logger *logrus.Logger) (portfoliodownloader.App, error) {
 	dateResolver := document.NewDateResolver(logger)
 	modelBuilder := document.NewModelBuilder(dateResolver, logger)
 	modelBuilderFactory := transaction.NewModelBuilderFactory(typeResolver, modelBuilder, logger)
-	db, err := database.NewSQLiteInMemory()
+	db, err := database.NewSQLiteInMemory(logger)
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
@@ -102,8 +102,9 @@ func CreateWritingApp(logger *logrus.Logger) (portfoliodownloader.App, error) {
 // wire.go:
 
 var (
-	DefaultSet = wire.NewSet(api.NewClient, auth.NewClient, console.NewAuthService, websocket.NewReader, portfoliodownloader.NewApp, transactions.NewClient, transactions.NewEventTypeResolver, details.NewClient, details.NewTypeResolver, database.NewSQLiteInMemory, transaction.NewModelBuilderFactory, document.NewModelBuilder, transaction.NewCSVEntryFactory, filesystem.NewCSVReader, filesystem.NewCSVWriter, transaction.NewProcessor, ProvideTransactionRepository,
-		ProvideInstrumentRepository, document.NewDownloader, document.NewDateResolver, wire.Bind(new(auth.ClientInterface), new(*auth.Client)), wire.Bind(new(console.AuthServiceInterface), new(*console.AuthService)), wire.Bind(new(portfolio.ReaderInterface), new(*websocket.Reader)), wire.Bind(new(transactions.EventTypeResolverInterface), new(transactions.EventTypeResolver)), wire.Bind(new(details.TypeResolverInterface), new(details.TypeResolver)), wire.Bind(new(transaction.ModelBuilderFactoryInterface), new(transaction.ModelBuilderFactory)), wire.Bind(new(document.ModelBuilderInterface), new(document.ModelBuilder)), wire.Bind(new(transaction.RepositoryInterface), new(*database.Repository[*transaction.Model])), wire.Bind(new(transaction.InstrumentRepositoryInterface), new(*database.Repository[*transaction.Instrument])), wire.Bind(new(document.DownloaderInterface), new(document.Downloader)), wire.Bind(new(document.DateResolverInterface), new(document.DateResolver)),
+	DefaultSet = wire.NewSet(api.NewClient, auth.NewClient, console.NewAuthService, websocket.NewReader, portfoliodownloader.NewApp, transactions.NewClient, transactions.NewEventTypeResolver, details.NewClient, details.NewTypeResolver, database.NewSQLiteInMemory, transaction.NewModelBuilderFactory, document.NewModelBuilder, transaction.NewCSVEntryFactory, filesystem.NewCSVReader, filesystem.NewCSVWriter, transaction.NewProcessor, document.NewDownloader, document.NewDateResolver, ProvideTransactionRepository,
+		ProvideInstrumentRepository,
+		ProvideDocumentRepository, wire.Bind(new(auth.ClientInterface), new(*auth.Client)), wire.Bind(new(console.AuthServiceInterface), new(*console.AuthService)), wire.Bind(new(portfolio.ReaderInterface), new(*websocket.Reader)), wire.Bind(new(transactions.EventTypeResolverInterface), new(transactions.EventTypeResolver)), wire.Bind(new(details.TypeResolverInterface), new(details.TypeResolver)), wire.Bind(new(transaction.ModelBuilderFactoryInterface), new(transaction.ModelBuilderFactory)), wire.Bind(new(document.ModelBuilderInterface), new(document.ModelBuilder)), wire.Bind(new(transaction.RepositoryInterface), new(*database.Repository[*transaction.Model])), wire.Bind(new(transaction.InstrumentRepositoryInterface), new(*database.Repository[*transaction.Instrument])), wire.Bind(new(document.DownloaderInterface), new(document.Downloader)), wire.Bind(new(document.DateResolverInterface), new(document.DateResolver)), wire.Bind(new(document.RepositoryInterface), new(*database.Repository[*document.Model])),
 	)
 
 	NonWritingSet = wire.NewSet(
@@ -121,4 +122,8 @@ func ProvideTransactionRepository(db *gorm.DB, logger *logrus.Logger) (*database
 
 func ProvideInstrumentRepository(db *gorm.DB, logger *logrus.Logger) (*database.Repository[*transaction.Instrument], error) {
 	return database.NewRepository[*transaction.Instrument](db, logger)
+}
+
+func ProvideDocumentRepository(db *gorm.DB, logger *logrus.Logger) (*database.Repository[*document.Model], error) {
+	return database.NewRepository[*document.Model](db, logger)
 }
