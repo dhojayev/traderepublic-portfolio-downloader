@@ -267,19 +267,22 @@ var BenefitsSpareChangeExecution01 = tests.TestCase{
 		Total:  1.09,
 		Documents: []document.Model{
 			{
-				ID:    "9df4c2e1-0de2-4900-aa8c-af5371ed58f6",
-				URL:   "https://traderepublic-postbox-platform-production.s3.eu-central-1.amazonaws.com/timeline/postbox",
-				Title: "Deaktivierung",
+				ID:       "9df4c2e1-0de2-4900-aa8c-af5371ed58f6",
+				URL:      "https://traderepublic-postbox-platform-production.s3.eu-central-1.amazonaws.com/timeline/postbox",
+				Title:    "Deaktivierung",
+				Filepath: "2024-01/265cb9c0-664a-45d4-b179-3061f196dd2a/Deaktivierung.pdf",
 			},
 			{
-				ID:    "3a8ebf86-a2bb-463e-8bfd-28fd705359ff",
-				URL:   "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox",
-				Title: "Abrechnung Ausführung",
+				ID:       "3a8ebf86-a2bb-463e-8bfd-28fd705359ff",
+				URL:      "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox",
+				Title:    "Abrechnung Ausführung",
+				Filepath: "2024-01/265cb9c0-664a-45d4-b179-3061f196dd2a/Abrechnung Ausführung.pdf",
 			},
 			{
-				ID:    "e2dfa755-e039-45c7-b7bb-1ac024844f75",
-				URL:   "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox",
-				Title: "Kosteninformation",
+				ID:       "e2dfa755-e039-45c7-b7bb-1ac024844f75",
+				URL:      "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox",
+				Title:    "Kosteninformation",
+				Filepath: "2024-01/265cb9c0-664a-45d4-b179-3061f196dd2a/Kosteninformation.pdf",
 			},
 		},
 	},
@@ -299,8 +302,4 @@ var BenefitsSpareChangeExecution01 = tests.TestCase{
 func init() {
 	BenefitsSpareChangeExecution01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2024-01-04T12:26:52.110+0000")
 	BenefitsSpareChangeExecution01.CSVEntry.Timestamp = internal.DateTime{Time: BenefitsSpareChangeExecution01.Transaction.Timestamp}
-
-	BenefitsSpareChangeExecution01.Transaction.Documents[0].Timestamp = BenefitsSpareChangeExecution01.Transaction.Timestamp
-	BenefitsSpareChangeExecution01.Transaction.Documents[1].Timestamp = BenefitsSpareChangeExecution01.Transaction.Timestamp
-	BenefitsSpareChangeExecution01.Transaction.Documents[2].Timestamp = BenefitsSpareChangeExecution01.Transaction.Timestamp
 }

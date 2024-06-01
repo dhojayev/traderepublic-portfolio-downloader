@@ -169,16 +169,18 @@ var (
 			Total:      395.80,
 			Documents: []document.Model{
 				{
-					ID:     "46e92aa7-df44-4a69-957c-183459753e66",
-					URL:    "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/",
-					Detail: "29.03.2022",
-					Title:  "Abrechnung",
+					ID:       "46e92aa7-df44-4a69-957c-183459753e66",
+					URL:      "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/",
+					Detail:   "29.03.2022",
+					Title:    "Abrechnung",
+					Filepath: "2022-03/b20e367c-5542-4fab-9fd6-6faa5e7ab582/Abrechnung.pdf",
 				},
 				{
-					ID:     "3c4ccef3-249d-4d10-a54a-18a82fb9475a",
-					URL:    "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/",
-					Detail: "29.03.2022",
-					Title:  "Kosteninformation",
+					ID:       "3c4ccef3-249d-4d10-a54a-18a82fb9475a",
+					URL:      "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/",
+					Detail:   "29.03.2022",
+					Title:    "Kosteninformation",
+					Filepath: "2022-03/b20e367c-5542-4fab-9fd6-6faa5e7ab582/Kosteninformation.pdf",
 				},
 			},
 		},
@@ -200,7 +202,4 @@ var (
 func init() {
 	OrderExecuted01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2022-03-29T09:43:31.570+0000")
 	OrderExecuted01.CSVEntry.Timestamp = internal.DateTime{Time: OrderExecuted01.Transaction.Timestamp}
-
-	OrderExecuted01.Transaction.Documents[0].Timestamp, _ = time.Parse(document.ResolverTimeFormat, "29.03.2022")
-	OrderExecuted01.Transaction.Documents[1].Timestamp, _ = time.Parse(document.ResolverTimeFormat, "29.03.2022")
 }

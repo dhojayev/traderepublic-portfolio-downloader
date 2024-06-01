@@ -60,7 +60,7 @@ func (f CSVEntryFactory) Make(transaction Model) (filesystem.CSVEntry, error) {
 	documents := make([]string, 0)
 
 	for _, doc := range transaction.Documents {
-		documents = append(documents, doc.Filename)
+		documents = append(documents, doc.Filepath)
 	}
 
 	return filesystem.NewCSVEntry(transaction.UUID, transaction.Status, transaction.Type,

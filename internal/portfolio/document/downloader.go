@@ -4,7 +4,6 @@ package document
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/cavaliergopher/grab/v3"
 	log "github.com/sirupsen/logrus"
@@ -28,13 +27,9 @@ func NewDownloader(logger *log.Logger) Downloader {
 }
 
 func (d Downloader) Download(baseDir string, document Model) (string, error) {
-	destDir := fmt.Sprintf("%s/%s/", baseDir, document.Timestamp.Format(DownloaderTimeFormat))
+	dest := baseDir + "/" + document.Filepath
 
-	if err := os.MkdirAll(destDir, permDir); err != nil {
-		return "", fmt.Errorf("could not create download base dir: %w", err)
-	}
-
-	resp, err := grab.Get(destDir, document.URL)
+	resp, err := grab.Get(dest, document.URL)
 	if err != nil {
 		return "", fmt.Errorf("could not download document: %w", err)
 	}

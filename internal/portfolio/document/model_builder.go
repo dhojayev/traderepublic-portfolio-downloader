@@ -25,7 +25,7 @@ func NewModelBuilder(dateResolver DateResolverInterface, logger *log.Logger) Mod
 }
 
 func (b ModelBuilder) Build(
-	_ string,
+	transactionUUID string,
 	transactionTimestamp time.Time,
 	response details.Response,
 ) ([]Model, error) {
@@ -47,7 +47,8 @@ func (b ModelBuilder) Build(
 			return documents, fmt.Errorf("document date resolver errors: %w", err)
 		}
 
-		documents = append(documents, NewModel("", doc.ID, url, doc.Detail, doc.Title, "", documentDate))
+		filepath := fmt.Sprintf("%s/%s/%s.pdf", documentDate.Format(DownloaderTimeFormat), transactionUUID, doc.Title)
+		documents = append(documents, NewModel("", doc.ID, url, doc.Detail, doc.Title, filepath))
 	}
 
 	return documents, nil

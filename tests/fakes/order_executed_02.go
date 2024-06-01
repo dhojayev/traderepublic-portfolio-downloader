@@ -290,22 +290,25 @@ var OrderExecuted02 = tests.TestCase{
 		Total:      136.14,
 		Documents: []document.Model{
 			{
-				ID:     "c9a1c524-1c54-4689-8b2f-0f1bcbb91c9d",
-				URL:    "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
-				Detail: "23.11.2023",
-				Title:  "Abrechnung",
+				ID:       "c9a1c524-1c54-4689-8b2f-0f1bcbb91c9d",
+				URL:      "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
+				Detail:   "23.11.2023",
+				Title:    "Abrechnung",
+				Filepath: "2023-11/1d9ad3b5-e65c-41f6-9c7d-96baa2a2ecad/Abrechnung.pdf",
 			},
 			{
-				ID:     "b26233a9-ee80-4da9-8404-08e722fe830b",
-				URL:    "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
-				Detail: "23.11.2023",
-				Title:  "Basisinformationsblatt",
+				ID:       "b26233a9-ee80-4da9-8404-08e722fe830b",
+				URL:      "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
+				Detail:   "23.11.2023",
+				Title:    "Basisinformationsblatt",
+				Filepath: "2023-11/1d9ad3b5-e65c-41f6-9c7d-96baa2a2ecad/Basisinformationsblatt.pdf",
 			},
 			{
-				ID:     "b582015c-7a5c-47d0-8d33-6391d414cdc7",
-				URL:    "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
-				Detail: "23.11.2023",
-				Title:  "Kosteninformation",
+				ID:       "b582015c-7a5c-47d0-8d33-6391d414cdc7",
+				URL:      "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
+				Detail:   "23.11.2023",
+				Title:    "Kosteninformation",
+				Filepath: "2023-11/1d9ad3b5-e65c-41f6-9c7d-96baa2a2ecad/Kosteninformation.pdf",
 			},
 		},
 	},
@@ -326,8 +329,4 @@ var OrderExecuted02 = tests.TestCase{
 func init() {
 	OrderExecuted02.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2023-11-23T15:45:24.252+0000")
 	OrderExecuted02.CSVEntry.Timestamp = internal.DateTime{Time: OrderExecuted02.Transaction.Timestamp}
-
-	OrderExecuted02.Transaction.Documents[0].Timestamp, _ = time.Parse(document.ResolverTimeFormat, "23.11.2023")
-	OrderExecuted02.Transaction.Documents[1].Timestamp, _ = time.Parse(document.ResolverTimeFormat, "23.11.2023")
-	OrderExecuted02.Transaction.Documents[2].Timestamp, _ = time.Parse(document.ResolverTimeFormat, "23.11.2023")
 }
