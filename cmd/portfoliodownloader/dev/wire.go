@@ -34,6 +34,7 @@ var (
 		details.NewClient,
 		details.NewTypeResolver,
 		transaction.NewModelBuilderFactory,
+		document.NewModelBuilder,
 		database.NewSQLiteOnFS,
 		transaction.NewCSVEntryFactory,
 		filesystem.NewCSVReader,
@@ -42,13 +43,16 @@ var (
 		ProvideTransactionRepository,
 		ProvideInstrumentRepository,
 		document.NewDownloader,
+		document.NewDateResolver,
 
 		wire.Bind(new(transactions.EventTypeResolverInterface), new(transactions.EventTypeResolver)),
 		wire.Bind(new(details.TypeResolverInterface), new(details.TypeResolver)),
 		wire.Bind(new(transaction.ModelBuilderFactoryInterface), new(transaction.ModelBuilderFactory)),
+		wire.Bind(new(document.ModelBuilderInterface), new(document.ModelBuilder)),
 		wire.Bind(new(transaction.RepositoryInterface), new(*database.Repository[*transaction.Model])),
 		wire.Bind(new(transaction.InstrumentRepositoryInterface), new(*database.Repository[*transaction.Instrument])),
 		wire.Bind(new(document.DownloaderInterface), new(document.Downloader)),
+		wire.Bind(new(document.DateResolverInterface), new(document.DateResolver)),
 	)
 
 	RemoteSet = wire.NewSet(

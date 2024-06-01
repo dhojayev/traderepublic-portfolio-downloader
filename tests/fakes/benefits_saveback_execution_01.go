@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
@@ -179,9 +180,9 @@ var BenefitsSavebackExecution01 = tests.TestCase{
 }
 
 func init() {
-	BenefitsSavebackExecution01.Transaction.Timestamp, _ = time.Parse(internal.DefaultTimeFormat, "2024-03-22T18:15:06.448+0000")
+	BenefitsSavebackExecution01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2024-03-22T18:15:06.448+0000")
 	BenefitsSavebackExecution01.CSVEntry.Timestamp = internal.DateTime{Time: BenefitsSavebackExecution01.Transaction.Timestamp}
 
-	BenefitsSavebackExecution01.Transaction.Documents[0].Timestamp, _ = time.Parse(document.TimeFormat, "22.03.2024")
-	BenefitsSavebackExecution01.Transaction.Documents[1].Timestamp, _ = time.Parse(document.TimeFormat, "21.03.2024")
+	BenefitsSavebackExecution01.Transaction.Documents[0].Timestamp, _ = time.Parse(document.ResolverTimeFormat, "22.03.2024")
+	BenefitsSavebackExecution01.Transaction.Documents[1].Timestamp, _ = time.Parse(document.ResolverTimeFormat, "21.03.2024")
 }

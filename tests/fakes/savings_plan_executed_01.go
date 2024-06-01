@@ -339,8 +339,8 @@ var SavingsPlanExecuted01 = tests.TestCase{
 }
 
 func init() {
-	SavingsPlanExecuted01.Transaction.Timestamp, _ = time.Parse(internal.DefaultTimeFormat, "2023-11-11T13:40:59.926+0000")
+	SavingsPlanExecuted01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2023-11-11T13:40:59.926+0000")
 	SavingsPlanExecuted01.CSVEntry.Timestamp = internal.DateTime{Time: SavingsPlanExecuted01.Transaction.Timestamp}
 
-	SavingsPlanExecuted01.Transaction.Documents[0].Timestamp, _ = time.Parse(document.TimeFormat, "11.11.2023")
+	SavingsPlanExecuted01.Transaction.Documents[0].Timestamp, _ = time.Parse(document.ResolverTimeFormat, "11.11.2023")
 }

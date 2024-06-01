@@ -228,8 +228,8 @@ var Credit01 = tests.TestCase{
 }
 
 func init() {
-	Credit01.Transaction.Timestamp, _ = time.Parse(internal.DefaultTimeFormat, "2023-12-13T12:44:28.857+0000")
+	Credit01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2023-12-13T12:44:28.857+0000")
 	Credit01.CSVEntry.Timestamp = internal.DateTime{Time: Credit01.Transaction.Timestamp}
 
-	Credit01.Transaction.Documents[0].Timestamp, _ = time.Parse(document.TimeFormat, "13.12.2023")
+	Credit01.Transaction.Documents[0].Timestamp, _ = time.Parse(document.ResolverTimeFormat, "13.12.2023")
 }

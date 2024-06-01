@@ -324,10 +324,10 @@ var OrderExecuted02 = tests.TestCase{
 }
 
 func init() {
-	OrderExecuted02.Transaction.Timestamp, _ = time.Parse(internal.DefaultTimeFormat, "2023-11-23T15:45:24.252+0000")
+	OrderExecuted02.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2023-11-23T15:45:24.252+0000")
 	OrderExecuted02.CSVEntry.Timestamp = internal.DateTime{Time: OrderExecuted02.Transaction.Timestamp}
 
-	OrderExecuted02.Transaction.Documents[0].Timestamp, _ = time.Parse(document.TimeFormat, "23.11.2023")
-	OrderExecuted02.Transaction.Documents[1].Timestamp, _ = time.Parse(document.TimeFormat, "23.11.2023")
-	OrderExecuted02.Transaction.Documents[2].Timestamp, _ = time.Parse(document.TimeFormat, "23.11.2023")
+	OrderExecuted02.Transaction.Documents[0].Timestamp, _ = time.Parse(document.ResolverTimeFormat, "23.11.2023")
+	OrderExecuted02.Transaction.Documents[1].Timestamp, _ = time.Parse(document.ResolverTimeFormat, "23.11.2023")
+	OrderExecuted02.Transaction.Documents[2].Timestamp, _ = time.Parse(document.ResolverTimeFormat, "23.11.2023")
 }

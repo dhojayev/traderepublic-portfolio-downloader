@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
@@ -197,9 +198,9 @@ var (
 )
 
 func init() {
-	OrderExecuted01.Transaction.Timestamp, _ = time.Parse(internal.DefaultTimeFormat, "2022-03-29T09:43:31.570+0000")
+	OrderExecuted01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2022-03-29T09:43:31.570+0000")
 	OrderExecuted01.CSVEntry.Timestamp = internal.DateTime{Time: OrderExecuted01.Transaction.Timestamp}
 
-	OrderExecuted01.Transaction.Documents[0].Timestamp, _ = time.Parse(document.TimeFormat, "29.03.2022")
-	OrderExecuted01.Transaction.Documents[1].Timestamp, _ = time.Parse(document.TimeFormat, "29.03.2022")
+	OrderExecuted01.Transaction.Documents[0].Timestamp, _ = time.Parse(document.ResolverTimeFormat, "29.03.2022")
+	OrderExecuted01.Transaction.Documents[1].Timestamp, _ = time.Parse(document.ResolverTimeFormat, "29.03.2022")
 }

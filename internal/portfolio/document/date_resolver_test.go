@@ -12,6 +12,8 @@ import (
 )
 
 func TestDateResolver_Resolve(t *testing.T) {
+	t.Parallel()
+
 	testCases := []tests.TestCase{
 		fakes.BenefitsSpareChangeExecution01,
 		fakes.BenefitsSavebackExecution01,

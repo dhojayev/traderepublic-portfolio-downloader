@@ -7,7 +7,6 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
@@ -25,7 +24,11 @@ type ModelBuilderFactory struct {
 	logger           *log.Logger
 }
 
-func NewModelBuilderFactory(resolver details.TypeResolverInterface, documentsBuilder document.ModelBuilderInterface, logger *log.Logger) ModelBuilderFactory {
+func NewModelBuilderFactory(
+	resolver details.TypeResolverInterface,
+	documentsBuilder document.ModelBuilderInterface,
+	logger *log.Logger,
+) ModelBuilderFactory {
 	return ModelBuilderFactory{
 		resolver:         resolver,
 		documentsBuilder: documentsBuilder,
@@ -85,7 +88,11 @@ type BaseModelBuilder struct {
 	logger           *log.Logger
 }
 
-func NewBaseModelBuilder(response details.Response, documentsBuilder document.ModelBuilderInterface, logger *log.Logger) BaseModelBuilder {
+func NewBaseModelBuilder(
+	response details.Response,
+	documentsBuilder document.ModelBuilderInterface,
+	logger *log.Logger,
+) BaseModelBuilder {
 	return BaseModelBuilder{
 		response:         response,
 		documentsBuilder: documentsBuilder,
@@ -117,7 +124,7 @@ func (b BaseModelBuilder) ExtractTimestamp() (time.Time, error) {
 		return time.Time{}, fmt.Errorf("could not get header section: %w", err)
 	}
 
-	timestamp, err := time.Parse(internal.DefaultTimeFormat, header.Data.Timestamp)
+	timestamp, err := time.Parse(details.ResponseTimeFormat, header.Data.Timestamp)
 	if err != nil {
 		return time.Time{}, fmt.Errorf("could not parse header section timestamp: %w", err)
 	}
@@ -387,8 +394,8 @@ func (b BaseModelBuilder) ExtractTaxAmount() (float64, error) {
 	return taxAmount, nil
 }
 
-func (b BaseModelBuilder) BuildDocuments() ([]document.Model, error) {
-	documents, err := b.documentsBuilder.Build(b.response)
+func (b BaseModelBuilder) BuildDocuments(model Model) ([]document.Model, error) {
+	documents, err := b.documentsBuilder.Build(model.Timestamp, b.response)
 	if err != nil {
 		return nil, fmt.Errorf("document model builder error: %w", err)
 	}
@@ -453,7 +460,7 @@ func (b PurchaseBuilder) Build() (Model, error) {
 	}
 
 	model.Instrument.Icon, _ = b.ExtractInstrumentIcon()
-	model.Documents, _ = b.BuildDocuments()
+	model.Documents, _ = b.BuildDocuments(model)
 
 	return model, err
 }
@@ -590,7 +597,7 @@ func (b DepositBuilder) Build() (Model, error) {
 		return model, err
 	}
 
-	model.Documents, _ = b.BuildDocuments()
+	model.Documents, _ = b.BuildDocuments(model)
 
 	return model, nil
 }

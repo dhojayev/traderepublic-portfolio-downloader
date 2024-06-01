@@ -7,7 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const TimeFormat = "02.01.2006"
+const ResolverTimeFormat = "02.01.2006"
 
 type DateResolverInterface interface {
 	Resolve(transactionTimestamp time.Time, documentDate string) (time.Time, error)
@@ -28,7 +28,7 @@ func (r DateResolver) Resolve(transactionTimestamp time.Time, documentDate strin
 		return transactionTimestamp, nil
 	}
 
-	date, err := time.Parse(TimeFormat, documentDate)
+	date, err := time.Parse(ResolverTimeFormat, documentDate)
 	if err != nil {
 		return date, fmt.Errorf("could not parse date from document detail: %w", err)
 	}

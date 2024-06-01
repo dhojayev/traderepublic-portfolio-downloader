@@ -10,10 +10,13 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const permDir = 0o700
+const (
+	DownloaderTimeFormat = "2006-01-02"
+	permDir              = 0o700
+)
 
 type DownloaderInterface interface {
-	Download(destDir string, document Model) (string, error)
+	Download(baseDir string, document Model) (string, error)
 }
 
 type Downloader struct {
@@ -24,9 +27,11 @@ func NewDownloader(logger *log.Logger) Downloader {
 	return Downloader{logger: logger}
 }
 
-func (d Downloader) Download(destDir string, document Model) (string, error) {
-	if err := os.Mkdir(destDir, permDir); err != nil {
-		return "", fmt.Errorf("could not create download dir: %w", err)
+func (d Downloader) Download(baseDir string, document Model) (string, error) {
+	destDir := fmt.Sprintf("%s/%s/", baseDir, document.Timestamp.Format(DownloaderTimeFormat))
+
+	if err := os.MkdirAll(destDir, permDir); err != nil {
+		return "", fmt.Errorf("could not create download base dir: %w", err)
 	}
 
 	resp, err := grab.Get(destDir, document.URL)

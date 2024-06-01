@@ -9,20 +9,22 @@ import (
 )
 
 type ModelBuilderInterface interface {
-	Build(response details.Response) ([]Model, error)
+	Build(transactionTimestamp time.Time, response details.Response) ([]Model, error)
 }
 
 type ModelBuilder struct {
-	logger *log.Logger
+	dateResolver DateResolverInterface
+	logger       *log.Logger
 }
 
-func NewModelBuilder(logger *log.Logger) ModelBuilder {
+func NewModelBuilder(dateResolver DateResolverInterface, logger *log.Logger) ModelBuilder {
 	return ModelBuilder{
-		logger: logger,
+		dateResolver: dateResolver,
+		logger:       logger,
 	}
 }
 
-func (b ModelBuilder) Build(response details.Response) ([]Model, error) {
+func (b ModelBuilder) Build(transactionTimestamp time.Time, response details.Response) ([]Model, error) {
 	documents := make([]Model, 0)
 
 	documentsSection, err := response.SectionTypeDocuments()
@@ -36,7 +38,12 @@ func (b ModelBuilder) Build(response details.Response) ([]Model, error) {
 			continue
 		}
 
-		documents = append(documents, NewModel(doc.ID, url, doc.Detail, doc.Title, "", time.Time{}))
+		documentDate, err := b.dateResolver.Resolve(transactionTimestamp, doc.Detail)
+		if err != nil {
+			return documents, fmt.Errorf("document date resolver errors: %w", err)
+		}
+
+		documents = append(documents, NewModel(doc.ID, url, doc.Detail, doc.Title, "", documentDate))
 	}
 
 	return documents, nil

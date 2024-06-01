@@ -43,7 +43,9 @@ func CreateNonWritingApp(logger *logrus.Logger) (portfoliodownloader.App, error)
 	eventTypeResolver := transactions.NewEventTypeResolver(logger)
 	detailsClient := details.NewClient(reader)
 	typeResolver := details.NewTypeResolver(logger)
-	modelBuilderFactory := transaction.NewModelBuilderFactory(typeResolver, logger)
+	dateResolver := document.NewDateResolver(logger)
+	modelBuilder := document.NewModelBuilder(dateResolver, logger)
+	modelBuilderFactory := transaction.NewModelBuilderFactory(typeResolver, modelBuilder, logger)
 	db, err := database.NewSQLiteInMemory()
 	if err != nil {
 		return portfoliodownloader.App{}, err
@@ -77,7 +79,9 @@ func CreateWritingApp(logger *logrus.Logger) (portfoliodownloader.App, error) {
 	eventTypeResolver := transactions.NewEventTypeResolver(logger)
 	detailsClient := details.NewClient(reader)
 	typeResolver := details.NewTypeResolver(logger)
-	modelBuilderFactory := transaction.NewModelBuilderFactory(typeResolver, logger)
+	dateResolver := document.NewDateResolver(logger)
+	modelBuilder := document.NewModelBuilder(dateResolver, logger)
+	modelBuilderFactory := transaction.NewModelBuilderFactory(typeResolver, modelBuilder, logger)
 	db, err := database.NewSQLiteInMemory()
 	if err != nil {
 		return portfoliodownloader.App{}, err
@@ -98,8 +102,8 @@ func CreateWritingApp(logger *logrus.Logger) (portfoliodownloader.App, error) {
 // wire.go:
 
 var (
-	DefaultSet = wire.NewSet(api.NewClient, auth.NewClient, console.NewAuthService, websocket.NewReader, portfoliodownloader.NewApp, transactions.NewClient, transactions.NewEventTypeResolver, details.NewClient, details.NewTypeResolver, database.NewSQLiteInMemory, transaction.NewModelBuilderFactory, transaction.NewCSVEntryFactory, filesystem.NewCSVReader, filesystem.NewCSVWriter, transaction.NewProcessor, ProvideTransactionRepository,
-		ProvideInstrumentRepository, document.NewDownloader, wire.Bind(new(auth.ClientInterface), new(*auth.Client)), wire.Bind(new(console.AuthServiceInterface), new(*console.AuthService)), wire.Bind(new(portfolio.ReaderInterface), new(*websocket.Reader)), wire.Bind(new(transactions.EventTypeResolverInterface), new(transactions.EventTypeResolver)), wire.Bind(new(details.TypeResolverInterface), new(details.TypeResolver)), wire.Bind(new(transaction.ModelBuilderFactoryInterface), new(transaction.ModelBuilderFactory)), wire.Bind(new(transaction.RepositoryInterface), new(*database.Repository[*transaction.Model])), wire.Bind(new(transaction.InstrumentRepositoryInterface), new(*database.Repository[*transaction.Instrument])), wire.Bind(new(document.DownloaderInterface), new(document.Downloader)),
+	DefaultSet = wire.NewSet(api.NewClient, auth.NewClient, console.NewAuthService, websocket.NewReader, portfoliodownloader.NewApp, transactions.NewClient, transactions.NewEventTypeResolver, details.NewClient, details.NewTypeResolver, database.NewSQLiteInMemory, transaction.NewModelBuilderFactory, document.NewModelBuilder, transaction.NewCSVEntryFactory, filesystem.NewCSVReader, filesystem.NewCSVWriter, transaction.NewProcessor, ProvideTransactionRepository,
+		ProvideInstrumentRepository, document.NewDownloader, document.NewDateResolver, wire.Bind(new(auth.ClientInterface), new(*auth.Client)), wire.Bind(new(console.AuthServiceInterface), new(*console.AuthService)), wire.Bind(new(portfolio.ReaderInterface), new(*websocket.Reader)), wire.Bind(new(transactions.EventTypeResolverInterface), new(transactions.EventTypeResolver)), wire.Bind(new(details.TypeResolverInterface), new(details.TypeResolver)), wire.Bind(new(transaction.ModelBuilderFactoryInterface), new(transaction.ModelBuilderFactory)), wire.Bind(new(document.ModelBuilderInterface), new(document.ModelBuilder)), wire.Bind(new(transaction.RepositoryInterface), new(*database.Repository[*transaction.Model])), wire.Bind(new(transaction.InstrumentRepositoryInterface), new(*database.Repository[*transaction.Instrument])), wire.Bind(new(document.DownloaderInterface), new(document.Downloader)), wire.Bind(new(document.DateResolverInterface), new(document.DateResolver)),
 	)
 
 	NonWritingSet = wire.NewSet(

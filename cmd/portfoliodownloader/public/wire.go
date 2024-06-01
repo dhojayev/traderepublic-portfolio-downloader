@@ -39,6 +39,7 @@ var (
 		details.NewTypeResolver,
 		database.NewSQLiteInMemory,
 		transaction.NewModelBuilderFactory,
+		document.NewModelBuilder,
 		transaction.NewCSVEntryFactory,
 		filesystem.NewCSVReader,
 		filesystem.NewCSVWriter,
@@ -46,6 +47,7 @@ var (
 		ProvideTransactionRepository,
 		ProvideInstrumentRepository,
 		document.NewDownloader,
+		document.NewDateResolver,
 
 		wire.Bind(new(auth.ClientInterface), new(*auth.Client)),
 		wire.Bind(new(console.AuthServiceInterface), new(*console.AuthService)),
@@ -54,9 +56,11 @@ var (
 		wire.Bind(new(transactions.EventTypeResolverInterface), new(transactions.EventTypeResolver)),
 		wire.Bind(new(details.TypeResolverInterface), new(details.TypeResolver)),
 		wire.Bind(new(transaction.ModelBuilderFactoryInterface), new(transaction.ModelBuilderFactory)),
+		wire.Bind(new(document.ModelBuilderInterface), new(document.ModelBuilder)),
 		wire.Bind(new(transaction.RepositoryInterface), new(*database.Repository[*transaction.Model])),
 		wire.Bind(new(transaction.InstrumentRepositoryInterface), new(*database.Repository[*transaction.Instrument])),
 		wire.Bind(new(document.DownloaderInterface), new(document.Downloader)),
+		wire.Bind(new(document.DateResolverInterface), new(document.DateResolver)),
 	)
 
 	NonWritingSet = wire.NewSet(
