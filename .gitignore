@@ -4,3 +4,4 @@
 /.refresh
 /responses
 vendor
+.DS_Store
