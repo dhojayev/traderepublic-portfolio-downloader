@@ -66,7 +66,7 @@ func (a App) Run() error {
 		eventType, err := a.eventTypeResolver.Resolve(transactionResponse)
 		if err != nil {
 			if errors.Is(err, transactions.ErrUnsupportedEventType) {
-				a.logger.WithFields(infoFields).Info("Unsupported transaction skipped")
+				a.logger.WithFields(infoFields).Warn("Unsupported transaction skipped")
 
 				continue
 			}
@@ -78,7 +78,7 @@ func (a App) Run() error {
 
 		if err := a.transactionProcessor.Process(eventType, transactionDetails); err != nil {
 			if errors.Is(err, transaction.ErrUnsupportedType) {
-				a.logger.WithFields(infoFields).Info("Unsupported transaction skipped")
+				a.logger.WithFields(infoFields).Warn("Unsupported transaction skipped")
 
 				continue
 			}

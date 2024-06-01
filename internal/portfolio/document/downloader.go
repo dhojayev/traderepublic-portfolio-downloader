@@ -4,6 +4,7 @@ package document
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -17,6 +18,8 @@ const (
 	DownloaderTimeFormat = "2006-01"
 	permDir              = 0o700
 )
+
+var ErrDocumentExists = errors.New("document exists")
 
 type DownloaderInterface interface {
 	Download(baseDir string, document Model) error
@@ -32,6 +35,11 @@ func NewDownloader(logger *log.Logger) Downloader {
 
 func (d Downloader) Download(baseDir string, document Model) error {
 	dest := baseDir + "/" + document.Filepath
+
+	if _, err := os.Stat(dest); err == nil {
+		return ErrDocumentExists
+	}
+
 	dir := filepath.Dir(dest)
 
 	if err := os.MkdirAll(dir, permDir); err != nil {

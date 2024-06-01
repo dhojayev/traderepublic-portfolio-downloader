@@ -47,7 +47,7 @@ func NewProcessor(
 	}
 }
 
-//nolint:cyclop
+//nolint:cyclop,funlen
 func (p Processor) Process(eventType transactions.EventType, response details.Response) error {
 	csvEntries, err := p.csvReader.Read(csvFilename)
 	if err != nil {
@@ -93,13 +93,21 @@ func (p Processor) Process(eventType transactions.EventType, response details.Re
 		return fmt.Errorf("could not save transaction to file: %w", err)
 	}
 
-	for _, document := range transaction.Documents {
-		err = p.documentDownloader.Download(documentBaseDir, document)
+	for _, doc := range transaction.Documents {
+		err = p.documentDownloader.Download(documentBaseDir, doc)
 		if err == nil {
+			p.logger.WithFields(logFields).Info("Document downloaded")
+
 			continue
 		}
 
-		p.logger.WithFields(logFields).Warnf("document downloader error: %s", err)
+		if errors.Is(err, document.ErrDocumentExists) {
+			p.logger.WithFields(logFields).Warn("Document already exists")
+
+			continue
+		}
+
+		p.logger.WithFields(logFields).Warnf("Document downloader error: %s", err)
 	}
 
 	return nil
