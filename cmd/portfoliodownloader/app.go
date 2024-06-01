@@ -44,7 +44,7 @@ func (a App) Run() error {
 		return fmt.Errorf("could not fetch transactions: %w", err)
 	}
 
-	a.logger.Infof("%d transaction downloaded", len(transactionResponses))
+	a.logger.Infof("%d transactions downloaded", len(transactionResponses))
 
 	slices.Reverse(transactionResponses)
 
