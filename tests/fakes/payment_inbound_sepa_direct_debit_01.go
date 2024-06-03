@@ -201,4 +201,6 @@ var PaymentInboundSepaDirectDebit01 = tests.TestCase{
 func init() {
 	PaymentInboundSepaDirectDebit01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2023-07-23T21:05:22.543+0000")
 	PaymentInboundSepaDirectDebit01.CSVEntry.Timestamp = internal.DateTime{Time: PaymentInboundSepaDirectDebit01.Transaction.Timestamp}
+
+	tests.RegisterSupported(PaymentInboundSepaDirectDebit01)
 }

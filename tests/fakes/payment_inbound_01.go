@@ -127,4 +127,6 @@ var PaymentInbound01 = tests.TestCase{
 func init() {
 	PaymentInbound01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2023-05-21T08:25:53.360+0000")
 	PaymentInbound01.CSVEntry.Timestamp = internal.DateTime{Time: PaymentInbound01.Transaction.Timestamp}
+
+	tests.RegisterSupported(PaymentInbound01)
 }

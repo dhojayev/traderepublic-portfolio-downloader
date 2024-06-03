@@ -342,4 +342,6 @@ var SavingsPlanExecuted01 = tests.TestCase{
 func init() {
 	SavingsPlanExecuted01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2023-11-11T13:40:59.926+0000")
 	SavingsPlanExecuted01.CSVEntry.Timestamp = internal.DateTime{Time: SavingsPlanExecuted01.Transaction.Timestamp}
+
+	tests.RegisterSupported(SavingsPlanExecuted01)
 }

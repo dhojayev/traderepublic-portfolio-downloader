@@ -330,3 +330,7 @@ var InterestPayoutCreated01 = tests.TestCase{
 		InvestedAmount: 0,
 	},
 }
+
+func init() {
+	tests.RegisterUnsupported(InterestPayoutCreated01)
+}

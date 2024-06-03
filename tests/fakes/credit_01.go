@@ -231,4 +231,6 @@ var Credit01 = tests.TestCase{
 func init() {
 	Credit01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2023-12-13T12:44:28.857+0000")
 	Credit01.CSVEntry.Timestamp = internal.DateTime{Time: Credit01.Transaction.Timestamp}
+
+	tests.RegisterSupported(Credit01)
 }

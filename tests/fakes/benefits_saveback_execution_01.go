@@ -184,4 +184,6 @@ var BenefitsSavebackExecution01 = tests.TestCase{
 func init() {
 	BenefitsSavebackExecution01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2024-03-22T18:15:06.448+0000")
 	BenefitsSavebackExecution01.CSVEntry.Timestamp = internal.DateTime{Time: BenefitsSavebackExecution01.Transaction.Timestamp}
+
+	tests.RegisterSupported(BenefitsSavebackExecution01)
 }

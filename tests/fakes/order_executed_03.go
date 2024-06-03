@@ -250,4 +250,6 @@ var OrderExecuted03 = tests.TestCase{
 func init() {
 	OrderExecuted03.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2024-03-11T11:23:59.448+0000")
 	OrderExecuted03.CSVEntry.Timestamp = internal.DateTime{Time: OrderExecuted03.Transaction.Timestamp}
+
+	tests.RegisterSupported(OrderExecuted03)
 }
