@@ -12,7 +12,10 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
 )
 
-var ErrUnsupportedType = errors.New("unsupported response")
+var (
+	ErrUnsupportedType          = errors.New("unsupported response")
+	ErrInsufficientDataResolved = errors.New("insufficient data resolved")
+)
 
 type ModelBuilderFactoryInterface interface {
 	Create(eventType transactions.EventType, response details.Response) (ModelBuilderInterface, error)
@@ -403,6 +406,16 @@ func (b BaseModelBuilder) BuildDocuments(model Model) ([]document.Model, error) 
 	return documents, nil
 }
 
+func (b BaseModelBuilder) HandleErr(err error) error {
+	if !errors.Is(err, details.ErrSectionDataTitleNotFound) {
+		return err
+	}
+
+	b.logger.Error(err)
+
+	return ErrInsufficientDataResolved
+}
+
 type PurchaseBuilder struct {
 	BaseModelBuilder
 }
@@ -421,42 +434,42 @@ func (b PurchaseBuilder) Build() (Model, error) {
 
 	model.Status, err = b.ExtractStatus()
 	if err != nil {
-		return model, err
+		return model, b.HandleErr(err)
 	}
 
 	model.Timestamp, err = b.ExtractTimestamp()
 	if err != nil {
-		return model, err
+		return model, b.HandleErr(err)
 	}
 
 	model.Instrument.ISIN, err = b.ExtractInstrumentISIN()
 	if err != nil {
-		return model, err
+		return model, b.HandleErr(err)
 	}
 
 	model.Instrument.Name, err = b.ExtractInstrumentName()
 	if err != nil {
-		return model, err
+		return model, b.HandleErr(err)
 	}
 
 	model.Shares, err = b.ExtractSharesAmount()
 	if err != nil {
-		return model, err
+		return model, b.HandleErr(err)
 	}
 
 	model.Rate, err = b.ExtractRateValue()
 	if err != nil {
-		return model, err
+		return model, b.HandleErr(err)
 	}
 
 	model.Commission, err = b.ExtractCommissionAmount()
 	if err != nil {
-		return model, err
+		return model, b.HandleErr(err)
 	}
 
 	model.Total, err = b.ExtractTotalAmount()
 	if err != nil {
-		return model, err
+		return model, b.HandleErr(err)
 	}
 
 	model.Instrument.Icon, _ = b.ExtractInstrumentIcon()
@@ -488,12 +501,12 @@ func (b SaleBuilder) Build() (Model, error) {
 
 	model.Yield, err = b.ExtractYield()
 	if err != nil {
-		return model, err
+		return model, b.HandleErr(err)
 	}
 
 	model.Profit, err = b.ExtractProfitAndLoss()
 	if err != nil {
-		return model, err
+		return model, b.HandleErr(err)
 	}
 
 	return model, nil
@@ -574,7 +587,7 @@ func (b DepositBuilder) Build() (Model, error) {
 
 	model.Status, err = b.ExtractStatus()
 	if err != nil {
-		return model, err
+		return model, b.HandleErr(err)
 	}
 
 	model.Timestamp, err = b.ExtractTimestamp()
@@ -582,24 +595,33 @@ func (b DepositBuilder) Build() (Model, error) {
 		return model, err
 	}
 
-	header, err := b.response.SectionTypeHeader()
+	model.Total, err = b.ExtractTotalAmount()
 	if err != nil {
-		return model, fmt.Errorf("could not get header section: %w", err)
-	}
-
-	totalAmountStr, err := ParseNumericValueFromString(header.Title)
-	if err != nil {
-		return model, err
-	}
-
-	model.Total, err = ParseFloatWithComma(totalAmountStr, false)
-	if err != nil {
-		return model, err
+		return model, b.HandleErr(err)
 	}
 
 	model.Documents, _ = b.BuildDocuments(model)
 
 	return model, nil
+}
+
+func (b DepositBuilder) ExtractTotalAmount() (float64, error) {
+	header, err := b.response.SectionTypeHeader()
+	if err != nil {
+		return 0, fmt.Errorf("could not get header section: %w", err)
+	}
+
+	totalAmountStr, err := ParseNumericValueFromString(header.Title)
+	if err != nil {
+		return 0, err
+	}
+
+	total, err := ParseFloatWithComma(totalAmountStr, false)
+	if err != nil {
+		return total, err
+	}
+
+	return total, nil
 }
 
 type WithdrawBuilder struct {
