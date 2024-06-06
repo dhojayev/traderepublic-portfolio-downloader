@@ -12,7 +12,8 @@ import (
 )
 
 var PaymentOutbound01 = tests.TestCase{
-	ResponseJSON: `{
+	TimelineDetailsData: tests.TimelineDetailsData{
+		Raw: `{
   "id": "a2597441-45f4-4ae2-a881-ab4a65aa0f0e",
   "sections": [
     {
@@ -64,6 +65,7 @@ var PaymentOutbound01 = tests.TestCase{
     }
   ]
 }`,
+	},
 	EventType: transactions.EventTypePaymentOutbound,
 	Transaction: transaction.Model{
 		UUID:      "a2597441-45f4-4ae2-a881-ab4a65aa0f0e",

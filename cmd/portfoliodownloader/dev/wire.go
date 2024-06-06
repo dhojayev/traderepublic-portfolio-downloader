@@ -46,8 +46,11 @@ var (
 		ProvideInstrumentRepository,
 		ProvideDocumentRepository,
 
+		wire.Bind(new(transactions.ClientInterface), new(transactions.Client)),
 		wire.Bind(new(transactions.EventTypeResolverInterface), new(transactions.EventTypeResolver)),
+		wire.Bind(new(details.ClientInterface), new(details.Client)),
 		wire.Bind(new(details.TypeResolverInterface), new(details.TypeResolver)),
+		wire.Bind(new(transaction.ProcessorInterface), new(transaction.Processor)),
 		wire.Bind(new(transaction.ModelBuilderFactoryInterface), new(transaction.ModelBuilderFactory)),
 		wire.Bind(new(document.ModelBuilderInterface), new(document.ModelBuilder)),
 		wire.Bind(new(transaction.RepositoryInterface), new(*database.Repository[*transaction.Model])),

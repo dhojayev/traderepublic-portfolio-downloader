@@ -34,7 +34,7 @@ func TestModelBuilderBuildSupported(t *testing.T) {
 			EXPECT().
 			Read("timelineDetailV2", gomock.Any()).
 			DoAndReturn(func(_ string, _ map[string]any) (portfolio.OutputDataInterface, error) {
-				return filesystem.NewOutputData([]byte(testCase.ResponseJSON)), nil
+				return filesystem.NewOutputData([]byte(testCase.TimelineDetailsData.Raw)), nil
 			})
 
 		response, err := detailsClient.Get("b20e367c-5542-4fab-9fd6-6faa5e7ab582")
@@ -71,7 +71,7 @@ func TestModelBuilderBuildUnsupported(t *testing.T) {
 			EXPECT().
 			Read("timelineDetailV2", gomock.Any()).
 			DoAndReturn(func(_ string, _ map[string]any) (portfolio.OutputDataInterface, error) {
-				return filesystem.NewOutputData([]byte(testCase.ResponseJSON)), nil
+				return filesystem.NewOutputData([]byte(testCase.TimelineDetailsData.Raw)), nil
 			})
 
 		response, err := detailsClient.Get("b20e367c-5542-4fab-9fd6-6faa5e7ab582")

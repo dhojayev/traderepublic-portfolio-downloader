@@ -37,7 +37,7 @@ func TestResponseContents(t *testing.T) {
 			EXPECT().
 			Read("timelineDetailV2", gomock.Any()).
 			DoAndReturn(func(_ string, _ map[string]any) (portfolio.OutputDataInterface, error) {
-				return filesystem.NewOutputData([]byte(testCase.ResponseJSON)), nil
+				return filesystem.NewOutputData([]byte(testCase.TimelineDetailsData.Raw)), nil
 			})
 
 		actual, err := client.Get("1ae661c0-b3f1-4a81-a909-79567161b014")
@@ -46,19 +46,19 @@ func TestResponseContents(t *testing.T) {
 		headerSection, err := actual.SectionTypeHeader()
 		assert.NoError(t, err, fmt.Sprintf("case %d", i))
 
-		assert.Equal(t, testCase.Response.HeaderSection, headerSection)
+		assert.Equal(t, testCase.TimelineDetailsData.Unmarshalled.Header, headerSection)
 
 		tableSections, err := actual.SectionsTypeTable()
 		assert.NoError(t, err, fmt.Sprintf("case %d", i))
 
-		assert.Equal(t, testCase.Response.TableSections, tableSections, fmt.Sprintf("case %d", i))
+		assert.Equal(t, testCase.TimelineDetailsData.Unmarshalled.Table, tableSections, fmt.Sprintf("case %d", i))
 
 		// do not compare documents section if no expected value provided.
-		if !reflect.DeepEqual(testCase.Response.DocumentsSection, details.ResponseSectionTypeDocuments{}) {
+		if !reflect.DeepEqual(testCase.TimelineDetailsData.Unmarshalled.Documents, details.ResponseSectionTypeDocuments{}) {
 			documentsSection, err := actual.SectionTypeDocuments()
 			assert.NoError(t, err, fmt.Sprintf("case %d", i))
 
-			assert.Equal(t, testCase.Response.DocumentsSection, documentsSection, fmt.Sprintf("case %d", i))
+			assert.Equal(t, testCase.TimelineDetailsData.Unmarshalled.Documents, documentsSection, fmt.Sprintf("case %d", i))
 		}
 	}
 }

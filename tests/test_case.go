@@ -14,17 +14,27 @@ var (
 )
 
 type TestCase struct {
-	ResponseJSON string
-	Response     Response
-	EventType    transactions.EventType
-	Transaction  transaction.Model
-	CSVEntry     filesystem.CSVEntry
+	TimelineTransactionsData TimelineTransactionsData
+	TimelineDetailsData      TimelineDetailsData
+	EventType                transactions.EventType
+	Transaction              transaction.Model
+	CSVEntry                 filesystem.CSVEntry
 }
 
-type Response struct {
-	HeaderSection    details.ResponseSectionTypeHeader
-	TableSections    details.ResponseSectionsTypeTable
-	DocumentsSection details.ResponseSectionTypeDocuments
+type TimelineTransactionsData struct {
+	Raw          string
+	Unmarshalled transactions.ResponseItem
+}
+
+type TimelineDetailsData struct {
+	Raw          string
+	Unmarshalled TimelineDetailsResponseSections
+}
+
+type TimelineDetailsResponseSections struct {
+	Header    details.ResponseSectionTypeHeader
+	Table     details.ResponseSectionsTypeTable
+	Documents details.ResponseSectionTypeDocuments
 }
 
 func RegisterSupported(testCase TestCase) {
