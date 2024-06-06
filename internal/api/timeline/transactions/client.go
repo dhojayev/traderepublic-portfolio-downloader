@@ -1,3 +1,5 @@
+//go:generate go run -mod=mod go.uber.org/mock/mockgen -source=client.go -destination client_mock.go -package=transactions
+
 package transactions
 
 import (
@@ -13,6 +15,10 @@ const (
 	dataType = "timelineTransactions"
 )
 
+type ClientInterface interface {
+	Get() ([]ResponseItem, error)
+}
+
 type Client struct {
 	reader portfolio.ReaderInterface
 }
@@ -23,7 +29,7 @@ func NewClient(reader portfolio.ReaderInterface) Client {
 	}
 }
 
-func (c *Client) Get() ([]ResponseItem, error) {
+func (c Client) Get() ([]ResponseItem, error) {
 	var result []ResponseItem
 
 	resp, err := c.request("")
@@ -45,7 +51,7 @@ func (c *Client) Get() ([]ResponseItem, error) {
 	return result, nil
 }
 
-func (c *Client) request(after string) (websocket.CollectionResponse[ResponseItem], error) {
+func (c Client) request(after string) (websocket.CollectionResponse[ResponseItem], error) {
 	var resp websocket.CollectionResponse[ResponseItem]
 
 	msg, err := c.reader.Read(dataType, map[string]any{"after": after})
