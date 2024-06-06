@@ -15,6 +15,7 @@ import (
 var (
 	ErrUnsupportedType          = errors.New("unsupported response")
 	ErrInsufficientDataResolved = errors.New("insufficient data resolved")
+	ErrUnknownType              = errors.New("unknown response")
 )
 
 type ModelBuilderFactoryInterface interface {
@@ -78,7 +79,7 @@ func (f ModelBuilderFactory) Create(
 		return nil, ErrUnsupportedType
 	}
 
-	return nil, ErrUnsupportedType
+	return nil, ErrUnknownType
 }
 
 type ModelBuilderInterface interface {

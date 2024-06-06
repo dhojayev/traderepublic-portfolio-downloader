@@ -14,6 +14,7 @@ import (
 type Type string
 
 const (
+	TypeUnknown                   Type = "Unknown"
 	TypeUnsupported               Type = "Unsupported"
 	TypeSaleTransaction           Type = "Sale"
 	TypePurchaseTransaction       Type = "Purchase"
@@ -43,11 +44,11 @@ func NewTypeResolver(logger *log.Logger) TypeResolver {
 	return TypeResolver{
 		detectors: map[Type]TesterFunc{
 			TypeDepositTransaction:        DepositDetector,
-			TypeInterestPayoutTransaction: InterestPayoutDetector,
+			TypeWithdrawalTransaction:     WithdrawalDetector,
+			TypeDividendPayoutTransaction: DividendPayoutDetector,
 			TypeRoundUpTransaction:        RoundUpDetector,
 			TypeSavebackTransaction:       SavebackDetector,
-			TypeDividendPayoutTransaction: DividendPayoutDetector,
-			TypeWithdrawalTransaction:     WithdrawalDetector,
+			TypeUnsupported:               InterestPayoutDetector,
 
 			// Detectors with the highest performance hit should be listed in the bottom.
 			TypePurchaseTransaction: PurchaseDetector,
@@ -68,7 +69,7 @@ func (r TypeResolver) Resolve(eventType transactions.EventType, response Respons
 		return detectedType, nil
 	}
 
-	return TypeUnsupported, ErrUnsupportedResponse
+	return TypeUnknown, ErrUnsupportedResponse
 }
 
 func PurchaseDetector(eventType transactions.EventType, response Response) bool {
