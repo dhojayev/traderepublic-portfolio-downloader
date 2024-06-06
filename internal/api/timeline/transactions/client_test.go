@@ -19,6 +19,7 @@ func TestClient_Get(t *testing.T) {
 
 	testCases := []tests.TestCase{
 		fakes.CardSuccessfulTransaction01,
+		fakes.CardSuccessfulTransaction02,
 	}
 
 	controller := gomock.NewController(t)

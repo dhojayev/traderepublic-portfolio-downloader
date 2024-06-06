@@ -5,49 +5,58 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/tests"
 )
 
-var CardSuccessfulTransaction01 = tests.TestCase{
+var CardSuccessfulTransaction02 = tests.TestCase{
 	TimelineTransactionsData: tests.TimelineTransactionsData{
 		Raw: `{
 		"items": 
 			[
 				{
 					"action": {
-						"payload": "6221f5fb-b8fa-4ad6-8c99-c3fb3c31da10",
+						"payload": "9aa0f0a1-1b68-412d-8f90-71ef77a10f45",
 						"type": "timelineDetail"
 					},
 					"amount": {
 						"currency": "EUR",
 						"fractionDigits": 2,
-						"value": -5.95
+						"value": -157.93
 					},
 					"badge": null,
 					"eventType": "card_successful_transaction",
-					"icon": "logos/merchant-45180dc7-8917-45c9-b926-6ae7b3befe28/v2",
-					"id": "6221f5fb-b8fa-4ad6-8c99-c3fb3c31da10",
+					"icon": "logos/merchant-fallback-entertainment/v2",
+					"id": "9aa0f0a1-1b68-412d-8f90-71ef77a10f45",
 					"status": "EXECUTED",
-					"subAmount": null,
+					"subAmount": {
+						"currency": "CZK",
+						"fractionDigits": 2,
+						"value": -3900
+					},
 					"subtitle": null,
-					"timestamp": "2024-05-27T13:51:55.167+0000",
-					"title": "Aldi"
+					"timestamp": "2024-05-23T11:37:27.519+0000",
+					"title": "Home Depot"
 				}
 			]
 }`,
 		Unmarshalled: transactions.ResponseItem{
 			Action: transactions.ResponseItemAction{
-				Payload: "6221f5fb-b8fa-4ad6-8c99-c3fb3c31da10",
+				Payload: "9aa0f0a1-1b68-412d-8f90-71ef77a10f45",
 				Type:    "timelineDetail",
 			},
 			Amount: transactions.ResponseItemAmount{
 				Currency:       "EUR",
 				FractionDigits: 2,
-				Value:          -5.95,
+				Value:          -157.93,
 			},
 			EventType: "card_successful_transaction",
-			Icon:      "logos/merchant-45180dc7-8917-45c9-b926-6ae7b3befe28/v2",
-			ID:        "6221f5fb-b8fa-4ad6-8c99-c3fb3c31da10",
+			Icon:      "logos/merchant-fallback-entertainment/v2",
+			ID:        "9aa0f0a1-1b68-412d-8f90-71ef77a10f45",
+			SubAmount: map[string]any{
+				"currency":       "CZK",
+				"fractionDigits": float64(2),
+				"value":          float64(-3900),
+			},
 			Status:    "EXECUTED",
-			Timestamp: "2024-05-27T13:51:55.167+0000",
-			Title:     "Aldi",
+			Timestamp: "2024-05-23T11:37:27.519+0000",
+			Title:     "Home Depot",
 		},
 	},
 }
