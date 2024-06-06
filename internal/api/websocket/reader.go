@@ -19,6 +19,8 @@ const (
 	baseHost = "api.traderepublic.com"
 )
 
+var ErrErrorStateReceived = errors.New("error state received")
+
 type Reader struct {
 	authService console.AuthServiceInterface
 	writer      writer.Interface
@@ -124,7 +126,7 @@ func (r *Reader) Read(dataType string, dataMap map[string]any) (portfolio.Output
 				return r.Read(dataType, dataMap)
 			}
 
-			return message, fmt.Errorf("error state received: %s", msg)
+			return message, fmt.Errorf("%w: %s", ErrErrorStateReceived, msg)
 		}
 
 		if err := r.writer.Bytes(dataType, message.Data()); err != nil {

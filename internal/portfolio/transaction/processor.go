@@ -1,3 +1,5 @@
+//go:generate go run -mod=mod go.uber.org/mock/mockgen -source=processor.go -destination processor_mock.go -package=transaction
+
 package transaction
 
 import (
@@ -16,6 +18,10 @@ const (
 	csvFilename     = "./transactions.csv"
 	documentBaseDir = "./documents/transactions"
 )
+
+type ProcessorInterface interface {
+	Process(eventType transactions.EventType, response details.Response) error
+}
 
 type Processor struct {
 	builderFactory     ModelBuilderFactoryInterface

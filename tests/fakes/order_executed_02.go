@@ -13,7 +13,8 @@ import (
 )
 
 var OrderExecuted02 = tests.TestCase{
-	ResponseJSON: `{
+	TimelineDetailsData: tests.TimelineDetailsData{
+		Raw: `{
 		"id": "1d9ad3b5-e65c-41f6-9c7d-96baa2a2ecad",
 		"sections": [
 		  {
@@ -152,126 +153,127 @@ var OrderExecuted02 = tests.TestCase{
 		  }
 		]
 	  }`,
-	Response: tests.Response{
-		HeaderSection: details.ResponseSectionTypeHeader{
-			Action: details.ResponseAction{
-				Payload: "DE000A0F5UF5",
-				Type:    "instrumentDetail",
-			},
-			Data: details.ResponseSectionTypeHeaderData{
-				Icon:      "logos/DE000A0F5UF5/v2",
-				Status:    "executed",
-				Timestamp: "2023-11-23T15:45:24.252+0000",
-			},
-			Title: "Du hast 136,14 €  investiert",
-			Type:  "header",
-		},
-		TableSections: details.ResponseSectionsTypeTable{
-			{
-				Data: []details.ResponseSectionTypeTableData{
-					{
-						Detail: details.ResponseSectionTypeTableDataDetail{
-							FunctionalStyle: "EXECUTED",
-							Text:            "Ausgeführt",
-							Type:            "status",
-						},
-						Style: "plain",
-						Title: "Status",
-					},
-					{
-						Detail: details.ResponseSectionTypeTableDataDetail{
-							Text: "Kauf",
-							Type: "text",
-						},
-						Style: "plain",
-						Title: "Orderart",
-					},
-					{
-						Detail: details.ResponseSectionTypeTableDataDetail{
-							Text: "NASDAQ100 USD (Dist)",
-							Type: "text",
-						},
-						Style: "plain",
-						Title: "Asset",
-					},
+		Unmarshalled: tests.TimelineDetailsResponseSections{
+			Header: details.ResponseSectionTypeHeader{
+				Action: details.ResponseAction{
+					Payload: "DE000A0F5UF5",
+					Type:    "instrumentDetail",
 				},
-				Title: "Übersicht",
-				Type:  "table",
-			},
-			{
-				Data: []details.ResponseSectionTypeTableData{
-					{
-						Detail: details.ResponseSectionTypeTableDataDetail{
-							Text: "1",
-							Type: "text",
-						},
-						Style: "plain",
-						Title: "Anteile",
-					},
-					{
-						Detail: details.ResponseSectionTypeTableDataDetail{
-							Text: "135,14 €",
-							Type: "text",
-						},
-						Style: "plain",
-						Title: "Aktienkurs",
-					},
-					{
-						Detail: details.ResponseSectionTypeTableDataDetail{
-							Text: "1,00 €",
-							Type: "text",
-						},
-						Style: "plain",
-						Title: "Gebühr",
-					},
-					{
-						Detail: details.ResponseSectionTypeTableDataDetail{
-							Text: "136,14 €",
-							Type: "text",
-						},
-						Style: "highlighted",
-						Title: "Gesamt",
-					},
+				Data: details.ResponseSectionTypeHeaderData{
+					Icon:      "logos/DE000A0F5UF5/v2",
+					Status:    "executed",
+					Timestamp: "2023-11-23T15:45:24.252+0000",
 				},
-				Title: "Transaktion",
-				Type:  "table",
+				Title: "Du hast 136,14 €  investiert",
+				Type:  "header",
 			},
-		},
-		DocumentsSection: details.ResponseSectionTypeDocuments{
-			Data: []details.ResponseSectionTypeDocumentData{
+			Table: details.ResponseSectionsTypeTable{
 				{
-					Action: details.ResponseAction{
-						Payload: "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
-						Type:    "browserModal",
+					Data: []details.ResponseSectionTypeTableData{
+						{
+							Detail: details.ResponseSectionTypeTableDataDetail{
+								FunctionalStyle: "EXECUTED",
+								Text:            "Ausgeführt",
+								Type:            "status",
+							},
+							Style: "plain",
+							Title: "Status",
+						},
+						{
+							Detail: details.ResponseSectionTypeTableDataDetail{
+								Text: "Kauf",
+								Type: "text",
+							},
+							Style: "plain",
+							Title: "Orderart",
+						},
+						{
+							Detail: details.ResponseSectionTypeTableDataDetail{
+								Text: "NASDAQ100 USD (Dist)",
+								Type: "text",
+							},
+							Style: "plain",
+							Title: "Asset",
+						},
 					},
-					Detail:      "23.11.2023",
-					ID:          "c9a1c524-1c54-4689-8b2f-0f1bcbb91c9d",
-					PostboxType: "SECURITIES_SETTLEMENT",
-					Title:       "Abrechnung",
+					Title: "Übersicht",
+					Type:  "table",
 				},
 				{
-					Action: details.ResponseAction{
-						Payload: "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
-						Type:    "browserModal",
+					Data: []details.ResponseSectionTypeTableData{
+						{
+							Detail: details.ResponseSectionTypeTableDataDetail{
+								Text: "1",
+								Type: "text",
+							},
+							Style: "plain",
+							Title: "Anteile",
+						},
+						{
+							Detail: details.ResponseSectionTypeTableDataDetail{
+								Text: "135,14 €",
+								Type: "text",
+							},
+							Style: "plain",
+							Title: "Aktienkurs",
+						},
+						{
+							Detail: details.ResponseSectionTypeTableDataDetail{
+								Text: "1,00 €",
+								Type: "text",
+							},
+							Style: "plain",
+							Title: "Gebühr",
+						},
+						{
+							Detail: details.ResponseSectionTypeTableDataDetail{
+								Text: "136,14 €",
+								Type: "text",
+							},
+							Style: "highlighted",
+							Title: "Gesamt",
+						},
 					},
-					Detail:      "23.11.2023",
-					ID:          "b26233a9-ee80-4da9-8404-08e722fe830b",
-					PostboxType: "INFO",
-					Title:       "Basisinformationsblatt",
-				},
-				{
-					Action: details.ResponseAction{
-						Payload: "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
-						Type:    "browserModal",
-					},
-					Detail:      "23.11.2023",
-					ID:          "b582015c-7a5c-47d0-8d33-6391d414cdc7",
-					PostboxType: "COSTS_INFO_BUY_V2",
-					Title:       "Kosteninformation",
+					Title: "Transaktion",
+					Type:  "table",
 				},
 			},
-			Title: "Dokumente",
-			Type:  "documents",
+			Documents: details.ResponseSectionTypeDocuments{
+				Data: []details.ResponseSectionTypeDocumentData{
+					{
+						Action: details.ResponseAction{
+							Payload: "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
+							Type:    "browserModal",
+						},
+						Detail:      "23.11.2023",
+						ID:          "c9a1c524-1c54-4689-8b2f-0f1bcbb91c9d",
+						PostboxType: "SECURITIES_SETTLEMENT",
+						Title:       "Abrechnung",
+					},
+					{
+						Action: details.ResponseAction{
+							Payload: "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
+							Type:    "browserModal",
+						},
+						Detail:      "23.11.2023",
+						ID:          "b26233a9-ee80-4da9-8404-08e722fe830b",
+						PostboxType: "INFO",
+						Title:       "Basisinformationsblatt",
+					},
+					{
+						Action: details.ResponseAction{
+							Payload: "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
+							Type:    "browserModal",
+						},
+						Detail:      "23.11.2023",
+						ID:          "b582015c-7a5c-47d0-8d33-6391d414cdc7",
+						PostboxType: "COSTS_INFO_BUY_V2",
+						Title:       "Kosteninformation",
+					},
+				},
+				Title: "Dokumente",
+				Type:  "documents",
+			},
 		},
 	},
 	EventType: transactions.EventTypeOrderExecuted,

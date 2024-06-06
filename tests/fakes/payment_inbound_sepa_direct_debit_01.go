@@ -13,7 +13,8 @@ import (
 )
 
 var PaymentInboundSepaDirectDebit01 = tests.TestCase{
-	ResponseJSON: `{
+	TimelineDetailsData: tests.TimelineDetailsData{
+		Raw: `{
 		"id": "ddc4ed4f-0314-42cf-8a65-930da1354348",
 		"sections": [
 		  {
@@ -99,78 +100,79 @@ var PaymentInboundSepaDirectDebit01 = tests.TestCase{
 		  }
 		]
 	  }`,
-	Response: tests.Response{
-		HeaderSection: details.ResponseSectionTypeHeader{
-			Data: details.ResponseSectionTypeHeaderData{
-				Icon:      "logos/timeline_plus_circle/v2",
-				Status:    "executed",
-				Timestamp: "2023-07-23T21:05:22.543+0000",
-			},
-			Title: "Du hast 500,00 € per Lastschrift hinzugefügt",
-			Type:  "header",
-		},
-		TableSections: details.ResponseSectionsTypeTable{
-			{
-				Data: []details.ResponseSectionTypeTableData{
-					{
-						Detail: details.ResponseSectionTypeTableDataDetail{
-							FunctionalStyle: "EXECUTED",
-							Text:            "Ausgeführt",
-							Type:            "status",
-						},
-						Style: "plain",
-						Title: "Status",
-					},
-					{
-						Detail: details.ResponseSectionTypeTableDataDetail{
-							Text: "Lastschrift",
-							Type: "text",
-						},
-						Style: "plain",
-						Title: "Zahlung",
-					},
+		Unmarshalled: tests.TimelineDetailsResponseSections{
+			Header: details.ResponseSectionTypeHeader{
+				Data: details.ResponseSectionTypeHeaderData{
+					Icon:      "logos/timeline_plus_circle/v2",
+					Status:    "executed",
+					Timestamp: "2023-07-23T21:05:22.543+0000",
 				},
-				Title: "Übersicht",
-				Type:  "table",
+				Title: "Du hast 500,00 € per Lastschrift hinzugefügt",
+				Type:  "header",
 			},
-			{
-				Data: []details.ResponseSectionTypeTableData{
-					{
-						Detail: details.ResponseSectionTypeTableDataDetail{
-							Text: "Gratis",
-							Type: "text",
-						},
-						Style: "plain",
-						Title: "Gebühr",
-					},
-					{
-						Detail: details.ResponseSectionTypeTableDataDetail{
-							Text: "500,00 €",
-							Type: "text",
-						},
-						Style: "highlighted",
-						Title: "Betrag",
-					},
-				},
-				Title: "Transaktion",
-				Type:  "table",
-			},
-		},
-		DocumentsSection: details.ResponseSectionTypeDocuments{
-			Data: []details.ResponseSectionTypeDocumentData{
+			Table: details.ResponseSectionsTypeTable{
 				{
-					Action: details.ResponseAction{
-						Payload: "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
-						Type:    "browserModal",
+					Data: []details.ResponseSectionTypeTableData{
+						{
+							Detail: details.ResponseSectionTypeTableDataDetail{
+								FunctionalStyle: "EXECUTED",
+								Text:            "Ausgeführt",
+								Type:            "status",
+							},
+							Style: "plain",
+							Title: "Status",
+						},
+						{
+							Detail: details.ResponseSectionTypeTableDataDetail{
+								Text: "Lastschrift",
+								Type: "text",
+							},
+							Style: "plain",
+							Title: "Zahlung",
+						},
 					},
-					Detail:      "23.07.2023",
-					ID:          "cfc08704-eb56-44f1-83a0-c39aba9055ca",
-					PostboxType: "PAYMENT_INBOUND_INVOICE",
-					Title:       "Abrechnung Einzahlung",
+					Title: "Übersicht",
+					Type:  "table",
+				},
+				{
+					Data: []details.ResponseSectionTypeTableData{
+						{
+							Detail: details.ResponseSectionTypeTableDataDetail{
+								Text: "Gratis",
+								Type: "text",
+							},
+							Style: "plain",
+							Title: "Gebühr",
+						},
+						{
+							Detail: details.ResponseSectionTypeTableDataDetail{
+								Text: "500,00 €",
+								Type: "text",
+							},
+							Style: "highlighted",
+							Title: "Betrag",
+						},
+					},
+					Title: "Transaktion",
+					Type:  "table",
 				},
 			},
-			Title: "Dokumente",
-			Type:  "documents",
+			Documents: details.ResponseSectionTypeDocuments{
+				Data: []details.ResponseSectionTypeDocumentData{
+					{
+						Action: details.ResponseAction{
+							Payload: "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
+							Type:    "browserModal",
+						},
+						Detail:      "23.07.2023",
+						ID:          "cfc08704-eb56-44f1-83a0-c39aba9055ca",
+						PostboxType: "PAYMENT_INBOUND_INVOICE",
+						Title:       "Abrechnung Einzahlung",
+					},
+				},
+				Title: "Dokumente",
+				Type:  "documents",
+			},
 		},
 	},
 	EventType: transactions.EventTypePaymentInboundSepaDirectDebit,

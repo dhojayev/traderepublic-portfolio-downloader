@@ -146,7 +146,7 @@ Mar 28 12:02:09.453 [INFO] [id:xxxxxxx-xxxxx-xxxxx-xxxxx-xxxx] Fetching transact
 Mar 28 12:02:09.485 [INFO] [id:xxxxxxx-xxxxx-xxxxx-xxxxx-xxxx] Processing transaction details
 Mar 28 12:02:09.488 [INFO] [id:xxxxxxx-xxxxx-xxxxx-xxxxx-xxxx] Unsupported transaction skipped
 ...
-Mar 28 12:02:27.379 [INFO] All data processed
+Mar 28 12:02:27.379 [INFO] Completed: 200, skipped: 47
 ```
 
 ### CSV File Fields
@@ -188,8 +188,6 @@ Please create a pull request with your changes if you have something to contribu
 
 ## Closing Words
 
-This project
-
- and its contributors have no affiliation with Trade Republic Bank GmbH.
+This project and its contributors have no affiliation with Trade Republic Bank GmbH.
 
 Trade Republic is a registered trademark of Trade Republic Bank GmbH.
