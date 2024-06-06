@@ -17,7 +17,7 @@ type ResponseItem struct {
 	Icon      string             `json:"icon"`
 	ID        string             `json:"id"`
 	Status    string             `json:"status"`
-	SubAmount string             `json:"subAmount,omitempty"`
+	SubAmount any                `json:"subAmount,omitempty"`
 	Subtitle  string             `json:"subtitle,omitempty"`
 	Timestamp string             `json:"timestamp"`
 	Title     string             `json:"title"`

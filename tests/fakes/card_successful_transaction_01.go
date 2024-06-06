@@ -25,7 +25,7 @@ var CardSuccessfulTransaction01 = tests.TestCase{
 					"icon": "logos/merchant-45180dc7-8917-45c9-b926-6ae7b3befe28/v2",
 					"id": "6221f5fb-b8fa-4ad6-8c99-c3fb3c31da10",
 					"status": "EXECUTED",
-					"subAmount": null,
+					"subAmount": {},
 					"subtitle": null,
 					"timestamp": "2024-05-27T13:51:55.167+0000",
 					"title": "Aldi"
@@ -45,6 +45,7 @@ var CardSuccessfulTransaction01 = tests.TestCase{
 			EventType: "card_successful_transaction",
 			Icon:      "logos/merchant-45180dc7-8917-45c9-b926-6ae7b3befe28/v2",
 			ID:        "6221f5fb-b8fa-4ad6-8c99-c3fb3c31da10",
+			SubAmount: map[string]any{},
 			Status:    "EXECUTED",
 			Timestamp: "2024-05-27T13:51:55.167+0000",
 			Title:     "Aldi",

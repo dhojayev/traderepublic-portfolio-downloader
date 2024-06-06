@@ -36,6 +36,11 @@ func TestClient_Get(t *testing.T) {
 		actual, err := client.Get()
 
 		assert.NoError(t, err, fmt.Sprintf("case %d", i))
+
+		if err != nil {
+			continue
+		}
+
 		assert.Len(t, actual, 1, fmt.Sprintf("case %d", i))
 		assert.Equal(t, testCase.TimelineTransactionsData.Unmarshalled, actual[0], fmt.Sprintf("case %d", i))
 	}
