@@ -1,4 +1,4 @@
-package tests
+package fakes
 
 import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"

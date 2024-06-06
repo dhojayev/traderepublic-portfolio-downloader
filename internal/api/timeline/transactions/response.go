@@ -12,12 +12,12 @@ type Response struct {
 type ResponseItem struct {
 	Action    ResponseItemAction `json:"action,omitempty"`
 	Amount    ResponseItemAmount `json:"amount"`
-	Badge     string             `json:"badge,omitempty"`
+	Badge     any                `json:"badge,omitempty"`
 	EventType string             `json:"eventType"`
 	Icon      string             `json:"icon"`
 	ID        string             `json:"id"`
 	Status    string             `json:"status"`
-	SubAmount any                `json:"subAmount,omitempty"`
+	SubAmount ResponseItemAmount `json:"subAmount,omitempty"`
 	Subtitle  string             `json:"subtitle,omitempty"`
 	Timestamp string             `json:"timestamp"`
 	Title     string             `json:"title"`

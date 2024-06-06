@@ -9,11 +9,10 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/tests"
 )
 
-var OrderExecuted03 = tests.TestCase{
-	TimelineDetailsData: tests.TimelineDetailsData{
+var OrderExecuted03 = TestCase{
+	TimelineDetailsData: TimelineDetailsData{
 		Raw: `{
 		"id": "a3b8e625-a6e9-4269-9529-01ebb86d69bb",
 		"sections": [
@@ -253,5 +252,5 @@ func init() {
 	OrderExecuted03.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2024-03-11T11:23:59.448+0000")
 	OrderExecuted03.CSVEntry.Timestamp = internal.DateTime{Time: OrderExecuted03.Transaction.Timestamp}
 
-	tests.RegisterSupported(OrderExecuted03)
+	RegisterSupported(OrderExecuted03)
 }

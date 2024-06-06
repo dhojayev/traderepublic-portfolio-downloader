@@ -9,11 +9,10 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/tests"
 )
 
-var PaymentInboundSepaDirectDebit01 = tests.TestCase{
-	TimelineDetailsData: tests.TimelineDetailsData{
+var PaymentInboundSepaDirectDebit01 = TestCase{
+	TimelineDetailsData: TimelineDetailsData{
 		Raw: `{
 		"id": "ddc4ed4f-0314-42cf-8a65-930da1354348",
 		"sections": [
@@ -100,7 +99,7 @@ var PaymentInboundSepaDirectDebit01 = tests.TestCase{
 		  }
 		]
 	  }`,
-		Unmarshalled: tests.TimelineDetailsResponseSections{
+		Unmarshalled: TimelineDetailsResponseSections{
 			Header: details.ResponseSectionTypeHeader{
 				Data: details.ResponseSectionTypeHeaderData{
 					Icon:      "logos/timeline_plus_circle/v2",
@@ -204,5 +203,5 @@ func init() {
 	PaymentInboundSepaDirectDebit01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2023-07-23T21:05:22.543+0000")
 	PaymentInboundSepaDirectDebit01.CSVEntry.Timestamp = internal.DateTime{Time: PaymentInboundSepaDirectDebit01.Transaction.Timestamp}
 
-	tests.RegisterSupported(PaymentInboundSepaDirectDebit01)
+	RegisterSupported(PaymentInboundSepaDirectDebit01)
 }

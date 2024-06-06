@@ -46,27 +46,33 @@ func (a App) Run() error {
 	}
 
 	for _, response := range responses {
+		// No payload = no details to process.
 		if response.Action.Payload == "" {
 			continue
 		}
 
 		infoFields := log.Fields{"id": response.ID}
 
-		err := a.ProcessTransaction(response)
+		err := a.ProcessTransactionResponse(response)
 
+		// Handle ignorable errors.
 		switch {
 		case err == nil:
 			counter++
-		case errors.Is(err, websocket.ErrErrorStateReceived):
+		case errors.Is(err, websocket.ErrMsgErrorStateReceived):
 			a.logger.WithFields(infoFields).Error(err)
 
 			continue
-		case errors.Is(err, transactions.ErrUnsupportedEventType):
+		case errors.Is(err, transactions.ErrEventTypeUnsupported):
 			a.logger.WithFields(infoFields).Warn("Unsupported transaction skipped")
 
 			continue
-		case errors.Is(err, transaction.ErrUnsupportedType):
+		case errors.Is(err, transaction.ErrModelBuilderUnsupportedType):
 			a.logger.WithFields(infoFields).Warn("Unsupported transaction skipped")
+
+			continue
+		case errors.Is(err, transaction.ErrModelBuilderInsufficientDataResolved):
+			a.logger.WithFields(infoFields).Warnf("Transaction skipped due to missing details: %s", err)
 
 			continue
 		}
@@ -94,7 +100,7 @@ func (a App) GetTimelineTransactions() ([]transactions.ResponseItem, error) {
 	return transactionResponses, nil
 }
 
-func (a App) ProcessTransaction(response transactions.ResponseItem) error {
+func (a App) ProcessTransactionResponse(response transactions.ResponseItem) error {
 	infoFields := log.Fields{"id": response.ID}
 
 	a.logger.WithFields(infoFields).Info("Fetching transaction details")
@@ -112,7 +118,7 @@ func (a App) ProcessTransaction(response transactions.ResponseItem) error {
 	a.logger.WithFields(infoFields).Info("Processing transaction details")
 
 	if err := a.transactionProcessor.Process(eventType, transactionDetails); err != nil {
-		return fmt.Errorf("could process transaction: %w", err)
+		return fmt.Errorf("could not process transaction: %w", err)
 	}
 
 	a.logger.WithFields(infoFields).Info("Transaction processed")

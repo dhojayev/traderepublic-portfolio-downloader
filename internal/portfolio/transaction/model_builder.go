@@ -13,9 +13,9 @@ import (
 )
 
 var (
-	ErrUnsupportedType          = errors.New("unsupported response")
-	ErrInsufficientDataResolved = errors.New("insufficient data resolved")
-	ErrUnknownType              = errors.New("unknown response")
+	ErrModelBuilderUnsupportedType          = errors.New("unsupported response")
+	ErrModelBuilderInsufficientDataResolved = errors.New("insufficient data resolved")
+	ErrModelBuilderUnknownType              = errors.New("unknown response")
 )
 
 type ModelBuilderFactoryInterface interface {
@@ -47,8 +47,8 @@ func (f ModelBuilderFactory) Create(
 ) (ModelBuilderInterface, error) {
 	responseType, err := f.resolver.Resolve(eventType, response)
 	if err != nil {
-		if errors.Is(err, details.ErrUnsupportedResponse) {
-			return nil, ErrUnsupportedType
+		if errors.Is(err, details.ErrTypeResolverUnsupportedType) {
+			return nil, ErrModelBuilderUnsupportedType
 		}
 
 		return nil, fmt.Errorf("resolver error: %w", err)
@@ -76,10 +76,10 @@ func (f ModelBuilderFactory) Create(
 		details.TypeUnsupported,
 		details.TypeCardPaymentTransaction,
 		details.TypeInterestPayoutTransaction:
-		return nil, ErrUnsupportedType
+		return nil, ErrModelBuilderUnsupportedType
 	}
 
-	return nil, ErrUnknownType
+	return nil, ErrModelBuilderUnknownType
 }
 
 type ModelBuilderInterface interface {
@@ -412,9 +412,7 @@ func (b BaseModelBuilder) HandleErr(err error) error {
 		return err
 	}
 
-	b.logger.Error(err)
-
-	return ErrInsufficientDataResolved
+	return fmt.Errorf("%w: %w", ErrModelBuilderInsufficientDataResolved, err)
 }
 
 type PurchaseBuilder struct {

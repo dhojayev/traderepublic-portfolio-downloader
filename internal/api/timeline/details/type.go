@@ -14,7 +14,6 @@ import (
 type Type string
 
 const (
-	TypeUnknown                   Type = "Unknown"
 	TypeUnsupported               Type = "Unsupported"
 	TypeSaleTransaction           Type = "Sale"
 	TypePurchaseTransaction       Type = "Purchase"
@@ -27,7 +26,7 @@ const (
 	TypeInterestPayoutTransaction Type = "Interest payout"
 )
 
-var ErrUnsupportedResponse = errors.New("could not resolve transaction type")
+var ErrTypeResolverUnsupportedType = errors.New("could not resolve transaction type")
 
 type TesterFunc func(transactions.EventType, Response) bool
 
@@ -69,7 +68,7 @@ func (r TypeResolver) Resolve(eventType transactions.EventType, response Respons
 		return detectedType, nil
 	}
 
-	return TypeUnknown, ErrUnsupportedResponse
+	return Type(""), ErrTypeResolverUnsupportedType
 }
 
 func PurchaseDetector(eventType transactions.EventType, response Response) bool {

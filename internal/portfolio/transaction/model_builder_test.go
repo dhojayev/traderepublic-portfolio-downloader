@@ -13,13 +13,13 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/tests"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/tests/fakes"
 )
 
 func TestModelBuilderBuildSupported(t *testing.T) {
 	t.Parallel()
 
-	testCases := tests.TestCasesSupported
+	testCases := fakes.TestCasesSupported
 	logger := log.New()
 	controller := gomock.NewController(t)
 	readerMock := portfolio.NewMockReaderInterface(controller)
@@ -56,7 +56,7 @@ func TestModelBuilderBuildSupported(t *testing.T) {
 func TestModelBuilderBuildUnsupported(t *testing.T) {
 	t.Parallel()
 
-	testCases := tests.TestCasesUnsupported
+	testCases := fakes.TestCasesUnsupported
 	logger := log.New()
 	controller := gomock.NewController(t)
 	readerMock := portfolio.NewMockReaderInterface(controller)
@@ -85,7 +85,7 @@ func TestModelBuilderBuildUnsupported(t *testing.T) {
 func TestModelBuilderBuildUnknown(t *testing.T) {
 	t.Parallel()
 
-	testCases := tests.TestCasesUnknown
+	testCases := fakes.TestCasesUnknown
 	logger := log.New()
 	controller := gomock.NewController(t)
 	readerMock := portfolio.NewMockReaderInterface(controller)
@@ -100,7 +100,7 @@ func TestModelBuilderBuildUnknown(t *testing.T) {
 			EXPECT().
 			Read("timelineDetailV2", gomock.Any()).
 			DoAndReturn(func(_ string, _ map[string]any) (portfolio.OutputDataInterface, error) {
-				return filesystem.NewOutputData([]byte(testCase.ResponseJSON)), nil
+				return filesystem.NewOutputData([]byte(testCase.TimelineDetailsData.Raw)), nil
 			})
 
 		response, err := detailsClient.Get("b20e367c-5542-4fab-9fd6-6faa5e7ab582")
@@ -114,6 +114,6 @@ func TestModelBuilderBuildUnknown(t *testing.T) {
 		}
 
 		_, err = builder.Build()
-		assert.ErrorIs(t, err, transaction.ErrInsufficientDataResolved, fmt.Sprintf("case %d", i))
+		assert.ErrorIs(t, err, transaction.ErrModelBuilderInsufficientDataResolved, fmt.Sprintf("case %d", i))
 	}
 }

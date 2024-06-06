@@ -8,11 +8,10 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/tests"
 )
 
-var PaymentInbound01 = tests.TestCase{
-	TimelineDetailsData: tests.TimelineDetailsData{
+var PaymentInbound01 = TestCase{
+	TimelineDetailsData: TimelineDetailsData{
 		Raw: `{
 		"id": "1ae661c0-b3f1-4a81-a909-79567161b014",
 		"sections": [
@@ -65,7 +64,7 @@ var PaymentInbound01 = tests.TestCase{
 		  }
 		]
 	  }`,
-		Unmarshalled: tests.TimelineDetailsResponseSections{
+		Unmarshalled: TimelineDetailsResponseSections{
 			Header: details.ResponseSectionTypeHeader{
 				Data: details.ResponseSectionTypeHeaderData{
 					Icon:      "logos/timeline_plus_circle/v2",
@@ -130,5 +129,5 @@ func init() {
 	PaymentInbound01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2023-05-21T08:25:53.360+0000")
 	PaymentInbound01.CSVEntry.Timestamp = internal.DateTime{Time: PaymentInbound01.Transaction.Timestamp}
 
-	tests.RegisterSupported(PaymentInbound01)
+	RegisterSupported(PaymentInbound01)
 }

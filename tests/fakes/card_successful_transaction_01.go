@@ -2,11 +2,10 @@ package fakes
 
 import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/tests"
 )
 
-var CardSuccessfulTransaction01 = tests.TestCase{
-	TimelineTransactionsData: tests.TimelineTransactionsData{
+var CardSuccessfulTransaction01 = TestCase{
+	TimelineTransactionsData: TimelineTransactionsData{
 		Raw: `{
 		"items": 
 			[
@@ -50,4 +49,11 @@ var CardSuccessfulTransaction01 = tests.TestCase{
 			Title:     "Aldi",
 		},
 	},
+	TimelineDetailsData: TimelineDetailsData{
+		Raw: "{}",
+	},
+}
+
+func init() {
+	RegisterUnsupported(CardSuccessfulTransaction01)
 }

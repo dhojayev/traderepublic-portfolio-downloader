@@ -9,11 +9,10 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/tests"
 )
 
-var BenefitsSavebackExecution01 = tests.TestCase{
-	TimelineDetailsData: tests.TimelineDetailsData{
+var BenefitsSavebackExecution01 = TestCase{
+	TimelineDetailsData: TimelineDetailsData{
 		Raw: `{
 		"id": "73fc417a-62ef-4179-a85e-9f3b29224567",
 		"sections": [
@@ -187,5 +186,5 @@ func init() {
 	BenefitsSavebackExecution01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2024-03-22T18:15:06.448+0000")
 	BenefitsSavebackExecution01.CSVEntry.Timestamp = internal.DateTime{Time: BenefitsSavebackExecution01.Transaction.Timestamp}
 
-	tests.RegisterSupported(BenefitsSavebackExecution01)
+	RegisterSupported(BenefitsSavebackExecution01)
 }

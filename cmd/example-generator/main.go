@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
@@ -8,7 +9,7 @@ import (
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/tests"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/tests/fakes"
 )
 
 const (
@@ -16,13 +17,15 @@ const (
 )
 
 func main() {
-	examples := tests.TestCasesSupported
+	examples := fakes.TestCasesSupported
 	logger := log.New()
 	factory := transaction.NewCSVEntryFactory(logger)
 	csvWriter := filesystem.NewCSVWriter(logger)
 
 	if err := os.Remove(assetFilepath); err != nil {
-		panic(err)
+		if !errors.Is(err, os.ErrNotExist) {
+			panic(err)
+		}
 	}
 
 	for _, example := range examples {

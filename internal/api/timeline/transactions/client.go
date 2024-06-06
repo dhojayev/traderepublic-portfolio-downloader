@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	dataType = "timelineTransactions"
+	RequestDataType = "timelineTransactions"
 )
 
 type ClientInterface interface {
@@ -54,13 +54,13 @@ func (c Client) Get() ([]ResponseItem, error) {
 func (c Client) request(after string) (websocket.CollectionResponse[ResponseItem], error) {
 	var resp websocket.CollectionResponse[ResponseItem]
 
-	msg, err := c.reader.Read(dataType, map[string]any{"after": after})
+	msg, err := c.reader.Read(RequestDataType, map[string]any{"after": after})
 	if err != nil {
-		return resp, fmt.Errorf("could not fetch %s: %w", dataType, err)
+		return resp, fmt.Errorf("could not fetch %s: %w", RequestDataType, err)
 	}
 
 	if err = json.Unmarshal(msg.Data(), &resp); err != nil {
-		return resp, fmt.Errorf("could not unmarshal %s response: %w", dataType, err)
+		return resp, fmt.Errorf("could not unmarshal %s response: %w", RequestDataType, err)
 	}
 
 	return resp, nil

@@ -11,13 +11,13 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/tests"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/tests/fakes"
 )
 
 func TestMakeSupported(t *testing.T) {
 	t.Parallel()
 
-	testCases := tests.TestCasesSupported
+	testCases := fakes.TestCasesSupported
 	factory := transaction.NewCSVEntryFactory(log.New())
 
 	for i, testCase := range testCases {
@@ -36,7 +36,7 @@ func TestMakeSupported(t *testing.T) {
 func TestMakeUnsupported(t *testing.T) {
 	t.Parallel()
 
-	testCases := tests.TestCasesUnsupported
+	testCases := fakes.TestCasesUnsupported
 	factory := transaction.NewCSVEntryFactory(log.New())
 
 	for i, testCase := range testCases {
@@ -49,7 +49,7 @@ func TestMakeUnsupported(t *testing.T) {
 func TestMakeUnknown(t *testing.T) {
 	t.Parallel()
 
-	testCases := tests.TestCasesUnknown
+	testCases := fakes.TestCasesUnknown
 	factory := transaction.NewCSVEntryFactory(log.New())
 
 	for i, testCase := range testCases {

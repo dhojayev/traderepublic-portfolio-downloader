@@ -1,3 +1,5 @@
+//go:generate go run -mod=mod go.uber.org/mock/mockgen -source=csv_writer.go -destination csv_writer_mock.go -package=filesystem
+
 package filesystem
 
 import (
@@ -7,6 +9,10 @@ import (
 	"github.com/gocarina/gocsv"
 	log "github.com/sirupsen/logrus"
 )
+
+type CSVWriterInterface interface {
+	Write(filepath string, entry CSVEntry) error
+}
 
 type CSVWriter struct {
 	logger *log.Logger

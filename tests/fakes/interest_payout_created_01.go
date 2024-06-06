@@ -5,11 +5,55 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/tests"
 )
 
-var InterestPayoutCreated01 = tests.TestCase{
-	TimelineDetailsData: tests.TimelineDetailsData{
+var InterestPayoutCreated01 = TestCase{
+	TimelineTransactionsData: TimelineTransactionsData{
+		Raw: `{
+		"items": 
+			[
+				{
+					"action": {
+						"payload": "c30c2952-ff0e-4fdb-bb8c-dfe1a8c35ce6",
+						"type": "timelineDetail"
+					},
+					"amount": {
+						"currency": "EUR",
+						"fractionDigits": 2,
+						"value": 0.07
+					},
+					"badge": null,
+					"eventType": "INTEREST_PAYOUT_CREATED",
+					"icon": "logos/timeline_interest_new/v2",
+					"id": "c30c2952-ff0e-4fdb-bb8c-dfe1a8c35ce6",
+					"status": "EXECUTED",
+					"subAmount": null,
+					"subtitle": "2,00% p.a.",
+					"timestamp": "2023-11-06T11:22:52.544+0000",
+					"title": "Zinsen"
+				}
+			]
+		}`,
+		Unmarshalled: transactions.ResponseItem{
+			Action: transactions.ResponseItemAction{
+				Payload: "c30c2952-ff0e-4fdb-bb8c-dfe1a8c35ce6",
+				Type:    "timelineDetail",
+			},
+			Amount: transactions.ResponseItemAmount{
+				Currency:       "EUR",
+				FractionDigits: 2,
+				Value:          0.07,
+			},
+			EventType: "INTEREST_PAYOUT_CREATED",
+			Icon:      "logos/timeline_interest_new/v2",
+			ID:        "c30c2952-ff0e-4fdb-bb8c-dfe1a8c35ce6",
+			Status:    "EXECUTED",
+			Subtitle:  "2,00% p.a.",
+			Timestamp: "2023-11-06T11:22:52.544+0000",
+			Title:     "Zinsen",
+		},
+	},
+	TimelineDetailsData: TimelineDetailsData{
 		Raw: `{
 		"id": "c30c2952-ff0e-4fdb-bb8c-dfe1a8c35ce6",
 		"sections": [
@@ -201,7 +245,7 @@ var InterestPayoutCreated01 = tests.TestCase{
 		  }
 		]
 	  }`,
-		Unmarshalled: tests.TimelineDetailsResponseSections{
+		Unmarshalled: TimelineDetailsResponseSections{
 			Header: details.ResponseSectionTypeHeader{
 				Data: details.ResponseSectionTypeHeaderData{
 					Icon:      "logos/timeline_interest_new/v2",
@@ -334,5 +378,5 @@ var InterestPayoutCreated01 = tests.TestCase{
 }
 
 func init() {
-	tests.RegisterUnsupported(InterestPayoutCreated01)
+	RegisterUnsupported(InterestPayoutCreated01)
 }

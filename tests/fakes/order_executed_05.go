@@ -8,11 +8,56 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/tests"
 )
 
-var OrderExecuted05 = tests.TestCase{
-	ResponseJSON: `{
+var OrderExecuted05 = TestCase{
+	TimelineTransactionsData: TimelineTransactionsData{
+		Raw: `{
+    "items": 
+    [
+      {
+        "action": {
+          "payload": "eb6ee8c7-2cff-4dcc-ab70-3ca7f31f0371",
+          "type": "timelineDetail"
+        },
+        "amount": {
+          "currency": "EUR",
+          "fractionDigits": 2,
+          "value": -5001.01
+        },
+        "badge": null,
+        "eventType": "ORDER_EXECUTED",
+        "icon": "logos/DE0007500001/v2",
+        "id": "eb6ee8c7-2cff-4dcc-ab70-3ca7f31f0371",
+        "status": "EXECUTED",
+        "subAmount": null,
+        "subtitle": "Kauforder",
+        "timestamp": "2023-09-12T06:35:52.879+0000",
+        "title": "Anleihe Feb. 2024"
+      }
+     ]
+   }`,
+		Unmarshalled: transactions.ResponseItem{
+			Action: transactions.ResponseItemAction{
+				Payload: "eb6ee8c7-2cff-4dcc-ab70-3ca7f31f0371",
+				Type:    "timelineDetail",
+			},
+			Amount: transactions.ResponseItemAmount{
+				Currency:       "EUR",
+				FractionDigits: 2,
+				Value:          -5001.01,
+			},
+			EventType: "ORDER_EXECUTED",
+			Icon:      "logos/DE0007500001/v2",
+			ID:        "eb6ee8c7-2cff-4dcc-ab70-3ca7f31f0371",
+			Status:    "EXECUTED",
+			Subtitle:  "Kauforder",
+			Timestamp: "2023-09-12T06:35:52.879+0000",
+			Title:     "Anleihe Feb. 2024",
+		},
+	},
+	TimelineDetailsData: TimelineDetailsData{
+		Raw: `{
   "id": "eb6ee8c7-2cff-4dcc-ab70-3ca7f31f0371",
   "sections": [
     {
@@ -236,7 +281,7 @@ var OrderExecuted05 = tests.TestCase{
     }
   ]
 }`,
-	Response:    tests.Response{},
+	},
 	EventType:   transactions.EventTypeOrderExecuted,
 	Transaction: transaction.Model{},
 	CSVEntry:    filesystem.CSVEntry{},
@@ -246,5 +291,5 @@ func init() {
 	OrderExecuted05.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2023-09-12T06:35:52.879+0000")
 	OrderExecuted05.CSVEntry.Timestamp = internal.DateTime{Time: OrderExecuted05.Transaction.Timestamp}
 
-	tests.RegisterUnknown(OrderExecuted05)
+	RegisterUnknown(OrderExecuted05)
 }
