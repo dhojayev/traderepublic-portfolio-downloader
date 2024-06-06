@@ -23,8 +23,8 @@ func NewClient(reader portfolio.ReaderInterface) Client {
 	}
 }
 
-func (c *Client) Get() ([]TransactionResponse, error) {
-	var result []TransactionResponse
+func (c *Client) Get() ([]ResponseItem, error) {
+	var result []ResponseItem
 
 	resp, err := c.request("")
 	if err != nil {
@@ -45,8 +45,8 @@ func (c *Client) Get() ([]TransactionResponse, error) {
 	return result, nil
 }
 
-func (c *Client) request(after string) (websocket.CollectionResponse[TransactionResponse], error) {
-	var resp websocket.CollectionResponse[TransactionResponse]
+func (c *Client) request(after string) (websocket.CollectionResponse[ResponseItem], error) {
+	var resp websocket.CollectionResponse[ResponseItem]
 
 	msg, err := c.reader.Read(dataType, map[string]any{"after": after})
 	if err != nil {

@@ -25,7 +25,7 @@ var ErrUnsupportedEventType = errors.New("unsupported event type")
 type EventType string
 
 type EventTypeResolverInterface interface {
-	Resolve(response TransactionResponse) (EventType, error)
+	Resolve(response ResponseItem) (EventType, error)
 }
 
 type EventTypeResolver struct {
@@ -50,7 +50,7 @@ func NewEventTypeResolver(logger *log.Logger) EventTypeResolver {
 	}
 }
 
-func (e EventTypeResolver) Resolve(response TransactionResponse) (EventType, error) {
+func (e EventTypeResolver) Resolve(response ResponseItem) (EventType, error) {
 	for _, t := range e.supportedTypes {
 		if response.EventType != string(t) {
 			continue

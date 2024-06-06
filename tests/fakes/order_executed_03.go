@@ -13,7 +13,8 @@ import (
 )
 
 var OrderExecuted03 = tests.TestCase{
-	ResponseJSON: `{
+	TimelineDetailsData: tests.TimelineDetailsData{
+		Raw: `{
 		"id": "a3b8e625-a6e9-4269-9529-01ebb86d69bb",
 		"sections": [
 		  {
@@ -189,6 +190,7 @@ var OrderExecuted03 = tests.TestCase{
 		  }
 		]
 	  }`,
+	},
 	EventType: transactions.EventTypeOrderExecuted,
 	Transaction: transaction.Model{
 		UUID: "a3b8e625-a6e9-4269-9529-01ebb86d69bb",

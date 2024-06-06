@@ -39,12 +39,11 @@ func (m *MockDownloaderInterface) EXPECT() *MockDownloaderInterfaceMockRecorder 
 }
 
 // Download mocks base method.
-func (m *MockDownloaderInterface) Download(baseDir string, document Model) (string, error) {
+func (m *MockDownloaderInterface) Download(baseDir string, document Model) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Download", baseDir, document)
-	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // Download indicates an expected call of Download.

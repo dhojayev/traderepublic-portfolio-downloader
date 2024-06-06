@@ -13,7 +13,8 @@ import (
 )
 
 var BenefitsSavebackExecution01 = tests.TestCase{
-	ResponseJSON: `{
+	TimelineDetailsData: tests.TimelineDetailsData{
+		Raw: `{
 		"id": "73fc417a-62ef-4179-a85e-9f3b29224567",
 		"sections": [
 		  {
@@ -139,6 +140,7 @@ var BenefitsSavebackExecution01 = tests.TestCase{
 		  }
 		]
 	  }`,
+	},
 	EventType: transactions.EventTypeBenefitsSavebackExecution,
 	Transaction: transaction.Model{
 		UUID: "73fc417a-62ef-4179-a85e-9f3b29224567",

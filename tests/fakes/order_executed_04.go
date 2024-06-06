@@ -3,7 +3,8 @@ package fakes
 import "github.com/dhojayev/traderepublic-portfolio-downloader/tests"
 
 var OrderExecuted04 = tests.TestCase{
-	ResponseJSON: `{
+	TimelineDetailsData: tests.TimelineDetailsData{
+		Raw: `{
 		"id": "61f297f9-f9c3-46c4-a15c-cdd50d5544ad",
 		"sections": [
 		  {
@@ -159,4 +160,5 @@ var OrderExecuted04 = tests.TestCase{
 		  }
 		]
 	  }`,
+	},
 }
