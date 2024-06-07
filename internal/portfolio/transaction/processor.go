@@ -27,8 +27,8 @@ type Processor struct {
 	builderFactory     ModelBuilderFactoryInterface
 	transactionRepo    RepositoryInterface
 	factory            CSVEntryFactory
-	csvReader          filesystem.CSVReader
-	csvWriter          filesystem.CSVWriter
+	csvReader          filesystem.CSVReaderInterface
+	csvWriter          filesystem.CSVWriterInterface
 	documentDownloader document.DownloaderInterface
 	logger             *log.Logger
 }
@@ -37,8 +37,8 @@ func NewProcessor(
 	builderFactory ModelBuilderFactoryInterface,
 	transactionRepo RepositoryInterface,
 	factory CSVEntryFactory,
-	csvReader filesystem.CSVReader,
-	csvWriter filesystem.CSVWriter,
+	csvReader filesystem.CSVReaderInterface,
+	csvWriter filesystem.CSVWriterInterface,
 	documentDownloader document.DownloaderInterface,
 	logger *log.Logger,
 ) Processor {
@@ -72,10 +72,10 @@ func (p Processor) Process(eventType transactions.EventType, response details.Re
 
 	builder, err := p.builderFactory.Create(eventType, response)
 	if err != nil {
-		if errors.Is(err, ErrUnsupportedType) {
+		if errors.Is(err, ErrModelBuilderUnsupportedType) {
 			p.logger.WithFields(logFields).Debugf("builder factory error: %s", err)
 
-			return ErrUnsupportedType
+			return ErrModelBuilderUnsupportedType
 		}
 
 		return fmt.Errorf("builder factory error: %w", err)

@@ -22,7 +22,7 @@ const (
 	EventTypeCardRefund                    EventType = "card_refund"
 )
 
-var ErrUnsupportedEventType = errors.New("unsupported event type")
+var ErrEventTypeUnsupported = errors.New("unsupported event type")
 
 type EventType string
 
@@ -61,5 +61,5 @@ func (e EventTypeResolver) Resolve(response ResponseItem) (EventType, error) {
 		return t, nil
 	}
 
-	return "", ErrUnsupportedEventType
+	return "", ErrEventTypeUnsupported
 }

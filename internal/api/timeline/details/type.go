@@ -26,7 +26,7 @@ const (
 	TypeInterestPayoutTransaction Type = "Interest payout"
 )
 
-var ErrUnsupportedResponse = errors.New("could not resolve transaction type")
+var ErrTypeResolverUnsupportedType = errors.New("could not resolve transaction type")
 
 type TesterFunc func(transactions.EventType, Response) bool
 
@@ -43,11 +43,11 @@ func NewTypeResolver(logger *log.Logger) TypeResolver {
 	return TypeResolver{
 		detectors: map[Type]TesterFunc{
 			TypeDepositTransaction:        DepositDetector,
-			TypeInterestPayoutTransaction: InterestPayoutDetector,
+			TypeWithdrawalTransaction:     WithdrawalDetector,
+			TypeDividendPayoutTransaction: DividendPayoutDetector,
 			TypeRoundUpTransaction:        RoundUpDetector,
 			TypeSavebackTransaction:       SavebackDetector,
-			TypeDividendPayoutTransaction: DividendPayoutDetector,
-			TypeWithdrawalTransaction:     WithdrawalDetector,
+			TypeUnsupported:               InterestPayoutDetector,
 
 			// Detectors with the highest performance hit should be listed in the bottom.
 			TypePurchaseTransaction: PurchaseDetector,
@@ -68,7 +68,7 @@ func (r TypeResolver) Resolve(eventType transactions.EventType, response Respons
 		return detectedType, nil
 	}
 
-	return TypeUnsupported, ErrUnsupportedResponse
+	return Type(""), ErrTypeResolverUnsupportedType
 }
 
 func PurchaseDetector(eventType transactions.EventType, response Response) bool {

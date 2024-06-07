@@ -1,3 +1,5 @@
+//go:generate go run -mod=mod go.uber.org/mock/mockgen -source=csv_reader.go -destination csv_reader_mock.go -package=filesystem
+
 package filesystem
 
 import (
@@ -9,6 +11,10 @@ import (
 	"github.com/gocarina/gocsv"
 	log "github.com/sirupsen/logrus"
 )
+
+type CSVReaderInterface interface {
+	Read(filepath string) ([]CSVEntry, error)
+}
 
 type CSVReader struct {
 	logger *log.Logger

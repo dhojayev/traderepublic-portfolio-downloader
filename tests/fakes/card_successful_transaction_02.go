@@ -2,11 +2,10 @@ package fakes
 
 import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/tests"
 )
 
-var CardSuccessfulTransaction02 = tests.TestCase{
-	TimelineTransactionsData: tests.TimelineTransactionsData{
+var CardSuccessfulTransaction02 = TestCase{
+	TimelineTransactionsData: TimelineTransactionsData{
 		Raw: `{
 		"items": 
 			[
@@ -49,14 +48,21 @@ var CardSuccessfulTransaction02 = tests.TestCase{
 			EventType: "card_successful_transaction",
 			Icon:      "logos/merchant-fallback-entertainment/v2",
 			ID:        "9aa0f0a1-1b68-412d-8f90-71ef77a10f45",
-			SubAmount: map[string]any{
-				"currency":       "CZK",
-				"fractionDigits": float64(2),
-				"value":          float64(-3900),
+			SubAmount: transactions.ResponseItemAmount{
+				Currency:       "CZK",
+				FractionDigits: 2,
+				Value:          -3900,
 			},
 			Status:    "EXECUTED",
 			Timestamp: "2024-05-23T11:37:27.519+0000",
 			Title:     "Home Depot",
 		},
 	},
+	TimelineDetailsData: TimelineDetailsData{
+		Raw: "{}",
+	},
+}
+
+func init() {
+	RegisterUnsupported(CardSuccessfulTransaction02)
 }

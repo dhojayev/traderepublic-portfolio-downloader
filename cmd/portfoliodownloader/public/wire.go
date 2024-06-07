@@ -66,6 +66,8 @@ var (
 		wire.Bind(new(document.DownloaderInterface), new(document.Downloader)),
 		wire.Bind(new(document.DateResolverInterface), new(document.DateResolver)),
 		wire.Bind(new(document.RepositoryInterface), new(*database.Repository[*document.Model])),
+		wire.Bind(new(filesystem.CSVReaderInterface), new(filesystem.CSVReader)),
+		wire.Bind(new(filesystem.CSVWriterInterface), new(filesystem.CSVWriter)),
 	)
 
 	NonWritingSet = wire.NewSet(

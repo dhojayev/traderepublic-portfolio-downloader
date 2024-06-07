@@ -5,12 +5,30 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch Package",
+            "name": "Launch Package Public",
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${fileDirname}",
-            "args": ["-l"],
+            "program": "./cmd/portfoliodownloader/public",
+            "args": ["-w", "--debug"],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "Launch Package Dev",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "./cmd/portfoliodownloader/dev",
+            "args": ["-l", "--trace"],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "Launch Package Example Generator",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "./cmd/example-generator",
+            "args": [],
             "cwd": "${workspaceFolder}"
         }
     ]

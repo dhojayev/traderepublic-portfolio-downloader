@@ -90,7 +90,7 @@ issues:
           - funlen
           - lll
           - wrapcheck
-      - path: tests/fakes/.*\.go
+      - path: tests/.*\.go
         linters:
           - dupl
           - gochecknoglobals

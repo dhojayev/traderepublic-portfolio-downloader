@@ -10,14 +10,13 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/tests"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/tests/fakes"
 )
 
 func TestClient_Get(t *testing.T) {
 	t.Parallel()
 
-	testCases := []tests.TestCase{
+	testCases := []fakes.TestCase{
 		fakes.CardSuccessfulTransaction01,
 		fakes.CardSuccessfulTransaction02,
 	}

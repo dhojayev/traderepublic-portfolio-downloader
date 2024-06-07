@@ -11,26 +11,13 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/tests"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/tests/fakes"
 )
 
 func TestMakeSupported(t *testing.T) {
 	t.Parallel()
 
-	testCases := []tests.TestCase{
-		fakes.BenefitsSpareChangeExecution01,
-		fakes.BenefitsSavebackExecution01,
-		fakes.Credit01,
-		fakes.OrderExecuted01,
-		fakes.OrderExecuted02,
-		fakes.OrderExecuted03,
-		fakes.PaymentInbound01,
-		fakes.PaymentInboundSepaDirectDebit01,
-		fakes.PaymentOutbound01,
-		fakes.SavingsPlanExecuted01,
-	}
-
+	testCases := fakes.TestCasesSupported
 	factory := transaction.NewCSVEntryFactory(log.New())
 
 	for i, testCase := range testCases {
@@ -49,10 +36,20 @@ func TestMakeSupported(t *testing.T) {
 func TestMakeUnsupported(t *testing.T) {
 	t.Parallel()
 
-	testCases := []tests.TestCase{
-		fakes.InterestPayoutCreated01,
-	}
+	testCases := fakes.TestCasesUnsupported
+	factory := transaction.NewCSVEntryFactory(log.New())
 
+	for i, testCase := range testCases {
+		_, err := factory.Make(testCase.Transaction)
+
+		assert.Error(t, err, fmt.Sprintf("case %d", i))
+	}
+}
+
+func TestMakeUnknown(t *testing.T) {
+	t.Parallel()
+
+	testCases := fakes.TestCasesUnknown
 	factory := transaction.NewCSVEntryFactory(log.New())
 
 	for i, testCase := range testCases {
