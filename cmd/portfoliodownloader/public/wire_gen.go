@@ -39,9 +39,9 @@ func CreateNonWritingApp(logger *logrus.Logger) (portfoliodownloader.App, error)
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
-	transactionsClient := transactions.NewClient(reader)
+	transactionsClient := transactions.NewClient(reader, logger)
 	eventTypeResolver := transactions.NewEventTypeResolver(logger)
-	detailsClient := details.NewClient(reader)
+	detailsClient := details.NewClient(reader, logger)
 	typeResolver := details.NewTypeResolver(logger)
 	dateResolver := document.NewDateResolver(logger)
 	modelBuilder := document.NewModelBuilder(dateResolver, logger)
@@ -75,9 +75,9 @@ func CreateWritingApp(logger *logrus.Logger) (portfoliodownloader.App, error) {
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
-	transactionsClient := transactions.NewClient(reader)
+	transactionsClient := transactions.NewClient(reader, logger)
 	eventTypeResolver := transactions.NewEventTypeResolver(logger)
-	detailsClient := details.NewClient(reader)
+	detailsClient := details.NewClient(reader, logger)
 	typeResolver := details.NewTypeResolver(logger)
 	dateResolver := document.NewDateResolver(logger)
 	modelBuilder := document.NewModelBuilder(dateResolver, logger)

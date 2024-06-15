@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"testing"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
@@ -27,9 +28,10 @@ func TestResponseContents(t *testing.T) {
 		fakes.BenefitsSpareChangeExecution01,
 	}
 
+	logger := log.New()
 	controller := gomock.NewController(t)
 	readerMock := portfolio.NewMockReaderInterface(controller)
-	client := details.NewClient(readerMock)
+	client := details.NewClient(readerMock, logger)
 
 	for i, testCase := range testCases {
 		readerMock.
@@ -39,7 +41,9 @@ func TestResponseContents(t *testing.T) {
 				return filesystem.NewOutputData([]byte(testCase.TimelineDetailsData.Raw)), nil
 			})
 
-		actual, err := client.Get("1ae661c0-b3f1-4a81-a909-79567161b014")
+		var actual details.Response
+
+		err := client.Details("1ae661c0-b3f1-4a81-a909-79567161b014", &actual)
 		assert.NoError(t, err, fmt.Sprintf("case %d", i))
 
 		headerSection, err := actual.SectionTypeHeader()

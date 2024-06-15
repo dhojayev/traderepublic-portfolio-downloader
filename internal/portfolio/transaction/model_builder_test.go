@@ -23,7 +23,7 @@ func TestModelBuilderBuildSupported(t *testing.T) {
 	logger := log.New()
 	controller := gomock.NewController(t)
 	readerMock := portfolio.NewMockReaderInterface(controller)
-	detailsClient := details.NewClient(readerMock)
+	detailsClient := details.NewClient(readerMock, logger)
 	resolver := details.NewTypeResolver(logger)
 	documentDateResolver := document.NewDateResolver(logger)
 	documentBuilder := document.NewModelBuilder(documentDateResolver, logger)
@@ -37,7 +37,9 @@ func TestModelBuilderBuildSupported(t *testing.T) {
 				return filesystem.NewOutputData([]byte(testCase.TimelineDetailsData.Raw)), nil
 			})
 
-		response, err := detailsClient.Get("b20e367c-5542-4fab-9fd6-6faa5e7ab582")
+		var response details.Response
+
+		err := detailsClient.Details("b20e367c-5542-4fab-9fd6-6faa5e7ab582", &response)
 		assert.NoError(t, err, fmt.Sprintf("case %d", i))
 
 		builder, err := builderFactory.Create(testCase.EventType, response)
@@ -60,7 +62,7 @@ func TestModelBuilderBuildUnsupported(t *testing.T) {
 	logger := log.New()
 	controller := gomock.NewController(t)
 	readerMock := portfolio.NewMockReaderInterface(controller)
-	detailsClient := details.NewClient(readerMock)
+	detailsClient := details.NewClient(readerMock, logger)
 	resolver := details.NewTypeResolver(logger)
 	documentDateResolver := document.NewDateResolver(logger)
 	documentBuilder := document.NewModelBuilder(documentDateResolver, logger)
@@ -74,7 +76,9 @@ func TestModelBuilderBuildUnsupported(t *testing.T) {
 				return filesystem.NewOutputData([]byte(testCase.TimelineDetailsData.Raw)), nil
 			})
 
-		response, err := detailsClient.Get("b20e367c-5542-4fab-9fd6-6faa5e7ab582")
+		var response details.Response
+
+		err := detailsClient.Details("b20e367c-5542-4fab-9fd6-6faa5e7ab582", &response)
 		assert.NoError(t, err, fmt.Sprintf("case %d", i))
 
 		_, err = builderFactory.Create(testCase.EventType, response)
@@ -89,7 +93,7 @@ func TestModelBuilderBuildUnknown(t *testing.T) {
 	logger := log.New()
 	controller := gomock.NewController(t)
 	readerMock := portfolio.NewMockReaderInterface(controller)
-	detailsClient := details.NewClient(readerMock)
+	detailsClient := details.NewClient(readerMock, logger)
 	resolver := details.NewTypeResolver(logger)
 	documentDateResolver := document.NewDateResolver(logger)
 	documentBuilder := document.NewModelBuilder(documentDateResolver, logger)
@@ -103,7 +107,9 @@ func TestModelBuilderBuildUnknown(t *testing.T) {
 				return filesystem.NewOutputData([]byte(testCase.TimelineDetailsData.Raw)), nil
 			})
 
-		response, err := detailsClient.Get("b20e367c-5542-4fab-9fd6-6faa5e7ab582")
+		var response details.Response
+
+		err := detailsClient.Details("b20e367c-5542-4fab-9fd6-6faa5e7ab582", &response)
 		assert.NoError(t, err, fmt.Sprintf("case %d", i))
 
 		builder, err := builderFactory.Create(testCase.EventType, response)

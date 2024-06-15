@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
@@ -21,9 +22,10 @@ func TestClient_Get(t *testing.T) {
 		fakes.CardSuccessfulTransaction02,
 	}
 
+	logger := log.New()
 	controller := gomock.NewController(t)
 	readerMock := portfolio.NewMockReaderInterface(controller)
-	client := transactions.NewClient(readerMock)
+	client := transactions.NewClient(readerMock, logger)
 
 	for i, testCase := range testCases {
 		readerMock.
@@ -33,7 +35,8 @@ func TestClient_Get(t *testing.T) {
 				return filesystem.NewOutputData([]byte(testCase.TimelineTransactionsData.Raw)), nil
 			})
 
-		actual, err := client.Get()
+		var actual []transactions.ResponseItem
+		err := client.List(&actual)
 
 		assert.NoError(t, err, fmt.Sprintf("case %d", i))
 

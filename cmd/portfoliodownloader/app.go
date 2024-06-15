@@ -88,36 +88,40 @@ func (a App) Run() error {
 func (a App) GetTimelineTransactions() ([]transactions.ResponseItem, error) {
 	a.logger.Info("Downloading transactions")
 
-	transactionResponses, err := a.transactionsClient.Get()
+	var transactions []transactions.ResponseItem
+
+	err := a.transactionsClient.List(&transactions)
 	if err != nil {
-		return transactionResponses, fmt.Errorf("could not fetch transactions: %w", err)
+		return transactions, fmt.Errorf("could not fetch transactions: %w", err)
 	}
 
-	slices.Reverse(transactionResponses)
+	slices.Reverse(transactions)
 
-	a.logger.Infof("%d transactions downloaded", len(transactionResponses))
+	a.logger.Infof("%d transactions downloaded", len(transactions))
 
-	return transactionResponses, nil
+	return transactions, nil
 }
 
-func (a App) ProcessTransactionResponse(response transactions.ResponseItem) error {
-	infoFields := log.Fields{"id": response.ID}
+func (a App) ProcessTransactionResponse(transaction transactions.ResponseItem) error {
+	infoFields := log.Fields{"id": transaction.ID}
 
 	a.logger.WithFields(infoFields).Info("Fetching transaction details")
 
-	transactionDetails, err := a.timelineDetailsClient.Get(response.Action.Payload)
+	var details details.Response
+
+	err := a.timelineDetailsClient.Details(transaction.Action.Payload, &details)
 	if err != nil {
 		return fmt.Errorf("could not fetch transaction details: %w", err)
 	}
 
-	eventType, err := a.eventTypeResolver.Resolve(response)
+	eventType, err := a.eventTypeResolver.Resolve(transaction)
 	if err != nil {
 		return fmt.Errorf("could not resolve transaction even type: %w", err)
 	}
 
 	a.logger.WithFields(infoFields).Info("Processing transaction details")
 
-	if err := a.transactionProcessor.Process(eventType, transactionDetails); err != nil {
+	if err := a.transactionProcessor.Process(eventType, details); err != nil {
 		return fmt.Errorf("could not process transaction: %w", err)
 	}
 

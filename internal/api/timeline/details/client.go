@@ -3,10 +3,9 @@
 package details
 
 import (
-	"encoding/json"
-	"fmt"
-
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -14,30 +13,13 @@ const (
 )
 
 type ClientInterface interface {
-	Get(eventID string) (Response, error)
+	api.WSDetailsGetterClientInterface
 }
 
 type Client struct {
-	reader portfolio.ReaderInterface
+	api.WSClient
 }
 
-func NewClient(reader portfolio.ReaderInterface) Client {
-	return Client{
-		reader: reader,
-	}
-}
-
-func (c Client) Get(eventID string) (Response, error) {
-	var response Response
-
-	msg, err := c.reader.Read(RequestDataType, map[string]any{"id": eventID})
-	if err != nil {
-		return response, fmt.Errorf("could not fetch %s: %w", RequestDataType, err)
-	}
-
-	if err = json.Unmarshal(msg.Data(), &response); err != nil {
-		return response, fmt.Errorf("could not unmarshal %s response: %w", RequestDataType, err)
-	}
-
-	return response, nil
+func NewClient(reader portfolio.ReaderInterface, logger *log.Logger) Client {
+	return Client{api.NewWSClient(RequestDataType, reader, logger)}
 }

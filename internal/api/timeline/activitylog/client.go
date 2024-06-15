@@ -1,6 +1,6 @@
-//go:generate go run -mod=mod go.uber.org/mock/mockgen -source=client.go -destination client_mock.go -package=transactions
+//go:generate go run -mod=mod go.uber.org/mock/mockgen -source=client.go -destination client_mock.go -package=activitylog
 
-package transactions
+package activitylog
 
 import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api"
@@ -8,9 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const (
-	RequestDataType = "timelineTransactions"
-)
+const RequestDataType = "timelineActivityLog"
 
 type ClientInterface interface {
 	api.WSListGetterClientInterface

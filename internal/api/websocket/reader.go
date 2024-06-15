@@ -139,6 +139,11 @@ func (r *Reader) Read(dataType string, dataMap map[string]any) (portfolio.Output
 
 func (r *Reader) createWritableDataBytes(dataType string, dataMap map[string]any) ([]byte, error) {
 	data := dataMap
+
+	if data == nil {
+		data = make(map[string]any)
+	}
+
 	data["type"] = dataType
 	data["token"] = r.authService.SessionToken().Value()
 
