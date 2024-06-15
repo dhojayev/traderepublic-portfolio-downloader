@@ -29,13 +29,15 @@ func TestItDoesReturnErrorIfTransactionDetailsCannotBeFetched(t *testing.T) {
 	typeResolverMock := transactions.NewMockEventTypeResolverInterface(ctrl)
 	processorMock := transaction.NewMockProcessorInterface(ctrl)
 
-	detailsClient := details.NewClient(detailsReaderMock)
+	detailsClient := details.NewClient(detailsReaderMock, logger)
 	app := portfoliodownloader.NewApp(transactionsClientMock, typeResolverMock, detailsClient, processorMock, logger)
+
+	var responses []transactions.ResponseItem
 
 	transactionsClientMock.
 		EXPECT().
-		Get().
-		Return([]transactions.ResponseItem{
+		List(&responses).
+		SetArg(0, []transactions.ResponseItem{
 			{
 				Action: transactions.ResponseItemAction{
 					Payload: "0e5cf3cb-0f4d-4905-ae5f-ec0a530de6ca",
@@ -43,7 +45,7 @@ func TestItDoesReturnErrorIfTransactionDetailsCannotBeFetched(t *testing.T) {
 				},
 				ID: "0e5cf3cb-0f4d-4905-ae5f-ec0a530de6ca",
 			},
-		}, nil)
+		})
 
 	detailsReaderMock.
 		EXPECT().
@@ -70,9 +72,9 @@ func TestItDoesReturnErrorIfTransactionTypeUnsupported(t *testing.T) {
 	documentDownloaderMock := document.NewMockDownloaderInterface(ctrl)
 
 	logger := log.New()
-	transactionsClient := transactions.NewClient(readerMock)
+	transactionsClient := transactions.NewClient(readerMock, logger)
 	transactionsTypeResolver := transactions.NewEventTypeResolver(logger)
-	detailsClient := details.NewClient(readerMock)
+	detailsClient := details.NewClient(readerMock, logger)
 	detailsTypeResolver := details.NewTypeResolver(logger)
 	documentDateResolver := document.NewDateResolver(logger)
 	documentBuilder := document.NewModelBuilder(documentDateResolver, logger)
