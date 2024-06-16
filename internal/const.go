@@ -1,5 +1,20 @@
 package internal
 
-// ResponseActionTypeTimelineDetail represents the value the app will look for in order to determine
-// if any details can be fetched.
-const ResponseActionTypeTimelineDetail = "timelineDetail"
+const (
+	// RestAPIBaseURI Trade Republic's REST API base URI.
+	RestAPIBaseURI = "https://api.traderepublic.com/api/v1"
+
+	// WebsocketBaseHost Trade Republic's websocket base host.
+	WebsocketBaseHost = "api.traderepublic.com"
+
+	// HTTPUserAgent used for all HTTP communications.
+	HTTPUserAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) " +
+		"AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15"
+
+	// CookieNamePrefix prefix used by Trade Republic for its auth cookies.
+	CookieNamePrefix = "tr_"
+
+	// ResponseActionTypeTimelineDetail represents the value the app will look for in order to determine
+	// if any details can be fetched.
+	ResponseActionTypeTimelineDetail = "timelineDetail"
+)

@@ -9,14 +9,11 @@ import (
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
 
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/header"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/console"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/reader"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/writer"
-)
-
-const (
-	baseHost = "api.traderepublic.com"
 )
 
 var ErrMsgErrorStateReceived = errors.New("error state received")
@@ -40,7 +37,7 @@ func NewReader(authService console.AuthServiceInterface, writer writer.Interface
 }
 
 func (r *Reader) connect() error {
-	u := url.URL{Scheme: "wss", Host: baseHost, Path: "/"}
+	u := url.URL{Scheme: "wss", Host: internal.WebsocketBaseHost, Path: "/"}
 
 	conn, _, err := websocket.DefaultDialer.Dial(u.String(), header.NewHeaders().AsHTTPHeader())
 	if err != nil {
