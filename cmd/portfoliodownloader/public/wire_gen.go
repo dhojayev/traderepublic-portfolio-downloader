@@ -17,6 +17,7 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/console"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/database"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/activity"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/reader"
@@ -40,12 +41,16 @@ func CreateNonWritingApp(logger *logrus.Logger) (portfoliodownloader.App, error)
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
-	transactionsClient := transactions.NewClient(reader, logger)
-	eventTypeResolver := transactions.NewEventTypeResolver(logger)
+	activitylogClient := activitylog.NewClient(reader, logger)
 	detailsClient := details.NewClient(reader, logger)
-	typeResolver := details.NewTypeResolver(logger)
 	dateResolver := document.NewDateResolver(logger)
 	modelBuilder := document.NewModelBuilder(dateResolver, logger)
+	downloader := document.NewDownloader(logger)
+	processor := activity.NewProcessor(modelBuilder, downloader, logger)
+	handler := activity.NewHandler(activitylogClient, detailsClient, processor, logger)
+	transactionsClient := transactions.NewClient(reader, logger)
+	eventTypeResolver := transactions.NewEventTypeResolver(logger)
+	typeResolver := details.NewTypeResolver(logger)
 	modelBuilderFactory := transaction.NewModelBuilderFactory(typeResolver, modelBuilder, logger)
 	db, err := database.NewSQLiteInMemory(logger)
 	if err != nil {
@@ -58,10 +63,9 @@ func CreateNonWritingApp(logger *logrus.Logger) (portfoliodownloader.App, error)
 	csvEntryFactory := transaction.NewCSVEntryFactory(logger)
 	csvReader := filesystem.NewCSVReader(logger)
 	csvWriter := filesystem.NewCSVWriter(logger)
-	downloader := document.NewDownloader(logger)
-	processor := transaction.NewProcessor(modelBuilderFactory, repository, csvEntryFactory, csvReader, csvWriter, downloader, logger)
-	activitylogClient := activitylog.NewClient(reader, logger)
-	app := portfoliodownloader.NewApp(transactionsClient, eventTypeResolver, detailsClient, processor, activitylogClient, logger)
+	transactionProcessor := transaction.NewProcessor(modelBuilderFactory, repository, csvEntryFactory, csvReader, csvWriter, downloader, logger)
+	transactionHandler := transaction.NewHandler(transactionsClient, detailsClient, eventTypeResolver, transactionProcessor, logger)
+	app := portfoliodownloader.NewApp(handler, transactionHandler, logger)
 	return app, nil
 }
 
@@ -77,12 +81,16 @@ func CreateWritingApp(logger *logrus.Logger) (portfoliodownloader.App, error) {
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
-	transactionsClient := transactions.NewClient(reader, logger)
-	eventTypeResolver := transactions.NewEventTypeResolver(logger)
+	activitylogClient := activitylog.NewClient(reader, logger)
 	detailsClient := details.NewClient(reader, logger)
-	typeResolver := details.NewTypeResolver(logger)
 	dateResolver := document.NewDateResolver(logger)
 	modelBuilder := document.NewModelBuilder(dateResolver, logger)
+	downloader := document.NewDownloader(logger)
+	processor := activity.NewProcessor(modelBuilder, downloader, logger)
+	handler := activity.NewHandler(activitylogClient, detailsClient, processor, logger)
+	transactionsClient := transactions.NewClient(reader, logger)
+	eventTypeResolver := transactions.NewEventTypeResolver(logger)
+	typeResolver := details.NewTypeResolver(logger)
 	modelBuilderFactory := transaction.NewModelBuilderFactory(typeResolver, modelBuilder, logger)
 	db, err := database.NewSQLiteInMemory(logger)
 	if err != nil {
@@ -95,10 +103,9 @@ func CreateWritingApp(logger *logrus.Logger) (portfoliodownloader.App, error) {
 	csvEntryFactory := transaction.NewCSVEntryFactory(logger)
 	csvReader := filesystem.NewCSVReader(logger)
 	csvWriter := filesystem.NewCSVWriter(logger)
-	downloader := document.NewDownloader(logger)
-	processor := transaction.NewProcessor(modelBuilderFactory, repository, csvEntryFactory, csvReader, csvWriter, downloader, logger)
-	activitylogClient := activitylog.NewClient(reader, logger)
-	app := portfoliodownloader.NewApp(transactionsClient, eventTypeResolver, detailsClient, processor, activitylogClient, logger)
+	transactionProcessor := transaction.NewProcessor(modelBuilderFactory, repository, csvEntryFactory, csvReader, csvWriter, downloader, logger)
+	transactionHandler := transaction.NewHandler(transactionsClient, detailsClient, eventTypeResolver, transactionProcessor, logger)
+	app := portfoliodownloader.NewApp(handler, transactionHandler, logger)
 	return app, nil
 }
 
@@ -107,7 +114,7 @@ func CreateWritingApp(logger *logrus.Logger) (portfoliodownloader.App, error) {
 var (
 	DefaultSet = wire.NewSet(api.NewClient, auth.NewClient, console.NewAuthService, websocket.NewReader, portfoliodownloader.NewApp, transactions.NewClient, transactions.NewEventTypeResolver, details.NewClient, details.NewTypeResolver, database.NewSQLiteInMemory, transaction.NewModelBuilderFactory, document.NewModelBuilder, transaction.NewCSVEntryFactory, filesystem.NewCSVReader, filesystem.NewCSVWriter, transaction.NewProcessor, document.NewDownloader, document.NewDateResolver, ProvideTransactionRepository,
 		ProvideInstrumentRepository,
-		ProvideDocumentRepository, activitylog.NewClient, wire.Bind(new(auth.ClientInterface), new(*auth.Client)), wire.Bind(new(console.AuthServiceInterface), new(*console.AuthService)), wire.Bind(new(reader.Interface), new(*websocket.Reader)), wire.Bind(new(transactions.ClientInterface), new(transactions.Client)), wire.Bind(new(transactions.EventTypeResolverInterface), new(transactions.EventTypeResolver)), wire.Bind(new(details.ClientInterface), new(details.Client)), wire.Bind(new(details.TypeResolverInterface), new(details.TypeResolver)), wire.Bind(new(transaction.ProcessorInterface), new(transaction.Processor)), wire.Bind(new(transaction.ModelBuilderFactoryInterface), new(transaction.ModelBuilderFactory)), wire.Bind(new(document.ModelBuilderInterface), new(document.ModelBuilder)), wire.Bind(new(transaction.RepositoryInterface), new(*database.Repository[*transaction.Model])), wire.Bind(new(transaction.InstrumentRepositoryInterface), new(*database.Repository[*transaction.Instrument])), wire.Bind(new(document.DownloaderInterface), new(document.Downloader)), wire.Bind(new(document.DateResolverInterface), new(document.DateResolver)), wire.Bind(new(document.RepositoryInterface), new(*database.Repository[*document.Model])), wire.Bind(new(filesystem.CSVReaderInterface), new(filesystem.CSVReader)), wire.Bind(new(filesystem.CSVWriterInterface), new(filesystem.CSVWriter)), wire.Bind(new(activitylog.ClientInterface), new(activitylog.Client)),
+		ProvideDocumentRepository, activitylog.NewClient, activity.NewProcessor, activity.NewHandler, transaction.NewHandler, wire.Bind(new(auth.ClientInterface), new(*auth.Client)), wire.Bind(new(console.AuthServiceInterface), new(*console.AuthService)), wire.Bind(new(reader.Interface), new(*websocket.Reader)), wire.Bind(new(transactions.ClientInterface), new(transactions.Client)), wire.Bind(new(transactions.EventTypeResolverInterface), new(transactions.EventTypeResolver)), wire.Bind(new(details.ClientInterface), new(details.Client)), wire.Bind(new(details.TypeResolverInterface), new(details.TypeResolver)), wire.Bind(new(transaction.ProcessorInterface), new(transaction.Processor)), wire.Bind(new(transaction.ModelBuilderFactoryInterface), new(transaction.ModelBuilderFactory)), wire.Bind(new(document.ModelBuilderInterface), new(document.ModelBuilder)), wire.Bind(new(transaction.RepositoryInterface), new(*database.Repository[*transaction.Model])), wire.Bind(new(transaction.InstrumentRepositoryInterface), new(*database.Repository[*transaction.Instrument])), wire.Bind(new(document.DownloaderInterface), new(document.Downloader)), wire.Bind(new(document.DateResolverInterface), new(document.DateResolver)), wire.Bind(new(document.RepositoryInterface), new(*database.Repository[*document.Model])), wire.Bind(new(filesystem.CSVReaderInterface), new(filesystem.CSVReader)), wire.Bind(new(filesystem.CSVWriterInterface), new(filesystem.CSVWriter)), wire.Bind(new(activitylog.ClientInterface), new(activitylog.Client)), wire.Bind(new(activity.ProcessorInterface), new(activity.Processor)), wire.Bind(new(activity.HandlerInterface), new(activity.Handler)), wire.Bind(new(transaction.HandlerInterface), new(transaction.Handler)),
 	)
 
 	NonWritingSet = wire.NewSet(

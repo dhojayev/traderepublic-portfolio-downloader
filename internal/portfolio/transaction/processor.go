@@ -24,13 +24,13 @@ type ProcessorInterface interface {
 }
 
 type Processor struct {
-	builderFactory     ModelBuilderFactoryInterface
-	transactionRepo    RepositoryInterface
-	factory            CSVEntryFactory
-	csvReader          filesystem.CSVReaderInterface
-	csvWriter          filesystem.CSVWriterInterface
-	documentDownloader document.DownloaderInterface
-	logger             *log.Logger
+	builderFactory  ModelBuilderFactoryInterface
+	transactionRepo RepositoryInterface
+	factory         CSVEntryFactory
+	csvReader       filesystem.CSVReaderInterface
+	csvWriter       filesystem.CSVWriterInterface
+	docDownloader   document.DownloaderInterface
+	logger          *log.Logger
 }
 
 func NewProcessor(
@@ -39,17 +39,17 @@ func NewProcessor(
 	factory CSVEntryFactory,
 	csvReader filesystem.CSVReaderInterface,
 	csvWriter filesystem.CSVWriterInterface,
-	documentDownloader document.DownloaderInterface,
+	docDownloader document.DownloaderInterface,
 	logger *log.Logger,
 ) Processor {
 	return Processor{
-		builderFactory:     builderFactory,
-		transactionRepo:    transactionRepo,
-		factory:            factory,
-		csvReader:          csvReader,
-		csvWriter:          csvWriter,
-		documentDownloader: documentDownloader,
-		logger:             logger,
+		builderFactory:  builderFactory,
+		transactionRepo: transactionRepo,
+		factory:         factory,
+		csvReader:       csvReader,
+		csvWriter:       csvWriter,
+		docDownloader:   docDownloader,
+		logger:          logger,
 	}
 }
 
@@ -100,16 +100,12 @@ func (p Processor) Process(eventType transactions.EventType, response details.Re
 	}
 
 	for _, doc := range transaction.Documents {
-		err = p.documentDownloader.Download(documentBaseDir, doc)
+		err = p.docDownloader.Download(documentBaseDir, doc)
 		if err == nil {
-			p.logger.WithFields(logFields).Info("Document downloaded")
-
 			continue
 		}
 
 		if errors.Is(err, document.ErrDocumentExists) {
-			p.logger.WithFields(logFields).Warn("Document already exists")
-
 			continue
 		}
 

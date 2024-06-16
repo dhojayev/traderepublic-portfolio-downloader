@@ -14,7 +14,16 @@ const (
 	// CookieNamePrefix prefix used by Trade Republic for its auth cookies.
 	CookieNamePrefix = "tr_"
 
+	// SessionRefreshInterval represents in how many seconds session has to be refreshed to keep it alive.
+	SessionRefreshInterval = 60
+
 	// ResponseActionTypeTimelineDetail represents the value the app will look for in order to determine
 	// if any details can be fetched.
 	ResponseActionTypeTimelineDetail = "timelineDetail"
+
+	// CSVFilename filename under which a CSV file with transaction entries has to be saved.
+	CSVFilename = "./transactions.csv"
+
+	// DocumentsBaseDir base directory under which downloaded documents have to be saved.
+	DocumentsBaseDir = "./documents/transactions"
 )

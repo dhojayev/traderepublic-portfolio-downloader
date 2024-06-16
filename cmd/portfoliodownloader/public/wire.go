@@ -20,6 +20,7 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/console"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/database"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/activity"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/reader"
@@ -51,6 +52,9 @@ var (
 		ProvideInstrumentRepository,
 		ProvideDocumentRepository,
 		activitylog.NewClient,
+		activity.NewProcessor,
+		activity.NewHandler,
+		transaction.NewHandler,
 
 		wire.Bind(new(auth.ClientInterface), new(*auth.Client)),
 		wire.Bind(new(console.AuthServiceInterface), new(*console.AuthService)),
@@ -71,6 +75,9 @@ var (
 		wire.Bind(new(filesystem.CSVReaderInterface), new(filesystem.CSVReader)),
 		wire.Bind(new(filesystem.CSVWriterInterface), new(filesystem.CSVWriter)),
 		wire.Bind(new(activitylog.ClientInterface), new(activitylog.Client)),
+		wire.Bind(new(activity.ProcessorInterface), new(activity.Processor)),
+		wire.Bind(new(activity.HandlerInterface), new(activity.Handler)),
+		wire.Bind(new(transaction.HandlerInterface), new(transaction.Handler)),
 	)
 
 	NonWritingSet = wire.NewSet(

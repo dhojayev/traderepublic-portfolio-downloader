@@ -9,7 +9,7 @@ import (
 )
 
 type ModelBuilderInterface interface {
-	Build(transactionUUID string, transactionTimestamp time.Time, response details.Response) ([]Model, error)
+	Build(transactionUUID string, parentTimestamp time.Time, response details.Response) ([]Model, error)
 }
 
 type ModelBuilder struct {
@@ -25,8 +25,8 @@ func NewModelBuilder(dateResolver DateResolverInterface, logger *log.Logger) Mod
 }
 
 func (b ModelBuilder) Build(
-	transactionUUID string,
-	transactionTimestamp time.Time,
+	parentUUID string,
+	parentTimestamp time.Time,
 	response details.Response,
 ) ([]Model, error) {
 	documents := make([]Model, 0)
@@ -42,13 +42,9 @@ func (b ModelBuilder) Build(
 			continue
 		}
 
-		documentDate, err := b.dateResolver.Resolve(transactionTimestamp, doc.Detail)
-		if err != nil {
-			return documents, fmt.Errorf("document date resolver errors: %w", err)
-		}
-
-		filepath := fmt.Sprintf("%s/%s/%s.pdf", documentDate.Format(DownloaderTimeFormat), transactionUUID, doc.Title)
-		documents = append(documents, NewModel("", doc.ID, url, doc.Detail, doc.Title, filepath))
+		documentDate := b.dateResolver.Resolve(parentTimestamp, doc.Detail)
+		filepath := fmt.Sprintf("%s/%s/%s.pdf", documentDate.Format(DownloaderTimeFormat), parentUUID, doc.Title)
+		documents = append(documents, NewModel(parentUUID, doc.ID, url, doc.Detail, doc.Title, filepath))
 	}
 
 	return documents, nil

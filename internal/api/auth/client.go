@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
-	"time"
 
 	log "github.com/sirupsen/logrus"
 
@@ -55,15 +54,13 @@ func NewClient(apiClient api.Client, logger *log.Logger) (*Client, error) {
 
 	client.refreshToken = refreshToken
 
-	client.refreshSession()
-
-	ticker := time.NewTicker(tickerTimeoutSec * time.Second)
-
 	go func() {
-		for range ticker.C {
+		for range SessionRefreshTicker.C {
 			client.refreshSession()
 		}
 	}()
+
+	client.refreshSession()
 
 	return client, nil
 }
