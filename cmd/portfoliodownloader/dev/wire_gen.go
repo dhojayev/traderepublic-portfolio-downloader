@@ -29,7 +29,7 @@ import (
 // Injectors from wire.go:
 
 func CreateLocalApp(baseDir string, logger *logrus.Logger) (portfoliodownloader.App, error) {
-	jsonReader := filesystem.NewJSONReader(baseDir, logger)
+	jsonReader := reader.NewJSONReader(baseDir, logger)
 	client := transactions.NewClient(jsonReader, logger)
 	eventTypeResolver := transactions.NewEventTypeResolver(logger)
 	detailsClient := details.NewClient(jsonReader, logger)
@@ -63,13 +63,13 @@ func CreateRemoteApp(logger *logrus.Logger) (portfoliodownloader.App, error) {
 	}
 	authService := console.NewAuthService(authClient)
 	jsonWriter := filesystem.NewJSONWriter(logger)
-	reader, err := websocket.NewReader(authService, jsonWriter, logger)
+	websocketReader, err := websocket.NewReader(authService, jsonWriter, logger)
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
-	transactionsClient := transactions.NewClient(reader, logger)
+	transactionsClient := transactions.NewClient(websocketReader, logger)
 	eventTypeResolver := transactions.NewEventTypeResolver(logger)
-	detailsClient := details.NewClient(reader, logger)
+	detailsClient := details.NewClient(websocketReader, logger)
 	typeResolver := details.NewTypeResolver(logger)
 	dateResolver := document.NewDateResolver(logger)
 	modelBuilder := document.NewModelBuilder(dateResolver, logger)
@@ -87,7 +87,7 @@ func CreateRemoteApp(logger *logrus.Logger) (portfoliodownloader.App, error) {
 	csvWriter := filesystem.NewCSVWriter(logger)
 	downloader := document.NewDownloader(logger)
 	processor := transaction.NewProcessor(modelBuilderFactory, repository, csvEntryFactory, csvReader, csvWriter, downloader, logger)
-	activitylogClient := activitylog.NewClient(reader, logger)
+	activitylogClient := activitylog.NewClient(websocketReader, logger)
 	app := portfoliodownloader.NewApp(transactionsClient, eventTypeResolver, detailsClient, processor, activitylogClient, logger)
 	return app, nil
 }
@@ -105,7 +105,7 @@ var (
 	)
 
 	LocalSet = wire.NewSet(
-		DefaultSet, writer.NewNilWriter, filesystem.NewJSONReader, wire.Bind(new(reader.Interface), new(*filesystem.JSONReader)), wire.Bind(new(writer.Interface), new(writer.NilWriter)),
+		DefaultSet, writer.NewNilWriter, reader.NewJSONReader, wire.Bind(new(reader.Interface), new(*reader.JSONReader)), wire.Bind(new(writer.Interface), new(writer.NilWriter)),
 	)
 )
 

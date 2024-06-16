@@ -83,9 +83,9 @@ var (
 	LocalSet = wire.NewSet(
 		DefaultSet,
 		writer.NewNilWriter,
-		filesystem.NewJSONReader,
+		reader.NewJSONReader,
 
-		wire.Bind(new(reader.Interface), new(*filesystem.JSONReader)),
+		wire.Bind(new(reader.Interface), new(*reader.JSONReader)),
 		wire.Bind(new(writer.Interface), new(writer.NilWriter)),
 	)
 )

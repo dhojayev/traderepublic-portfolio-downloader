@@ -44,31 +44,31 @@ func NewApp(
 func (a App) Run() error {
 	counter := 0
 
-	activityEntries, err := a.GetActivityLog()
-	if err != nil {
-		return nil
-	}
+	// activityEntries, err := a.GetActivityLog()
+	// if err != nil {
+	// 	return nil
+	// }
 
-	for _, response := range activityEntries {
-		if !response.Action.HasDetails() {
-			continue
-		}
+	// for _, response := range activityEntries {
+	// 	if !response.Action.HasDetails() {
+	// 		continue
+	// 	}
 
-		infoFields := log.Fields{"id": response.ID}
+	// 	infoFields := log.Fields{"id": response.ID}
 
-		a.logger.WithFields(infoFields).Info("Fetching activity entry details")
+	// 	a.logger.WithFields(infoFields).Info("Fetching activity entry details")
 
-		var details details.Response
+	// 	var details details.Response
 
-		err := a.timelineDetailsClient.Details(response.Action.Payload, &details)
-		if err != nil {
-			return fmt.Errorf("could not fetch activity entry details: %w", err)
-		}
+	// 	err := a.timelineDetailsClient.Details(response.Action.Payload, &details)
+	// 	if err != nil {
+	// 		return fmt.Errorf("could not fetch activity entry details: %w", err)
+	// 	}
 
-		a.logger.Infof("%#v", details)
-	}
+	// 	a.logger.Infof("%#v", details)
+	// }
 
-	return nil
+	// return nil
 
 	responses, err := a.GetTimelineTransactions()
 	if err != nil {

@@ -81,18 +81,20 @@ func (r *Reader) Close() error {
 	return nil
 }
 
-//nolint:cyclop,ireturn
-func (r *Reader) Read(dataType string, req reader.Request) (reader.ResponseInterface, error) {
+//nolint:cyclop
+func (r *Reader) Read(dataType string, req reader.Request) (reader.JSONResponse, error) {
 	r.subID++
+
+	resp := reader.NewJSONResponse(nil)
 
 	dataBytes, err := r.createWritableDataBytes(dataType, req)
 	if err != nil {
-		return Message{}, err
+		return resp, err
 	}
 
 	err = r.conn.WriteMessage(websocket.TextMessage, dataBytes)
 	if err != nil {
-		return Message{}, fmt.Errorf("could not send message: %w", err)
+		return resp, fmt.Errorf("could not send message: %w", err)
 	}
 
 	r.logger.WithField("message", string(dataBytes)).Trace("sent message")
@@ -100,14 +102,14 @@ func (r *Reader) Read(dataType string, req reader.Request) (reader.ResponseInter
 	for {
 		_, msg, err := r.conn.ReadMessage()
 		if err != nil {
-			return Message{}, fmt.Errorf("could not read message: %w", err)
+			return resp, fmt.Errorf("could not read message: %w", err)
 		}
 
 		r.logger.WithField("message", string(msg)).Trace("received msg")
 
 		message, err := NewMessage(msg)
 		if err != nil {
-			return message, fmt.Errorf("could not create message struct: %w", err)
+			return resp, fmt.Errorf("could not create message struct: %w", err)
 		}
 
 		switch {
@@ -116,24 +118,24 @@ func (r *Reader) Read(dataType string, req reader.Request) (reader.ResponseInter
 		case message.HasErrorState():
 			if message.HasAuthErrMsg() {
 				if loginErr := r.authService.Login(); loginErr != nil {
-					return message, fmt.Errorf("could not re-login: %w", loginErr)
+					return resp, fmt.Errorf("could not re-login: %w", loginErr)
 				}
 
 				if err = r.reconnect(); err != nil {
-					return message, err
+					return resp, err
 				}
 
 				return r.Read(dataType, req)
 			}
 
-			return message, fmt.Errorf("%w: %s", ErrMsgErrorStateReceived, msg)
+			return resp, fmt.Errorf("%w: %s", ErrMsgErrorStateReceived, msg)
 		}
 
 		if err := r.writer.Bytes(dataType, message.Data()); err != nil {
-			return message, fmt.Errorf("could not write message: %w", err)
+			return resp, fmt.Errorf("could not write message: %w", err)
 		}
 
-		return message, nil
+		return reader.NewJSONResponse(message.Data()), nil
 	}
 }
 

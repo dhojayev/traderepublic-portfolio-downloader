@@ -39,10 +39,10 @@ func (m *MockInterface) EXPECT() *MockInterfaceMockRecorder {
 }
 
 // Read mocks base method.
-func (m *MockInterface) Read(dataType string, req Request) (ResponseInterface, error) {
+func (m *MockInterface) Read(dataType string, req Request) (JSONResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Read", dataType, req)
-	ret0, _ := ret[0].(ResponseInterface)
+	ret0, _ := ret[0].(JSONResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

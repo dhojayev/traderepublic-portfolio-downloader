@@ -52,7 +52,7 @@ func TestItDoesReturnErrorIfTransactionDetailsCannotBeFetched(t *testing.T) {
 	detailsReaderMock.
 		EXPECT().
 		Read(details.RequestDataType, map[string]any{"id": "0e5cf3cb-0f4d-4905-ae5f-ec0a530de6ca"}).
-		Return(filesystem.OutputData{}, fmt.Errorf("could not fetch %s: %w", details.RequestDataType, websocket.ErrMsgErrorStateReceived))
+		Return(reader.NewJSONResponse(nil), fmt.Errorf("could not fetch %s: %w", details.RequestDataType, websocket.ErrMsgErrorStateReceived))
 
 	err := app.Run()
 
@@ -93,13 +93,13 @@ func TestItDoesReturnErrorIfTransactionTypeUnsupported(t *testing.T) {
 			EXPECT().
 			Read(transactions.RequestDataType, gomock.Any()).
 			Times(1).
-			Return(filesystem.NewOutputData([]byte(testCase.TimelineTransactionsData.Raw)), nil)
+			Return(reader.NewJSONResponse([]byte(testCase.TimelineTransactionsData.Raw)), nil)
 
 		readerMock.
 			EXPECT().
 			Read(details.RequestDataType, map[string]any{"id": testCase.TimelineTransactionsData.Unmarshalled.Action.Payload}).
 			Times(1).
-			Return(filesystem.NewOutputData([]byte(testCase.TimelineDetailsData.Raw)), nil)
+			Return(reader.NewJSONResponse([]byte(testCase.TimelineDetailsData.Raw)), nil)
 
 		err := app.Run()
 

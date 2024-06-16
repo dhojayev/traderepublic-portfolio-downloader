@@ -10,7 +10,6 @@ import (
 	"go.uber.org/mock/gomock"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/reader"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/tests/fakes"
 )
@@ -37,8 +36,8 @@ func TestResponseContents(t *testing.T) {
 		readerMock.
 			EXPECT().
 			Read("timelineDetailV2", gomock.Any()).
-			DoAndReturn(func(_ string, _ map[string]any) (reader.ResponseInterface, error) {
-				return filesystem.NewOutputData([]byte(testCase.TimelineDetailsData.Raw)), nil
+			DoAndReturn(func(_ string, _ map[string]any) (reader.JSONResponse, error) {
+				return reader.NewJSONResponse([]byte(testCase.TimelineDetailsData.Raw)), nil
 			})
 
 		var actual details.Response

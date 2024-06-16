@@ -3,5 +3,5 @@
 package reader
 
 type Interface interface {
-	Read(dataType string, req Request) (ResponseInterface, error)
+	Read(dataType string, req Request) (JSONResponse, error)
 }
