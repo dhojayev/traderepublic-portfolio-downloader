@@ -4,7 +4,7 @@ package transactions
 
 import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/reader"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -20,6 +20,6 @@ type Client struct {
 	api.WSClient
 }
 
-func NewClient(reader portfolio.ReaderInterface, logger *log.Logger) Client {
+func NewClient(reader reader.Interface, logger *log.Logger) Client {
 	return Client{api.NewWSClient(RequestDataType, reader, logger)}
 }

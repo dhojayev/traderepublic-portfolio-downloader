@@ -17,9 +17,9 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/console"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/database"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/reader"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/writer"
 	"github.com/google/wire"
 	"github.com/sirupsen/logrus"
@@ -101,11 +101,11 @@ var (
 	)
 
 	RemoteSet = wire.NewSet(
-		DefaultSet, api.NewClient, auth.NewClient, console.NewAuthService, websocket.NewReader, filesystem.NewJSONWriter, wire.Bind(new(auth.ClientInterface), new(*auth.Client)), wire.Bind(new(console.AuthServiceInterface), new(*console.AuthService)), wire.Bind(new(portfolio.ReaderInterface), new(*websocket.Reader)), wire.Bind(new(writer.Interface), new(*filesystem.JSONWriter)),
+		DefaultSet, api.NewClient, auth.NewClient, console.NewAuthService, websocket.NewReader, filesystem.NewJSONWriter, wire.Bind(new(auth.ClientInterface), new(*auth.Client)), wire.Bind(new(console.AuthServiceInterface), new(*console.AuthService)), wire.Bind(new(reader.Interface), new(*websocket.Reader)), wire.Bind(new(writer.Interface), new(*filesystem.JSONWriter)),
 	)
 
 	LocalSet = wire.NewSet(
-		DefaultSet, writer.NewNilWriter, filesystem.NewJSONReader, wire.Bind(new(writer.Interface), new(writer.NilWriter)), wire.Bind(new(portfolio.ReaderInterface), new(*filesystem.JSONReader)),
+		DefaultSet, writer.NewNilWriter, filesystem.NewJSONReader, wire.Bind(new(reader.Interface), new(*filesystem.JSONReader)), wire.Bind(new(writer.Interface), new(writer.NilWriter)),
 	)
 )
 

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"slices"
 
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/reader"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -22,11 +22,11 @@ type WSDetailsGetterClientInterface interface {
 // WSClient Websocket client.
 type WSClient struct {
 	dataType string
-	reader   portfolio.ReaderInterface
+	reader   reader.Interface
 	logger   *log.Logger
 }
 
-func NewWSClient(dataType string, reader portfolio.ReaderInterface, logger *log.Logger) WSClient {
+func NewWSClient(dataType string, reader reader.Interface, logger *log.Logger) WSClient {
 	return WSClient{
 		dataType: dataType,
 		reader:   reader,

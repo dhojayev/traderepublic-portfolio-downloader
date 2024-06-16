@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/reader"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -24,8 +24,8 @@ func NewJSONReader(baseDir string, logger *log.Logger) *JSONReader {
 }
 
 //nolint:ireturn
-func (r *JSONReader) Read(dataType string, data map[string]any) (portfolio.OutputDataInterface, error) {
-	id, found := data["id"]
+func (r *JSONReader) Read(dataType string, req reader.Request) (reader.ResponseInterface, error) {
+	id, found := req["id"]
 	if !found {
 		cursor, found := r.cursors[dataType]
 		if !found {

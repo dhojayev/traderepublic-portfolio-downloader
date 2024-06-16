@@ -10,9 +10,9 @@ import (
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/reader"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/tests/fakes"
 )
 
@@ -22,7 +22,7 @@ func TestModelBuilderBuildSupported(t *testing.T) {
 	testCases := fakes.TestCasesSupported
 	logger := log.New()
 	controller := gomock.NewController(t)
-	readerMock := portfolio.NewMockReaderInterface(controller)
+	readerMock := reader.NewMockInterface(controller)
 	detailsClient := details.NewClient(readerMock, logger)
 	resolver := details.NewTypeResolver(logger)
 	documentDateResolver := document.NewDateResolver(logger)
@@ -33,7 +33,7 @@ func TestModelBuilderBuildSupported(t *testing.T) {
 		readerMock.
 			EXPECT().
 			Read("timelineDetailV2", gomock.Any()).
-			DoAndReturn(func(_ string, _ map[string]any) (portfolio.OutputDataInterface, error) {
+			DoAndReturn(func(_ string, _ map[string]any) (reader.ResponseInterface, error) {
 				return filesystem.NewOutputData([]byte(testCase.TimelineDetailsData.Raw)), nil
 			})
 
@@ -61,7 +61,7 @@ func TestModelBuilderBuildUnsupported(t *testing.T) {
 	testCases := fakes.TestCasesUnsupported
 	logger := log.New()
 	controller := gomock.NewController(t)
-	readerMock := portfolio.NewMockReaderInterface(controller)
+	readerMock := reader.NewMockInterface(controller)
 	detailsClient := details.NewClient(readerMock, logger)
 	resolver := details.NewTypeResolver(logger)
 	documentDateResolver := document.NewDateResolver(logger)
@@ -72,7 +72,7 @@ func TestModelBuilderBuildUnsupported(t *testing.T) {
 		readerMock.
 			EXPECT().
 			Read("timelineDetailV2", gomock.Any()).
-			DoAndReturn(func(_ string, _ map[string]any) (portfolio.OutputDataInterface, error) {
+			DoAndReturn(func(_ string, _ map[string]any) (reader.ResponseInterface, error) {
 				return filesystem.NewOutputData([]byte(testCase.TimelineDetailsData.Raw)), nil
 			})
 
@@ -92,7 +92,7 @@ func TestModelBuilderBuildUnknown(t *testing.T) {
 	testCases := fakes.TestCasesUnknown
 	logger := log.New()
 	controller := gomock.NewController(t)
-	readerMock := portfolio.NewMockReaderInterface(controller)
+	readerMock := reader.NewMockInterface(controller)
 	detailsClient := details.NewClient(readerMock, logger)
 	resolver := details.NewTypeResolver(logger)
 	documentDateResolver := document.NewDateResolver(logger)
@@ -103,7 +103,7 @@ func TestModelBuilderBuildUnknown(t *testing.T) {
 		readerMock.
 			EXPECT().
 			Read("timelineDetailV2", gomock.Any()).
-			DoAndReturn(func(_ string, _ map[string]any) (portfolio.OutputDataInterface, error) {
+			DoAndReturn(func(_ string, _ map[string]any) (reader.ResponseInterface, error) {
 				return filesystem.NewOutputData([]byte(testCase.TimelineDetailsData.Raw)), nil
 			})
 

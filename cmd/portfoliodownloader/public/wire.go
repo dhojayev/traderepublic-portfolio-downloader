@@ -20,9 +20,9 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/console"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/database"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/reader"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/writer"
 )
 
@@ -54,7 +54,7 @@ var (
 
 		wire.Bind(new(auth.ClientInterface), new(*auth.Client)),
 		wire.Bind(new(console.AuthServiceInterface), new(*console.AuthService)),
-		wire.Bind(new(portfolio.ReaderInterface), new(*websocket.Reader)),
+		wire.Bind(new(reader.Interface), new(*websocket.Reader)),
 
 		wire.Bind(new(transactions.ClientInterface), new(transactions.Client)),
 		wire.Bind(new(transactions.EventTypeResolverInterface), new(transactions.EventTypeResolver)),

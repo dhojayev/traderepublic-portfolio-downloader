@@ -9,13 +9,14 @@ import (
 	"go.uber.org/mock/gomock"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/cmd/portfoliodownloader"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/activitylog"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/websocket"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/reader"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/tests/fakes"
 )
 
@@ -24,13 +25,14 @@ func TestItDoesReturnErrorIfTransactionDetailsCannotBeFetched(t *testing.T) {
 
 	logger := log.New()
 	ctrl := gomock.NewController(t)
+	activityClientMock := activitylog.NewMockClientInterface(ctrl)
 	transactionsClientMock := transactions.NewMockClientInterface(ctrl)
-	detailsReaderMock := portfolio.NewMockReaderInterface(ctrl)
+	detailsReaderMock := reader.NewMockInterface(ctrl)
 	typeResolverMock := transactions.NewMockEventTypeResolverInterface(ctrl)
 	processorMock := transaction.NewMockProcessorInterface(ctrl)
 
 	detailsClient := details.NewClient(detailsReaderMock, logger)
-	app := portfoliodownloader.NewApp(transactionsClientMock, typeResolverMock, detailsClient, processorMock, logger)
+	app := portfoliodownloader.NewApp(transactionsClientMock, typeResolverMock, detailsClient, processorMock, activityClientMock, logger)
 
 	var responses []transactions.ResponseItem
 
@@ -65,13 +67,14 @@ func TestItDoesReturnErrorIfTransactionTypeUnsupported(t *testing.T) {
 	testCases = append(testCases, fakes.TestCasesUnknown...)
 
 	ctrl := gomock.NewController(t)
-	readerMock := portfolio.NewMockReaderInterface(ctrl)
+	readerMock := reader.NewMockInterface(ctrl)
 	transactionRepoMock := transaction.NewMockRepositoryInterface(ctrl)
 	csvReaderMock := filesystem.NewMockCSVReaderInterface(ctrl)
 	csvWriterMock := filesystem.NewMockCSVWriterInterface(ctrl)
 	documentDownloaderMock := document.NewMockDownloaderInterface(ctrl)
 
 	logger := log.New()
+	activityClientMock := activitylog.NewMockClientInterface(ctrl)
 	transactionsClient := transactions.NewClient(readerMock, logger)
 	transactionsTypeResolver := transactions.NewEventTypeResolver(logger)
 	detailsClient := details.NewClient(readerMock, logger)
@@ -81,7 +84,7 @@ func TestItDoesReturnErrorIfTransactionTypeUnsupported(t *testing.T) {
 	builderFactory := transaction.NewModelBuilderFactory(detailsTypeResolver, documentBuilder, logger)
 	csvEntryFactory := transaction.NewCSVEntryFactory(logger)
 	processor := transaction.NewProcessor(builderFactory, transactionRepoMock, csvEntryFactory, csvReaderMock, csvWriterMock, documentDownloaderMock, logger)
-	app := portfoliodownloader.NewApp(transactionsClient, transactionsTypeResolver, detailsClient, processor, logger)
+	app := portfoliodownloader.NewApp(transactionsClient, transactionsTypeResolver, detailsClient, processor, activityClientMock, logger)
 
 	csvReaderMock.EXPECT().Read(gomock.Any()).AnyTimes().Return([]filesystem.CSVEntry{}, nil)
 

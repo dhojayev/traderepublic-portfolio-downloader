@@ -11,7 +11,7 @@ import (
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/header"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/console"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/reader"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/writer"
 )
 
@@ -82,10 +82,10 @@ func (r *Reader) Close() error {
 }
 
 //nolint:cyclop,ireturn
-func (r *Reader) Read(dataType string, dataMap map[string]any) (portfolio.OutputDataInterface, error) {
+func (r *Reader) Read(dataType string, req reader.Request) (reader.ResponseInterface, error) {
 	r.subID++
 
-	dataBytes, err := r.createWritableDataBytes(dataType, dataMap)
+	dataBytes, err := r.createWritableDataBytes(dataType, req)
 	if err != nil {
 		return Message{}, err
 	}
@@ -123,7 +123,7 @@ func (r *Reader) Read(dataType string, dataMap map[string]any) (portfolio.Output
 					return message, err
 				}
 
-				return r.Read(dataType, dataMap)
+				return r.Read(dataType, req)
 			}
 
 			return message, fmt.Errorf("%w: %s", ErrMsgErrorStateReceived, msg)

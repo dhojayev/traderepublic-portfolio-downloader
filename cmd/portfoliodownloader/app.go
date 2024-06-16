@@ -49,7 +49,26 @@ func (a App) Run() error {
 		return nil
 	}
 
-	a.logger.Infof("%#v", activityEntries)
+	for _, response := range activityEntries {
+		if !response.Action.HasDetails() {
+			continue
+		}
+
+		infoFields := log.Fields{"id": response.ID}
+
+		a.logger.WithFields(infoFields).Info("Fetching activity entry details")
+
+		var details details.Response
+
+		err := a.timelineDetailsClient.Details(response.Action.Payload, &details)
+		if err != nil {
+			return fmt.Errorf("could not fetch activity entry details: %w", err)
+		}
+
+		a.logger.Infof("%#v", details)
+	}
+
+	return nil
 
 	responses, err := a.GetTimelineTransactions()
 	if err != nil {
@@ -57,8 +76,7 @@ func (a App) Run() error {
 	}
 
 	for _, response := range responses {
-		// No payload = no details to process.
-		if response.Action.Payload == "" {
+		if !response.Action.HasDetails() {
 			continue
 		}
 

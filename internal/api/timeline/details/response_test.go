@@ -11,7 +11,7 @@ import (
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/reader"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/tests/fakes"
 )
 
@@ -30,14 +30,14 @@ func TestResponseContents(t *testing.T) {
 
 	logger := log.New()
 	controller := gomock.NewController(t)
-	readerMock := portfolio.NewMockReaderInterface(controller)
+	readerMock := reader.NewMockInterface(controller)
 	client := details.NewClient(readerMock, logger)
 
 	for i, testCase := range testCases {
 		readerMock.
 			EXPECT().
 			Read("timelineDetailV2", gomock.Any()).
-			DoAndReturn(func(_ string, _ map[string]any) (portfolio.OutputDataInterface, error) {
+			DoAndReturn(func(_ string, _ map[string]any) (reader.ResponseInterface, error) {
 				return filesystem.NewOutputData([]byte(testCase.TimelineDetailsData.Raw)), nil
 			})
 

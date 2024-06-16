@@ -1,5 +1,7 @@
 package activitylog
 
+import "github.com/dhojayev/traderepublic-portfolio-downloader/internal"
+
 type Response struct {
 	Type  string       `json:"type"`
 	Items ResponseItem `json:"data"`
@@ -13,6 +15,10 @@ type ResponseItem struct {
 	Subtitle  string             `json:"subtitle,omitempty"`
 	Timestamp string             `json:"timestamp"`
 	Title     string             `json:"title"`
+}
+
+func (a ResponseItemAction) HasDetails() bool {
+	return a.Type == internal.ResponseActionTypeTimelineDetail && a.Payload != ""
 }
 
 type ResponseItemAction struct {

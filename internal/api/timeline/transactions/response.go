@@ -1,8 +1,6 @@
 package transactions
 
-const (
-	transactionActionTypeTimelineDetail = "timelineDetail"
-)
+import "github.com/dhojayev/traderepublic-portfolio-downloader/internal"
 
 type Response struct {
 	Type  string       `json:"type"`
@@ -26,6 +24,10 @@ type ResponseItem struct {
 type ResponseItemAction struct {
 	Payload string `json:"payload"`
 	Type    string `json:"type"`
+}
+
+func (a ResponseItemAction) HasDetails() bool {
+	return a.Type == internal.ResponseActionTypeTimelineDetail && a.Payload != ""
 }
 
 type ResponseItemAmount struct {
