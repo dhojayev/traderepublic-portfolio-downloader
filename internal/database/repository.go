@@ -29,7 +29,7 @@ func NewRepository[M comparable](database *gorm.DB, logger *log.Logger) (*Reposi
 		return nil, fmt.Errorf("could not auto-migrate: %w", err)
 	}
 
-	repository.logger.WithField("model", reflect.TypeOf(model)).Debug("initialized repository for model")
+	repository.logger.WithField("model", reflect.TypeOf(model)).Trace("initialized repository for model")
 
 	return repository, nil
 }
