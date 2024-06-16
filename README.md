@@ -160,6 +160,7 @@ Jun 16 22:15:13.484 [INFO] Activity log entries completed: 29, skipped: 13
 
 All documents are saved under `documents` directory followed by:
 * `transactions` or `activity` based on document type.
+* Date in `YYYY-mm` format, e.g.: `2020-01`
 * UUID related to its transaction or activity log entry. 
 * Document name, e.g. `Abrechnung Ausführung.pdf` 
 
