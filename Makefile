@@ -6,7 +6,7 @@ init:
 	go run -mod=mod github.com/google/wire/cmd/wire ./...
 
 generate:
-	rm -f **/*_gen.go **/*_mock.go
+	rm -f **/*_mock.go
 	go generate ./...
 	go run ./cmd/example-generator
 	

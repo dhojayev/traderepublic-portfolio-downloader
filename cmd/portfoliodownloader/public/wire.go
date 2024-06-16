@@ -13,6 +13,7 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/cmd/portfoliodownloader"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/auth"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/activitylog"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/websocket"
@@ -49,6 +50,7 @@ var (
 		ProvideTransactionRepository,
 		ProvideInstrumentRepository,
 		ProvideDocumentRepository,
+		activitylog.NewClient,
 
 		wire.Bind(new(auth.ClientInterface), new(*auth.Client)),
 		wire.Bind(new(console.AuthServiceInterface), new(*console.AuthService)),
@@ -68,6 +70,7 @@ var (
 		wire.Bind(new(document.RepositoryInterface), new(*database.Repository[*document.Model])),
 		wire.Bind(new(filesystem.CSVReaderInterface), new(filesystem.CSVReader)),
 		wire.Bind(new(filesystem.CSVWriterInterface), new(filesystem.CSVWriter)),
+		wire.Bind(new(activitylog.ClientInterface), new(activitylog.Client)),
 	)
 
 	NonWritingSet = wire.NewSet(

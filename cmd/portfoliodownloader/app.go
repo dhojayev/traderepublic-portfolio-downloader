@@ -7,6 +7,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/activitylog"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/websocket"
@@ -18,6 +19,7 @@ type App struct {
 	eventTypeResolver     transactions.EventTypeResolverInterface
 	timelineDetailsClient details.ClientInterface
 	transactionProcessor  transaction.ProcessorInterface
+	activityClient        activitylog.ClientInterface
 	logger                *log.Logger
 }
 
@@ -26,6 +28,7 @@ func NewApp(
 	eventTypeResolver transactions.EventTypeResolverInterface,
 	timelineDetailsClient details.ClientInterface,
 	transactionProcessor transaction.ProcessorInterface,
+	activityClient activitylog.ClientInterface,
 	logger *log.Logger,
 ) App {
 	return App{
@@ -33,12 +36,20 @@ func NewApp(
 		eventTypeResolver:     eventTypeResolver,
 		timelineDetailsClient: timelineDetailsClient,
 		transactionProcessor:  transactionProcessor,
+		activityClient:        activityClient,
 		logger:                logger,
 	}
 }
 
 func (a App) Run() error {
 	counter := 0
+
+	activityEntries, err := a.GetActivityLog()
+	if err != nil {
+		return nil
+	}
+
+	a.logger.Infof("%#v", activityEntries)
 
 	responses, err := a.GetTimelineTransactions()
 	if err != nil {
@@ -128,4 +139,21 @@ func (a App) ProcessTransactionResponse(transaction transactions.ResponseItem) e
 	a.logger.WithFields(infoFields).Info("Transaction processed")
 
 	return nil
+}
+
+func (a App) GetActivityLog() ([]activitylog.ResponseItem, error) {
+	a.logger.Info("Downloading activity entries")
+
+	var entries []activitylog.ResponseItem
+
+	err := a.activityClient.List(&entries)
+	if err != nil {
+		return entries, fmt.Errorf("could not fetch activity entries: %w", err)
+	}
+
+	slices.Reverse(entries)
+
+	a.logger.Infof("%d activity entries downloaded", len(entries))
+
+	return entries, nil
 }
