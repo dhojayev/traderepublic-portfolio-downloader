@@ -11,9 +11,9 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
 )
 
-var SavingsPlanExecuted01 = TestCase{
-	TimelineDetailsData: TimelineDetailsData{
-		Raw: `{
+var SavingsPlanExecuted01 = TransactionTestCase{
+	TimelineDetailsData: TimelineDetailsTestData{
+		Raw: []byte(`{
 		"id": "7c9be07c-7b88-4a49-a4be-425094388b8e",
 		"sections": [
 		  {
@@ -166,7 +166,7 @@ var SavingsPlanExecuted01 = TestCase{
 			"type": "documents"
 		  }
 		]
-	  }`,
+	  }`),
 		Unmarshalled: TimelineDetailsResponseSections{
 			Header: details.ResponseSectionTypeHeader{
 				Action: details.ResponseAction{

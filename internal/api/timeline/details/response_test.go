@@ -17,7 +17,7 @@ import (
 func TestResponseContents(t *testing.T) {
 	t.Parallel()
 
-	testCases := []fakes.TestCase{
+	testCases := []fakes.TransactionTestCase{
 		fakes.PaymentInbound01,
 		fakes.PaymentInboundSepaDirectDebit01,
 		fakes.InterestPayoutCreated01,
@@ -37,7 +37,7 @@ func TestResponseContents(t *testing.T) {
 			EXPECT().
 			Read("timelineDetailV2", gomock.Any()).
 			DoAndReturn(func(_ string, _ map[string]any) (reader.JSONResponse, error) {
-				return reader.NewJSONResponse([]byte(testCase.TimelineDetailsData.Raw)), nil
+				return reader.NewJSONResponse(testCase.TimelineDetailsData.Raw), nil
 			})
 
 		var actual details.Response

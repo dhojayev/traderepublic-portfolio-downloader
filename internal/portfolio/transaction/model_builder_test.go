@@ -18,7 +18,7 @@ import (
 func TestModelBuilderBuildSupported(t *testing.T) {
 	t.Parallel()
 
-	testCases := fakes.TestCasesSupported
+	testCases := fakes.TransactionTestCasesSupported
 	logger := log.New()
 	controller := gomock.NewController(t)
 	readerMock := reader.NewMockInterface(controller)
@@ -33,7 +33,7 @@ func TestModelBuilderBuildSupported(t *testing.T) {
 			EXPECT().
 			Read("timelineDetailV2", gomock.Any()).
 			DoAndReturn(func(_ string, _ map[string]any) (reader.JSONResponse, error) {
-				return reader.NewJSONResponse([]byte(testCase.TimelineDetailsData.Raw)), nil
+				return reader.NewJSONResponse(testCase.TimelineDetailsData.Raw), nil
 			})
 
 		var response details.Response
@@ -57,7 +57,7 @@ func TestModelBuilderBuildSupported(t *testing.T) {
 func TestModelBuilderBuildUnsupported(t *testing.T) {
 	t.Parallel()
 
-	testCases := fakes.TestCasesUnsupported
+	testCases := fakes.TransactionTestCasesUnsupported
 	logger := log.New()
 	controller := gomock.NewController(t)
 	readerMock := reader.NewMockInterface(controller)
@@ -72,7 +72,7 @@ func TestModelBuilderBuildUnsupported(t *testing.T) {
 			EXPECT().
 			Read("timelineDetailV2", gomock.Any()).
 			DoAndReturn(func(_ string, _ map[string]any) (reader.JSONResponse, error) {
-				return reader.NewJSONResponse([]byte(testCase.TimelineDetailsData.Raw)), nil
+				return reader.NewJSONResponse(testCase.TimelineDetailsData.Raw), nil
 			})
 
 		var response details.Response
@@ -88,7 +88,7 @@ func TestModelBuilderBuildUnsupported(t *testing.T) {
 func TestModelBuilderBuildUnknown(t *testing.T) {
 	t.Parallel()
 
-	testCases := fakes.TestCasesUnknown
+	testCases := fakes.TransactionTestCasesUnknown
 	logger := log.New()
 	controller := gomock.NewController(t)
 	readerMock := reader.NewMockInterface(controller)
@@ -103,7 +103,7 @@ func TestModelBuilderBuildUnknown(t *testing.T) {
 			EXPECT().
 			Read("timelineDetailV2", gomock.Any()).
 			DoAndReturn(func(_ string, _ map[string]any) (reader.JSONResponse, error) {
-				return reader.NewJSONResponse([]byte(testCase.TimelineDetailsData.Raw)), nil
+				return reader.NewJSONResponse(testCase.TimelineDetailsData.Raw), nil
 			})
 
 		var response details.Response

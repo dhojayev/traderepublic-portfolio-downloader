@@ -19,7 +19,7 @@ type App struct {
 	eventTypeResolver     transactions.EventTypeResolverInterface
 	timelineDetailsClient details.ClientInterface
 	transactionProcessor  transaction.ProcessorInterface
-	activityClient        activitylog.ClientInterface
+	activityLogClient     activitylog.ClientInterface
 	logger                *log.Logger
 }
 
@@ -28,7 +28,7 @@ func NewApp(
 	eventTypeResolver transactions.EventTypeResolverInterface,
 	timelineDetailsClient details.ClientInterface,
 	transactionProcessor transaction.ProcessorInterface,
-	activityClient activitylog.ClientInterface,
+	activityLogClient activitylog.ClientInterface,
 	logger *log.Logger,
 ) App {
 	return App{
@@ -36,39 +36,36 @@ func NewApp(
 		eventTypeResolver:     eventTypeResolver,
 		timelineDetailsClient: timelineDetailsClient,
 		transactionProcessor:  transactionProcessor,
-		activityClient:        activityClient,
+		activityLogClient:     activityLogClient,
 		logger:                logger,
 	}
 }
 
+//nolint:funlen,cyclop
 func (a App) Run() error {
 	counter := 0
 
-	// activityEntries, err := a.GetActivityLog()
-	// if err != nil {
-	// 	return nil
-	// }
+	entries, err := a.GetActivityLog()
+	if err != nil {
+		return fmt.Errorf("could not fetch activity log entries: %w", err)
+	}
 
-	// for _, response := range activityEntries {
-	// 	if !response.Action.HasDetails() {
-	// 		continue
-	// 	}
+	for _, entry := range entries {
+		if !entry.Action.HasDetails() {
+			continue
+		}
 
-	// 	infoFields := log.Fields{"id": response.ID}
+		infoFields := log.Fields{"id": entry.ID}
 
-	// 	a.logger.WithFields(infoFields).Info("Fetching activity entry details")
+		a.logger.WithFields(infoFields).Info("Fetching activity entry details")
 
-	// 	var details details.Response
+		var details details.Response
 
-	// 	err := a.timelineDetailsClient.Details(response.Action.Payload, &details)
-	// 	if err != nil {
-	// 		return fmt.Errorf("could not fetch activity entry details: %w", err)
-	// 	}
-
-	// 	a.logger.Infof("%#v", details)
-	// }
-
-	// return nil
+		err := a.timelineDetailsClient.Details(entry.Action.Payload, &details)
+		if err != nil {
+			return fmt.Errorf("could not fetch activity entry details: %w", err)
+		}
+	}
 
 	responses, err := a.GetTimelineTransactions()
 	if err != nil {
@@ -164,7 +161,7 @@ func (a App) GetActivityLog() ([]activitylog.ResponseItem, error) {
 
 	var entries []activitylog.ResponseItem
 
-	err := a.activityClient.List(&entries)
+	err := a.activityLogClient.List(&entries)
 	if err != nil {
 		return entries, fmt.Errorf("could not fetch activity entries: %w", err)
 	}

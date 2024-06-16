@@ -11,9 +11,9 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
 )
 
-var OrderExecuted03 = TestCase{
-	TimelineDetailsData: TimelineDetailsData{
-		Raw: `{
+var OrderExecuted03 = TransactionTestCase{
+	TimelineDetailsData: TimelineDetailsTestData{
+		Raw: []byte(`{
 		"id": "a3b8e625-a6e9-4269-9529-01ebb86d69bb",
 		"sections": [
 		  {
@@ -188,7 +188,7 @@ var OrderExecuted03 = TestCase{
 			"type": "documents"
 		  }
 		]
-	  }`,
+	  }`),
 	},
 	EventType: transactions.EventTypeOrderExecuted,
 	Transaction: transaction.Model{

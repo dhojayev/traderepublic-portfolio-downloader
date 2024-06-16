@@ -4,9 +4,9 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
 )
 
-var CardSuccessfulTransaction01 = TestCase{
-	TimelineTransactionsData: TimelineTransactionsData{
-		Raw: `{
+var CardSuccessfulTransaction01 = TransactionTestCase{
+	TimelineTransactionsData: TimelineTransactionsTestData{
+		Raw: []byte(`{
 		"items": 
 			[
 				{
@@ -30,7 +30,7 @@ var CardSuccessfulTransaction01 = TestCase{
 					"title": "Aldi"
 				}
 			]
-}`,
+}`),
 		Unmarshalled: transactions.ResponseItem{
 			Action: transactions.ResponseItemAction{
 				Payload: "6221f5fb-b8fa-4ad6-8c99-c3fb3c31da10",
@@ -49,8 +49,8 @@ var CardSuccessfulTransaction01 = TestCase{
 			Title:     "Aldi",
 		},
 	},
-	TimelineDetailsData: TimelineDetailsData{
-		Raw: "{}",
+	TimelineDetailsData: TimelineDetailsTestData{
+		Raw: []byte("{}"),
 	},
 }
 

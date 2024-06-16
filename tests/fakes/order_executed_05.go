@@ -10,9 +10,9 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
 )
 
-var OrderExecuted05 = TestCase{
-	TimelineTransactionsData: TimelineTransactionsData{
-		Raw: `{
+var OrderExecuted05 = TransactionTestCase{
+	TimelineTransactionsData: TimelineTransactionsTestData{
+		Raw: []byte(`{
     "items": 
     [
       {
@@ -36,7 +36,7 @@ var OrderExecuted05 = TestCase{
         "title": "Anleihe Feb. 2024"
       }
      ]
-   }`,
+   }`),
 		Unmarshalled: transactions.ResponseItem{
 			Action: transactions.ResponseItemAction{
 				Payload: "eb6ee8c7-2cff-4dcc-ab70-3ca7f31f0371",
@@ -56,8 +56,8 @@ var OrderExecuted05 = TestCase{
 			Title:     "Anleihe Feb. 2024",
 		},
 	},
-	TimelineDetailsData: TimelineDetailsData{
-		Raw: `{
+	TimelineDetailsData: TimelineDetailsTestData{
+		Raw: []byte(`{
   "id": "eb6ee8c7-2cff-4dcc-ab70-3ca7f31f0371",
   "sections": [
     {
@@ -280,7 +280,7 @@ var OrderExecuted05 = TestCase{
       "type": "documents"
     }
   ]
-}`,
+}`),
 	},
 	EventType:   transactions.EventTypeOrderExecuted,
 	Transaction: transaction.Model{},

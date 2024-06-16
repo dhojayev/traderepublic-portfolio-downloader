@@ -1,8 +1,8 @@
 package fakes
 
-var OrderExecuted04 = TestCase{
-	TimelineDetailsData: TimelineDetailsData{
-		Raw: `{
+var OrderExecuted04 = TransactionTestCase{
+	TimelineDetailsData: TimelineDetailsTestData{
+		Raw: []byte(`{
 		"id": "61f297f9-f9c3-46c4-a15c-cdd50d5544ad",
 		"sections": [
 		  {
@@ -157,6 +157,6 @@ var OrderExecuted04 = TestCase{
 			"type": "documents"
 		  }
 		]
-	  }`,
+	  }`),
 	},
 }

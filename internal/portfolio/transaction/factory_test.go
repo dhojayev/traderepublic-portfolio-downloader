@@ -17,7 +17,7 @@ import (
 func TestMakeSupported(t *testing.T) {
 	t.Parallel()
 
-	testCases := fakes.TestCasesSupported
+	testCases := fakes.TransactionTestCasesSupported
 	factory := transaction.NewCSVEntryFactory(log.New())
 
 	for i, testCase := range testCases {
@@ -36,7 +36,7 @@ func TestMakeSupported(t *testing.T) {
 func TestMakeUnsupported(t *testing.T) {
 	t.Parallel()
 
-	testCases := fakes.TestCasesUnsupported
+	testCases := fakes.TransactionTestCasesUnsupported
 	factory := transaction.NewCSVEntryFactory(log.New())
 
 	for i, testCase := range testCases {
@@ -49,7 +49,7 @@ func TestMakeUnsupported(t *testing.T) {
 func TestMakeUnknown(t *testing.T) {
 	t.Parallel()
 
-	testCases := fakes.TestCasesUnknown
+	testCases := fakes.TransactionTestCasesUnknown
 	factory := transaction.NewCSVEntryFactory(log.New())
 
 	for i, testCase := range testCases {

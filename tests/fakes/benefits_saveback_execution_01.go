@@ -11,9 +11,9 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
 )
 
-var BenefitsSavebackExecution01 = TestCase{
-	TimelineDetailsData: TimelineDetailsData{
-		Raw: `{
+var BenefitsSavebackExecution01 = TransactionTestCase{
+	TimelineDetailsData: TimelineDetailsTestData{
+		Raw: []byte(`{
 		"id": "73fc417a-62ef-4179-a85e-9f3b29224567",
 		"sections": [
 		  {
@@ -138,7 +138,7 @@ var BenefitsSavebackExecution01 = TestCase{
 			"type": "documents"
 		  }
 		]
-	  }`,
+	  }`),
 	},
 	EventType: transactions.EventTypeBenefitsSavebackExecution,
 	Transaction: transaction.Model{

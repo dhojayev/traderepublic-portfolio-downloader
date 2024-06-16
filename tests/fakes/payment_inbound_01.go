@@ -10,9 +10,9 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
 )
 
-var PaymentInbound01 = TestCase{
-	TimelineDetailsData: TimelineDetailsData{
-		Raw: `{
+var PaymentInbound01 = TransactionTestCase{
+	TimelineDetailsData: TimelineDetailsTestData{
+		Raw: []byte(`{
 		"id": "1ae661c0-b3f1-4a81-a909-79567161b014",
 		"sections": [
 		  {
@@ -63,7 +63,7 @@ var PaymentInbound01 = TestCase{
 			"type": "table"
 		  }
 		]
-	  }`,
+	  }`),
 		Unmarshalled: TimelineDetailsResponseSections{
 			Header: details.ResponseSectionTypeHeader{
 				Data: details.ResponseSectionTypeHeaderData{

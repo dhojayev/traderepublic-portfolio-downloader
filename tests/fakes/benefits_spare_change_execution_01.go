@@ -11,9 +11,9 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
 )
 
-var BenefitsSpareChangeExecution01 = TestCase{
-	TimelineDetailsData: TimelineDetailsData{
-		Raw: `{
+var BenefitsSpareChangeExecution01 = TransactionTestCase{
+	TimelineDetailsData: TimelineDetailsTestData{
+		Raw: []byte(`{
 		"id": "265cb9c0-664a-45d4-b179-3061f196dd2a",
 		"sections": [
 		  {
@@ -132,7 +132,7 @@ var BenefitsSpareChangeExecution01 = TestCase{
 			"type": "documents"
 		  }
 		]
-	  }`,
+	  }`),
 		Unmarshalled: TimelineDetailsResponseSections{
 			Header: details.ResponseSectionTypeHeader{
 				Action: details.ResponseAction{

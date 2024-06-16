@@ -11,9 +11,9 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
 )
 
-var PaymentInboundSepaDirectDebit01 = TestCase{
-	TimelineDetailsData: TimelineDetailsData{
-		Raw: `{
+var PaymentInboundSepaDirectDebit01 = TransactionTestCase{
+	TimelineDetailsData: TimelineDetailsTestData{
+		Raw: []byte(`{
 		"id": "ddc4ed4f-0314-42cf-8a65-930da1354348",
 		"sections": [
 		  {
@@ -98,7 +98,7 @@ var PaymentInboundSepaDirectDebit01 = TestCase{
 			"type": "documents"
 		  }
 		]
-	  }`,
+	  }`),
 		Unmarshalled: TimelineDetailsResponseSections{
 			Header: details.ResponseSectionTypeHeader{
 				Data: details.ResponseSectionTypeHeaderData{

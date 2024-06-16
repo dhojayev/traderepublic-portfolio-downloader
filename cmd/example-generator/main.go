@@ -17,7 +17,7 @@ const (
 )
 
 func main() {
-	examples := fakes.TestCasesSupported
+	examples := fakes.TransactionTestCasesSupported
 	logger := log.New()
 	factory := transaction.NewCSVEntryFactory(logger)
 	csvWriter := filesystem.NewCSVWriter(logger)

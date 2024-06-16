@@ -10,9 +10,9 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
 )
 
-var PaymentOutbound01 = TestCase{
-	TimelineDetailsData: TimelineDetailsData{
-		Raw: `{
+var PaymentOutbound01 = TransactionTestCase{
+	TimelineDetailsData: TimelineDetailsTestData{
+		Raw: []byte(`{
   "id": "a2597441-45f4-4ae2-a881-ab4a65aa0f0e",
   "sections": [
     {
@@ -63,7 +63,7 @@ var PaymentOutbound01 = TestCase{
       "type": "table"
     }
   ]
-}`,
+}`),
 	},
 	EventType: transactions.EventTypePaymentOutbound,
 	Transaction: transaction.Model{

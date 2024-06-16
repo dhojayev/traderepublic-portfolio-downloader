@@ -12,9 +12,9 @@ import (
 )
 
 var (
-	OrderExecuted01 = TestCase{
-		TimelineDetailsData: TimelineDetailsData{
-			Raw: `{
+	OrderExecuted01 = TransactionTestCase{
+		TimelineDetailsData: TimelineDetailsTestData{
+			Raw: []byte(`{
 			"id": "b20e367c-5542-4fab-9fd6-6faa5e7ab582",
 			"sections": [
 			  {
@@ -152,7 +152,7 @@ var (
 				"type": "documents"
 			  }
 			]
-		  }`,
+		  }`),
 		},
 		EventType: transactions.EventTypeOrderExecuted,
 		Transaction: transaction.Model{
