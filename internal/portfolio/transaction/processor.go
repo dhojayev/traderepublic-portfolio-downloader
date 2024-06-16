@@ -53,7 +53,7 @@ func NewProcessor(
 	}
 }
 
-//nolint:cyclop,funlen
+//nolint:cyclop
 func (p Processor) Process(eventType transactions.EventType, response details.Response) error {
 	csvEntries, err := p.csvReader.Read(csvFilename)
 	if err != nil {

@@ -319,11 +319,12 @@ var SavingsPlanExecuted01 = TransactionTestCase{
 		Total:  500,
 		Documents: []document.Model{
 			{
-				ID:       "0ac3aea7-6d68-4815-8f25-9c8997ef790d",
-				URL:      "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
-				Detail:   "11.11.2023",
-				Title:    "Abrechnung Ausführung",
-				Filepath: "2023-11/7c9be07c-7b88-4a49-a4be-425094388b8e/Abrechnung Ausführung.pdf",
+				TransactionUUID: "7c9be07c-7b88-4a49-a4be-425094388b8e",
+				ID:              "0ac3aea7-6d68-4815-8f25-9c8997ef790d",
+				URL:             "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
+				Detail:          "11.11.2023",
+				Title:           "Abrechnung Ausführung",
+				Filepath:        "2023-11/7c9be07c-7b88-4a49-a4be-425094388b8e/Abrechnung Ausführung.pdf",
 			},
 		},
 	},

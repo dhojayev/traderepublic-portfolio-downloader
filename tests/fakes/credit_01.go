@@ -202,11 +202,12 @@ var Credit01 = TransactionTestCase{
 		},
 		Documents: []document.Model{
 			{
-				ID:       "df244c67-8907-4365-bb89-ce26e1fadea5",
-				URL:      "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
-				Detail:   "13.12.2023",
-				Title:    "Abrechnung",
-				Filepath: "2023-12/23cf72a9-3888-4918-898c-c3bc38346ba1/Abrechnung.pdf",
+				TransactionUUID: "23cf72a9-3888-4918-898c-c3bc38346ba1",
+				ID:              "df244c67-8907-4365-bb89-ce26e1fadea5",
+				URL:             "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
+				Detail:          "13.12.2023",
+				Title:           "Abrechnung",
+				Filepath:        "2023-12/23cf72a9-3888-4918-898c-c3bc38346ba1/Abrechnung.pdf",
 			},
 		},
 		Type:   transaction.TypeDividendPayout,

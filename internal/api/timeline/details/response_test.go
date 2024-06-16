@@ -2,6 +2,7 @@ package details_test
 
 import (
 	"fmt"
+	"io"
 	"reflect"
 	"testing"
 
@@ -28,6 +29,8 @@ func TestResponseContents(t *testing.T) {
 	}
 
 	logger := log.New()
+	logger.Out = io.Discard
+
 	controller := gomock.NewController(t)
 	readerMock := reader.NewMockInterface(controller)
 	client := details.NewClient(readerMock, logger)

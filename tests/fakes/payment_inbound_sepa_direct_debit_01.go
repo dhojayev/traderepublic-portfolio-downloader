@@ -182,11 +182,12 @@ var PaymentInboundSepaDirectDebit01 = TransactionTestCase{
 		Total:  500,
 		Documents: []document.Model{
 			{
-				ID:       "cfc08704-eb56-44f1-83a0-c39aba9055ca",
-				URL:      "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
-				Detail:   "23.07.2023",
-				Title:    "Abrechnung Einzahlung",
-				Filepath: "2023-07/ddc4ed4f-0314-42cf-8a65-930da1354348/Abrechnung Einzahlung.pdf",
+				TransactionUUID: "ddc4ed4f-0314-42cf-8a65-930da1354348",
+				ID:              "cfc08704-eb56-44f1-83a0-c39aba9055ca",
+				URL:             "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
+				Detail:          "23.07.2023",
+				Title:           "Abrechnung Einzahlung",
+				Filepath:        "2023-07/ddc4ed4f-0314-42cf-8a65-930da1354348/Abrechnung Einzahlung.pdf",
 			},
 		},
 	},

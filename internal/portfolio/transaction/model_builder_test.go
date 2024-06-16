@@ -2,6 +2,7 @@ package transaction_test
 
 import (
 	"fmt"
+	"io"
 	"testing"
 
 	log "github.com/sirupsen/logrus"
@@ -20,6 +21,8 @@ func TestModelBuilderBuildSupported(t *testing.T) {
 
 	testCases := fakes.TransactionTestCasesSupported
 	logger := log.New()
+	logger.Out = io.Discard
+
 	controller := gomock.NewController(t)
 	readerMock := reader.NewMockInterface(controller)
 	detailsClient := details.NewClient(readerMock, logger)

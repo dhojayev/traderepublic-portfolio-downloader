@@ -2,6 +2,7 @@ package activitylog_test
 
 import (
 	"fmt"
+	"io"
 	"testing"
 
 	log "github.com/sirupsen/logrus"
@@ -19,6 +20,8 @@ func TestClient_Get(t *testing.T) {
 	testCases := fakes.ActivityLogTestCasesSupported
 
 	logger := log.New()
+	logger.Out = io.Discard
+
 	controller := gomock.NewController(t)
 	readerMock := reader.NewMockInterface(controller)
 	client := activitylog.NewClient(readerMock, logger)

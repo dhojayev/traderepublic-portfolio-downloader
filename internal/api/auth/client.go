@@ -12,10 +12,6 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api"
 )
 
-const (
-	tickerTimeoutSec = 60
-)
-
 type (
 	PhoneNumber string
 	Pin         string
