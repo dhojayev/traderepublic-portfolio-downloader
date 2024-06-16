@@ -159,12 +159,13 @@ Jun 16 22:15:13.484 [INFO] Activity log entries completed: 29, skipped: 13
 ### PDF documents storage structure
 
 All documents are saved under `documents` directory followed by:
+* `transactions` or `activity` based on document type.
 * UUID related to its transaction or activity log entry. 
 * Document name, e.g. `Abrechnung Ausführung.pdf` 
 
 Exmaples:
 * `documents/transactions/2023-11/67bd11bb-327e-475d-b715-5876bab61c5c/Abrechnung Ausführung.pdf`
-* `documents/transactions/2023-09/d7488784-2ac1-4daf-856a-f87fb79f641e/Kundenvereinbarung.pdf`
+* `documents/activity/2023-09/d7488784-2ac1-4daf-856a-f87fb79f641e/Kundenvereinbarung.pdf`
 
 ### CSV File Fields
 

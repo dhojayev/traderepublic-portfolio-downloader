@@ -55,7 +55,7 @@ func (p Processor) Process(response details.Response) error {
 	}
 
 	for _, doc := range documents {
-		err = p.docDownloader.Download(internal.DocumentsBaseDir, doc)
+		err = p.docDownloader.Download(internal.ActivityLogDocumentsBaseDir, doc)
 		if err == nil {
 			continue
 		}

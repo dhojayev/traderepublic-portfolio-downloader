@@ -24,6 +24,9 @@ const (
 	// CSVFilename filename under which a CSV file with transaction entries has to be saved.
 	CSVFilename = "./transactions.csv"
 
-	// DocumentsBaseDir base directory under which downloaded documents have to be saved.
-	DocumentsBaseDir = "./documents/transactions"
+	// TransactionDocumentsBaseDir base directory under which downloaded transaction documents are saved.
+	TransactionDocumentsBaseDir = "./documents/transactions"
+
+	// ActivityLogDocumentsBaseDir base directory under which downloaded activity documents are saved.
+	ActivityLogDocumentsBaseDir = "./documents/activity"
 )
