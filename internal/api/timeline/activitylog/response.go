@@ -18,10 +18,19 @@ type ResponseItem struct {
 }
 
 func (a ResponseItemAction) HasDetails() bool {
-	return a.Type == internal.ResponseActionTypeTimelineDetail && a.Payload != ""
+	return a.Type == internal.ResponseActionTypeTimelineDetail && a.PayloadStr() != ""
 }
 
 type ResponseItemAction struct {
-	Payload string `json:"payload"`
+	Payload any    `json:"payload"`
 	Type    string `json:"type"`
+}
+
+func (a ResponseItemAction) PayloadStr() string {
+	strPayload, ok := a.Payload.(string)
+	if !ok {
+		return ""
+	}
+
+	return strPayload
 }

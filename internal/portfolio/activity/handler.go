@@ -56,7 +56,7 @@ func (h Handler) Handle() error {
 
 		var detailsEntry details.Response
 
-		err := h.detailsClient.Details(entry.Action.Payload, &detailsEntry)
+		err := h.detailsClient.Details(entry.Action.PayloadStr(), &detailsEntry)
 		if err != nil {
 			return fmt.Errorf("could not fetch activity log entry details: %w", err)
 		}
