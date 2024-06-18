@@ -10,11 +10,8 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/header"
-)
-
-const (
-	baseURL = "https://api.traderepublic.com/api/v1"
 )
 
 type Client struct {
@@ -40,7 +37,7 @@ func (c *Client) Login(requestBody LoginRequest, refreshToken Token) (LoginRespo
 	req, err := http.NewRequestWithContext(
 		context.Background(),
 		http.MethodPost,
-		fmt.Sprintf("%s/%s", baseURL, "auth/web/login"),
+		fmt.Sprintf("%s/%s", internal.RestAPIBaseURI, "auth/web/login"),
 		bytes.NewReader(requestBodyBytes),
 	)
 	if err != nil {
@@ -77,7 +74,7 @@ func (c *Client) PostOTP(processID, otp string) (Token, Token, error) {
 	req, err := http.NewRequestWithContext(
 		context.Background(),
 		http.MethodPost,
-		fmt.Sprintf("%s/%s/%s/%s", baseURL, "auth/web/login", processID, otp),
+		fmt.Sprintf("%s/%s/%s/%s", internal.RestAPIBaseURI, "auth/web/login", processID, otp),
 		nil,
 	)
 	if err != nil {
@@ -112,7 +109,7 @@ func (c *Client) PostOTP(processID, otp string) (Token, Token, error) {
 
 func (c *Client) Session(refreshToken Token) (Token, error) {
 	sessionToken := NewToken(TokenNameSession, "")
-	url := fmt.Sprintf("%s/%s", baseURL, "auth/web/session")
+	url := fmt.Sprintf("%s/%s", internal.RestAPIBaseURI, "auth/web/session")
 
 	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, url, nil)
 	if err != nil {

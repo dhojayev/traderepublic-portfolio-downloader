@@ -34,9 +34,15 @@ func NewDownloader(logger *log.Logger) Downloader {
 }
 
 func (d Downloader) Download(baseDir string, document Model) error {
+	logFields := log.Fields{
+		"id": document.TransactionUUID,
+	}
+
 	dest := baseDir + "/" + document.Filepath
 
 	if _, err := os.Stat(dest); err == nil {
+		d.logger.WithFields(logFields).Warn("Document already exists")
+
 		return ErrDocumentExists
 	}
 
@@ -69,6 +75,8 @@ func (d Downloader) Download(baseDir string, document Model) error {
 	if err != nil {
 		return fmt.Errorf("could not write document file: %w", err)
 	}
+
+	d.logger.WithFields(logFields).Info("Document downloaded")
 
 	return nil
 }

@@ -11,9 +11,9 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
 )
 
-var OrderExecuted02 = TestCase{
-	TimelineDetailsData: TimelineDetailsData{
-		Raw: `{
+var OrderExecuted02 = TransactionTestCase{
+	TimelineDetailsData: TimelineDetailsTestData{
+		Raw: []byte(`{
 		"id": "1d9ad3b5-e65c-41f6-9c7d-96baa2a2ecad",
 		"sections": [
 		  {
@@ -151,7 +151,7 @@ var OrderExecuted02 = TestCase{
 			"type": "documents"
 		  }
 		]
-	  }`,
+	  }`),
 		Unmarshalled: TimelineDetailsResponseSections{
 			Header: details.ResponseSectionTypeHeader{
 				Action: details.ResponseAction{
@@ -291,25 +291,28 @@ var OrderExecuted02 = TestCase{
 		Total:      136.14,
 		Documents: []document.Model{
 			{
-				ID:       "c9a1c524-1c54-4689-8b2f-0f1bcbb91c9d",
-				URL:      "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
-				Detail:   "23.11.2023",
-				Title:    "Abrechnung",
-				Filepath: "2023-11/1d9ad3b5-e65c-41f6-9c7d-96baa2a2ecad/Abrechnung.pdf",
+				TransactionUUID: "1d9ad3b5-e65c-41f6-9c7d-96baa2a2ecad",
+				ID:              "c9a1c524-1c54-4689-8b2f-0f1bcbb91c9d",
+				URL:             "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
+				Detail:          "23.11.2023",
+				Title:           "Abrechnung",
+				Filepath:        "2023-11/1d9ad3b5-e65c-41f6-9c7d-96baa2a2ecad/Abrechnung.pdf",
 			},
 			{
-				ID:       "b26233a9-ee80-4da9-8404-08e722fe830b",
-				URL:      "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
-				Detail:   "23.11.2023",
-				Title:    "Basisinformationsblatt",
-				Filepath: "2023-11/1d9ad3b5-e65c-41f6-9c7d-96baa2a2ecad/Basisinformationsblatt.pdf",
+				TransactionUUID: "1d9ad3b5-e65c-41f6-9c7d-96baa2a2ecad",
+				ID:              "b26233a9-ee80-4da9-8404-08e722fe830b",
+				URL:             "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
+				Detail:          "23.11.2023",
+				Title:           "Basisinformationsblatt",
+				Filepath:        "2023-11/1d9ad3b5-e65c-41f6-9c7d-96baa2a2ecad/Basisinformationsblatt.pdf",
 			},
 			{
-				ID:       "b582015c-7a5c-47d0-8d33-6391d414cdc7",
-				URL:      "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
-				Detail:   "23.11.2023",
-				Title:    "Kosteninformation",
-				Filepath: "2023-11/1d9ad3b5-e65c-41f6-9c7d-96baa2a2ecad/Kosteninformation.pdf",
+				TransactionUUID: "1d9ad3b5-e65c-41f6-9c7d-96baa2a2ecad",
+				ID:              "b582015c-7a5c-47d0-8d33-6391d414cdc7",
+				URL:             "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
+				Detail:          "23.11.2023",
+				Title:           "Kosteninformation",
+				Filepath:        "2023-11/1d9ad3b5-e65c-41f6-9c7d-96baa2a2ecad/Kosteninformation.pdf",
 			},
 		},
 	},

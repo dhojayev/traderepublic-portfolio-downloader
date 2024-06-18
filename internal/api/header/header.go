@@ -2,19 +2,15 @@ package header
 
 import (
 	"net/http"
-	"strings"
+
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
 )
 
 type Headers http.Header
 
 func NewHeaders() Headers {
 	return Headers(http.Header{
-		"User-Agent": {strings.Join([]string{
-			"Mozilla/5.0",
-			"(Macintosh; Intel Mac OS X 10_15_7)",
-			"AppleWebKit/605.1.15 (KHTML, like Gecko)",
-			"Version/17.4 Safari/605.1.15",
-		}, " ")},
+		"User-Agent": {internal.HTTPUserAgent},
 	})
 }
 

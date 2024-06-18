@@ -11,9 +11,9 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
 )
 
-var BenefitsSavebackExecution01 = TestCase{
-	TimelineDetailsData: TimelineDetailsData{
-		Raw: `{
+var BenefitsSavebackExecution01 = TransactionTestCase{
+	TimelineDetailsData: TimelineDetailsTestData{
+		Raw: []byte(`{
 		"id": "73fc417a-62ef-4179-a85e-9f3b29224567",
 		"sections": [
 		  {
@@ -138,7 +138,7 @@ var BenefitsSavebackExecution01 = TestCase{
 			"type": "documents"
 		  }
 		]
-	  }`,
+	  }`),
 	},
 	EventType: transactions.EventTypeBenefitsSavebackExecution,
 	Transaction: transaction.Model{
@@ -155,18 +155,20 @@ var BenefitsSavebackExecution01 = TestCase{
 		Total:  15,
 		Documents: []document.Model{
 			{
-				ID:       "3a54ce6c-7bf7-4db5-a79e-5c24dbc71594",
-				URL:      "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
-				Detail:   "22.03.2024",
-				Title:    "Abrechnung Ausführung",
-				Filepath: "2024-03/73fc417a-62ef-4179-a85e-9f3b29224567/Abrechnung Ausführung.pdf",
+				TransactionUUID: "73fc417a-62ef-4179-a85e-9f3b29224567",
+				ID:              "3a54ce6c-7bf7-4db5-a79e-5c24dbc71594",
+				URL:             "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
+				Detail:          "22.03.2024",
+				Title:           "Abrechnung Ausführung",
+				Filepath:        "2024-03/73fc417a-62ef-4179-a85e-9f3b29224567/Abrechnung Ausführung.pdf",
 			},
 			{
-				ID:       "70776ac6-b87e-4c73-a8cb-558466234f0d",
-				URL:      "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
-				Detail:   "21.03.2024",
-				Title:    "Kosteninformation",
-				Filepath: "2024-03/73fc417a-62ef-4179-a85e-9f3b29224567/Kosteninformation.pdf",
+				TransactionUUID: "73fc417a-62ef-4179-a85e-9f3b29224567",
+				ID:              "70776ac6-b87e-4c73-a8cb-558466234f0d",
+				URL:             "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
+				Detail:          "21.03.2024",
+				Title:           "Kosteninformation",
+				Filepath:        "2024-03/73fc417a-62ef-4179-a85e-9f3b29224567/Kosteninformation.pdf",
 			},
 		},
 	},

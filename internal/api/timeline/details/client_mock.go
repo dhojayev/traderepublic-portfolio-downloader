@@ -38,17 +38,16 @@ func (m *MockClientInterface) EXPECT() *MockClientInterfaceMockRecorder {
 	return m.recorder
 }
 
-// Get mocks base method.
-func (m *MockClientInterface) Get(eventID string) (Response, error) {
+// Details mocks base method.
+func (m *MockClientInterface) Details(itemID string, v any) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Get", eventID)
-	ret0, _ := ret[0].(Response)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret := m.ctrl.Call(m, "Details", itemID, v)
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
-// Get indicates an expected call of Get.
-func (mr *MockClientInterfaceMockRecorder) Get(eventID any) *gomock.Call {
+// Details indicates an expected call of Details.
+func (mr *MockClientInterfaceMockRecorder) Details(itemID, v any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockClientInterface)(nil).Get), eventID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Details", reflect.TypeOf((*MockClientInterface)(nil).Details), itemID, v)
 }

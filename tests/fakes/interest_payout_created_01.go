@@ -7,9 +7,9 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
 )
 
-var InterestPayoutCreated01 = TestCase{
-	TimelineTransactionsData: TimelineTransactionsData{
-		Raw: `{
+var InterestPayoutCreated01 = TransactionTestCase{
+	TimelineTransactionsData: TimelineTransactionsTestData{
+		Raw: []byte(`{
 		"items": 
 			[
 				{
@@ -33,7 +33,7 @@ var InterestPayoutCreated01 = TestCase{
 					"title": "Zinsen"
 				}
 			]
-		}`,
+		}`),
 		Unmarshalled: transactions.ResponseItem{
 			Action: transactions.ResponseItemAction{
 				Payload: "c30c2952-ff0e-4fdb-bb8c-dfe1a8c35ce6",
@@ -53,8 +53,8 @@ var InterestPayoutCreated01 = TestCase{
 			Title:     "Zinsen",
 		},
 	},
-	TimelineDetailsData: TimelineDetailsData{
-		Raw: `{
+	TimelineDetailsData: TimelineDetailsTestData{
+		Raw: []byte(`{
 		"id": "c30c2952-ff0e-4fdb-bb8c-dfe1a8c35ce6",
 		"sections": [
 		  {
@@ -244,7 +244,7 @@ var InterestPayoutCreated01 = TestCase{
 			"type": "documents"
 		  }
 		]
-	  }`,
+	  }`),
 		Unmarshalled: TimelineDetailsResponseSections{
 			Header: details.ResponseSectionTypeHeader{
 				Data: details.ResponseSectionTypeHeaderData{

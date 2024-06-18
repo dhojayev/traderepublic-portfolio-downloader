@@ -12,9 +12,9 @@ import (
 )
 
 var (
-	OrderExecuted01 = TestCase{
-		TimelineDetailsData: TimelineDetailsData{
-			Raw: `{
+	OrderExecuted01 = TransactionTestCase{
+		TimelineDetailsData: TimelineDetailsTestData{
+			Raw: []byte(`{
 			"id": "b20e367c-5542-4fab-9fd6-6faa5e7ab582",
 			"sections": [
 			  {
@@ -152,7 +152,7 @@ var (
 				"type": "documents"
 			  }
 			]
-		  }`,
+		  }`),
 		},
 		EventType: transactions.EventTypeOrderExecuted,
 		Transaction: transaction.Model{
@@ -170,18 +170,20 @@ var (
 			Total:      395.80,
 			Documents: []document.Model{
 				{
-					ID:       "46e92aa7-df44-4a69-957c-183459753e66",
-					URL:      "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/",
-					Detail:   "29.03.2022",
-					Title:    "Abrechnung",
-					Filepath: "2022-03/b20e367c-5542-4fab-9fd6-6faa5e7ab582/Abrechnung.pdf",
+					TransactionUUID: "b20e367c-5542-4fab-9fd6-6faa5e7ab582",
+					ID:              "46e92aa7-df44-4a69-957c-183459753e66",
+					URL:             "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/",
+					Detail:          "29.03.2022",
+					Title:           "Abrechnung",
+					Filepath:        "2022-03/b20e367c-5542-4fab-9fd6-6faa5e7ab582/Abrechnung.pdf",
 				},
 				{
-					ID:       "3c4ccef3-249d-4d10-a54a-18a82fb9475a",
-					URL:      "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/",
-					Detail:   "29.03.2022",
-					Title:    "Kosteninformation",
-					Filepath: "2022-03/b20e367c-5542-4fab-9fd6-6faa5e7ab582/Kosteninformation.pdf",
+					TransactionUUID: "b20e367c-5542-4fab-9fd6-6faa5e7ab582",
+					ID:              "3c4ccef3-249d-4d10-a54a-18a82fb9475a",
+					URL:             "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/",
+					Detail:          "29.03.2022",
+					Title:           "Kosteninformation",
+					Filepath:        "2022-03/b20e367c-5542-4fab-9fd6-6faa5e7ab582/Kosteninformation.pdf",
 				},
 			},
 		},

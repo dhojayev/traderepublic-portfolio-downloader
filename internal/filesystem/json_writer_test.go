@@ -2,6 +2,7 @@ package filesystem_test
 
 import (
 	"fmt"
+	"io"
 	"testing"
 
 	log "github.com/sirupsen/logrus"
@@ -53,6 +54,8 @@ func TestGenerateFilename(t *testing.T) {
 	}
 
 	logger := log.New()
+	logger.Out = io.Discard
+
 	writer := filesystem.NewJSONWriter(logger)
 
 	for i, testCase := range testCases {

@@ -6,15 +6,10 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
-	"time"
 
 	log "github.com/sirupsen/logrus"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api"
-)
-
-const (
-	tickerTimeoutSec = 60
 )
 
 type (
@@ -55,15 +50,13 @@ func NewClient(apiClient api.Client, logger *log.Logger) (*Client, error) {
 
 	client.refreshToken = refreshToken
 
-	ticker := time.NewTicker(tickerTimeoutSec * time.Second)
-
 	go func() {
-		for range ticker.C {
-			if err = client.refreshSession(); err != nil {
-				client.logger.Error(err)
-			}
+		for range SessionRefreshTicker.C {
+			client.refreshSession()
 		}
 	}()
+
+	client.refreshSession()
 
 	return client, nil
 }
@@ -111,17 +104,15 @@ func (c *Client) ProvideOTP(processID, otp string) error {
 	return nil
 }
 
-func (c *Client) refreshSession() error {
-	c.logger.Info("refreshing session token")
+func (c *Client) refreshSession() {
+	c.logger.Debug("refreshing session token")
 
 	sessionToken, err := c.apiClient.Session(c.refreshToken)
 	if err != nil {
-		return fmt.Errorf("could not refresh session: %w", err)
+		c.logger.Warnf("could not refresh session: %s", err)
 	}
 
 	c.sessionToken = sessionToken
-
-	return nil
 }
 
 func (c *Client) SessionToken() api.Token {

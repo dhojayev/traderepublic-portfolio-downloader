@@ -19,6 +19,15 @@
             "request": "launch",
             "mode": "auto",
             "program": "./cmd/portfoliodownloader/dev",
+            "args": ["--trace"],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "Launch Package Dev with local responses",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "./cmd/portfoliodownloader/dev",
             "args": ["-l", "--trace"],
             "cwd": "${workspaceFolder}"
         },

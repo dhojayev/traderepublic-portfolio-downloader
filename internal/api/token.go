@@ -5,13 +5,13 @@ import (
 	"net/http"
 	"os"
 	"strings"
+
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
 )
 
 const (
 	TokenNameSession TokenName = "session"
 	TokenNameRefresh TokenName = "refresh"
-
-	cookieNamePrefix = "tr_"
 
 	headerSetCookie = "Set-Cookie"
 	filePermissions = 0o600
@@ -55,7 +55,7 @@ func NewTokenFromHeader(name TokenName, header http.Header) (Token, error) {
 		}
 
 		found = true
-		cookieName := cookieNamePrefix + name
+		cookieName := internal.CookieNamePrefix + name
 		startPos := len(cookieName) + 1
 		token.value = v[startPos:strings.Index(v, ";")]
 	}

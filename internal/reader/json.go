@@ -1,10 +1,8 @@
-package filesystem
+package reader
 
 import (
 	"fmt"
 	"os"
-
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -23,9 +21,8 @@ func NewJSONReader(baseDir string, logger *log.Logger) *JSONReader {
 	}
 }
 
-//nolint:ireturn
-func (r *JSONReader) Read(dataType string, data map[string]any) (portfolio.OutputDataInterface, error) {
-	id, found := data["id"]
+func (r *JSONReader) Read(dataType string, req Request) (JSONResponse, error) {
+	id, found := req["id"]
 	if !found {
 		cursor, found := r.cursors[dataType]
 		if !found {
@@ -42,10 +39,10 @@ func (r *JSONReader) Read(dataType string, data map[string]any) (portfolio.Outpu
 	return r.read(filepath)
 }
 
-func (r *JSONReader) read(filepath string) (OutputData, error) {
+func (r *JSONReader) read(filepath string) (JSONResponse, error) {
 	fileContents, err := os.ReadFile(filepath)
 	if err != nil {
-		return OutputData{}, fmt.Errorf("could not read filepath: %w", err)
+		return NewJSONResponse(nil), fmt.Errorf("could not read filepath: %w", err)
 	}
 
 	r.logger.
@@ -54,5 +51,5 @@ func (r *JSONReader) read(filepath string) (OutputData, error) {
 		}).
 		Debug("read file contents")
 
-	return OutputData{data: fileContents}, nil
+	return NewJSONResponse(fileContents), nil
 }

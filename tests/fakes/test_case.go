@@ -1,6 +1,7 @@
 package fakes
 
 import (
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/activitylog"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
@@ -8,26 +9,37 @@ import (
 )
 
 var (
-	TestCasesSupported   []TestCase
-	TestCasesUnsupported []TestCase
-	TestCasesUnknown     []TestCase
+	TransactionTestCasesSupported   []TransactionTestCase
+	TransactionTestCasesUnsupported []TransactionTestCase
+	TransactionTestCasesUnknown     []TransactionTestCase
+	ActivityLogTestCasesSupported   []ActivityLogTestCase
 )
 
-type TestCase struct {
-	TimelineTransactionsData TimelineTransactionsData
-	TimelineDetailsData      TimelineDetailsData
+type TransactionTestCase struct {
+	TimelineTransactionsData TimelineTransactionsTestData
+	TimelineDetailsData      TimelineDetailsTestData
 	EventType                transactions.EventType
 	Transaction              transaction.Model
 	CSVEntry                 filesystem.CSVEntry
 }
 
-type TimelineTransactionsData struct {
-	Raw          string
+type ActivityLogTestCase struct {
+	ActivityLogData     ActivityLogTestData
+	TimelineDetailsData TimelineDetailsTestData
+}
+
+type TimelineTransactionsTestData struct {
+	Raw          []byte
 	Unmarshalled transactions.ResponseItem
 }
 
-type TimelineDetailsData struct {
-	Raw          string
+type ActivityLogTestData struct {
+	Raw          []byte
+	Unmarshalled activitylog.ResponseItem
+}
+
+type TimelineDetailsTestData struct {
+	Raw          []byte
 	Unmarshalled TimelineDetailsResponseSections
 }
 
@@ -37,14 +49,18 @@ type TimelineDetailsResponseSections struct {
 	Documents details.ResponseSectionTypeDocuments
 }
 
-func RegisterSupported(testCase TestCase) {
-	TestCasesSupported = append(TestCasesSupported, testCase)
+func RegisterSupported(testCase TransactionTestCase) {
+	TransactionTestCasesSupported = append(TransactionTestCasesSupported, testCase)
 }
 
-func RegisterUnsupported(testCase TestCase) {
-	TestCasesUnsupported = append(TestCasesUnsupported, testCase)
+func RegisterUnsupported(testCase TransactionTestCase) {
+	TransactionTestCasesUnsupported = append(TransactionTestCasesUnsupported, testCase)
 }
 
-func RegisterUnknown(testCase TestCase) {
-	TestCasesUnknown = append(TestCasesUnknown, testCase)
+func RegisterUnknown(testCase TransactionTestCase) {
+	TransactionTestCasesUnknown = append(TransactionTestCasesUnknown, testCase)
+}
+
+func RegisterActivityLogSupported(testCase ActivityLogTestCase) {
+	ActivityLogTestCasesSupported = append(ActivityLogTestCasesSupported, testCase)
 }

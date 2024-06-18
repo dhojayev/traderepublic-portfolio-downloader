@@ -36,15 +36,15 @@ The application performs the same functions as Trade Republic's official fronten
 
 ### Currently Supported Functionality
 
+* Transaction PDF documents download.
+* Account related PDF documents download (aka Aktivität).
 * Creating a CSV file with all transactions (except for "interest received" transactions). This includes:
   * Cash deposits and withdrawals.
   * Purchase and sale of ETFs, stocks, and cryptocurrency.
-  * Interest received transactions.
   * Limited support for the purchase of derivatives.
   * Dividends received from ETFs and stocks.
   * Benefits received such as round-up and save-back.
 * Inserting new data into the CSV file.
-* Transaction PDF documents download.
 * Saving raw responses onto the file system.
 
 ### Planned Features and Improvements
@@ -52,7 +52,6 @@ The application performs the same functions as Trade Republic's official fronten
 **Upcoming Features:**
 
 * Support for including "lending" transactions.
-* Downloading and storing PDF files related to the account (not just transaction documents).
 * Identifying stock transactions.
 * Writing data into an SQLite file on the filesystem.
 * Calculating miscellaneous values based on Trade Republic data: invested amount, taxable amount, earliest date of non-taxable sale of crypto assets, etc.
@@ -146,8 +145,28 @@ Mar 28 12:02:09.453 [INFO] [id:xxxxxxx-xxxxx-xxxxx-xxxxx-xxxx] Fetching transact
 Mar 28 12:02:09.485 [INFO] [id:xxxxxxx-xxxxx-xxxxx-xxxxx-xxxx] Processing transaction details
 Mar 28 12:02:09.488 [INFO] [id:xxxxxxx-xxxxx-xxxxx-xxxxx-xxxx] Unsupported transaction skipped
 ...
-Mar 28 12:02:27.379 [INFO] Completed: 200, skipped: 47
+Mar 28 12:02:27.379 [INFO] Transactions completed: 200, skipped: 47
+Jun 16 22:15:09.675 [INFO] Downloading activity log entries
+Jun 16 22:15:09.858 [INFO] 42 activity log entries downloaded
+Jun 16 22:15:09.858 [INFO] [id:14e2842f-7a4a-4f3f-8f37-52ac2d332673] Fetching activity log entry details
+Jun 16 22:15:10.030 [INFO] [id:14e2842f-7a4a-4f3f-8f37-52ac2d332673] Document downloaded
+Jun 16 22:15:10.031 [INFO] [id:f61e9ebb-3e6b-473b-91ae-1b61bc8b9dcc] Fetching activity log entry details
+Jun 16 22:15:10.133 [INFO] [id:f61e9ebb-3e6b-473b-91ae-1b61bc8b9dcc] Document downloaded
+...
+Jun 16 22:15:13.484 [INFO] Activity log entries completed: 29, skipped: 13
 ```
+
+### PDF documents storage structure
+
+All documents are saved under `documents` directory followed by:
+* `transactions` or `activity` based on document type.
+* Date in `YYYY-mm` format, e.g.: `2020-01`
+* UUID related to its transaction or activity log entry. 
+* Document name, e.g. `Abrechnung Ausführung.pdf` 
+
+Exmaples:
+* `documents/transactions/2023-11/67bd11bb-327e-475d-b715-5876bab61c5c/Abrechnung Ausführung.pdf`
+* `documents/activity/2023-09/d7488784-2ac1-4daf-856a-f87fb79f641e/Kundenvereinbarung.pdf`
 
 ### CSV File Fields
 
@@ -155,11 +174,11 @@ Mar 28 12:02:27.379 [INFO] Completed: 200, skipped: 47
 | ------------------ | ------------------------------------------------------------------------- |
 | **ID**             | Transaction UUID                                                          |
 | **Status**         | Transaction status (should always be `executed`)                          |
-| **Timestamp**      | Date and time of transaction execution, e.g., `30 Nov 23 10:22 +0000`     |
+| **Timestamp**      | Date and time of transaction execution, e.g.: `30 Nov 23 10:22 +0000`     |
 | **Type**           | Transaction type, one of: `Purchase, Sale, Dividends, Round Up, Saveback` |
 | **Asset type**     | Asset type, one of: `ETF, Cryptocurrency, Lending, Other`                 |
-| **Name**           | Asset name, e.g., `Bitcoin`                                               |
-| **Instrument**     | Instrument ISIN, e.g., `IE00BK1PV551`                                     |
+| **Name**           | Asset name, e.g.: `Bitcoin`                                               |
+| **Instrument**     | Instrument ISIN, e.g.: `IE00BK1PV551`                                     |
 | **Shares**         | Number of shares in the transaction (negative when sold)                  |
 | **Rate**           | Price per share in EUR                                                    |
 | **Realized yield** | Realized yield in percentage (negative if loss)                           |

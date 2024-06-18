@@ -9,14 +9,11 @@ import (
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
 
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/header"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/console"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/reader"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/writer"
-)
-
-const (
-	baseHost = "api.traderepublic.com"
 )
 
 var ErrMsgErrorStateReceived = errors.New("error state received")
@@ -40,7 +37,7 @@ func NewReader(authService console.AuthServiceInterface, writer writer.Interface
 }
 
 func (r *Reader) connect() error {
-	u := url.URL{Scheme: "wss", Host: baseHost, Path: "/"}
+	u := url.URL{Scheme: "wss", Host: internal.WebsocketBaseHost, Path: "/"}
 
 	conn, _, err := websocket.DefaultDialer.Dial(u.String(), header.NewHeaders().AsHTTPHeader())
 	if err != nil {
@@ -81,18 +78,20 @@ func (r *Reader) Close() error {
 	return nil
 }
 
-//nolint:cyclop,ireturn
-func (r *Reader) Read(dataType string, dataMap map[string]any) (portfolio.OutputDataInterface, error) {
+//nolint:cyclop
+func (r *Reader) Read(dataType string, req reader.Request) (reader.JSONResponse, error) {
 	r.subID++
 
-	dataBytes, err := r.createWritableDataBytes(dataType, dataMap)
+	resp := reader.NewJSONResponse(nil)
+
+	dataBytes, err := r.createWritableDataBytes(dataType, req)
 	if err != nil {
-		return Message{}, err
+		return resp, err
 	}
 
 	err = r.conn.WriteMessage(websocket.TextMessage, dataBytes)
 	if err != nil {
-		return Message{}, fmt.Errorf("could not send message: %w", err)
+		return resp, fmt.Errorf("could not send message: %w", err)
 	}
 
 	r.logger.WithField("message", string(dataBytes)).Trace("sent message")
@@ -100,14 +99,14 @@ func (r *Reader) Read(dataType string, dataMap map[string]any) (portfolio.Output
 	for {
 		_, msg, err := r.conn.ReadMessage()
 		if err != nil {
-			return Message{}, fmt.Errorf("could not read message: %w", err)
+			return resp, fmt.Errorf("could not read message: %w", err)
 		}
 
 		r.logger.WithField("message", string(msg)).Trace("received msg")
 
 		message, err := NewMessage(msg)
 		if err != nil {
-			return message, fmt.Errorf("could not create message struct: %w", err)
+			return resp, fmt.Errorf("could not create message struct: %w", err)
 		}
 
 		switch {
@@ -116,29 +115,34 @@ func (r *Reader) Read(dataType string, dataMap map[string]any) (portfolio.Output
 		case message.HasErrorState():
 			if message.HasAuthErrMsg() {
 				if loginErr := r.authService.Login(); loginErr != nil {
-					return message, fmt.Errorf("could not re-login: %w", loginErr)
+					return resp, fmt.Errorf("could not re-login: %w", loginErr)
 				}
 
 				if err = r.reconnect(); err != nil {
-					return message, err
+					return resp, err
 				}
 
-				return r.Read(dataType, dataMap)
+				return r.Read(dataType, req)
 			}
 
-			return message, fmt.Errorf("%w: %s", ErrMsgErrorStateReceived, msg)
+			return resp, fmt.Errorf("%w: %s", ErrMsgErrorStateReceived, msg)
 		}
 
 		if err := r.writer.Bytes(dataType, message.Data()); err != nil {
-			return message, fmt.Errorf("could not write message: %w", err)
+			return resp, fmt.Errorf("could not write message: %w", err)
 		}
 
-		return message, nil
+		return reader.NewJSONResponse(message.Data()), nil
 	}
 }
 
 func (r *Reader) createWritableDataBytes(dataType string, dataMap map[string]any) ([]byte, error) {
 	data := dataMap
+
+	if data == nil {
+		data = make(map[string]any)
+	}
+
 	data["type"] = dataType
 	data["token"] = r.authService.SessionToken().Value()
 

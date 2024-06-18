@@ -1,6 +1,6 @@
-//go:generate go run -mod=mod go.uber.org/mock/mockgen -source=client.go -destination client_mock.go -package=details
+//go:generate go run -mod=mod go.uber.org/mock/mockgen -source=client.go -destination client_mock.go -package=activitylog
 
-package details
+package activitylog
 
 import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api"
@@ -8,12 +8,10 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const (
-	RequestDataType = "timelineDetailV2"
-)
+const RequestDataType = "timelineActivityLog"
 
 type ClientInterface interface {
-	api.WSDetailsGetterClientInterface
+	api.WSListGetterClientInterface
 }
 
 type Client struct {

@@ -1,3 +1,4 @@
+// go:build wireinject
 //go:build wireinject
 // +build wireinject
 
@@ -11,15 +12,17 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/cmd/portfoliodownloader"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/auth"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/activitylog"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/websocket"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/console"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/database"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/activity"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/reader"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/writer"
 
 	"github.com/google/wire"
@@ -45,6 +48,10 @@ var (
 		ProvideTransactionRepository,
 		ProvideInstrumentRepository,
 		ProvideDocumentRepository,
+		activitylog.NewClient,
+		activity.NewProcessor,
+		activity.NewHandler,
+		transaction.NewHandler,
 
 		wire.Bind(new(transactions.ClientInterface), new(transactions.Client)),
 		wire.Bind(new(transactions.EventTypeResolverInterface), new(transactions.EventTypeResolver)),
@@ -60,6 +67,10 @@ var (
 		wire.Bind(new(document.RepositoryInterface), new(*database.Repository[*document.Model])),
 		wire.Bind(new(filesystem.CSVReaderInterface), new(filesystem.CSVReader)),
 		wire.Bind(new(filesystem.CSVWriterInterface), new(filesystem.CSVWriter)),
+		wire.Bind(new(activitylog.ClientInterface), new(activitylog.Client)),
+		wire.Bind(new(activity.ProcessorInterface), new(activity.Processor)),
+		wire.Bind(new(activity.HandlerInterface), new(activity.Handler)),
+		wire.Bind(new(transaction.HandlerInterface), new(transaction.Handler)),
 	)
 
 	RemoteSet = wire.NewSet(
@@ -72,18 +83,17 @@ var (
 
 		wire.Bind(new(auth.ClientInterface), new(*auth.Client)),
 		wire.Bind(new(console.AuthServiceInterface), new(*console.AuthService)),
-		wire.Bind(new(portfolio.ReaderInterface), new(*websocket.Reader)),
-
+		wire.Bind(new(reader.Interface), new(*websocket.Reader)),
 		wire.Bind(new(writer.Interface), new(*filesystem.JSONWriter)),
 	)
 
 	LocalSet = wire.NewSet(
 		DefaultSet,
 		writer.NewNilWriter,
-		filesystem.NewJSONReader,
+		reader.NewJSONReader,
 
+		wire.Bind(new(reader.Interface), new(*reader.JSONReader)),
 		wire.Bind(new(writer.Interface), new(writer.NilWriter)),
-		wire.Bind(new(portfolio.ReaderInterface), new(*filesystem.JSONReader)),
 	)
 )
 

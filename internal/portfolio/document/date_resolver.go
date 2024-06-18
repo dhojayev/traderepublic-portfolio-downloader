@@ -1,7 +1,6 @@
 package document
 
 import (
-	"fmt"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -10,7 +9,7 @@ import (
 const ResolverTimeFormat = "02.01.2006"
 
 type DateResolverInterface interface {
-	Resolve(transactionTimestamp time.Time, documentDate string) (time.Time, error)
+	Resolve(parentTimestamp time.Time, documentDate string) time.Time
 }
 
 type DateResolver struct {
@@ -23,15 +22,11 @@ func NewDateResolver(logger *log.Logger) DateResolver {
 	}
 }
 
-func (r DateResolver) Resolve(transactionTimestamp time.Time, documentDate string) (time.Time, error) {
-	if documentDate == "" {
-		return transactionTimestamp, nil
-	}
-
+func (r DateResolver) Resolve(parentTimestamp time.Time, documentDate string) time.Time {
 	date, err := time.Parse(ResolverTimeFormat, documentDate)
 	if err != nil {
-		return date, fmt.Errorf("could not parse date from document detail: %w", err)
+		return parentTimestamp
 	}
 
-	return date, nil
+	return date
 }

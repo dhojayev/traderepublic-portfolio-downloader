@@ -2,22 +2,23 @@ package details_test
 
 import (
 	"fmt"
+	"io"
 	"reflect"
 	"testing"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/reader"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/tests/fakes"
 )
 
 func TestResponseContents(t *testing.T) {
 	t.Parallel()
 
-	testCases := []fakes.TestCase{
+	testCases := []fakes.TransactionTestCase{
 		fakes.PaymentInbound01,
 		fakes.PaymentInboundSepaDirectDebit01,
 		fakes.InterestPayoutCreated01,
@@ -27,19 +28,24 @@ func TestResponseContents(t *testing.T) {
 		fakes.BenefitsSpareChangeExecution01,
 	}
 
+	logger := log.New()
+	logger.Out = io.Discard
+
 	controller := gomock.NewController(t)
-	readerMock := portfolio.NewMockReaderInterface(controller)
-	client := details.NewClient(readerMock)
+	readerMock := reader.NewMockInterface(controller)
+	client := details.NewClient(readerMock, logger)
 
 	for i, testCase := range testCases {
 		readerMock.
 			EXPECT().
 			Read("timelineDetailV2", gomock.Any()).
-			DoAndReturn(func(_ string, _ map[string]any) (portfolio.OutputDataInterface, error) {
-				return filesystem.NewOutputData([]byte(testCase.TimelineDetailsData.Raw)), nil
+			DoAndReturn(func(_ string, _ map[string]any) (reader.JSONResponse, error) {
+				return reader.NewJSONResponse(testCase.TimelineDetailsData.Raw), nil
 			})
 
-		actual, err := client.Get("1ae661c0-b3f1-4a81-a909-79567161b014")
+		var actual details.Response
+
+		err := client.Details("1ae661c0-b3f1-4a81-a909-79567161b014", &actual)
 		assert.NoError(t, err, fmt.Sprintf("case %d", i))
 
 		headerSection, err := actual.SectionTypeHeader()
