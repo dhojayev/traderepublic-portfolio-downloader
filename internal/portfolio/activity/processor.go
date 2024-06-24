@@ -46,12 +46,6 @@ func (p Processor) Process(response details.NormalizedResponse) error {
 
 	documents, err := p.builder.Build(response.ID, entryTimestamp, response)
 	if err != nil {
-		if errors.Is(err, details.ErrSectionTypeNotFound) {
-			p.logger.Warnf("document model builder errors: %s", err)
-
-			return nil
-		}
-
 		return fmt.Errorf("document model builder error: %w", err)
 	}
 

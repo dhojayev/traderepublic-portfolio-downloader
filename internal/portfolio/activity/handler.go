@@ -66,6 +66,11 @@ func (h Handler) Handle() error {
 		}
 
 		normalizedResponse, _ := h.normalizer.Normalize(detailsEntry)
+		if normalizedResponse.Documents == nil {
+			counter.Skipped().Add(1)
+
+			continue
+		}
 
 		if err := h.processor.Process(normalizedResponse); err != nil {
 			return fmt.Errorf("activity processor error: %w", err)

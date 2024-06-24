@@ -15,6 +15,7 @@ const (
 	SectionTitlePerformance                 = "Performance"
 	SectionTitleTransaction                 = "Transaktion"
 	SectionTitleBusiness                    = "Geschäft"
+	SectionTitleSavingPlan                  = "Sparplan"
 	OverviewDataTitleOrderType              = "Orderart"
 	OverviewDataTitleAsset                  = "Asset"
 	OverviewDataTitleUnderlyingAsset        = "Basiswert"
