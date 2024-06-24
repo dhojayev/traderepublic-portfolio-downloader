@@ -20,7 +20,7 @@ const (
 )
 
 type ProcessorInterface interface {
-	Process(eventType transactions.EventType, response details.Response) error
+	Process(eventType transactions.EventType, response details.NormalizedResponse) error
 }
 
 type Processor struct {
@@ -54,7 +54,7 @@ func NewProcessor(
 }
 
 //nolint:cyclop
-func (p Processor) Process(eventType transactions.EventType, response details.Response) error {
+func (p Processor) Process(eventType transactions.EventType, response details.NormalizedResponse) error {
 	csvEntries, err := p.csvReader.Read(csvFilename)
 	if err != nil {
 		return fmt.Errorf("csv reader read error: %w", err)

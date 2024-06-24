@@ -9,10 +9,10 @@ import (
 )
 
 var (
-	TransactionTestCasesSupported   []TransactionTestCase
-	TransactionTestCasesUnsupported []TransactionTestCase
-	TransactionTestCasesUnknown     []TransactionTestCase
-	ActivityLogTestCasesSupported   []ActivityLogTestCase
+	TransactionTestCasesSupported   = make(map[string]TransactionTestCase)
+	TransactionTestCasesUnsupported = make(map[string]TransactionTestCase)
+	TransactionTestCasesUnknown     = make(map[string]TransactionTestCase)
+	ActivityLogTestCasesSupported   = make(map[string]ActivityLogTestCase)
 )
 
 type TransactionTestCase struct {
@@ -39,28 +39,22 @@ type ActivityLogTestData struct {
 }
 
 type TimelineDetailsTestData struct {
-	Raw          []byte
-	Unmarshalled TimelineDetailsResponseSections
+	Raw        []byte
+	Normalized details.NormalizedResponse
 }
 
-type TimelineDetailsResponseSections struct {
-	Header    details.ResponseSectionTypeHeader
-	Table     details.ResponseSectionsTypeTable
-	Documents details.ResponseSectionTypeDocuments
+func RegisterSupported(name string, testCase TransactionTestCase) {
+	TransactionTestCasesSupported[name] = testCase
 }
 
-func RegisterSupported(testCase TransactionTestCase) {
-	TransactionTestCasesSupported = append(TransactionTestCasesSupported, testCase)
+func RegisterUnsupported(name string, testCase TransactionTestCase) {
+	TransactionTestCasesUnsupported[name] = testCase
 }
 
-func RegisterUnsupported(testCase TransactionTestCase) {
-	TransactionTestCasesUnsupported = append(TransactionTestCasesUnsupported, testCase)
+func RegisterUnknown(name string, testCase TransactionTestCase) {
+	TransactionTestCasesUnknown[name] = testCase
 }
 
-func RegisterUnknown(testCase TransactionTestCase) {
-	TransactionTestCasesUnknown = append(TransactionTestCasesUnknown, testCase)
-}
-
-func RegisterActivityLogSupported(testCase ActivityLogTestCase) {
-	ActivityLogTestCasesSupported = append(ActivityLogTestCasesSupported, testCase)
+func RegisterActivityLogSupported(name string, testCase ActivityLogTestCase) {
+	ActivityLogTestCasesSupported[name] = testCase
 }

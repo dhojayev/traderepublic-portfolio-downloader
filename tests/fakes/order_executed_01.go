@@ -206,5 +206,5 @@ func init() {
 	OrderExecuted01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2022-03-29T09:43:31.570+0000")
 	OrderExecuted01.CSVEntry.Timestamp = internal.DateTime{Time: OrderExecuted01.Transaction.Timestamp}
 
-	RegisterSupported(OrderExecuted01)
+	RegisterSupported("OrderExecuted01", OrderExecuted01)
 }

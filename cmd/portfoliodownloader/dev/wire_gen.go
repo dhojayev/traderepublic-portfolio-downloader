@@ -33,11 +33,12 @@ func CreateLocalApp(baseDir string, logger *logrus.Logger) (portfoliodownloader.
 	jsonReader := reader.NewJSONReader(baseDir, logger)
 	client := activitylog.NewClient(jsonReader, logger)
 	detailsClient := details.NewClient(jsonReader, logger)
+	responseNormalizer := details.NewResponseNormalizer(logger)
 	dateResolver := document.NewDateResolver(logger)
 	modelBuilder := document.NewModelBuilder(dateResolver, logger)
 	downloader := document.NewDownloader(logger)
 	processor := activity.NewProcessor(modelBuilder, downloader, logger)
-	handler := activity.NewHandler(client, detailsClient, processor, logger)
+	handler := activity.NewHandler(client, detailsClient, responseNormalizer, processor, logger)
 	transactionsClient := transactions.NewClient(jsonReader, logger)
 	eventTypeResolver := transactions.NewEventTypeResolver(logger)
 	typeResolver := details.NewTypeResolver(logger)
@@ -54,7 +55,7 @@ func CreateLocalApp(baseDir string, logger *logrus.Logger) (portfoliodownloader.
 	csvReader := filesystem.NewCSVReader(logger)
 	csvWriter := filesystem.NewCSVWriter(logger)
 	transactionProcessor := transaction.NewProcessor(modelBuilderFactory, repository, csvEntryFactory, csvReader, csvWriter, downloader, logger)
-	transactionHandler := transaction.NewHandler(transactionsClient, detailsClient, eventTypeResolver, transactionProcessor, logger)
+	transactionHandler := transaction.NewHandler(transactionsClient, detailsClient, responseNormalizer, eventTypeResolver, transactionProcessor, logger)
 	app := portfoliodownloader.NewApp(handler, transactionHandler, logger)
 	return app, nil
 }
@@ -73,11 +74,12 @@ func CreateRemoteApp(logger *logrus.Logger) (portfoliodownloader.App, error) {
 	}
 	activitylogClient := activitylog.NewClient(websocketReader, logger)
 	detailsClient := details.NewClient(websocketReader, logger)
+	responseNormalizer := details.NewResponseNormalizer(logger)
 	dateResolver := document.NewDateResolver(logger)
 	modelBuilder := document.NewModelBuilder(dateResolver, logger)
 	downloader := document.NewDownloader(logger)
 	processor := activity.NewProcessor(modelBuilder, downloader, logger)
-	handler := activity.NewHandler(activitylogClient, detailsClient, processor, logger)
+	handler := activity.NewHandler(activitylogClient, detailsClient, responseNormalizer, processor, logger)
 	transactionsClient := transactions.NewClient(websocketReader, logger)
 	eventTypeResolver := transactions.NewEventTypeResolver(logger)
 	typeResolver := details.NewTypeResolver(logger)
@@ -94,7 +96,7 @@ func CreateRemoteApp(logger *logrus.Logger) (portfoliodownloader.App, error) {
 	csvReader := filesystem.NewCSVReader(logger)
 	csvWriter := filesystem.NewCSVWriter(logger)
 	transactionProcessor := transaction.NewProcessor(modelBuilderFactory, repository, csvEntryFactory, csvReader, csvWriter, downloader, logger)
-	transactionHandler := transaction.NewHandler(transactionsClient, detailsClient, eventTypeResolver, transactionProcessor, logger)
+	transactionHandler := transaction.NewHandler(transactionsClient, detailsClient, responseNormalizer, eventTypeResolver, transactionProcessor, logger)
 	app := portfoliodownloader.NewApp(handler, transactionHandler, logger)
 	return app, nil
 }
@@ -104,7 +106,7 @@ func CreateRemoteApp(logger *logrus.Logger) (portfoliodownloader.App, error) {
 var (
 	DefaultSet = wire.NewSet(portfoliodownloader.NewApp, transactions.NewClient, transactions.NewEventTypeResolver, details.NewClient, details.NewTypeResolver, transaction.NewModelBuilderFactory, document.NewModelBuilder, database.NewSQLiteOnFS, transaction.NewCSVEntryFactory, filesystem.NewCSVReader, filesystem.NewCSVWriter, transaction.NewProcessor, document.NewDownloader, document.NewDateResolver, ProvideTransactionRepository,
 		ProvideInstrumentRepository,
-		ProvideDocumentRepository, activitylog.NewClient, activity.NewProcessor, activity.NewHandler, transaction.NewHandler, wire.Bind(new(transactions.ClientInterface), new(transactions.Client)), wire.Bind(new(transactions.EventTypeResolverInterface), new(transactions.EventTypeResolver)), wire.Bind(new(details.ClientInterface), new(details.Client)), wire.Bind(new(details.TypeResolverInterface), new(details.TypeResolver)), wire.Bind(new(transaction.ProcessorInterface), new(transaction.Processor)), wire.Bind(new(transaction.ModelBuilderFactoryInterface), new(transaction.ModelBuilderFactory)), wire.Bind(new(document.ModelBuilderInterface), new(document.ModelBuilder)), wire.Bind(new(transaction.RepositoryInterface), new(*database.Repository[*transaction.Model])), wire.Bind(new(transaction.InstrumentRepositoryInterface), new(*database.Repository[*transaction.Instrument])), wire.Bind(new(document.DownloaderInterface), new(document.Downloader)), wire.Bind(new(document.DateResolverInterface), new(document.DateResolver)), wire.Bind(new(document.RepositoryInterface), new(*database.Repository[*document.Model])), wire.Bind(new(filesystem.CSVReaderInterface), new(filesystem.CSVReader)), wire.Bind(new(filesystem.CSVWriterInterface), new(filesystem.CSVWriter)), wire.Bind(new(activitylog.ClientInterface), new(activitylog.Client)), wire.Bind(new(activity.ProcessorInterface), new(activity.Processor)), wire.Bind(new(activity.HandlerInterface), new(activity.Handler)), wire.Bind(new(transaction.HandlerInterface), new(transaction.Handler)),
+		ProvideDocumentRepository, activitylog.NewClient, activity.NewProcessor, activity.NewHandler, transaction.NewHandler, details.NewResponseNormalizer, wire.Bind(new(transactions.ClientInterface), new(transactions.Client)), wire.Bind(new(transactions.EventTypeResolverInterface), new(transactions.EventTypeResolver)), wire.Bind(new(details.ClientInterface), new(details.Client)), wire.Bind(new(details.TypeResolverInterface), new(details.TypeResolver)), wire.Bind(new(transaction.ProcessorInterface), new(transaction.Processor)), wire.Bind(new(transaction.ModelBuilderFactoryInterface), new(transaction.ModelBuilderFactory)), wire.Bind(new(document.ModelBuilderInterface), new(document.ModelBuilder)), wire.Bind(new(transaction.RepositoryInterface), new(*database.Repository[*transaction.Model])), wire.Bind(new(transaction.InstrumentRepositoryInterface), new(*database.Repository[*transaction.Instrument])), wire.Bind(new(document.DownloaderInterface), new(document.Downloader)), wire.Bind(new(document.DateResolverInterface), new(document.DateResolver)), wire.Bind(new(document.RepositoryInterface), new(*database.Repository[*document.Model])), wire.Bind(new(filesystem.CSVReaderInterface), new(filesystem.CSVReader)), wire.Bind(new(filesystem.CSVWriterInterface), new(filesystem.CSVWriter)), wire.Bind(new(activitylog.ClientInterface), new(activitylog.Client)), wire.Bind(new(activity.ProcessorInterface), new(activity.Processor)), wire.Bind(new(activity.HandlerInterface), new(activity.Handler)), wire.Bind(new(transaction.HandlerInterface), new(transaction.Handler)), wire.Bind(new(details.ResponseNormalizerInterface), new(details.ResponseNormalizer)),
 	)
 
 	RemoteSet = wire.NewSet(

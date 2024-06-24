@@ -245,9 +245,10 @@ var InterestPayoutCreated01 = TransactionTestCase{
 		  }
 		]
 	  }`),
-		Unmarshalled: TimelineDetailsResponseSections{
-			Header: details.ResponseSectionTypeHeader{
-				Data: details.ResponseSectionTypeHeaderData{
+		Normalized: details.NormalizedResponse{
+			ID: "c30c2952-ff0e-4fdb-bb8c-dfe1a8c35ce6",
+			Header: &details.NormalizedResponseHeaderSection{
+				Data: details.NormalizedResponseHeaderSectionData{
 					Icon:      "logos/timeline_interest_new/v2",
 					Status:    "executed",
 					Timestamp: "2023-11-06T11:22:52.544+0000",
@@ -255,11 +256,11 @@ var InterestPayoutCreated01 = TransactionTestCase{
 				Title: "Du hast 0,07 EUR erhalten",
 				Type:  "header",
 			},
-			Table: details.ResponseSectionsTypeTable{
-				{
-					Data: []details.ResponseSectionTypeTableData{
+			Overview: &details.NormalizedResponseOverviewSection{
+				NormalizedResponseTableSection: details.NormalizedResponseTableSection{
+					Data: []details.NormalizedResponseTableSectionData{
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								FunctionalStyle: "EXECUTED",
 								Text:            "Abgeschlossen",
 								Type:            "status",
@@ -268,7 +269,7 @@ var InterestPayoutCreated01 = TransactionTestCase{
 							Title: "Status",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								Text: "283,33 €",
 								Type: "text",
 							},
@@ -276,7 +277,7 @@ var InterestPayoutCreated01 = TransactionTestCase{
 							Title: "Durchschnittssaldo",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								Text: "2 %",
 								Type: "text",
 							},
@@ -284,7 +285,7 @@ var InterestPayoutCreated01 = TransactionTestCase{
 							Title: "Jahressatz",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								Text: "Guthaben",
 								Type: "text",
 							},
@@ -295,10 +296,12 @@ var InterestPayoutCreated01 = TransactionTestCase{
 					Title: "Übersicht",
 					Type:  "table",
 				},
-				{
-					Data: []details.ResponseSectionTypeTableData{
+			},
+			Transaction: &details.NormalizedResponseTransactionSection{
+				NormalizedResponseTableSection: details.NormalizedResponseTableSection{
+					Data: []details.NormalizedResponseTableSectionData{
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								Text: "+ 0,09 €",
 								Type: "text",
 							},
@@ -306,7 +309,7 @@ var InterestPayoutCreated01 = TransactionTestCase{
 							Title: "Angefallen",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								Text: "0,02 €",
 								Type: "text",
 							},
@@ -314,7 +317,7 @@ var InterestPayoutCreated01 = TransactionTestCase{
 							Title: "Steuern",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								Text: "+ 0,07 €",
 								Type: "text",
 							},
@@ -326,10 +329,10 @@ var InterestPayoutCreated01 = TransactionTestCase{
 					Type:  "table",
 				},
 			},
-			Documents: details.ResponseSectionTypeDocuments{
-				Data: []details.ResponseSectionTypeDocumentData{
+			Documents: &details.NormalizedResponseDocumentsSection{
+				Data: []details.NormalizedResponseDocumentsSectionData{
 					{
-						Action: details.ResponseAction{
+						Action: details.NormalizedResponseSectionAction{
 							Payload: "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
 							Type:    "browserModal",
 						},
@@ -378,5 +381,5 @@ var InterestPayoutCreated01 = TransactionTestCase{
 }
 
 func init() {
-	RegisterUnsupported(InterestPayoutCreated01)
+	RegisterUnsupported("InterestPayoutCreated01", InterestPayoutCreated01)
 }

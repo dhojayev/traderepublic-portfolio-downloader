@@ -17,9 +17,9 @@ import (
 func TestClient_Get(t *testing.T) {
 	t.Parallel()
 
-	testCases := []fakes.TransactionTestCase{
-		fakes.CardSuccessfulTransaction01,
-		fakes.CardSuccessfulTransaction02,
+	testCases := map[string]fakes.TransactionTestCase{
+		"CardSuccessfulTransaction01": fakes.CardSuccessfulTransaction01,
+		"CardSuccessfulTransaction02": fakes.CardSuccessfulTransaction02,
 	}
 
 	logger := log.New()
@@ -29,7 +29,7 @@ func TestClient_Get(t *testing.T) {
 	readerMock := reader.NewMockInterface(controller)
 	client := transactions.NewClient(readerMock, logger)
 
-	for i, testCase := range testCases {
+	for testCaseName, testCase := range testCases {
 		readerMock.
 			EXPECT().
 			Read("timelineTransactions", gomock.Any()).
@@ -40,13 +40,13 @@ func TestClient_Get(t *testing.T) {
 		var actual []transactions.ResponseItem
 		err := client.List(&actual)
 
-		assert.NoError(t, err, fmt.Sprintf("case %d", i))
+		assert.NoError(t, err, fmt.Sprintf("case '%s'", testCaseName))
 
 		if err != nil {
 			continue
 		}
 
-		assert.Len(t, actual, 1, fmt.Sprintf("case %d", i))
-		assert.Equal(t, testCase.TimelineTransactionsData.Unmarshalled, actual[0], fmt.Sprintf("case %d", i))
+		assert.Len(t, actual, 1, fmt.Sprintf("case '%s'", testCaseName))
+		assert.Equal(t, testCase.TimelineTransactionsData.Unmarshalled, actual[0], fmt.Sprintf("case '%s'", testCaseName))
 	}
 }

@@ -55,6 +55,7 @@ var (
 		activity.NewProcessor,
 		activity.NewHandler,
 		transaction.NewHandler,
+		details.NewResponseNormalizer,
 
 		wire.Bind(new(auth.ClientInterface), new(*auth.Client)),
 		wire.Bind(new(console.AuthServiceInterface), new(*console.AuthService)),
@@ -78,6 +79,7 @@ var (
 		wire.Bind(new(activity.ProcessorInterface), new(activity.Processor)),
 		wire.Bind(new(activity.HandlerInterface), new(activity.Handler)),
 		wire.Bind(new(transaction.HandlerInterface), new(transaction.Handler)),
+		wire.Bind(new(details.ResponseNormalizerInterface), new(details.ResponseNormalizer)),
 	)
 
 	NonWritingSet = wire.NewSet(

@@ -41,5 +41,5 @@ var ReferenceAccountChanged01 = ActivityLogTestCase{
 }
 
 func init() {
-	RegisterActivityLogSupported(ReferenceAccountChanged01)
+	RegisterActivityLogSupported("ReferenceAccountChanged01", ReferenceAccountChanged01)
 }

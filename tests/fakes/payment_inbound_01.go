@@ -64,9 +64,10 @@ var PaymentInbound01 = TransactionTestCase{
 		  }
 		]
 	  }`),
-		Unmarshalled: TimelineDetailsResponseSections{
-			Header: details.ResponseSectionTypeHeader{
-				Data: details.ResponseSectionTypeHeaderData{
+		Normalized: details.NormalizedResponse{
+			ID: "1ae661c0-b3f1-4a81-a909-79567161b014",
+			Header: &details.NormalizedResponseHeaderSection{
+				Data: details.NormalizedResponseHeaderSectionData{
 					Icon:      "logos/timeline_plus_circle/v2",
 					Status:    "executed",
 					Timestamp: "2023-05-21T08:25:53.360+0000",
@@ -74,11 +75,11 @@ var PaymentInbound01 = TransactionTestCase{
 				Title: "Du hast 200,00 € erhalten",
 				Type:  "header",
 			},
-			Table: details.ResponseSectionsTypeTable{
-				{
-					Data: []details.ResponseSectionTypeTableData{
+			Overview: &details.NormalizedResponseOverviewSection{
+				NormalizedResponseTableSection: details.NormalizedResponseTableSection{
+					Data: []details.NormalizedResponseTableSectionData{
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								FunctionalStyle: "EXECUTED",
 								Text:            "Abgeschlossen",
 								Type:            "status",
@@ -87,7 +88,7 @@ var PaymentInbound01 = TransactionTestCase{
 							Title: "Status",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								Text: "John Doe",
 								Type: "text",
 							},
@@ -95,7 +96,7 @@ var PaymentInbound01 = TransactionTestCase{
 							Title: "Von",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								Text: "DE78 0000 0000 0000 0000 00",
 								Type: "text",
 							},
@@ -129,5 +130,5 @@ func init() {
 	PaymentInbound01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2023-05-21T08:25:53.360+0000")
 	PaymentInbound01.CSVEntry.Timestamp = internal.DateTime{Time: PaymentInbound01.Transaction.Timestamp}
 
-	RegisterSupported(PaymentInbound01)
+	RegisterSupported("PaymentInbound01", PaymentInbound01)
 }

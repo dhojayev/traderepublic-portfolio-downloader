@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"slices"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/websocket"
-	log "github.com/sirupsen/logrus"
 )
 
 type HandlerInterface interface {
@@ -19,6 +20,7 @@ type HandlerInterface interface {
 type Handler struct {
 	listClient        transactions.ClientInterface
 	detailsClient     details.ClientInterface
+	normalizer        details.ResponseNormalizerInterface
 	eventTypeResolver transactions.EventTypeResolverInterface
 	processor         ProcessorInterface
 	logger            *log.Logger
@@ -27,6 +29,7 @@ type Handler struct {
 func NewHandler(
 	listClient transactions.ClientInterface,
 	detailsClient details.ClientInterface,
+	normalizer details.ResponseNormalizerInterface,
 	eventTypeResolver transactions.EventTypeResolverInterface,
 	processor ProcessorInterface,
 	logger *log.Logger,
@@ -34,6 +37,7 @@ func NewHandler(
 	return Handler{
 		listClient:        listClient,
 		detailsClient:     detailsClient,
+		normalizer:        normalizer,
 		eventTypeResolver: eventTypeResolver,
 		processor:         processor,
 		logger:            logger,
@@ -94,20 +98,20 @@ func (h Handler) Handle() error {
 }
 
 func (h Handler) GetTimelineTransactions() ([]transactions.ResponseItem, error) {
-	h.logger.Info("Downloading transactions")
+	h.logger.Info("Downloading items")
 
-	var transactions []transactions.ResponseItem
+	var items []transactions.ResponseItem
 
-	err := h.listClient.List(&transactions)
+	err := h.listClient.List(&items)
 	if err != nil {
-		return transactions, fmt.Errorf("could not fetch transactions: %w", err)
+		return items, fmt.Errorf("could not fetch transactions: %w", err)
 	}
 
-	slices.Reverse(transactions)
+	slices.Reverse(items)
 
-	h.logger.Infof("%d transactions downloaded", len(transactions))
+	h.logger.Infof("%d items downloaded", len(items))
 
-	return transactions, nil
+	return items, nil
 }
 
 func (h Handler) ProcessTransactionResponse(transaction transactions.ResponseItem) error {
@@ -115,21 +119,26 @@ func (h Handler) ProcessTransactionResponse(transaction transactions.ResponseIte
 
 	h.logger.WithFields(infoFields).Info("Fetching transaction details")
 
-	var details details.Response
+	var response details.Response
 
-	err := h.detailsClient.Details(transaction.Action.Payload, &details)
+	err := h.detailsClient.Details(transaction.Action.Payload, &response)
 	if err != nil {
 		return fmt.Errorf("could not fetch transaction details: %w", err)
 	}
 
 	eventType, err := h.eventTypeResolver.Resolve(transaction)
 	if err != nil {
-		return fmt.Errorf("could not resolve transaction even type: %w", err)
+		return fmt.Errorf("could not resolve transaction event type: %w", err)
 	}
 
 	h.logger.WithFields(infoFields).Info("Processing transaction details")
 
-	if err := h.processor.Process(eventType, details); err != nil {
+	normalizedResponse, err := h.normalizer.Normalize(response)
+	if err != nil {
+		return fmt.Errorf("could not normalize transaction details: %w", err)
+	}
+
+	if err := h.processor.Process(eventType, normalizedResponse); err != nil {
 		return fmt.Errorf("could not process transaction: %w", err)
 	}
 

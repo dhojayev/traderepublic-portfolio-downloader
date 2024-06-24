@@ -28,10 +28,10 @@ const (
 
 var ErrTypeResolverUnsupportedType = errors.New("could not resolve transaction type")
 
-type TesterFunc func(transactions.EventType, Response) bool
+type TesterFunc func(transactions.EventType, NormalizedResponse) bool
 
 type TypeResolverInterface interface {
-	Resolve(eventType transactions.EventType, response Response) (Type, error)
+	Resolve(eventType transactions.EventType, response NormalizedResponse) (Type, error)
 }
 
 type TypeResolver struct {
@@ -57,7 +57,7 @@ func NewTypeResolver(logger *log.Logger) TypeResolver {
 	}
 }
 
-func (r TypeResolver) Resolve(eventType transactions.EventType, response Response) (Type, error) {
+func (r TypeResolver) Resolve(eventType transactions.EventType, response NormalizedResponse) (Type, error) {
 	for detectedType, detector := range r.detectors {
 		if !detector(eventType, response) {
 			continue
@@ -71,7 +71,7 @@ func (r TypeResolver) Resolve(eventType transactions.EventType, response Respons
 	return Type(""), ErrTypeResolverUnsupportedType
 }
 
-func PurchaseDetector(eventType transactions.EventType, response Response) bool {
+func PurchaseDetector(eventType transactions.EventType, response NormalizedResponse) bool {
 	if eventType == transactions.EventTypeSavingsPlanExecuted {
 		return true
 	}
@@ -80,17 +80,7 @@ func PurchaseDetector(eventType transactions.EventType, response Response) bool 
 		return false
 	}
 
-	tableSections, err := response.SectionsTypeTable()
-	if err != nil {
-		return false
-	}
-
-	overviewSection, err := tableSections.FindByTitle(SectionTitleOverview)
-	if err != nil {
-		return false
-	}
-
-	orderType, err := overviewSection.GetDataByTitle(OverviewDataTitleOrderType)
+	orderType, err := response.Overview.GetDataByTitle(OverviewDataTitleOrderType)
 	if err != nil {
 		return false
 	}
@@ -98,22 +88,12 @@ func PurchaseDetector(eventType transactions.EventType, response Response) bool 
 	return strings.Contains(orderType.Detail.Text, OrderTypeTextsPurchase)
 }
 
-func SaleDetector(eventType transactions.EventType, response Response) bool {
+func SaleDetector(eventType transactions.EventType, response NormalizedResponse) bool {
 	if eventType != transactions.EventTypeOrderExecuted {
 		return false
 	}
 
-	tableSections, err := response.SectionsTypeTable()
-	if err != nil {
-		return false
-	}
-
-	overviewSection, err := tableSections.FindByTitle(SectionTitleOverview)
-	if err != nil {
-		return false
-	}
-
-	orderType, err := overviewSection.GetDataByTitle(OverviewDataTitleOrderType)
+	orderType, err := response.Overview.GetDataByTitle(OverviewDataTitleOrderType)
 	if err != nil {
 		return false
 	}
@@ -121,27 +101,27 @@ func SaleDetector(eventType transactions.EventType, response Response) bool {
 	return strings.Contains(orderType.Detail.Text, OrderTypeTextsSale)
 }
 
-func RoundUpDetector(eventType transactions.EventType, _ Response) bool {
+func RoundUpDetector(eventType transactions.EventType, _ NormalizedResponse) bool {
 	return eventType == transactions.EventTypeBenefitsSpareChangeExecution
 }
 
-func SavebackDetector(eventType transactions.EventType, _ Response) bool {
+func SavebackDetector(eventType transactions.EventType, _ NormalizedResponse) bool {
 	return eventType == transactions.EventTypeBenefitsSavebackExecution
 }
 
-func DepositDetector(eventType transactions.EventType, _ Response) bool {
+func DepositDetector(eventType transactions.EventType, _ NormalizedResponse) bool {
 	return eventType == transactions.EventTypePaymentInbound ||
 		eventType == transactions.EventTypePaymentInboundSepaDirectDebit
 }
 
-func InterestPayoutDetector(eventType transactions.EventType, _ Response) bool {
+func InterestPayoutDetector(eventType transactions.EventType, _ NormalizedResponse) bool {
 	return eventType == transactions.EventTypeInterestPayoutCreated
 }
 
-func DividendPayoutDetector(eventType transactions.EventType, _ Response) bool {
-	return eventType == transactions.EventTypeCredit
+func DividendPayoutDetector(eventType transactions.EventType, _ NormalizedResponse) bool {
+	return eventType == transactions.EventTypeCredit || eventType == transactions.EventTypeSSPCorporateActionInvoiceCash
 }
 
-func WithdrawalDetector(eventType transactions.EventType, _ Response) bool {
+func WithdrawalDetector(eventType transactions.EventType, _ NormalizedResponse) bool {
 	return eventType == transactions.EventTypePaymentOutbound
 }

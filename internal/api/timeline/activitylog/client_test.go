@@ -26,7 +26,7 @@ func TestClient_Get(t *testing.T) {
 	readerMock := reader.NewMockInterface(controller)
 	client := activitylog.NewClient(readerMock, logger)
 
-	for i, testCase := range testCases {
+	for testCaseName, testCase := range testCases {
 		readerMock.
 			EXPECT().
 			Read(activitylog.RequestDataType, gomock.Any()).
@@ -37,13 +37,13 @@ func TestClient_Get(t *testing.T) {
 		var actual []activitylog.ResponseItem
 		err := client.List(&actual)
 
-		assert.NoError(t, err, fmt.Sprintf("case %d", i))
+		assert.NoError(t, err, fmt.Sprintf("case '%s'", testCaseName))
 
 		if err != nil {
 			continue
 		}
 
-		assert.Len(t, actual, 1, fmt.Sprintf("case %d", i))
-		assert.Equal(t, testCase.ActivityLogData.Unmarshalled, actual[0], fmt.Sprintf("case %d", i))
+		assert.Len(t, actual, 1, fmt.Sprintf("case '%s'", testCaseName))
+		assert.Equal(t, testCase.ActivityLogData.Unmarshalled, actual[0], fmt.Sprintf("case '%s'", testCaseName))
 	}
 }

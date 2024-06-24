@@ -40,7 +40,7 @@ func (m *MockTypeResolverInterface) EXPECT() *MockTypeResolverInterfaceMockRecor
 }
 
 // Resolve mocks base method.
-func (m *MockTypeResolverInterface) Resolve(eventType transactions.EventType, response Response) (Type, error) {
+func (m *MockTypeResolverInterface) Resolve(eventType transactions.EventType, response NormalizedResponse) (Type, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Resolve", eventType, response)
 	ret0, _ := ret[0].(Type)

@@ -55,5 +55,5 @@ var CardSuccessfulTransaction01 = TransactionTestCase{
 }
 
 func init() {
-	RegisterUnsupported(CardSuccessfulTransaction01)
+	RegisterUnsupported("CardSuccessfulTransaction01", CardSuccessfulTransaction01)
 }

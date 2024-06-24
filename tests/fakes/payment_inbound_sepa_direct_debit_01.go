@@ -99,9 +99,10 @@ var PaymentInboundSepaDirectDebit01 = TransactionTestCase{
 		  }
 		]
 	  }`),
-		Unmarshalled: TimelineDetailsResponseSections{
-			Header: details.ResponseSectionTypeHeader{
-				Data: details.ResponseSectionTypeHeaderData{
+		Normalized: details.NormalizedResponse{
+			ID: "ddc4ed4f-0314-42cf-8a65-930da1354348",
+			Header: &details.NormalizedResponseHeaderSection{
+				Data: details.NormalizedResponseHeaderSectionData{
 					Icon:      "logos/timeline_plus_circle/v2",
 					Status:    "executed",
 					Timestamp: "2023-07-23T21:05:22.543+0000",
@@ -109,11 +110,11 @@ var PaymentInboundSepaDirectDebit01 = TransactionTestCase{
 				Title: "Du hast 500,00 € per Lastschrift hinzugefügt",
 				Type:  "header",
 			},
-			Table: details.ResponseSectionsTypeTable{
-				{
-					Data: []details.ResponseSectionTypeTableData{
+			Overview: &details.NormalizedResponseOverviewSection{
+				NormalizedResponseTableSection: details.NormalizedResponseTableSection{
+					Data: []details.NormalizedResponseTableSectionData{
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								FunctionalStyle: "EXECUTED",
 								Text:            "Ausgeführt",
 								Type:            "status",
@@ -122,7 +123,7 @@ var PaymentInboundSepaDirectDebit01 = TransactionTestCase{
 							Title: "Status",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								Text: "Lastschrift",
 								Type: "text",
 							},
@@ -133,10 +134,12 @@ var PaymentInboundSepaDirectDebit01 = TransactionTestCase{
 					Title: "Übersicht",
 					Type:  "table",
 				},
-				{
-					Data: []details.ResponseSectionTypeTableData{
+			},
+			Transaction: &details.NormalizedResponseTransactionSection{
+				NormalizedResponseTableSection: details.NormalizedResponseTableSection{
+					Data: []details.NormalizedResponseTableSectionData{
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								Text: "Gratis",
 								Type: "text",
 							},
@@ -144,7 +147,7 @@ var PaymentInboundSepaDirectDebit01 = TransactionTestCase{
 							Title: "Gebühr",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								Text: "500,00 €",
 								Type: "text",
 							},
@@ -156,10 +159,10 @@ var PaymentInboundSepaDirectDebit01 = TransactionTestCase{
 					Type:  "table",
 				},
 			},
-			Documents: details.ResponseSectionTypeDocuments{
-				Data: []details.ResponseSectionTypeDocumentData{
+			Documents: &details.NormalizedResponseDocumentsSection{
+				Data: []details.NormalizedResponseDocumentsSectionData{
 					{
-						Action: details.ResponseAction{
+						Action: details.NormalizedResponseSectionAction{
 							Payload: "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
 							Type:    "browserModal",
 						},
@@ -204,5 +207,5 @@ func init() {
 	PaymentInboundSepaDirectDebit01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2023-07-23T21:05:22.543+0000")
 	PaymentInboundSepaDirectDebit01.CSVEntry.Timestamp = internal.DateTime{Time: PaymentInboundSepaDirectDebit01.Transaction.Timestamp}
 
-	RegisterSupported(PaymentInboundSepaDirectDebit01)
+	RegisterSupported("PaymentInboundSepaDirectDebit01", PaymentInboundSepaDirectDebit01)
 }

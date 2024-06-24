@@ -87,5 +87,5 @@ func init() {
 	PaymentOutbound01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2024-01-11T08:55:22.185+0000")
 	PaymentOutbound01.CSVEntry.Timestamp = internal.DateTime{Time: PaymentOutbound01.Transaction.Timestamp}
 
-	RegisterSupported(PaymentOutbound01)
+	RegisterSupported("PaymentOutbound01", PaymentOutbound01)
 }

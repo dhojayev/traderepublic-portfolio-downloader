@@ -117,10 +117,9 @@ var DocumentsCreated01 = ActivityLogTestCase{
     }
   ]
 }`),
-		Unmarshalled: TimelineDetailsResponseSections{},
 	},
 }
 
 func init() {
-	RegisterActivityLogSupported(DocumentsCreated01)
+	RegisterActivityLogSupported("DocumentsCreated01", DocumentsCreated01)
 }
