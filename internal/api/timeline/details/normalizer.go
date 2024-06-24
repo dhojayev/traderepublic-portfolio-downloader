@@ -38,7 +38,7 @@ func (n ResponseNormalizer) Normalize(response Response) (NormalizedResponse, er
 	resp.Header, err = n.SectionTypeHeader(response)
 	if err != nil {
 		// header is crucial for all transactions, therefore we cannot simply raise a warning but have to fail.
-		return resp, fmt.Errorf("could not deserialize section type header: %w", err)
+		return resp, fmt.Errorf("could not deserialize header section: %w", err)
 	}
 
 	tableSections, err := n.SectionsTypeTable(response)
@@ -58,13 +58,13 @@ func (n ResponseNormalizer) Normalize(response Response) (NormalizedResponse, er
 			resp.Security = &NormalizedResponseSecuritySection{tableSection}
 		case SectionTitleSavingPlan:
 		default:
-			n.logger.Warnf("unknown section type: %v", tableSection.Title)
+			n.logger.Warnf("unknown section title: %v", tableSection.Title)
 		}
 	}
 
 	resp.Documents, err = n.SectionTypeDocuments(response)
 	if err != nil {
-		n.logger.Warnf("could not deserialize documents: %v", err)
+		n.logger.Warnf("could not deserialize documents section: %v", err)
 	}
 
 	return resp, nil
@@ -113,7 +113,7 @@ func (n ResponseNormalizer) SectionTypeDocuments(response Response) (*Normalized
 	return &sections[0], nil
 }
 
-func (n ResponseNormalizer) deserializeSections(response Response, v any, needles ...string) error {
+func (n ResponseNormalizer) deserializeSections(response Response, v any, sectionTypes ...string) error {
 	sections := make([]map[string]any, 0)
 
 	for _, section := range response.Sections {
@@ -127,7 +127,7 @@ func (n ResponseNormalizer) deserializeSections(response Response, v any, needle
 			return fmt.Errorf("section type is not a string: %v", sectionType)
 		}
 
-		if !slices.Contains(needles, sectionTypeString) {
+		if !slices.Contains(sectionTypes, sectionTypeString) {
 			continue
 		}
 
@@ -135,16 +135,16 @@ func (n ResponseNormalizer) deserializeSections(response Response, v any, needle
 	}
 
 	if len(sections) == 0 {
-		return ErrSectionTypeNotFound
+		return fmt.Errorf("section types '%v' were not found: %w", sectionTypes, ErrSectionTypeNotFound)
 	}
 
 	sectionsBytes, err := json.Marshal(sections)
 	if err != nil {
-		return fmt.Errorf("could not marshal %s section: %w", needles, err)
+		return fmt.Errorf("could not marshal %s section: %w", sectionTypes, err)
 	}
 
 	if err = json.Unmarshal(sectionsBytes, v); err != nil {
-		return fmt.Errorf("could not unmarshal %s section: %w", needles, err)
+		return fmt.Errorf("could not unmarshal %s section: %w", sectionTypes, err)
 	}
 
 	return nil
