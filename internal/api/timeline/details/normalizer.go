@@ -52,10 +52,8 @@ func (n ResponseNormalizer) Normalize(response Response) (NormalizedResponse, er
 			resp.Overview = &NormalizedResponseOverviewSection{tableSection}
 		case SectionTitlePerformance:
 			resp.Performance = &NormalizedResponsePerformanceSection{tableSection}
-		case SectionTitleTransaction:
+		case SectionTitleTransaction, SectionTitleTransactionAlt:
 			resp.Transaction = &NormalizedResponseTransactionSection{tableSection}
-		case SectionTitleBusiness:
-			resp.Security = &NormalizedResponseSecuritySection{tableSection}
 		case SectionTitleSavingPlan:
 		default:
 			n.logger.Warnf("unknown section title: %v", tableSection.Title)

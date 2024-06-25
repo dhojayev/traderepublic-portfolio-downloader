@@ -80,7 +80,7 @@ func PurchaseDetector(eventType transactions.EventType, response NormalizedRespo
 		return false
 	}
 
-	orderType, err := response.Overview.GetDataByTitle(OverviewDataTitleOrderType)
+	orderType, err := response.Overview.GetDataByTitles(OverviewDataTitleOrderType)
 	if err != nil {
 		return false
 	}
@@ -93,7 +93,7 @@ func SaleDetector(eventType transactions.EventType, response NormalizedResponse)
 		return false
 	}
 
-	orderType, err := response.Overview.GetDataByTitle(OverviewDataTitleOrderType)
+	orderType, err := response.Overview.GetDataByTitles(OverviewDataTitleOrderType)
 	if err != nil {
 		return false
 	}

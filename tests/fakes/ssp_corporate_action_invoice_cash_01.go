@@ -184,7 +184,6 @@ var SSPCorporateActionInvoiceCash01 = TransactionTestCase{
 		},
 		Type:   transaction.TypeDividendPayout,
 		Status: "executed",
-		Profit: 0.27,
 		Shares: 1.203461,
 		Rate:   0.25,
 		Total:  0.27,

@@ -3,6 +3,7 @@ package details
 import (
 	"errors"
 	"fmt"
+	"slices"
 )
 
 const (
@@ -14,7 +15,7 @@ const (
 	SectionTitleOverview                    = "Übersicht"
 	SectionTitlePerformance                 = "Performance"
 	SectionTitleTransaction                 = "Transaktion"
-	SectionTitleBusiness                    = "Geschäft"
+	SectionTitleTransactionAlt              = "Geschäft"
 	SectionTitleSavingPlan                  = "Sparplan"
 	OverviewDataTitleOrderType              = "Orderart"
 	OverviewDataTitleAsset                  = "Asset"
@@ -25,6 +26,7 @@ const (
 	TransactionDataTitleRate                = "Aktienkurs"
 	TransactionDataTitleRateAlt             = "Anteilspreis"
 	TransactionDataTitleRateAlt2            = "Dividende je Aktie"
+	TransactionDataTitleRateAlt3            = "Dividende pro Aktie"
 	TransactionDataTitleCommission          = "Gebühr"
 	TransactionDataTitleTotal               = "Gesamt"
 	TransactionDataTitleTax                 = "Steuern"
@@ -49,7 +51,6 @@ type NormalizedResponse struct {
 	Overview    *NormalizedResponseOverviewSection
 	Performance *NormalizedResponsePerformanceSection
 	Transaction *NormalizedResponseTransactionSection
-	Security    *NormalizedResponseSecuritySection
 	Documents   *NormalizedResponseDocumentsSection
 }
 
@@ -66,16 +67,16 @@ type NormalizedResponseTableSection struct {
 	Type  string                               `json:"type"`
 }
 
-func (s NormalizedResponseTableSection) GetDataByTitle(title string) (NormalizedResponseTableSectionData, error) {
+func (s NormalizedResponseTableSection) GetDataByTitles(titles ...string) (NormalizedResponseTableSectionData, error) {
 	for _, data := range s.Data {
-		if data.Title != title {
+		if !slices.Contains(titles, data.Title) {
 			continue
 		}
 
 		return data, nil
 	}
 
-	return NormalizedResponseTableSectionData{}, fmt.Errorf("%w (%s)", ErrSectionDataTitleNotFound, title)
+	return NormalizedResponseTableSectionData{}, fmt.Errorf("%w (%v)", ErrSectionDataTitleNotFound, titles)
 }
 
 type NormalizedResponseOverviewSection struct {
@@ -87,10 +88,6 @@ type NormalizedResponsePerformanceSection struct {
 }
 
 type NormalizedResponseTransactionSection struct {
-	NormalizedResponseTableSection
-}
-
-type NormalizedResponseSecuritySection struct {
 	NormalizedResponseTableSection
 }
 
