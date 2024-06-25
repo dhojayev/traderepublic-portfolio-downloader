@@ -181,6 +181,7 @@ var BenefitsSavebackExecution01 = TransactionTestCase{
 		Instrument: "XF000DOT0011",
 		Shares:     2.270212,
 		Rate:       6.61,
+		Credit:     15,
 	},
 }
 

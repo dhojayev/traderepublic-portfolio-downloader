@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"sort"
 
 	log "github.com/sirupsen/logrus"
 
@@ -18,6 +19,14 @@ const (
 
 func main() {
 	examples := fakes.TransactionTestCasesSupported
+	keys := make([]string, 0, len(examples))
+
+	for k := range examples {
+		keys = append(keys, k)
+	}
+
+	sort.Strings(keys)
+
 	logger := log.New()
 	factory := transaction.NewCSVEntryFactory(logger)
 	csvWriter := filesystem.NewCSVWriter(logger)
@@ -28,8 +37,8 @@ func main() {
 		}
 	}
 
-	for _, example := range examples {
-		csvEntry, err := factory.Make(example.Transaction)
+	for _, key := range keys {
+		csvEntry, err := factory.Make(examples[key].Transaction)
 		if err != nil {
 			logger.Fatal(err)
 		}

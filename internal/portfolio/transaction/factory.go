@@ -39,7 +39,7 @@ func (f CSVEntryFactory) Make(transaction Model) (filesystem.CSVEntry, error) {
 		taxAmount = transaction.TaxAmount
 		investedAmount = -(transaction.Total - transaction.Profit + transaction.Commission)
 	case TypeSaveback:
-
+		credit = transaction.Total
 	case TypeRoundUp:
 		debit = transaction.Total
 	case TypeDividendPayout:
