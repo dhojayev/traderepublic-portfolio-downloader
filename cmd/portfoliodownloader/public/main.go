@@ -28,13 +28,13 @@ func main() {
 		logger.Panic(err)
 	}
 
-	application, err := CreateNonWritingApp(logger)
+	application, err := ProvideNonWritingApp(logger)
 	if err != nil {
 		logger.Panic(err)
 	}
 
 	if args.WriteResponseFiles {
-		application, err = CreateWritingApp(logger)
+		application, err = ProvideWritingApp(logger)
 		if err != nil {
 			logger.Panic(err)
 		}
