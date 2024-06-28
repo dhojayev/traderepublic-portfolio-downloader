@@ -135,7 +135,7 @@ var BenefitsSpareChangeExecution01 = TransactionTestCase{
 	  }`),
 		Normalized: details.NormalizedResponse{
 			ID: "265cb9c0-664a-45d4-b179-3061f196dd2a",
-			Header: &details.NormalizedResponseHeaderSection{
+			Header: details.NormalizedResponseHeaderSection{
 				Action: details.NormalizedResponseSectionAction{
 					Payload: "DE000A0F5UF5",
 					Type:    "instrumentDetail",
@@ -148,7 +148,7 @@ var BenefitsSpareChangeExecution01 = TransactionTestCase{
 				Title: "Du hast 1,09 € investiert",
 				Type:  "header",
 			},
-			Overview: &details.NormalizedResponseOverviewSection{
+			Overview: details.NormalizedResponseOverviewSection{
 				NormalizedResponseTableSection: details.NormalizedResponseTableSection{
 					Data: []details.NormalizedResponseTableSectionData{
 						{
@@ -181,7 +181,7 @@ var BenefitsSpareChangeExecution01 = TransactionTestCase{
 					Type:  "table",
 				},
 			},
-			Transaction: &details.NormalizedResponseTransactionSection{
+			Transaction: details.NormalizedResponseTransactionSection{
 				NormalizedResponseTableSection: details.NormalizedResponseTableSection{
 					Data: []details.NormalizedResponseTableSectionData{
 						{
@@ -221,7 +221,7 @@ var BenefitsSpareChangeExecution01 = TransactionTestCase{
 					Type:  "table",
 				},
 			},
-			Documents: &details.NormalizedResponseDocumentsSection{
+			Documents: details.NormalizedResponseDocumentsSection{
 				Data: []details.NormalizedResponseDocumentsSectionData{
 					{
 						Action: details.NormalizedResponseSectionAction{

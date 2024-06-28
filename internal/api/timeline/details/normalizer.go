@@ -49,11 +49,11 @@ func (n ResponseNormalizer) Normalize(response Response) (NormalizedResponse, er
 	for _, tableSection := range tableSections {
 		switch tableSection.Title {
 		case SectionTitleOverview:
-			resp.Overview = &NormalizedResponseOverviewSection{tableSection}
+			resp.Overview = NormalizedResponseOverviewSection{tableSection}
 		case SectionTitlePerformance:
-			resp.Performance = &NormalizedResponsePerformanceSection{tableSection}
+			resp.Performance = NormalizedResponsePerformanceSection{tableSection}
 		case SectionTitleTransaction, SectionTitleTransactionAlt:
-			resp.Transaction = &NormalizedResponseTransactionSection{tableSection}
+			resp.Transaction = NormalizedResponseTransactionSection{tableSection}
 		case SectionTitleSavingPlan:
 		default:
 			n.logger.Warnf("unknown section title: %v", tableSection.Title)
@@ -68,18 +68,18 @@ func (n ResponseNormalizer) Normalize(response Response) (NormalizedResponse, er
 	return resp, nil
 }
 
-func (n ResponseNormalizer) SectionTypeHeader(response Response) (*NormalizedResponseHeaderSection, error) {
+func (n ResponseNormalizer) SectionTypeHeader(response Response) (NormalizedResponseHeaderSection, error) {
 	var sections []NormalizedResponseHeaderSection
 
 	if err := n.deserializeSections(response, &sections, ResponseSectionTypeValueHeader); err != nil {
-		return nil, err
+		return NormalizedResponseHeaderSection{}, err
 	}
 
 	if len(sections) == 0 {
-		return nil, ErrSectionTypeNotFound
+		return NormalizedResponseHeaderSection{}, ErrSectionTypeNotFound
 	}
 
-	return &sections[0], nil
+	return sections[0], nil
 }
 
 func (n ResponseNormalizer) SectionsTypeTable(response Response) ([]NormalizedResponseTableSection, error) {
@@ -97,18 +97,18 @@ func (n ResponseNormalizer) SectionsTypeTable(response Response) ([]NormalizedRe
 	return sections, nil
 }
 
-func (n ResponseNormalizer) SectionTypeDocuments(response Response) (*NormalizedResponseDocumentsSection, error) {
+func (n ResponseNormalizer) SectionTypeDocuments(response Response) (NormalizedResponseDocumentsSection, error) {
 	var sections []NormalizedResponseDocumentsSection
 
 	if err := n.deserializeSections(response, &sections, ResponseSectionTypeValueDocuments); err != nil {
-		return nil, err
+		return NormalizedResponseDocumentsSection{}, err
 	}
 
 	if len(sections) == 0 {
-		return nil, ErrSectionTypeNotFound
+		return NormalizedResponseDocumentsSection{}, ErrSectionTypeNotFound
 	}
 
-	return &sections[0], nil
+	return sections[0], nil
 }
 
 func (n ResponseNormalizer) deserializeSections(response Response, v any, sectionTypes ...string) error {

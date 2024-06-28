@@ -247,7 +247,7 @@ var InterestPayoutCreated01 = TransactionTestCase{
 	  }`),
 		Normalized: details.NormalizedResponse{
 			ID: "c30c2952-ff0e-4fdb-bb8c-dfe1a8c35ce6",
-			Header: &details.NormalizedResponseHeaderSection{
+			Header: details.NormalizedResponseHeaderSection{
 				Data: details.NormalizedResponseHeaderSectionData{
 					Icon:      "logos/timeline_interest_new/v2",
 					Status:    "executed",
@@ -256,7 +256,7 @@ var InterestPayoutCreated01 = TransactionTestCase{
 				Title: "Du hast 0,07 EUR erhalten",
 				Type:  "header",
 			},
-			Overview: &details.NormalizedResponseOverviewSection{
+			Overview: details.NormalizedResponseOverviewSection{
 				NormalizedResponseTableSection: details.NormalizedResponseTableSection{
 					Data: []details.NormalizedResponseTableSectionData{
 						{
@@ -297,7 +297,7 @@ var InterestPayoutCreated01 = TransactionTestCase{
 					Type:  "table",
 				},
 			},
-			Transaction: &details.NormalizedResponseTransactionSection{
+			Transaction: details.NormalizedResponseTransactionSection{
 				NormalizedResponseTableSection: details.NormalizedResponseTableSection{
 					Data: []details.NormalizedResponseTableSectionData{
 						{
@@ -329,7 +329,7 @@ var InterestPayoutCreated01 = TransactionTestCase{
 					Type:  "table",
 				},
 			},
-			Documents: &details.NormalizedResponseDocumentsSection{
+			Documents: details.NormalizedResponseDocumentsSection{
 				Data: []details.NormalizedResponseDocumentsSectionData{
 					{
 						Action: details.NormalizedResponseSectionAction{

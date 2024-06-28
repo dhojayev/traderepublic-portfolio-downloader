@@ -101,7 +101,7 @@ var PaymentInboundSepaDirectDebit01 = TransactionTestCase{
 	  }`),
 		Normalized: details.NormalizedResponse{
 			ID: "ddc4ed4f-0314-42cf-8a65-930da1354348",
-			Header: &details.NormalizedResponseHeaderSection{
+			Header: details.NormalizedResponseHeaderSection{
 				Data: details.NormalizedResponseHeaderSectionData{
 					Icon:      "logos/timeline_plus_circle/v2",
 					Status:    "executed",
@@ -110,7 +110,7 @@ var PaymentInboundSepaDirectDebit01 = TransactionTestCase{
 				Title: "Du hast 500,00 € per Lastschrift hinzugefügt",
 				Type:  "header",
 			},
-			Overview: &details.NormalizedResponseOverviewSection{
+			Overview: details.NormalizedResponseOverviewSection{
 				NormalizedResponseTableSection: details.NormalizedResponseTableSection{
 					Data: []details.NormalizedResponseTableSectionData{
 						{
@@ -135,7 +135,7 @@ var PaymentInboundSepaDirectDebit01 = TransactionTestCase{
 					Type:  "table",
 				},
 			},
-			Transaction: &details.NormalizedResponseTransactionSection{
+			Transaction: details.NormalizedResponseTransactionSection{
 				NormalizedResponseTableSection: details.NormalizedResponseTableSection{
 					Data: []details.NormalizedResponseTableSectionData{
 						{
@@ -159,7 +159,7 @@ var PaymentInboundSepaDirectDebit01 = TransactionTestCase{
 					Type:  "table",
 				},
 			},
-			Documents: &details.NormalizedResponseDocumentsSection{
+			Documents: details.NormalizedResponseDocumentsSection{
 				Data: []details.NormalizedResponseDocumentsSectionData{
 					{
 						Action: details.NormalizedResponseSectionAction{

@@ -66,7 +66,8 @@ func (h Handler) Handle() error {
 		}
 
 		normalizedResponse, _ := h.normalizer.Normalize(detailsEntry)
-		if normalizedResponse.Documents == nil {
+
+		if normalizedResponse.Documents.Data == nil {
 			counter.Skipped().Add(1)
 
 			continue

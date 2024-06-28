@@ -47,11 +47,11 @@ type Response struct {
 
 type NormalizedResponse struct {
 	ID          string
-	Header      *NormalizedResponseHeaderSection
-	Overview    *NormalizedResponseOverviewSection
-	Performance *NormalizedResponsePerformanceSection
-	Transaction *NormalizedResponseTransactionSection
-	Documents   *NormalizedResponseDocumentsSection
+	Header      NormalizedResponseHeaderSection
+	Overview    NormalizedResponseOverviewSection
+	Performance NormalizedResponsePerformanceSection
+	Transaction NormalizedResponseTransactionSection
+	Documents   NormalizedResponseDocumentsSection
 }
 
 type NormalizedResponseHeaderSection struct {

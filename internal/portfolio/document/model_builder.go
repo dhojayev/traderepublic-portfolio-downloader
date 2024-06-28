@@ -1,7 +1,6 @@
 package document
 
 import (
-	"errors"
 	"fmt"
 	"time"
 
@@ -33,10 +32,6 @@ func (b ModelBuilder) Build(
 ) ([]Model, error) {
 	documents := make([]Model, 0)
 
-	if response.Documents == nil {
-		return documents, errors.New("documents section is empty")
-	}
-
 	for _, doc := range response.Documents.Data {
 		url, ok := doc.Action.Payload.(string)
 		if !ok {
@@ -46,6 +41,10 @@ func (b ModelBuilder) Build(
 		documentDate := b.dateResolver.Resolve(parentTimestamp, doc.Detail)
 		filepath := fmt.Sprintf("%s/%s/%s.pdf", documentDate.Format(DownloaderTimeFormat), parentUUID, doc.Title)
 		documents = append(documents, NewModel(parentUUID, doc.ID, url, doc.Detail, doc.Title, filepath))
+	}
+
+	if len(documents) == 0 {
+		return nil, nil
 	}
 
 	return documents, nil

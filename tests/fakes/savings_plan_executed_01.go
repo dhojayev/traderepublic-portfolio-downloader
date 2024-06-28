@@ -169,7 +169,7 @@ var SavingsPlanExecuted01 = TransactionTestCase{
 	  }`),
 		Normalized: details.NormalizedResponse{
 			ID: "7c9be07c-7b88-4a49-a4be-425094388b8e",
-			Header: &details.NormalizedResponseHeaderSection{
+			Header: details.NormalizedResponseHeaderSection{
 				Action: details.NormalizedResponseSectionAction{
 					Payload: "IE00BK1PV551",
 					Type:    "instrumentDetail",
@@ -182,7 +182,7 @@ var SavingsPlanExecuted01 = TransactionTestCase{
 				Title: "Du hast 500,00 € investiert",
 				Type:  "header",
 			},
-			Overview: &details.NormalizedResponseOverviewSection{
+			Overview: details.NormalizedResponseOverviewSection{
 				NormalizedResponseTableSection: details.NormalizedResponseTableSection{
 					Data: []details.NormalizedResponseTableSectionData{
 						{
@@ -224,7 +224,7 @@ var SavingsPlanExecuted01 = TransactionTestCase{
 					Type:  "table",
 				},
 			},
-			Transaction: &details.NormalizedResponseTransactionSection{
+			Transaction: details.NormalizedResponseTransactionSection{
 				NormalizedResponseTableSection: details.NormalizedResponseTableSection{
 					Data: []details.NormalizedResponseTableSectionData{
 						{
@@ -264,7 +264,7 @@ var SavingsPlanExecuted01 = TransactionTestCase{
 					Type:  "table",
 				},
 			},
-			Documents: &details.NormalizedResponseDocumentsSection{
+			Documents: details.NormalizedResponseDocumentsSection{
 				Data: []details.NormalizedResponseDocumentsSectionData{
 					{
 						Action: details.NormalizedResponseSectionAction{

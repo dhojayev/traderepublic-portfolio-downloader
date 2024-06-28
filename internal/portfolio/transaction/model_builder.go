@@ -144,42 +144,7 @@ func (b BaseModelBuilder) ExtractInstrumentName() (string, error) {
 	return asset.Detail.Text, nil
 }
 
-func (b BaseModelBuilder) ExtractYield() (float64, error) {
-	yieldData, err := b.response.Performance.GetDataByTitles(details.PerformanceDataTitleYield)
-	if err != nil {
-		return 0, fmt.Errorf("could not get performance section yield: %w", err)
-	}
-
-	yield, err := ParseFloatWithComma(yieldData.Detail.Text, yieldData.Detail.Trend == details.TrendNegative)
-	if err != nil {
-		return 0, fmt.Errorf("could not parse performance section yield to float: %w", err)
-	}
-
-	return yield, nil
-}
-
-func (b BaseModelBuilder) ExtractProfitAndLoss() (float64, error) {
-	profitData, err := b.response.Performance.GetDataByTitles(
-		details.PerformanceDataTitleProfit,
-		details.PerformanceDataTitleLoss,
-	)
-	if err != nil {
-		return 0, fmt.Errorf("could not get performance section profit: %w", err)
-	}
-
-	profit, err := ParseFloatWithComma(profitData.Detail.Text, profitData.Detail.Trend == details.TrendNegative)
-	if err != nil {
-		return 0, fmt.Errorf("could not parse performance section profit to float: %w", err)
-	}
-
-	return profit, nil
-}
-
 func (b BaseModelBuilder) ExtractSharesAmount() (float64, error) {
-	if b.response.Transaction == nil {
-		return 0, ErrModelBuilderInsufficientDataResolved
-	}
-
 	sharesData, err := b.response.Transaction.GetDataByTitles(
 		details.TransactionDataTitleShares,
 		details.TransactionDataTitleSharesAlt,
@@ -357,6 +322,28 @@ type SaleBuilder struct {
 
 func NewSaleBuilder(purchaseBuilder PurchaseBuilder) SaleBuilder {
 	return SaleBuilder{purchaseBuilder}
+}
+
+func (b SaleBuilder) ExtractPerformanceFloatVal(titles ...string) (float64, error) {
+	stringData, err := b.response.Performance.GetDataByTitles(titles...)
+	if err != nil {
+		return 0, fmt.Errorf("could not get performance section data by titles %v: %w", titles, err)
+	}
+
+	floatData, err := ParseFloatWithComma(stringData.Detail.Text, stringData.Detail.Trend == details.TrendNegative)
+	if err != nil {
+		return 0, fmt.Errorf("could not parse performance section data to float by titles %v: %w", titles, err)
+	}
+
+	return floatData, nil
+}
+
+func (b SaleBuilder) ExtractYield() (float64, error) {
+	return b.ExtractPerformanceFloatVal(details.PerformanceDataTitleYield)
+}
+
+func (b SaleBuilder) ExtractProfitAndLoss() (float64, error) {
+	return b.ExtractPerformanceFloatVal(details.PerformanceDataTitleProfit, details.PerformanceDataTitleLoss)
 }
 
 func (b SaleBuilder) Build() (Model, error) {

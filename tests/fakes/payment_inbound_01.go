@@ -66,7 +66,7 @@ var PaymentInbound01 = TransactionTestCase{
 	  }`),
 		Normalized: details.NormalizedResponse{
 			ID: "1ae661c0-b3f1-4a81-a909-79567161b014",
-			Header: &details.NormalizedResponseHeaderSection{
+			Header: details.NormalizedResponseHeaderSection{
 				Data: details.NormalizedResponseHeaderSectionData{
 					Icon:      "logos/timeline_plus_circle/v2",
 					Status:    "executed",
@@ -75,7 +75,7 @@ var PaymentInbound01 = TransactionTestCase{
 				Title: "Du hast 200,00 € erhalten",
 				Type:  "header",
 			},
-			Overview: &details.NormalizedResponseOverviewSection{
+			Overview: details.NormalizedResponseOverviewSection{
 				NormalizedResponseTableSection: details.NormalizedResponseTableSection{
 					Data: []details.NormalizedResponseTableSectionData{
 						{
