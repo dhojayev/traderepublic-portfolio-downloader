@@ -8,17 +8,8 @@ package main
 
 import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/cmd/portfoliodownloader"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/auth"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/activitylog"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/websocket"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/console"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/database"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/activity"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/writer"
 	"github.com/google/wire"
@@ -28,83 +19,29 @@ import (
 // Injectors from wire.go:
 
 func ProvideNonWritingApp(logger *logrus.Logger) (portfoliodownloader.App, error) {
-	client := api.NewClient(logger)
-	authClient, err := auth.NewClient(client, logger)
-	if err != nil {
-		return portfoliodownloader.App{}, err
-	}
-	authService := console.NewAuthService(authClient)
 	nilWriter := writer.NewNilWriter()
-	reader, err := websocket.NewReader(authService, nilWriter, logger)
+	handler, err := activity.ProvideHandler(nilWriter, logger)
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
-	activitylogClient := activitylog.NewClient(reader, logger)
-	detailsClient := details.NewClient(reader, logger)
-	responseNormalizer := details.NewResponseNormalizer(logger)
-	dateResolver := document.NewDateResolver(logger)
-	modelBuilder := document.NewModelBuilder(dateResolver, logger)
-	downloader := document.NewDownloader(logger)
-	processor := activity.NewProcessor(modelBuilder, downloader, logger)
-	handler := activity.NewHandler(activitylogClient, detailsClient, responseNormalizer, processor, logger)
-	transactionsClient := transactions.NewClient(reader, logger)
-	eventTypeResolver := transactions.NewEventTypeResolver(logger)
-	typeResolver := details.NewTypeResolver(logger)
-	modelBuilderFactory := transaction.NewModelBuilderFactory(typeResolver, modelBuilder, logger)
-	db, err := database.NewSQLiteInMemory(logger)
+	transactionHandler, err := transaction.ProvideHandler(logger)
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
-	repository, err := transaction.ProvideTransactionRepository(db, logger)
-	if err != nil {
-		return portfoliodownloader.App{}, err
-	}
-	csvEntryFactory := transaction.NewCSVEntryFactory(logger)
-	csvReader := filesystem.NewCSVReader(logger)
-	csvWriter := filesystem.NewCSVWriter(logger)
-	transactionProcessor := transaction.NewProcessor(modelBuilderFactory, repository, csvEntryFactory, csvReader, csvWriter, downloader, logger)
-	transactionHandler := transaction.NewHandler(transactionsClient, detailsClient, responseNormalizer, eventTypeResolver, transactionProcessor, logger)
 	app := portfoliodownloader.NewApp(handler, transactionHandler, logger)
 	return app, nil
 }
 
 func ProvideWritingApp(logger *logrus.Logger) (portfoliodownloader.App, error) {
-	client := api.NewClient(logger)
-	authClient, err := auth.NewClient(client, logger)
-	if err != nil {
-		return portfoliodownloader.App{}, err
-	}
-	authService := console.NewAuthService(authClient)
 	jsonWriter := filesystem.NewJSONWriter(logger)
-	reader, err := websocket.NewReader(authService, jsonWriter, logger)
+	handler, err := activity.ProvideHandler(jsonWriter, logger)
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
-	activitylogClient := activitylog.NewClient(reader, logger)
-	detailsClient := details.NewClient(reader, logger)
-	responseNormalizer := details.NewResponseNormalizer(logger)
-	dateResolver := document.NewDateResolver(logger)
-	modelBuilder := document.NewModelBuilder(dateResolver, logger)
-	downloader := document.NewDownloader(logger)
-	processor := activity.NewProcessor(modelBuilder, downloader, logger)
-	handler := activity.NewHandler(activitylogClient, detailsClient, responseNormalizer, processor, logger)
-	transactionsClient := transactions.NewClient(reader, logger)
-	eventTypeResolver := transactions.NewEventTypeResolver(logger)
-	typeResolver := details.NewTypeResolver(logger)
-	modelBuilderFactory := transaction.NewModelBuilderFactory(typeResolver, modelBuilder, logger)
-	db, err := database.NewSQLiteInMemory(logger)
+	transactionHandler, err := transaction.ProvideHandler(logger)
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
-	repository, err := transaction.ProvideTransactionRepository(db, logger)
-	if err != nil {
-		return portfoliodownloader.App{}, err
-	}
-	csvEntryFactory := transaction.NewCSVEntryFactory(logger)
-	csvReader := filesystem.NewCSVReader(logger)
-	csvWriter := filesystem.NewCSVWriter(logger)
-	transactionProcessor := transaction.NewProcessor(modelBuilderFactory, repository, csvEntryFactory, csvReader, csvWriter, downloader, logger)
-	transactionHandler := transaction.NewHandler(transactionsClient, detailsClient, responseNormalizer, eventTypeResolver, transactionProcessor, logger)
 	app := portfoliodownloader.NewApp(handler, transactionHandler, logger)
 	return app, nil
 }
@@ -112,7 +49,7 @@ func ProvideWritingApp(logger *logrus.Logger) (portfoliodownloader.App, error) {
 // wire.go:
 
 var (
-	DefaultSet = wire.NewSet(activitylog.DefaultSet, details.DefaultSet, transactions.DefaultSet, api.DefaultSet, activity.DefaultSet, document.DefaultSet, transaction.DefaultSet, auth.DefaultSet, console.DefaultSet, websocket.DefaultSet, filesystem.CSVSet, database.SqliteInMemorySet, portfoliodownloader.NewApp)
+	DefaultSet = wire.NewSet(activity.ProvideHandler, transaction.ProvideHandler, portfoliodownloader.NewApp, wire.Bind(new(activity.HandlerInterface), new(activity.Handler)), wire.Bind(new(transaction.HandlerInterface), new(transaction.Handler)))
 
 	NonWritingSet = wire.NewSet(
 		DefaultSet, writer.NilSet,

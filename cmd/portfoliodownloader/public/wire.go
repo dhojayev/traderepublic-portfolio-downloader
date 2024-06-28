@@ -10,37 +10,20 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/cmd/portfoliodownloader"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/auth"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/activitylog"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/websocket"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/console"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/database"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/activity"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/writer"
 )
 
 var (
 	DefaultSet = wire.NewSet(
-		activitylog.DefaultSet,
-		details.DefaultSet,
-		transactions.DefaultSet,
-		api.DefaultSet,
-		activity.DefaultSet,
-		document.DefaultSet,
-		transaction.DefaultSet,
-		auth.DefaultSet,
-		console.DefaultSet,
-		websocket.DefaultSet,
-		filesystem.CSVSet,
-		database.SqliteInMemorySet,
-
+		activity.ProvideHandler,
+		transaction.ProvideHandler,
 		portfoliodownloader.NewApp,
+
+		wire.Bind(new(activity.HandlerInterface), new(activity.Handler)),
+		wire.Bind(new(transaction.HandlerInterface), new(transaction.Handler)),
 	)
 
 	NonWritingSet = wire.NewSet(
