@@ -89,7 +89,8 @@ func (h Handler) Handle() error {
 	}
 
 	h.logger.Infof(
-		"Transactions completed: %d, skipped: %d",
+		"Transactions total: %d; completed: %d; skipped: %d",
+		counter.Processed().Load()+counter.Skipped().Load(),
 		counter.Processed().Load(),
 		counter.Skipped().Load(),
 	)

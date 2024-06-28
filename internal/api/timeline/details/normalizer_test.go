@@ -29,7 +29,7 @@ func TestItNormalizesSupportTransactionDetails(t *testing.T) {
 	logger := log.New()
 	logger.Out = io.Discard
 
-	normalizer := details.NewResponseNormalizer(logger)
+	normalizer := details.NewTransactionResponseNormalizer(logger)
 
 	for testCaseName, testCase := range testCases {
 		var response details.Response

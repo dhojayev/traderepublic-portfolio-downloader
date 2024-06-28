@@ -5,9 +5,19 @@ import "github.com/google/wire"
 var DefaultSet = wire.NewSet(
 	NewClient,
 	NewTypeResolver,
-	NewResponseNormalizer,
 
 	wire.Bind(new(ClientInterface), new(Client)),
 	wire.Bind(new(TypeResolverInterface), new(TypeResolver)),
-	wire.Bind(new(ResponseNormalizerInterface), new(ResponseNormalizer)),
+)
+
+var TransactionSet = wire.NewSet(
+	NewTransactionResponseNormalizer,
+
+	wire.Bind(new(ResponseNormalizerInterface), new(TransactionResponseNormalizer)),
+)
+
+var ActivityLogSet = wire.NewSet(
+	NewActivityResponseNormalizer,
+
+	wire.Bind(new(ResponseNormalizerInterface), new(ActivityLogResponseNormalizer)),
 )

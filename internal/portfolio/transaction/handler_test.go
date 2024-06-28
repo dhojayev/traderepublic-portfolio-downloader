@@ -32,7 +32,7 @@ func TestItDoesReturnErrorIfTransactionDetailsCannotBeFetched(t *testing.T) {
 	typeResolverMock := transactions.NewMockEventTypeResolverInterface(ctrl)
 	processorMock := transaction.NewMockProcessorInterface(ctrl)
 	detailsClient := details.NewClient(detailsReaderMock, logger)
-	normalizer := details.NewResponseNormalizer(logger)
+	normalizer := details.NewTransactionResponseNormalizer(logger)
 	handler := transaction.NewHandler(listClientMock, detailsClient, normalizer, typeResolverMock, processorMock, logger)
 
 	var responses []transactions.ResponseItem
@@ -86,7 +86,7 @@ func TestItDoesReturnErrorIfTransactionTypeUnsupported(t *testing.T) {
 	builderFactory := transaction.NewModelBuilderFactory(detailsTypeResolver, documentBuilder, logger)
 	csvEntryFactory := transaction.NewCSVEntryFactory(logger)
 	processor := transaction.NewProcessor(builderFactory, transactionRepoMock, csvEntryFactory, csvReaderMock, csvWriterMock, documentDownloaderMock, logger)
-	normalizer := details.NewResponseNormalizer(logger)
+	normalizer := details.NewTransactionResponseNormalizer(logger)
 	handler := transaction.NewHandler(listClient, detailsClient, normalizer, transactionsTypeResolver, processor, logger)
 
 	csvReaderMock.EXPECT().Read(gomock.Any()).AnyTimes().Return([]filesystem.CSVEntry{}, nil)

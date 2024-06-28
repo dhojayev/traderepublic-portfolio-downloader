@@ -23,7 +23,7 @@ import (
 func ProvideHandler(responseReader reader.Interface, responseWriter writer.Interface, dbConnection *gorm.DB, logger *logrus.Logger) (Handler, error) {
 	client := transactions.NewClient(responseReader, logger)
 	detailsClient := details.NewClient(responseReader, logger)
-	responseNormalizer := details.NewResponseNormalizer(logger)
+	transactionResponseNormalizer := details.NewTransactionResponseNormalizer(logger)
 	eventTypeResolver := transactions.NewEventTypeResolver(logger)
 	typeResolver := details.NewTypeResolver(logger)
 	dateResolver := document.NewDateResolver(logger)
@@ -38,7 +38,7 @@ func ProvideHandler(responseReader reader.Interface, responseWriter writer.Inter
 	csvWriter := filesystem.NewCSVWriter(logger)
 	downloader := document.NewDownloader(logger)
 	processor := NewProcessor(modelBuilderFactory, repository, csvEntryFactory, csvReader, csvWriter, downloader, logger)
-	handler := NewHandler(client, detailsClient, responseNormalizer, eventTypeResolver, processor, logger)
+	handler := NewHandler(client, detailsClient, transactionResponseNormalizer, eventTypeResolver, processor, logger)
 	return handler, nil
 }
 

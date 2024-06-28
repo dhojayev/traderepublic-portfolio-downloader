@@ -65,9 +65,8 @@ func (h Handler) Handle() error {
 			return fmt.Errorf("could not fetch activity log entry details: %w", err)
 		}
 
-		normalizedResponse, _ := h.normalizer.Normalize(detailsEntry)
-
-		if normalizedResponse.Documents.Data == nil {
+		normalizedResponse, err := h.normalizer.Normalize(detailsEntry)
+		if err != nil {
 			counter.Skipped().Add(1)
 
 			continue
@@ -81,7 +80,8 @@ func (h Handler) Handle() error {
 	}
 
 	h.logger.Infof(
-		"Activity log entries completed: %d, skipped: %d",
+		"Activity log entries total: %d; completed %d; skipped: %d",
+		counter.Processed().Load()+counter.Skipped().Load(),
 		counter.Processed().Load(),
 		counter.Skipped().Load(),
 	)

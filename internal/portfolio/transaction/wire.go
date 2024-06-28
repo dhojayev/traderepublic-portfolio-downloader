@@ -28,6 +28,7 @@ func ProvideHandler(
 	wire.Build(
 		transactions.DefaultSet,
 		details.DefaultSet,
+		details.TransactionSet,
 		filesystem.CSVSet,
 		document.DefaultSet,
 		NewModelBuilderFactory,

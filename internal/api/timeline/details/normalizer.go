@@ -18,17 +18,17 @@ type ResponseNormalizerInterface interface {
 	Normalize(response Response) (NormalizedResponse, error)
 }
 
-type ResponseNormalizer struct {
+type TransactionResponseNormalizer struct {
 	logger *log.Logger
 }
 
-func NewResponseNormalizer(logger *log.Logger) ResponseNormalizer {
-	return ResponseNormalizer{
+func NewTransactionResponseNormalizer(logger *log.Logger) TransactionResponseNormalizer {
+	return TransactionResponseNormalizer{
 		logger: logger,
 	}
 }
 
-func (n ResponseNormalizer) Normalize(response Response) (NormalizedResponse, error) {
+func (n TransactionResponseNormalizer) Normalize(response Response) (NormalizedResponse, error) {
 	var err error
 
 	resp := NormalizedResponse{
@@ -68,7 +68,7 @@ func (n ResponseNormalizer) Normalize(response Response) (NormalizedResponse, er
 	return resp, nil
 }
 
-func (n ResponseNormalizer) SectionTypeHeader(response Response) (NormalizedResponseHeaderSection, error) {
+func (n TransactionResponseNormalizer) SectionTypeHeader(response Response) (NormalizedResponseHeaderSection, error) {
 	var sections []NormalizedResponseHeaderSection
 
 	if err := n.deserializeSections(response, &sections, ResponseSectionTypeValueHeader); err != nil {
@@ -82,7 +82,7 @@ func (n ResponseNormalizer) SectionTypeHeader(response Response) (NormalizedResp
 	return sections[0], nil
 }
 
-func (n ResponseNormalizer) SectionsTypeTable(response Response) ([]NormalizedResponseTableSection, error) {
+func (n TransactionResponseNormalizer) SectionsTypeTable(response Response) ([]NormalizedResponseTableSection, error) {
 	var sections []NormalizedResponseTableSection
 
 	if err := n.deserializeSections(
@@ -97,7 +97,9 @@ func (n ResponseNormalizer) SectionsTypeTable(response Response) ([]NormalizedRe
 	return sections, nil
 }
 
-func (n ResponseNormalizer) SectionTypeDocuments(response Response) (NormalizedResponseDocumentsSection, error) {
+func (n TransactionResponseNormalizer) SectionTypeDocuments(
+	response Response,
+) (NormalizedResponseDocumentsSection, error) {
 	var sections []NormalizedResponseDocumentsSection
 
 	if err := n.deserializeSections(response, &sections, ResponseSectionTypeValueDocuments); err != nil {
@@ -111,7 +113,7 @@ func (n ResponseNormalizer) SectionTypeDocuments(response Response) (NormalizedR
 	return sections[0], nil
 }
 
-func (n ResponseNormalizer) deserializeSections(response Response, v any, sectionTypes ...string) error {
+func (n TransactionResponseNormalizer) deserializeSections(response Response, v any, sectionTypes ...string) error {
 	sections := make([]map[string]any, 0)
 
 	for _, section := range response.Sections {
@@ -146,4 +148,32 @@ func (n ResponseNormalizer) deserializeSections(response Response, v any, sectio
 	}
 
 	return nil
+}
+
+type ActivityLogResponseNormalizer struct {
+	TransactionResponseNormalizer
+}
+
+func NewActivityResponseNormalizer(logger *log.Logger) ActivityLogResponseNormalizer {
+	return ActivityLogResponseNormalizer{TransactionResponseNormalizer: NewTransactionResponseNormalizer(logger)}
+}
+
+func (n ActivityLogResponseNormalizer) Normalize(response Response) (NormalizedResponse, error) {
+	var err error
+
+	resp := NormalizedResponse{
+		ID: response.ID,
+	}
+
+	resp.Header, err = n.SectionTypeHeader(response)
+	if err != nil {
+		return resp, fmt.Errorf("could not deserialize header section: %w", err)
+	}
+
+	resp.Documents, err = n.SectionTypeDocuments(response)
+	if err != nil {
+		return resp, fmt.Errorf("could not deserialize documents section: %w", err)
+	}
+
+	return resp, nil
 }

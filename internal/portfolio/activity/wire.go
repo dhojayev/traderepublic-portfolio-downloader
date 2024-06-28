@@ -24,6 +24,7 @@ func ProvideHandler(
 	wire.Build(
 		activitylog.DefaultSet,
 		details.DefaultSet,
+		details.ActivityLogSet,
 		document.DefaultSet,
 		NewProcessor,
 		NewHandler,

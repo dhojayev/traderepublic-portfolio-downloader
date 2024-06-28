@@ -20,11 +20,11 @@ import (
 func ProvideHandler(responseReader reader.Interface, responseWriter writer.Interface, logger *logrus.Logger) (Handler, error) {
 	client := activitylog.NewClient(responseReader, logger)
 	detailsClient := details.NewClient(responseReader, logger)
-	responseNormalizer := details.NewResponseNormalizer(logger)
+	activityLogResponseNormalizer := details.NewActivityResponseNormalizer(logger)
 	dateResolver := document.NewDateResolver(logger)
 	modelBuilder := document.NewModelBuilder(dateResolver, logger)
 	downloader := document.NewDownloader(logger)
 	processor := NewProcessor(modelBuilder, downloader, logger)
-	handler := NewHandler(client, detailsClient, responseNormalizer, processor, logger)
+	handler := NewHandler(client, detailsClient, activityLogResponseNormalizer, processor, logger)
 	return handler, nil
 }
