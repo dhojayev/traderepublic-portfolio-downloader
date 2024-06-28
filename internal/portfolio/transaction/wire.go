@@ -22,6 +22,7 @@ import (
 func ProvideHandler(
 	responseReader reader.Interface,
 	responseWriter writer.Interface,
+	dbConnection *gorm.DB,
 	logger *log.Logger,
 ) (Handler, error) {
 	wire.Build(
@@ -29,7 +30,6 @@ func ProvideHandler(
 		details.DefaultSet,
 		filesystem.CSVSet,
 		document.DefaultSet,
-		database.SqliteInMemorySet,
 		NewModelBuilderFactory,
 		NewCSVEntryFactory,
 		ProvideTransactionRepository,

@@ -9,6 +9,7 @@ package main
 import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/cmd/portfoliodownloader"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/websocket"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/database"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/activity"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
@@ -27,7 +28,11 @@ func ProvideLocalApp(baseDir string, logger *logrus.Logger) (portfoliodownloader
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
-	transactionHandler, err := transaction.ProvideHandler(jsonReader, nilWriter, logger)
+	db, err := database.NewSQLiteOnFS(logger)
+	if err != nil {
+		return portfoliodownloader.App{}, err
+	}
+	transactionHandler, err := transaction.ProvideHandler(jsonReader, nilWriter, db, logger)
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
@@ -45,7 +50,11 @@ func ProvideRemoteApp(logger *logrus.Logger) (portfoliodownloader.App, error) {
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
-	transactionHandler, err := transaction.ProvideHandler(websocketReader, jsonWriter, logger)
+	db, err := database.NewSQLiteOnFS(logger)
+	if err != nil {
+		return portfoliodownloader.App{}, err
+	}
+	transactionHandler, err := transaction.ProvideHandler(websocketReader, jsonWriter, db, logger)
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
@@ -56,7 +65,7 @@ func ProvideRemoteApp(logger *logrus.Logger) (portfoliodownloader.App, error) {
 // wire.go:
 
 var (
-	DefaultSet = wire.NewSet(activity.ProvideHandler, transaction.ProvideHandler, portfoliodownloader.NewApp, wire.Bind(new(activity.HandlerInterface), new(activity.Handler)), wire.Bind(new(transaction.HandlerInterface), new(transaction.Handler)))
+	DefaultSet = wire.NewSet(database.SqliteOnFilesystemSet, activity.ProvideHandler, transaction.ProvideHandler, portfoliodownloader.NewApp, wire.Bind(new(activity.HandlerInterface), new(activity.Handler)), wire.Bind(new(transaction.HandlerInterface), new(transaction.Handler)))
 
 	RemoteSet = wire.NewSet(
 		DefaultSet, websocket.ProvideReader, filesystem.JSONWriterSet, wire.Bind(new(reader.Interface), new(*websocket.Reader)),

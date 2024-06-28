@@ -8,6 +8,7 @@ package main
 import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/cmd/portfoliodownloader"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/websocket"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/database"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/activity"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
@@ -20,6 +21,7 @@ import (
 
 var (
 	DefaultSet = wire.NewSet(
+		database.SqliteOnFilesystemSet,
 		activity.ProvideHandler,
 		transaction.ProvideHandler,
 		portfoliodownloader.NewApp,

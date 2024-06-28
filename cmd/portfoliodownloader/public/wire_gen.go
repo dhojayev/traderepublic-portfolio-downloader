@@ -9,6 +9,7 @@ package main
 import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/cmd/portfoliodownloader"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/websocket"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/database"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/activity"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
@@ -30,7 +31,11 @@ func ProvideNonWritingApp(logger *logrus.Logger) (portfoliodownloader.App, error
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
-	transactionHandler, err := transaction.ProvideHandler(reader, nilWriter, logger)
+	db, err := database.NewSQLiteInMemory(logger)
+	if err != nil {
+		return portfoliodownloader.App{}, err
+	}
+	transactionHandler, err := transaction.ProvideHandler(reader, nilWriter, db, logger)
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
@@ -48,7 +53,11 @@ func ProvideWritingApp(logger *logrus.Logger) (portfoliodownloader.App, error) {
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
-	transactionHandler, err := transaction.ProvideHandler(reader, jsonWriter, logger)
+	db, err := database.NewSQLiteInMemory(logger)
+	if err != nil {
+		return portfoliodownloader.App{}, err
+	}
+	transactionHandler, err := transaction.ProvideHandler(reader, jsonWriter, db, logger)
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
@@ -59,7 +68,7 @@ func ProvideWritingApp(logger *logrus.Logger) (portfoliodownloader.App, error) {
 // wire.go:
 
 var (
-	DefaultSet = wire.NewSet(websocket.ProvideReader, activity.ProvideHandler, transaction.ProvideHandler, portfoliodownloader.NewApp, wire.Bind(new(reader.Interface), new(*websocket.Reader)), wire.Bind(new(activity.HandlerInterface), new(activity.Handler)), wire.Bind(new(transaction.HandlerInterface), new(transaction.Handler)))
+	DefaultSet = wire.NewSet(websocket.ProvideReader, database.SqliteInMemorySet, activity.ProvideHandler, transaction.ProvideHandler, portfoliodownloader.NewApp, wire.Bind(new(reader.Interface), new(*websocket.Reader)), wire.Bind(new(activity.HandlerInterface), new(activity.Handler)), wire.Bind(new(transaction.HandlerInterface), new(transaction.Handler)))
 
 	NonWritingSet = wire.NewSet(
 		DefaultSet, writer.NilSet,

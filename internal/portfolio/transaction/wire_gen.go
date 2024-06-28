@@ -20,7 +20,7 @@ import (
 
 // Injectors from wire.go:
 
-func ProvideHandler(responseReader reader.Interface, responseWriter writer.Interface, logger *logrus.Logger) (Handler, error) {
+func ProvideHandler(responseReader reader.Interface, responseWriter writer.Interface, dbConnection *gorm.DB, logger *logrus.Logger) (Handler, error) {
 	client := transactions.NewClient(responseReader, logger)
 	detailsClient := details.NewClient(responseReader, logger)
 	responseNormalizer := details.NewResponseNormalizer(logger)
@@ -29,11 +29,7 @@ func ProvideHandler(responseReader reader.Interface, responseWriter writer.Inter
 	dateResolver := document.NewDateResolver(logger)
 	modelBuilder := document.NewModelBuilder(dateResolver, logger)
 	modelBuilderFactory := NewModelBuilderFactory(typeResolver, modelBuilder, logger)
-	db, err := database.NewSQLiteInMemory(logger)
-	if err != nil {
-		return Handler{}, err
-	}
-	repository, err := ProvideTransactionRepository(db, logger)
+	repository, err := ProvideTransactionRepository(dbConnection, logger)
 	if err != nil {
 		return Handler{}, err
 	}
