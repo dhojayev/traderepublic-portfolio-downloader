@@ -8,17 +8,9 @@ package main
 
 import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/cmd/portfoliodownloader"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/auth"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/activitylog"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/websocket"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/console"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/database"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/activity"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/reader"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/writer"
@@ -30,72 +22,33 @@ import (
 
 func ProvideLocalApp(baseDir string, logger *logrus.Logger) (portfoliodownloader.App, error) {
 	jsonReader := reader.NewJSONReader(baseDir, logger)
-	client := activitylog.NewClient(jsonReader, logger)
-	detailsClient := details.NewClient(jsonReader, logger)
-	responseNormalizer := details.NewResponseNormalizer(logger)
-	dateResolver := document.NewDateResolver(logger)
-	modelBuilder := document.NewModelBuilder(dateResolver, logger)
-	downloader := document.NewDownloader(logger)
-	processor := activity.NewProcessor(modelBuilder, downloader, logger)
-	handler := activity.NewHandler(client, detailsClient, responseNormalizer, processor, logger)
-	transactionsClient := transactions.NewClient(jsonReader, logger)
-	eventTypeResolver := transactions.NewEventTypeResolver(logger)
-	typeResolver := details.NewTypeResolver(logger)
-	modelBuilderFactory := transaction.NewModelBuilderFactory(typeResolver, modelBuilder, logger)
-	db, err := database.NewSQLiteOnFS(logger)
+	nilWriter := writer.NewNilWriter()
+	handler, err := activity.ProvideHandler(jsonReader, nilWriter, logger)
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
-	repository, err := transaction.ProvideTransactionRepository(db, logger)
+	transactionHandler, err := transaction.ProvideHandler(jsonReader, nilWriter, logger)
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
-	csvEntryFactory := transaction.NewCSVEntryFactory(logger)
-	csvReader := filesystem.NewCSVReader(logger)
-	csvWriter := filesystem.NewCSVWriter(logger)
-	transactionProcessor := transaction.NewProcessor(modelBuilderFactory, repository, csvEntryFactory, csvReader, csvWriter, downloader, logger)
-	transactionHandler := transaction.NewHandler(transactionsClient, detailsClient, responseNormalizer, eventTypeResolver, transactionProcessor, logger)
 	app := portfoliodownloader.NewApp(handler, transactionHandler, logger)
 	return app, nil
 }
 
 func ProvideRemoteApp(logger *logrus.Logger) (portfoliodownloader.App, error) {
-	client := api.NewClient(logger)
-	authClient, err := auth.NewClient(client, logger)
-	if err != nil {
-		return portfoliodownloader.App{}, err
-	}
-	authService := console.NewAuthService(authClient)
 	jsonWriter := filesystem.NewJSONWriter(logger)
-	websocketReader, err := websocket.NewReader(authService, jsonWriter, logger)
+	websocketReader, err := websocket.ProvideReader(jsonWriter, logger)
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
-	activitylogClient := activitylog.NewClient(websocketReader, logger)
-	detailsClient := details.NewClient(websocketReader, logger)
-	responseNormalizer := details.NewResponseNormalizer(logger)
-	dateResolver := document.NewDateResolver(logger)
-	modelBuilder := document.NewModelBuilder(dateResolver, logger)
-	downloader := document.NewDownloader(logger)
-	processor := activity.NewProcessor(modelBuilder, downloader, logger)
-	handler := activity.NewHandler(activitylogClient, detailsClient, responseNormalizer, processor, logger)
-	transactionsClient := transactions.NewClient(websocketReader, logger)
-	eventTypeResolver := transactions.NewEventTypeResolver(logger)
-	typeResolver := details.NewTypeResolver(logger)
-	modelBuilderFactory := transaction.NewModelBuilderFactory(typeResolver, modelBuilder, logger)
-	db, err := database.NewSQLiteOnFS(logger)
+	handler, err := activity.ProvideHandler(websocketReader, jsonWriter, logger)
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
-	repository, err := transaction.ProvideTransactionRepository(db, logger)
+	transactionHandler, err := transaction.ProvideHandler(websocketReader, jsonWriter, logger)
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
-	csvEntryFactory := transaction.NewCSVEntryFactory(logger)
-	csvReader := filesystem.NewCSVReader(logger)
-	csvWriter := filesystem.NewCSVWriter(logger)
-	transactionProcessor := transaction.NewProcessor(modelBuilderFactory, repository, csvEntryFactory, csvReader, csvWriter, downloader, logger)
-	transactionHandler := transaction.NewHandler(transactionsClient, detailsClient, responseNormalizer, eventTypeResolver, transactionProcessor, logger)
 	app := portfoliodownloader.NewApp(handler, transactionHandler, logger)
 	return app, nil
 }
@@ -103,10 +56,10 @@ func ProvideRemoteApp(logger *logrus.Logger) (portfoliodownloader.App, error) {
 // wire.go:
 
 var (
-	DefaultSet = wire.NewSet(activitylog.DefaultSet, details.DefaultSet, transactions.DefaultSet, activity.DefaultSet, document.DefaultSet, transaction.DefaultSet, portfoliodownloader.NewApp, filesystem.CSVSet, database.SqliteOnFilesystemSet)
+	DefaultSet = wire.NewSet(activity.ProvideHandler, transaction.ProvideHandler, portfoliodownloader.NewApp, wire.Bind(new(activity.HandlerInterface), new(activity.Handler)), wire.Bind(new(transaction.HandlerInterface), new(transaction.Handler)))
 
 	RemoteSet = wire.NewSet(
-		DefaultSet, api.DefaultSet, auth.DefaultSet, console.DefaultSet, websocket.DefaultSet, filesystem.JSONWriterSet,
+		DefaultSet, websocket.ProvideReader, filesystem.JSONWriterSet, wire.Bind(new(reader.Interface), new(*websocket.Reader)),
 	)
 
 	LocalSet = wire.NewSet(

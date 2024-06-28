@@ -7,36 +7,22 @@
 package transaction
 
 import (
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/auth"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/websocket"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/console"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/database"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
-	"github.com/google/wire"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/reader"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/writer"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
 // Injectors from wire.go:
 
-func ProvideHandler(logger *logrus.Logger) (Handler, error) {
-	client := api.NewClient(logger)
-	authClient, err := auth.NewClient(client, logger)
-	if err != nil {
-		return Handler{}, err
-	}
-	authService := console.NewAuthService(authClient)
-	jsonWriter := filesystem.NewJSONWriter(logger)
-	reader, err := websocket.NewReader(authService, jsonWriter, logger)
-	if err != nil {
-		return Handler{}, err
-	}
-	transactionsClient := transactions.NewClient(reader, logger)
-	detailsClient := details.NewClient(reader, logger)
+func ProvideHandler(responseReader reader.Interface, responseWriter writer.Interface, logger *logrus.Logger) (Handler, error) {
+	client := transactions.NewClient(responseReader, logger)
+	detailsClient := details.NewClient(responseReader, logger)
 	responseNormalizer := details.NewResponseNormalizer(logger)
 	eventTypeResolver := transactions.NewEventTypeResolver(logger)
 	typeResolver := details.NewTypeResolver(logger)
@@ -56,20 +42,11 @@ func ProvideHandler(logger *logrus.Logger) (Handler, error) {
 	csvWriter := filesystem.NewCSVWriter(logger)
 	downloader := document.NewDownloader(logger)
 	processor := NewProcessor(modelBuilderFactory, repository, csvEntryFactory, csvReader, csvWriter, downloader, logger)
-	handler := NewHandler(transactionsClient, detailsClient, responseNormalizer, eventTypeResolver, processor, logger)
+	handler := NewHandler(client, detailsClient, responseNormalizer, eventTypeResolver, processor, logger)
 	return handler, nil
 }
 
 // wire.go:
-
-var DefaultSet = wire.NewSet(
-	NewModelBuilderFactory,
-	NewCSVEntryFactory,
-	NewProcessor,
-	NewHandler,
-	ProvideTransactionRepository,
-	ProvideInstrumentRepository, wire.Bind(new(ProcessorInterface), new(Processor)), wire.Bind(new(ModelBuilderFactoryInterface), new(ModelBuilderFactory)), wire.Bind(new(RepositoryInterface), new(*database.Repository[*Model])), wire.Bind(new(InstrumentRepositoryInterface), new(*database.Repository[*Instrument])), wire.Bind(new(HandlerInterface), new(Handler)),
-)
 
 func ProvideTransactionRepository(db *gorm.DB, logger *logrus.Logger) (*database.Repository[*Model], error) {
 	return database.NewRepository[*Model](db, logger)

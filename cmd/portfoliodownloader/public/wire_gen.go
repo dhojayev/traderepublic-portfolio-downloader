@@ -8,9 +8,11 @@ package main
 
 import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/cmd/portfoliodownloader"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/websocket"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/activity"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/reader"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/writer"
 	"github.com/google/wire"
 	"github.com/sirupsen/logrus"
@@ -20,11 +22,15 @@ import (
 
 func ProvideNonWritingApp(logger *logrus.Logger) (portfoliodownloader.App, error) {
 	nilWriter := writer.NewNilWriter()
-	handler, err := activity.ProvideHandler(nilWriter, logger)
+	reader, err := websocket.ProvideReader(nilWriter, logger)
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
-	transactionHandler, err := transaction.ProvideHandler(logger)
+	handler, err := activity.ProvideHandler(reader, nilWriter, logger)
+	if err != nil {
+		return portfoliodownloader.App{}, err
+	}
+	transactionHandler, err := transaction.ProvideHandler(reader, nilWriter, logger)
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
@@ -34,11 +40,15 @@ func ProvideNonWritingApp(logger *logrus.Logger) (portfoliodownloader.App, error
 
 func ProvideWritingApp(logger *logrus.Logger) (portfoliodownloader.App, error) {
 	jsonWriter := filesystem.NewJSONWriter(logger)
-	handler, err := activity.ProvideHandler(jsonWriter, logger)
+	reader, err := websocket.ProvideReader(jsonWriter, logger)
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
-	transactionHandler, err := transaction.ProvideHandler(logger)
+	handler, err := activity.ProvideHandler(reader, jsonWriter, logger)
+	if err != nil {
+		return portfoliodownloader.App{}, err
+	}
+	transactionHandler, err := transaction.ProvideHandler(reader, jsonWriter, logger)
 	if err != nil {
 		return portfoliodownloader.App{}, err
 	}
@@ -49,7 +59,7 @@ func ProvideWritingApp(logger *logrus.Logger) (portfoliodownloader.App, error) {
 // wire.go:
 
 var (
-	DefaultSet = wire.NewSet(activity.ProvideHandler, transaction.ProvideHandler, portfoliodownloader.NewApp, wire.Bind(new(activity.HandlerInterface), new(activity.Handler)), wire.Bind(new(transaction.HandlerInterface), new(transaction.Handler)))
+	DefaultSet = wire.NewSet(websocket.ProvideReader, activity.ProvideHandler, transaction.ProvideHandler, portfoliodownloader.NewApp, wire.Bind(new(reader.Interface), new(*websocket.Reader)), wire.Bind(new(activity.HandlerInterface), new(activity.Handler)), wire.Bind(new(transaction.HandlerInterface), new(transaction.Handler)))
 
 	NonWritingSet = wire.NewSet(
 		DefaultSet, writer.NilSet,

@@ -10,18 +10,22 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/cmd/portfoliodownloader"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/websocket"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/activity"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/reader"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/writer"
 )
 
 var (
 	DefaultSet = wire.NewSet(
+		websocket.ProvideReader,
 		activity.ProvideHandler,
 		transaction.ProvideHandler,
 		portfoliodownloader.NewApp,
 
+		wire.Bind(new(reader.Interface), new(*websocket.Reader)),
 		wire.Bind(new(activity.HandlerInterface), new(activity.Handler)),
 		wire.Bind(new(transaction.HandlerInterface), new(transaction.Handler)),
 	)
