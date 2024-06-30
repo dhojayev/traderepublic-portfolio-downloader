@@ -322,8 +322,8 @@ var OrderExecuted02 = TransactionTestCase{
 	CSVEntry: filesystem.CSVEntry{
 		ID:         "1d9ad3b5-e65c-41f6-9c7d-96baa2a2ecad",
 		Status:     "executed",
-		Type:       "Purchase",
-		AssetType:  "ETF",
+		Type:       transaction.TypePurchase,
+		AssetType:  transaction.InstrumentTypeETF,
 		Name:       "NASDAQ100 USD (Dist)",
 		Instrument: "DE000A0F5UF5",
 		Shares:     1,

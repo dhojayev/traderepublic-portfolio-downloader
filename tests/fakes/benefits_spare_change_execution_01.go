@@ -296,8 +296,8 @@ var BenefitsSpareChangeExecution01 = TransactionTestCase{
 	CSVEntry: filesystem.CSVEntry{
 		ID:         "265cb9c0-664a-45d4-b179-3061f196dd2a",
 		Status:     "executed",
-		Type:       "Round up",
-		AssetType:  "ETF",
+		Type:       transaction.TypeRoundUp,
+		AssetType:  transaction.InstrumentTypeETF,
 		Name:       "NASDAQ100 USD (Dist)",
 		Instrument: "DE000A0F5UF5",
 		Shares:     0.006882,

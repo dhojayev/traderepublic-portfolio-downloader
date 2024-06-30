@@ -77,8 +77,8 @@ var PaymentOutbound01 = TransactionTestCase{
 	CSVEntry: filesystem.CSVEntry{
 		ID:        "a2597441-45f4-4ae2-a881-ab4a65aa0f0e",
 		Status:    "executed",
-		Type:      "Withdrawal",
-		AssetType: "Other",
+		Type:      transaction.TypeWithdrawal,
+		AssetType: transaction.InstrumentTypeCash,
 		Debit:     1,
 	},
 }

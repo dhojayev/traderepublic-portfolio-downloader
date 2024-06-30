@@ -190,8 +190,8 @@ var (
 		CSVEntry: filesystem.CSVEntry{
 			ID:         "b20e367c-5542-4fab-9fd6-6faa5e7ab582",
 			Status:     "executed",
-			Type:       "Purchase",
-			AssetType:  "Other",
+			Type:       transaction.TypePurchase,
+			AssetType:  transaction.InstrumentTypeOther,
 			Name:       "CAC",
 			Instrument: "DE000SH0MW59",
 			Shares:     40,

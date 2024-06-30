@@ -72,10 +72,11 @@ func (f ModelBuilderFactory) Create(
 		return NewDepositBuilder(baseBuilder), nil
 	case details.TypeWithdrawalTransaction:
 		return NewWithdrawBuilder(NewDepositBuilder(baseBuilder)), nil
+	case details.TypeInterestPayoutTransaction:
+		return NewInterestPayoutBuilder(baseBuilder), nil
 	case
 		details.TypeUnsupported,
-		details.TypeCardPaymentTransaction,
-		details.TypeInterestPayoutTransaction:
+		details.TypeCardPaymentTransaction:
 		return nil, ErrModelBuilderUnsupportedType
 	}
 
@@ -377,7 +378,7 @@ type RoundUpBuilder struct {
 }
 
 func NewRoundUpBuilder(purchaseBuilder PurchaseBuilder) RoundUpBuilder {
-	return RoundUpBuilder{purchaseBuilder}
+	return RoundUpBuilder{PurchaseBuilder: purchaseBuilder}
 }
 
 func (b RoundUpBuilder) Build() (Model, error) {
@@ -396,7 +397,7 @@ type SavebackBuilder struct {
 }
 
 func NewSavebackBuilder(purchaseBuilder PurchaseBuilder) SavebackBuilder {
-	return SavebackBuilder{purchaseBuilder}
+	return SavebackBuilder{PurchaseBuilder: purchaseBuilder}
 }
 
 func (b SavebackBuilder) Build() (Model, error) {
@@ -415,7 +416,7 @@ type DividendPayoutBuilder struct {
 }
 
 func NewDividendPayoutBuilder(purchaseBuilder PurchaseBuilder) DividendPayoutBuilder {
-	return DividendPayoutBuilder{purchaseBuilder}
+	return DividendPayoutBuilder{PurchaseBuilder: purchaseBuilder}
 }
 
 func (b DividendPayoutBuilder) Build() (Model, error) {
@@ -434,7 +435,7 @@ type DepositBuilder struct {
 }
 
 func NewDepositBuilder(baseBuilder BaseModelBuilder) DepositBuilder {
-	return DepositBuilder{baseBuilder}
+	return DepositBuilder{BaseModelBuilder: baseBuilder}
 }
 
 func (b DepositBuilder) Build() (Model, error) {
@@ -484,7 +485,7 @@ type WithdrawBuilder struct {
 }
 
 func NewWithdrawBuilder(depositBuilder DepositBuilder) WithdrawBuilder {
-	return WithdrawBuilder{depositBuilder}
+	return WithdrawBuilder{DepositBuilder: depositBuilder}
 }
 
 func (b WithdrawBuilder) Build() (Model, error) {
@@ -494,6 +495,55 @@ func (b WithdrawBuilder) Build() (Model, error) {
 	}
 
 	model.Type = TypeWithdrawal
+
+	return model, nil
+}
+
+type InterestPayoutBuilder struct {
+	BaseModelBuilder
+}
+
+func NewInterestPayoutBuilder(baseBuilder BaseModelBuilder) InterestPayoutBuilder {
+	return InterestPayoutBuilder{BaseModelBuilder: baseBuilder}
+}
+
+func (b InterestPayoutBuilder) Build() (Model, error) {
+	var err error
+
+	model := Model{
+		UUID: b.response.ID,
+		Type: TypeInterestPayout,
+	}
+
+	model.Status, err = b.ExtractStatus()
+	if err != nil {
+		return model, b.HandleErr(err)
+	}
+
+	model.Timestamp, err = b.ExtractTimestamp()
+	if err != nil {
+		return model, err
+	}
+
+	model.TaxAmount, err = b.ExtractTaxAmount()
+	if err != nil {
+		b.logger.WithField("id", model.UUID).Debugf("could not extract tax amount: %s", err)
+	}
+
+	model.Total, err = b.ExtractTotalAmount()
+	if err != nil {
+		totalAmountStr, err := ParseNumericValueFromString(b.response.Header.Title)
+		if err != nil {
+			return model, b.HandleErr(err)
+		}
+
+		model.Total, err = ParseFloatWithComma(totalAmountStr, false)
+		if err != nil {
+			return model, b.HandleErr(err)
+		}
+	}
+
+	model.Documents, _ = b.BuildDocuments(model)
 
 	return model, nil
 }

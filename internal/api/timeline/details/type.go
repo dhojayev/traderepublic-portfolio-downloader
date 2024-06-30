@@ -47,7 +47,7 @@ func NewTypeResolver(logger *log.Logger) TypeResolver {
 			TypeDividendPayoutTransaction: DividendPayoutDetector,
 			TypeRoundUpTransaction:        RoundUpDetector,
 			TypeSavebackTransaction:       SavebackDetector,
-			TypeUnsupported:               InterestPayoutDetector,
+			TypeInterestPayoutTransaction: InterestPayoutDetector,
 
 			// Detectors with the highest performance hit should be listed in the bottom.
 			TypePurchaseTransaction: PurchaseDetector,

@@ -1,9 +1,13 @@
 package fakes
 
 import (
+	"time"
+
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
 )
 
@@ -349,37 +353,36 @@ var InterestPayoutCreated01 = TransactionTestCase{
 	},
 	EventType: transactions.EventTypeInterestPayoutCreated,
 	Transaction: transaction.Model{
-		UUID:       "c30c2952-ff0e-4fdb-bb8c-dfe1a8c35ce6",
-		Instrument: transaction.Instrument{},
-		Type:       "",
-		Status:     "executed",
-		Yield:      0,
-		Profit:     0,
-		Shares:     0,
-		Rate:       0,
-		Commission: 0,
-		Total:      0,
-		TaxAmount:  0,
+		UUID:      "c30c2952-ff0e-4fdb-bb8c-dfe1a8c35ce6",
+		Type:      transaction.TypeInterestPayout,
+		Status:    "executed",
+		Total:     0.07,
+		TaxAmount: 0.02,
+		Documents: []document.Model{
+			{
+				TransactionUUID: "c30c2952-ff0e-4fdb-bb8c-dfe1a8c35ce6",
+				ID:              "f1b33e1e-0e44-4508-b2cd-d508715d9740",
+				URL:             "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
+				Detail:          "06.11.2023",
+				Title:           "Abrechnung",
+				Filepath:        "2023-11/c30c2952-ff0e-4fdb-bb8c-dfe1a8c35ce6/Abrechnung.pdf",
+			},
+		},
 	},
 	CSVEntry: filesystem.CSVEntry{
-		ID:             "c30c2952-ff0e-4fdb-bb8c-dfe1a8c35ce6",
-		Status:         "executed",
-		Type:           "",
-		AssetType:      "",
-		Name:           "",
-		Instrument:     "",
-		Shares:         0,
-		Rate:           0,
-		Yield:          0,
-		Profit:         0,
-		Commission:     0,
-		Debit:          0,
-		Credit:         0,
-		TaxAmount:      0,
-		InvestedAmount: 0,
+		ID:        "c30c2952-ff0e-4fdb-bb8c-dfe1a8c35ce6",
+		Status:    "executed",
+		Type:      transaction.TypeInterestPayout,
+		AssetType: transaction.InstrumentTypeCash,
+		Name:      "Savings account",
+		Credit:    0.07,
+		TaxAmount: 0.02,
 	},
 }
 
 func init() {
-	RegisterUnsupported("InterestPayoutCreated01", InterestPayoutCreated01)
+	InterestPayoutCreated01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2023-11-06T11:22:52.544+0000")
+	InterestPayoutCreated01.CSVEntry.Timestamp = internal.DateTime{Time: InterestPayoutCreated01.Transaction.Timestamp}
+
+	RegisterSupported("InterestPayoutCreated01", InterestPayoutCreated01)
 }

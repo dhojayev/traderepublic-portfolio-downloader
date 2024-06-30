@@ -197,8 +197,8 @@ var PaymentInboundSepaDirectDebit01 = TransactionTestCase{
 	CSVEntry: filesystem.CSVEntry{
 		ID:        "ddc4ed4f-0314-42cf-8a65-930da1354348",
 		Status:    "executed",
-		Type:      "Deposit",
-		AssetType: "Other",
+		Type:      transaction.TypeDeposit,
+		AssetType: transaction.InstrumentTypeCash,
 		Credit:    500,
 	},
 }

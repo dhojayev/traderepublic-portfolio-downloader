@@ -29,6 +29,7 @@ func TestMakeSupported(t *testing.T) {
 			continue
 		}
 
+		assert.Equal(t, testCase.CSVEntry.AssetType, actual.AssetType, fmt.Sprintf("case '%s'", testCaseName))
 		assertHelper(t, testCase.CSVEntry, actual, testCaseName)
 	}
 }

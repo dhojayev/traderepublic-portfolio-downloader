@@ -120,8 +120,8 @@ var PaymentInbound01 = TransactionTestCase{
 	CSVEntry: filesystem.CSVEntry{
 		ID:        "1ae661c0-b3f1-4a81-a909-79567161b014",
 		Status:    "executed",
-		Type:      "Deposit",
-		AssetType: "Other",
+		Type:      transaction.TypeDeposit,
+		AssetType: transaction.InstrumentTypeCash,
 		Credit:    200,
 	},
 }

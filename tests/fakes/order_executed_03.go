@@ -237,8 +237,8 @@ var OrderExecuted03 = TransactionTestCase{
 	CSVEntry: filesystem.CSVEntry{
 		ID:         "a3b8e625-a6e9-4269-9529-01ebb86d69bb",
 		Status:     "executed",
-		Type:       "Sale",
-		AssetType:  "Other",
+		Type:       transaction.TypeSale,
+		AssetType:  transaction.InstrumentTypeOther,
 		Name:       "Novo Nordisk (ADR)",
 		Instrument: "US6701002056",
 		Shares:     -5,

@@ -309,8 +309,8 @@ var SavingsPlanExecuted01 = TransactionTestCase{
 	CSVEntry: filesystem.CSVEntry{
 		ID:         "7c9be07c-7b88-4a49-a4be-425094388b8e",
 		Status:     "executed",
-		Type:       "Purchase",
-		AssetType:  "ETF",
+		Type:       transaction.TypePurchase,
+		AssetType:  transaction.InstrumentTypeETF,
 		Name:       "MSCI World USD (Dist)",
 		Instrument: "IE00BK1PV551",
 		Shares:     6.887811,

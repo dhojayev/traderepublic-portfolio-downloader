@@ -16,6 +16,7 @@ const (
 	TypeSaveback       = "Saveback"
 	TypeDeposit        = "Deposit"
 	TypeWithdrawal     = "Withdrawal"
+	TypeInterestPayout = "Interest payout"
 
 	InstrumentTypeStocks         = "Stocks"
 	InstrumentTypeETF            = "ETF"

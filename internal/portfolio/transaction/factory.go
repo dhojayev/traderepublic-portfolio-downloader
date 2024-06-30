@@ -38,17 +38,13 @@ func (f CSVEntryFactory) Make(transaction Model) (filesystem.CSVEntry, error) {
 		credit = transaction.Total
 		taxAmount = transaction.TaxAmount
 		investedAmount = -(transaction.Total - transaction.Profit + transaction.Commission)
-	case TypeSaveback:
+	case TypeSaveback, TypeDeposit, TypeInterestPayout:
 		credit = transaction.Total
-	case TypeRoundUp:
+	case TypeRoundUp, TypeWithdrawal:
 		debit = transaction.Total
 	case TypeDividendPayout:
 		profit = transaction.Total
 		credit = transaction.Total
-	case TypeDeposit:
-		credit = transaction.Total
-	case TypeWithdrawal:
-		debit = transaction.Total
 	default:
 		return filesystem.CSVEntry{}, fmt.Errorf(
 			"unsupported type '%s' received: %w",

@@ -226,8 +226,8 @@ var Credit01 = TransactionTestCase{
 	CSVEntry: filesystem.CSVEntry{
 		ID:         "23cf72a9-3888-4918-898c-c3bc38346ba1",
 		Status:     "executed",
-		Type:       "Dividends",
-		AssetType:  "ETF",
+		Type:       transaction.TypeDividendPayout,
+		AssetType:  transaction.InstrumentTypeETF,
 		Name:       "MSCI World USD (Dist)",
 		Instrument: "IE00BK1PV551",
 		Shares:     10.344033,
