@@ -5,14 +5,15 @@ import (
 	"fmt"
 	"time"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
-	log "github.com/sirupsen/logrus"
 )
 
 type ProcessorInterface interface {
-	Process(response details.Response) error
+	Process(response details.NormalizedResponse) error
 }
 
 type Processor struct {
@@ -33,7 +34,7 @@ func NewProcessor(
 	}
 }
 
-func (p Processor) Process(response details.Response) error {
+func (p Processor) Process(response details.NormalizedResponse) error {
 	logFields := log.Fields{
 		"id": response.ID,
 	}
@@ -45,12 +46,6 @@ func (p Processor) Process(response details.Response) error {
 
 	documents, err := p.builder.Build(response.ID, entryTimestamp, response)
 	if err != nil {
-		if errors.Is(err, details.ErrSectionTypeNotFound) {
-			p.logger.Warnf("document model builder errors: %s", err)
-
-			return nil
-		}
-
 		return fmt.Errorf("document model builder error: %w", err)
 	}
 
@@ -70,13 +65,8 @@ func (p Processor) Process(response details.Response) error {
 	return nil
 }
 
-func (p Processor) extractTimestamp(response details.Response) (time.Time, error) {
-	header, err := response.SectionTypeHeader()
-	if err != nil {
-		return time.Time{}, fmt.Errorf("could not get header section: %w", err)
-	}
-
-	timestamp, err := time.Parse(details.ResponseTimeFormat, header.Data.Timestamp)
+func (p Processor) extractTimestamp(response details.NormalizedResponse) (time.Time, error) {
+	timestamp, err := time.Parse(details.ResponseTimeFormat, response.Header.Data.Timestamp)
 	if err != nil {
 		return time.Time{}, fmt.Errorf("could not parse header section timestamp: %w", err)
 	}

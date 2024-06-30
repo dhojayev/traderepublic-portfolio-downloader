@@ -152,13 +152,14 @@ var OrderExecuted02 = TransactionTestCase{
 		  }
 		]
 	  }`),
-		Unmarshalled: TimelineDetailsResponseSections{
-			Header: details.ResponseSectionTypeHeader{
-				Action: details.ResponseAction{
+		Normalized: details.NormalizedResponse{
+			ID: "1d9ad3b5-e65c-41f6-9c7d-96baa2a2ecad",
+			Header: details.NormalizedResponseHeaderSection{
+				Action: details.NormalizedResponseSectionAction{
 					Payload: "DE000A0F5UF5",
 					Type:    "instrumentDetail",
 				},
-				Data: details.ResponseSectionTypeHeaderData{
+				Data: details.NormalizedResponseHeaderSectionData{
 					Icon:      "logos/DE000A0F5UF5/v2",
 					Status:    "executed",
 					Timestamp: "2023-11-23T15:45:24.252+0000",
@@ -166,11 +167,11 @@ var OrderExecuted02 = TransactionTestCase{
 				Title: "Du hast 136,14 €  investiert",
 				Type:  "header",
 			},
-			Table: details.ResponseSectionsTypeTable{
-				{
-					Data: []details.ResponseSectionTypeTableData{
+			Overview: details.NormalizedResponseOverviewSection{
+				NormalizedResponseTableSection: details.NormalizedResponseTableSection{
+					Data: []details.NormalizedResponseTableSectionData{
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								FunctionalStyle: "EXECUTED",
 								Text:            "Ausgeführt",
 								Type:            "status",
@@ -179,7 +180,7 @@ var OrderExecuted02 = TransactionTestCase{
 							Title: "Status",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								Text: "Kauf",
 								Type: "text",
 							},
@@ -187,7 +188,7 @@ var OrderExecuted02 = TransactionTestCase{
 							Title: "Orderart",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								Text: "NASDAQ100 USD (Dist)",
 								Type: "text",
 							},
@@ -198,10 +199,12 @@ var OrderExecuted02 = TransactionTestCase{
 					Title: "Übersicht",
 					Type:  "table",
 				},
-				{
-					Data: []details.ResponseSectionTypeTableData{
+			},
+			Transaction: details.NormalizedResponseTransactionSection{
+				NormalizedResponseTableSection: details.NormalizedResponseTableSection{
+					Data: []details.NormalizedResponseTableSectionData{
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								Text: "1",
 								Type: "text",
 							},
@@ -209,7 +212,7 @@ var OrderExecuted02 = TransactionTestCase{
 							Title: "Anteile",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								Text: "135,14 €",
 								Type: "text",
 							},
@@ -217,7 +220,7 @@ var OrderExecuted02 = TransactionTestCase{
 							Title: "Aktienkurs",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								Text: "1,00 €",
 								Type: "text",
 							},
@@ -225,7 +228,7 @@ var OrderExecuted02 = TransactionTestCase{
 							Title: "Gebühr",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								Text: "136,14 €",
 								Type: "text",
 							},
@@ -237,10 +240,10 @@ var OrderExecuted02 = TransactionTestCase{
 					Type:  "table",
 				},
 			},
-			Documents: details.ResponseSectionTypeDocuments{
-				Data: []details.ResponseSectionTypeDocumentData{
+			Documents: details.NormalizedResponseDocumentsSection{
+				Data: []details.NormalizedResponseDocumentsSectionData{
 					{
-						Action: details.ResponseAction{
+						Action: details.NormalizedResponseSectionAction{
 							Payload: "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
 							Type:    "browserModal",
 						},
@@ -250,7 +253,7 @@ var OrderExecuted02 = TransactionTestCase{
 						Title:       "Abrechnung",
 					},
 					{
-						Action: details.ResponseAction{
+						Action: details.NormalizedResponseSectionAction{
 							Payload: "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
 							Type:    "browserModal",
 						},
@@ -260,7 +263,7 @@ var OrderExecuted02 = TransactionTestCase{
 						Title:       "Basisinformationsblatt",
 					},
 					{
-						Action: details.ResponseAction{
+						Action: details.NormalizedResponseSectionAction{
 							Payload: "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
 							Type:    "browserModal",
 						},
@@ -334,5 +337,5 @@ func init() {
 	OrderExecuted02.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2023-11-23T15:45:24.252+0000")
 	OrderExecuted02.CSVEntry.Timestamp = internal.DateTime{Time: OrderExecuted02.Transaction.Timestamp}
 
-	RegisterSupported(OrderExecuted02)
+	RegisterSupported("OrderExecuted01", OrderExecuted02)
 }

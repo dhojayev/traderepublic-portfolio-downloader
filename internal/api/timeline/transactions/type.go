@@ -18,6 +18,7 @@ const (
 	EventTypeCredit                        EventType = "CREDIT"
 	EventTypeBenefitsSavebackExecution     EventType = "benefits_saveback_execution"
 	EventTypeBenefitsSpareChangeExecution  EventType = "benefits_spare_change_execution"
+	EventTypeSSPCorporateActionInvoiceCash EventType = "ssp_corporate_action_invoice_cash"
 	EventTypeCardSuccessfulTransaction     EventType = "card_successful_transaction"
 	EventTypeCardRefund                    EventType = "card_refund"
 )
@@ -47,6 +48,7 @@ func NewEventTypeResolver(logger *log.Logger) EventTypeResolver {
 			EventTypeCredit,
 			EventTypeBenefitsSavebackExecution,
 			EventTypeBenefitsSpareChangeExecution,
+			EventTypeSSPCorporateActionInvoiceCash,
 		},
 		logger: logger,
 	}

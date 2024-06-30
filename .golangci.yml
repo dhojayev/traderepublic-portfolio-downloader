@@ -85,6 +85,9 @@ linters-settings:
 
 issues:
   exclude-rules:
+      - path: wire\.go
+        linters:
+          - gochecknoglobals
       - path: _test\.go
         linters:
           - funlen

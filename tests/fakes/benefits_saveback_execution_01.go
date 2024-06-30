@@ -181,6 +181,7 @@ var BenefitsSavebackExecution01 = TransactionTestCase{
 		Instrument: "XF000DOT0011",
 		Shares:     2.270212,
 		Rate:       6.61,
+		Credit:     15,
 	},
 }
 
@@ -188,5 +189,5 @@ func init() {
 	BenefitsSavebackExecution01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2024-03-22T18:15:06.448+0000")
 	BenefitsSavebackExecution01.CSVEntry.Timestamp = internal.DateTime{Time: BenefitsSavebackExecution01.Transaction.Timestamp}
 
-	RegisterSupported(BenefitsSavebackExecution01)
+	RegisterSupported("BenefitsSavebackExecution01", BenefitsSavebackExecution01)
 }

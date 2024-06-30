@@ -167,13 +167,14 @@ var SavingsPlanExecuted01 = TransactionTestCase{
 		  }
 		]
 	  }`),
-		Unmarshalled: TimelineDetailsResponseSections{
-			Header: details.ResponseSectionTypeHeader{
-				Action: details.ResponseAction{
+		Normalized: details.NormalizedResponse{
+			ID: "7c9be07c-7b88-4a49-a4be-425094388b8e",
+			Header: details.NormalizedResponseHeaderSection{
+				Action: details.NormalizedResponseSectionAction{
 					Payload: "IE00BK1PV551",
 					Type:    "instrumentDetail",
 				},
-				Data: details.ResponseSectionTypeHeaderData{
+				Data: details.NormalizedResponseHeaderSectionData{
 					Icon:      "logos/IE00BK1PV551/v2",
 					Status:    "executed",
 					Timestamp: "2023-11-11T13:40:59.926+0000",
@@ -181,11 +182,11 @@ var SavingsPlanExecuted01 = TransactionTestCase{
 				Title: "Du hast 500,00 € investiert",
 				Type:  "header",
 			},
-			Table: details.ResponseSectionsTypeTable{
-				{
-					Data: []details.ResponseSectionTypeTableData{
+			Overview: details.NormalizedResponseOverviewSection{
+				NormalizedResponseTableSection: details.NormalizedResponseTableSection{
+					Data: []details.NormalizedResponseTableSectionData{
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								FunctionalStyle: "EXECUTED",
 								Text:            "Ausgeführt",
 								Type:            "status",
@@ -194,7 +195,7 @@ var SavingsPlanExecuted01 = TransactionTestCase{
 							Title: "Status",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								Text: "Sparplan",
 								Type: "text",
 							},
@@ -202,7 +203,7 @@ var SavingsPlanExecuted01 = TransactionTestCase{
 							Title: "Orderart",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								Text: "MSCI World USD (Dist)",
 								Type: "text",
 							},
@@ -210,7 +211,7 @@ var SavingsPlanExecuted01 = TransactionTestCase{
 							Title: "Asset",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								Icon: "logos/bank_commerzbank/v2",
 								Text: "·· 0000",
 								Type: "iconWithText",
@@ -222,35 +223,12 @@ var SavingsPlanExecuted01 = TransactionTestCase{
 					Title: "Übersicht",
 					Type:  "table",
 				},
-				{
-					Data: []details.ResponseSectionTypeTableData{
+			},
+			Transaction: details.NormalizedResponseTransactionSection{
+				NormalizedResponseTableSection: details.NormalizedResponseTableSection{
+					Data: []details.NormalizedResponseTableSectionData{
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
-								Action: details.ResponseAction{
-									Payload: map[string]any{
-										"savingsPlanId": "f9c615ca-959c-4cf1-b8b9-10541673fba5",
-									},
-									Type: "openSavingsPlanOverview",
-								},
-								Amount:    "500,00 €",
-								Icon:      "logos/IE00BK1PV551/v2",
-								Status:    "executed",
-								Subtitle:  "Wöchentlich",
-								Timestamp: "2023-11-02T16:41:39.944Z",
-								Title:     "MSCI World USD (Dist)",
-								Type:      "embeddedTimelineItem",
-							},
-							Style: "plain",
-							Title: "",
-						},
-					},
-					Title: "Sparplan",
-					Type:  "table",
-				},
-				{
-					Data: []details.ResponseSectionTypeTableData{
-						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								Text: "6,887811",
 								Type: "text",
 							},
@@ -258,7 +236,7 @@ var SavingsPlanExecuted01 = TransactionTestCase{
 							Title: "Anteile",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								Text: "72,592 €",
 								Type: "text",
 							},
@@ -266,7 +244,7 @@ var SavingsPlanExecuted01 = TransactionTestCase{
 							Title: "Anteilspreis",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								Text: "Gratis",
 								Type: "text",
 							},
@@ -274,7 +252,7 @@ var SavingsPlanExecuted01 = TransactionTestCase{
 							Title: "Gebühr",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								Text: "500,00 €",
 								Type: "text",
 							},
@@ -286,10 +264,10 @@ var SavingsPlanExecuted01 = TransactionTestCase{
 					Type:  "table",
 				},
 			},
-			Documents: details.ResponseSectionTypeDocuments{
-				Data: []details.ResponseSectionTypeDocumentData{
+			Documents: details.NormalizedResponseDocumentsSection{
+				Data: []details.NormalizedResponseDocumentsSectionData{
 					{
-						Action: details.ResponseAction{
+						Action: details.NormalizedResponseSectionAction{
 							Payload: "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
 							Type:    "browserModal",
 						},
@@ -345,5 +323,5 @@ func init() {
 	SavingsPlanExecuted01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2023-11-11T13:40:59.926+0000")
 	SavingsPlanExecuted01.CSVEntry.Timestamp = internal.DateTime{Time: SavingsPlanExecuted01.Transaction.Timestamp}
 
-	RegisterSupported(SavingsPlanExecuted01)
+	RegisterSupported("SavingsPlanExecuted01", SavingsPlanExecuted01)
 }

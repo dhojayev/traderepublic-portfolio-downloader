@@ -145,7 +145,7 @@ Mar 28 12:02:09.453 [INFO] [id:xxxxxxx-xxxxx-xxxxx-xxxxx-xxxx] Fetching transact
 Mar 28 12:02:09.485 [INFO] [id:xxxxxxx-xxxxx-xxxxx-xxxxx-xxxx] Processing transaction details
 Mar 28 12:02:09.488 [INFO] [id:xxxxxxx-xxxxx-xxxxx-xxxxx-xxxx] Unsupported transaction skipped
 ...
-Mar 28 12:02:27.379 [INFO] Transactions completed: 200, skipped: 47
+Mar 28 12:02:27.379 [INFO] Transactions total: 247; completed: 200; skipped: 47
 Jun 16 22:15:09.675 [INFO] Downloading activity log entries
 Jun 16 22:15:09.858 [INFO] 42 activity log entries downloaded
 Jun 16 22:15:09.858 [INFO] [id:14e2842f-7a4a-4f3f-8f37-52ac2d332673] Fetching activity log entry details
@@ -153,7 +153,7 @@ Jun 16 22:15:10.030 [INFO] [id:14e2842f-7a4a-4f3f-8f37-52ac2d332673] Document do
 Jun 16 22:15:10.031 [INFO] [id:f61e9ebb-3e6b-473b-91ae-1b61bc8b9dcc] Fetching activity log entry details
 Jun 16 22:15:10.133 [INFO] [id:f61e9ebb-3e6b-473b-91ae-1b61bc8b9dcc] Document downloaded
 ...
-Jun 16 22:15:13.484 [INFO] Activity log entries completed: 29, skipped: 13
+Jun 16 22:15:13.484 [INFO] Activity log entries total: 42; completed: 29; skipped: 13
 ```
 
 ### PDF documents storage structure

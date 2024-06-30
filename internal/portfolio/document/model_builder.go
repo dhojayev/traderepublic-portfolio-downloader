@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
 )
 
 type ModelBuilderInterface interface {
-	Build(transactionUUID string, parentTimestamp time.Time, response details.Response) ([]Model, error)
+	Build(transactionUUID string, parentTimestamp time.Time, response details.NormalizedResponse) ([]Model, error)
 }
 
 type ModelBuilder struct {
@@ -27,16 +28,11 @@ func NewModelBuilder(dateResolver DateResolverInterface, logger *log.Logger) Mod
 func (b ModelBuilder) Build(
 	parentUUID string,
 	parentTimestamp time.Time,
-	response details.Response,
+	response details.NormalizedResponse,
 ) ([]Model, error) {
 	documents := make([]Model, 0)
 
-	documentsSection, err := response.SectionTypeDocuments()
-	if err != nil {
-		return documents, fmt.Errorf("could not get documents section: %w", err)
-	}
-
-	for _, doc := range documentsSection.Data {
+	for _, doc := range response.Documents.Data {
 		url, ok := doc.Action.Payload.(string)
 		if !ok {
 			continue
@@ -45,6 +41,10 @@ func (b ModelBuilder) Build(
 		documentDate := b.dateResolver.Resolve(parentTimestamp, doc.Detail)
 		filepath := fmt.Sprintf("%s/%s/%s.pdf", documentDate.Format(DownloaderTimeFormat), parentUUID, doc.Title)
 		documents = append(documents, NewModel(parentUUID, doc.ID, url, doc.Detail, doc.Title, filepath))
+	}
+
+	if len(documents) == 0 {
+		return nil, nil
 	}
 
 	return documents, nil

@@ -41,7 +41,7 @@ func (m *MockProcessorInterface) EXPECT() *MockProcessorInterfaceMockRecorder {
 }
 
 // Process mocks base method.
-func (m *MockProcessorInterface) Process(eventType transactions.EventType, response details.Response) error {
+func (m *MockProcessorInterface) Process(eventType transactions.EventType, response details.NormalizedResponse) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Process", eventType, response)
 	ret0, _ := ret[0].(error)

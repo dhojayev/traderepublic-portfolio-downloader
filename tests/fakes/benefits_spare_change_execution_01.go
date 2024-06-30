@@ -133,13 +133,14 @@ var BenefitsSpareChangeExecution01 = TransactionTestCase{
 		  }
 		]
 	  }`),
-		Unmarshalled: TimelineDetailsResponseSections{
-			Header: details.ResponseSectionTypeHeader{
-				Action: details.ResponseAction{
+		Normalized: details.NormalizedResponse{
+			ID: "265cb9c0-664a-45d4-b179-3061f196dd2a",
+			Header: details.NormalizedResponseHeaderSection{
+				Action: details.NormalizedResponseSectionAction{
 					Payload: "DE000A0F5UF5",
 					Type:    "instrumentDetail",
 				},
-				Data: details.ResponseSectionTypeHeaderData{
+				Data: details.NormalizedResponseHeaderSectionData{
 					Icon:      "logos/DE000A0F5UF5/v2",
 					Status:    "executed",
 					Timestamp: "2024-01-04T12:26:52.110+0000",
@@ -147,11 +148,11 @@ var BenefitsSpareChangeExecution01 = TransactionTestCase{
 				Title: "Du hast 1,09 € investiert",
 				Type:  "header",
 			},
-			Table: details.ResponseSectionsTypeTable{
-				{
-					Data: []details.ResponseSectionTypeTableData{
+			Overview: details.NormalizedResponseOverviewSection{
+				NormalizedResponseTableSection: details.NormalizedResponseTableSection{
+					Data: []details.NormalizedResponseTableSectionData{
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								FunctionalStyle: "EXECUTED",
 								Text:            "Ausgeführt",
 								Type:            "status",
@@ -160,7 +161,7 @@ var BenefitsSpareChangeExecution01 = TransactionTestCase{
 							Title: "Status",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								Text: "Round up",
 								Type: "text",
 							},
@@ -168,7 +169,7 @@ var BenefitsSpareChangeExecution01 = TransactionTestCase{
 							Title: "Ordertyp",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								Text: "NASDAQ100 USD (Dist)",
 								Type: "text",
 							},
@@ -179,10 +180,12 @@ var BenefitsSpareChangeExecution01 = TransactionTestCase{
 					Title: "Übersicht",
 					Type:  "table",
 				},
-				{
-					Data: []details.ResponseSectionTypeTableData{
+			},
+			Transaction: details.NormalizedResponseTransactionSection{
+				NormalizedResponseTableSection: details.NormalizedResponseTableSection{
+					Data: []details.NormalizedResponseTableSectionData{
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								Text: "0.006882",
 								Type: "text",
 							},
@@ -190,7 +193,7 @@ var BenefitsSpareChangeExecution01 = TransactionTestCase{
 							Title: "Aktien",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								Text: "158,38 €",
 								Type: "text",
 							},
@@ -198,7 +201,7 @@ var BenefitsSpareChangeExecution01 = TransactionTestCase{
 							Title: "Aktienkurs",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								Text: "Kostenlos",
 								Type: "text",
 							},
@@ -206,7 +209,7 @@ var BenefitsSpareChangeExecution01 = TransactionTestCase{
 							Title: "Gebühr",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								Text: "1,09 €",
 								Type: "text",
 							},
@@ -218,10 +221,10 @@ var BenefitsSpareChangeExecution01 = TransactionTestCase{
 					Type:  "table",
 				},
 			},
-			Documents: details.ResponseSectionTypeDocuments{
-				Data: []details.ResponseSectionTypeDocumentData{
+			Documents: details.NormalizedResponseDocumentsSection{
+				Data: []details.NormalizedResponseDocumentsSectionData{
 					{
-						Action: details.ResponseAction{
+						Action: details.NormalizedResponseSectionAction{
 							Payload: "https://traderepublic-postbox-platform-production.s3.eu-central-1.amazonaws.com/timeline/postbox",
 							Type:    "browserModal",
 						},
@@ -230,7 +233,7 @@ var BenefitsSpareChangeExecution01 = TransactionTestCase{
 						Title:       "Deaktivierung",
 					},
 					{
-						Action: details.ResponseAction{
+						Action: details.NormalizedResponseSectionAction{
 							Payload: "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox",
 							Type:    "browserModal",
 						},
@@ -239,7 +242,7 @@ var BenefitsSpareChangeExecution01 = TransactionTestCase{
 						Title:       "Abrechnung Ausführung",
 					},
 					{
-						Action: details.ResponseAction{
+						Action: details.NormalizedResponseSectionAction{
 							Payload: "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox",
 							Type:    "browserModal",
 						},
@@ -307,5 +310,5 @@ func init() {
 	BenefitsSpareChangeExecution01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2024-01-04T12:26:52.110+0000")
 	BenefitsSpareChangeExecution01.CSVEntry.Timestamp = internal.DateTime{Time: BenefitsSpareChangeExecution01.Transaction.Timestamp}
 
-	RegisterSupported(BenefitsSpareChangeExecution01)
+	RegisterSupported("BenefitsSpareChangeExecution01", BenefitsSpareChangeExecution01)
 }

@@ -110,9 +110,14 @@ var Credit01 = TransactionTestCase{
 		  }
 		]
 	  }`),
-		Unmarshalled: TimelineDetailsResponseSections{
-			Header: details.ResponseSectionTypeHeader{
-				Data: details.ResponseSectionTypeHeaderData{
+		Normalized: details.NormalizedResponse{
+			ID: "23cf72a9-3888-4918-898c-c3bc38346ba1",
+			Header: details.NormalizedResponseHeaderSection{
+				Action: details.NormalizedResponseSectionAction{
+					Payload: nil,
+					Type:    "",
+				},
+				Data: details.NormalizedResponseHeaderSectionData{
 					Icon:      "logos/IE00BK1PV551/v2",
 					Status:    "executed",
 					Timestamp: "2023-12-13T12:44:28.857+0000",
@@ -120,11 +125,11 @@ var Credit01 = TransactionTestCase{
 				Title: "Du hast 2,94 € erhalten",
 				Type:  "header",
 			},
-			Table: details.ResponseSectionsTypeTable{
-				{
-					Data: []details.ResponseSectionTypeTableData{
+			Overview: details.NormalizedResponseOverviewSection{
+				NormalizedResponseTableSection: details.NormalizedResponseTableSection{
+					Data: []details.NormalizedResponseTableSectionData{
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								Text: "Ausschüttung",
 								Type: "text",
 							},
@@ -132,7 +137,7 @@ var Credit01 = TransactionTestCase{
 							Title: "Ereignis",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								Text: "MSCI World USD (Dist)",
 								Type: "text",
 							},
@@ -143,10 +148,12 @@ var Credit01 = TransactionTestCase{
 					Title: "Übersicht",
 					Type:  "table",
 				},
-				{
-					Data: []details.ResponseSectionTypeTableData{
+			},
+			Transaction: details.NormalizedResponseTransactionSection{
+				NormalizedResponseTableSection: details.NormalizedResponseTableSection{
+					Data: []details.NormalizedResponseTableSectionData{
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								Text: "10,344033",
 								Type: "text",
 							},
@@ -154,7 +161,7 @@ var Credit01 = TransactionTestCase{
 							Title: "Anteile",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								Text: "0,28 €",
 								Type: "text",
 							},
@@ -162,7 +169,7 @@ var Credit01 = TransactionTestCase{
 							Title: "Dividende je Aktie",
 						},
 						{
-							Detail: details.ResponseSectionTypeTableDataDetail{
+							Detail: details.NormalizedResponseTableSectionDataDetail{
 								Text: "+ 2,94 €",
 								Type: "text",
 							},
@@ -174,10 +181,10 @@ var Credit01 = TransactionTestCase{
 					Type:  "table",
 				},
 			},
-			Documents: details.ResponseSectionTypeDocuments{
-				Data: []details.ResponseSectionTypeDocumentData{
+			Documents: details.NormalizedResponseDocumentsSection{
+				Data: []details.NormalizedResponseDocumentsSectionData{
 					{
-						Action: details.ResponseAction{
+						Action: details.NormalizedResponseSectionAction{
 							Payload: "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
 							Type:    "browserModal",
 						},
@@ -234,5 +241,5 @@ func init() {
 	Credit01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2023-12-13T12:44:28.857+0000")
 	Credit01.CSVEntry.Timestamp = internal.DateTime{Time: Credit01.Transaction.Timestamp}
 
-	RegisterSupported(Credit01)
+	RegisterSupported("Credit01", Credit01)
 }

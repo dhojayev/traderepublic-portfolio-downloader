@@ -19,7 +19,7 @@ var (
 )
 
 type ModelBuilderFactoryInterface interface {
-	Create(eventType transactions.EventType, response details.Response) (ModelBuilderInterface, error)
+	Create(eventType transactions.EventType, response details.NormalizedResponse) (ModelBuilderInterface, error)
 }
 
 type ModelBuilderFactory struct {
@@ -43,7 +43,7 @@ func NewModelBuilderFactory(
 //nolint:ireturn,cyclop
 func (f ModelBuilderFactory) Create(
 	eventType transactions.EventType,
-	response details.Response,
+	response details.NormalizedResponse,
 ) (ModelBuilderInterface, error) {
 	responseType, err := f.resolver.Resolve(eventType, response)
 	if err != nil {
@@ -87,13 +87,13 @@ type ModelBuilderInterface interface {
 }
 
 type BaseModelBuilder struct {
-	response         details.Response
+	response         details.NormalizedResponse
 	documentsBuilder document.ModelBuilderInterface
 	logger           *log.Logger
 }
 
 func NewBaseModelBuilder(
-	response details.Response,
+	response details.NormalizedResponse,
 	documentsBuilder document.ModelBuilderInterface,
 	logger *log.Logger,
 ) BaseModelBuilder {
@@ -105,30 +105,15 @@ func NewBaseModelBuilder(
 }
 
 func (b BaseModelBuilder) ExtractStatus() (string, error) {
-	header, err := b.response.SectionTypeHeader()
-	if err != nil {
-		return "", fmt.Errorf("could not get header section: %w", err)
-	}
-
-	return header.Data.Status, nil
+	return b.response.Header.Data.Status, nil
 }
 
 func (b BaseModelBuilder) ExtractInstrumentIcon() (string, error) {
-	header, err := b.response.SectionTypeHeader()
-	if err != nil {
-		return "", fmt.Errorf("could not get header section: %w", err)
-	}
-
-	return header.Data.Icon, nil
+	return b.response.Header.Data.Icon, nil
 }
 
 func (b BaseModelBuilder) ExtractTimestamp() (time.Time, error) {
-	header, err := b.response.SectionTypeHeader()
-	if err != nil {
-		return time.Time{}, fmt.Errorf("could not get header section: %w", err)
-	}
-
-	timestamp, err := time.Parse(details.ResponseTimeFormat, header.Data.Timestamp)
+	timestamp, err := time.Parse(details.ResponseTimeFormat, b.response.Header.Data.Timestamp)
 	if err != nil {
 		return time.Time{}, fmt.Errorf("could not parse header section timestamp: %w", err)
 	}
@@ -137,132 +122,35 @@ func (b BaseModelBuilder) ExtractTimestamp() (time.Time, error) {
 }
 
 func (b BaseModelBuilder) ExtractInstrumentISIN() (string, error) {
-	header, err := b.response.SectionTypeHeader()
-	if err != nil {
-		return "", fmt.Errorf("could not get header section: %w", err)
-	}
+	isin, valid := b.response.Header.Action.Payload.(string)
 
-	isin, _ := header.Action.Payload.(string)
-	if isin == "" {
-		isin, _ = ExtractInstrumentNameFromIcon(header.Data.Icon)
+	if !valid || isin == "" {
+		isin, _ = ExtractInstrumentNameFromIcon(b.response.Header.Data.Icon)
 	}
 
 	return isin, nil
 }
 
 func (b BaseModelBuilder) ExtractInstrumentName() (string, error) {
-	tableSections, err := b.response.SectionsTypeTable()
+	asset, err := b.response.Overview.GetDataByTitles(
+		details.OverviewDataTitleAsset,
+		details.OverviewDataTitleUnderlyingAsset,
+		details.OverviewDataTitleSecurity,
+	)
 	if err != nil {
-		return "", fmt.Errorf("could not get table sections: %w", err)
-	}
-
-	overview, err := tableSections.FindByTitle(details.SectionTitleOverview)
-	if err != nil {
-		return "", fmt.Errorf("could not get overview section: %w", err)
-	}
-
-	asset, err := overview.GetDataByTitle(details.OverviewDataTitleAsset)
-	if err == nil {
-		return asset.Detail.Text, nil
-	}
-
-	if !errors.Is(err, details.ErrSectionDataTitleNotFound) {
 		return "", fmt.Errorf("could not get overview section asset: %w", err)
 	}
 
-	underlyingAsset, err := overview.GetDataByTitle(details.OverviewDataTitleUnderlyingAsset)
-	if err != nil {
-		return "", fmt.Errorf("could not get overview section underlying asset: %w", err)
-	}
-
-	return underlyingAsset.Detail.Text, nil
-}
-
-func (b BaseModelBuilder) ExtractYield() (float64, error) {
-	tableSections, err := b.response.SectionsTypeHorizontalTable()
-	if err != nil {
-		return 0, fmt.Errorf("could not get table sections: %w", err)
-	}
-
-	performance, err := tableSections.FindByTitle(details.SectionTitlePerformance)
-	if err != nil {
-		return 0, fmt.Errorf("could not get performance section: %w", err)
-	}
-
-	yieldData, err := performance.GetDataByTitle(details.PerformanceDataTitleYield)
-	if err != nil {
-		return 0, fmt.Errorf("could not get performance section yield: %w", err)
-	}
-
-	yield, err := ParseFloatWithComma(yieldData.Detail.Text, yieldData.Detail.Trend == details.TrendNegative)
-	if err != nil {
-		return 0, fmt.Errorf("could not parse performance section yield to float: %w", err)
-	}
-
-	return yield, nil
-}
-
-func (b BaseModelBuilder) ExtractProfitAndLoss() (float64, error) {
-	tableSections, err := b.response.SectionsTypeHorizontalTable()
-	if err != nil {
-		return 0, fmt.Errorf("could not get table sections: %w", err)
-	}
-
-	performance, err := tableSections.FindByTitle(details.SectionTitlePerformance)
-	if err != nil {
-		return 0, fmt.Errorf("could not get performance section: %w", err)
-	}
-
-	var profitData details.ResponseSectionTypeTableData
-
-	titles := []string{details.PerformanceDataTitleProfit, details.PerformanceDataTitleLoss}
-
-	for _, title := range titles {
-		profitData, err = performance.GetDataByTitle(title)
-		if err == nil {
-			break
-		}
-	}
-
-	if err != nil {
-		return 0, fmt.Errorf("could not get performance section profit (%s): %w", titles, err)
-	}
-
-	profit, err := ParseFloatWithComma(profitData.Detail.Text, profitData.Detail.Trend == details.TrendNegative)
-	if err != nil {
-		return 0, fmt.Errorf("could not parse performance section profit to float: %w", err)
-	}
-
-	return profit, nil
+	return asset.Detail.Text, nil
 }
 
 func (b BaseModelBuilder) ExtractSharesAmount() (float64, error) {
-	tableSections, err := b.response.SectionsTypeTable()
-	if err != nil {
-		return 0, fmt.Errorf("could not get table sections: %w", err)
-	}
-
-	transactionSection, err := tableSections.FindByTitle(details.SectionTitleTransaction)
-	if err != nil {
-		return 0, fmt.Errorf("could not get transaction section: %w", err)
-	}
-
-	var sharesData details.ResponseSectionTypeTableData
-
-	titles := []string{
+	sharesData, err := b.response.Transaction.GetDataByTitles(
 		details.TransactionDataTitleShares,
 		details.TransactionDataTitleSharesAlt,
-	}
-
-	for _, title := range titles {
-		sharesData, err = transactionSection.GetDataByTitle(title)
-		if err == nil {
-			break
-		}
-	}
-
+	)
 	if err != nil {
-		return 0, fmt.Errorf("could not get transaction section shares (%s): %w", titles, err)
+		return 0, fmt.Errorf("could not get transaction section shares: %w", err)
 	}
 
 	shares, err := ParseFloatWithPeriod(sharesData.Detail.Text)
@@ -279,34 +167,15 @@ func (b BaseModelBuilder) ExtractSharesAmount() (float64, error) {
 }
 
 func (b BaseModelBuilder) ExtractRateValue() (float64, error) {
-	tableSections, err := b.response.SectionsTypeTable()
-	if err != nil {
-		return 0, fmt.Errorf("could not get table sections: %w", err)
-	}
-
-	transactionSection, err := tableSections.FindByTitle(details.SectionTitleTransaction)
-	if err != nil {
-		return 0, fmt.Errorf("could not get transaction section: %w", err)
-	}
-
-	var rateData details.ResponseSectionTypeTableData
-
-	titles := []string{
+	rateData, err := b.response.Transaction.GetDataByTitles(
 		details.TransactionDataTitleRate,
 		details.TransactionDataTitleRateAlt,
 		details.TransactionDataTitleRateAlt2,
-	}
-
-	for _, title := range titles {
-		rateData, err = transactionSection.GetDataByTitle(title)
-		if err == nil {
-			break
-		}
-	}
-
+		details.TransactionDataTitleRateAlt3,
+	)
 	if err != nil {
 		return 0, fmt.Errorf(
-			"could not get transaction section rate (%s): %w", titles, err)
+			"could not get transaction section rate: %w", err)
 	}
 
 	rate, err := ParseFloatWithComma(rateData.Detail.Text, rateData.Detail.Trend == details.TrendNegative)
@@ -318,17 +187,7 @@ func (b BaseModelBuilder) ExtractRateValue() (float64, error) {
 }
 
 func (b BaseModelBuilder) ExtractCommissionAmount() (float64, error) {
-	tableSections, err := b.response.SectionsTypeTable()
-	if err != nil {
-		return 0, fmt.Errorf("could not get table sections: %w", err)
-	}
-
-	transactionSection, err := tableSections.FindByTitle(details.SectionTitleTransaction)
-	if err != nil {
-		return 0, fmt.Errorf("could not get transaction section: %w", err)
-	}
-
-	commissionData, err := transactionSection.GetDataByTitle(details.TransactionDataTitleCommission)
+	commissionData, err := b.response.Transaction.GetDataByTitles(details.TransactionDataTitleCommission)
 	if err != nil {
 		if !errors.Is(err, details.ErrSectionDataTitleNotFound) {
 			return 0, fmt.Errorf("could not get transaction section commission: %w", err)
@@ -351,17 +210,7 @@ func (b BaseModelBuilder) ExtractCommissionAmount() (float64, error) {
 }
 
 func (b BaseModelBuilder) ExtractTotalAmount() (float64, error) {
-	tableSections, err := b.response.SectionsTypeTable()
-	if err != nil {
-		return 0, fmt.Errorf("could not get table sections: %w", err)
-	}
-
-	transactionSection, err := tableSections.FindByTitle(details.SectionTitleTransaction)
-	if err != nil {
-		return 0, fmt.Errorf("could not get transaction section: %w", err)
-	}
-
-	totalData, err := transactionSection.GetDataByTitle(details.TransactionDataTitleTotal)
+	totalData, err := b.response.Transaction.GetDataByTitles(details.TransactionDataTitleTotal)
 	if err != nil {
 		return 0, fmt.Errorf("could not get transaction section total: %w", err)
 	}
@@ -375,17 +224,7 @@ func (b BaseModelBuilder) ExtractTotalAmount() (float64, error) {
 }
 
 func (b BaseModelBuilder) ExtractTaxAmount() (float64, error) {
-	tableSections, err := b.response.SectionsTypeTable()
-	if err != nil {
-		return 0, fmt.Errorf("could not get table sections: %w", err)
-	}
-
-	transactionSection, err := tableSections.FindByTitle(details.SectionTitleTransaction)
-	if err != nil {
-		return 0, fmt.Errorf("could not get transaction section: %w", err)
-	}
-
-	taxData, err := transactionSection.GetDataByTitle(details.TransactionDataTitleTax)
+	taxData, err := b.response.Transaction.GetDataByTitles(details.TransactionDataTitleTax)
 	if err != nil {
 		return 0, fmt.Errorf("could not get transaction section tax amount: %w", err)
 	}
@@ -483,6 +322,28 @@ type SaleBuilder struct {
 
 func NewSaleBuilder(purchaseBuilder PurchaseBuilder) SaleBuilder {
 	return SaleBuilder{purchaseBuilder}
+}
+
+func (b SaleBuilder) ExtractPerformanceFloatVal(titles ...string) (float64, error) {
+	stringData, err := b.response.Performance.GetDataByTitles(titles...)
+	if err != nil {
+		return 0, fmt.Errorf("could not get performance section data by titles %v: %w", titles, err)
+	}
+
+	floatData, err := ParseFloatWithComma(stringData.Detail.Text, stringData.Detail.Trend == details.TrendNegative)
+	if err != nil {
+		return 0, fmt.Errorf("could not parse performance section data to float by titles %v: %w", titles, err)
+	}
+
+	return floatData, nil
+}
+
+func (b SaleBuilder) ExtractYield() (float64, error) {
+	return b.ExtractPerformanceFloatVal(details.PerformanceDataTitleYield)
+}
+
+func (b SaleBuilder) ExtractProfitAndLoss() (float64, error) {
+	return b.ExtractPerformanceFloatVal(details.PerformanceDataTitleProfit, details.PerformanceDataTitleLoss)
 }
 
 func (b SaleBuilder) Build() (Model, error) {
@@ -605,12 +466,7 @@ func (b DepositBuilder) Build() (Model, error) {
 }
 
 func (b DepositBuilder) ExtractTotalAmount() (float64, error) {
-	header, err := b.response.SectionTypeHeader()
-	if err != nil {
-		return 0, fmt.Errorf("could not get header section: %w", err)
-	}
-
-	totalAmountStr, err := ParseNumericValueFromString(header.Title)
+	totalAmountStr, err := ParseNumericValueFromString(b.response.Header.Title)
 	if err != nil {
 		return 0, err
 	}

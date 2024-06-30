@@ -3,6 +3,7 @@ package transaction_test
 import (
 	"fmt"
 	"io"
+	"maps"
 	"testing"
 
 	log "github.com/sirupsen/logrus"
@@ -31,7 +32,8 @@ func TestItDoesReturnErrorIfTransactionDetailsCannotBeFetched(t *testing.T) {
 	typeResolverMock := transactions.NewMockEventTypeResolverInterface(ctrl)
 	processorMock := transaction.NewMockProcessorInterface(ctrl)
 	detailsClient := details.NewClient(detailsReaderMock, logger)
-	handler := transaction.NewHandler(listClientMock, detailsClient, typeResolverMock, processorMock, logger)
+	normalizer := details.NewTransactionResponseNormalizer(logger)
+	handler := transaction.NewHandler(listClientMock, detailsClient, normalizer, typeResolverMock, processorMock, logger)
 
 	var responses []transactions.ResponseItem
 
@@ -61,9 +63,9 @@ func TestItDoesReturnErrorIfTransactionDetailsCannotBeFetched(t *testing.T) {
 func TestItDoesReturnErrorIfTransactionTypeUnsupported(t *testing.T) {
 	t.Parallel()
 
-	testCases := make([]fakes.TransactionTestCase, 0)
-	testCases = append(testCases, fakes.TransactionTestCasesUnsupported...)
-	testCases = append(testCases, fakes.TransactionTestCasesUnknown...)
+	testCases := make(map[string]fakes.TransactionTestCase)
+	maps.Copy(testCases, fakes.TransactionTestCasesUnsupported)
+	maps.Copy(testCases, fakes.TransactionTestCasesUnknown)
 
 	ctrl := gomock.NewController(t)
 	readerMock := reader.NewMockInterface(ctrl)
@@ -84,11 +86,12 @@ func TestItDoesReturnErrorIfTransactionTypeUnsupported(t *testing.T) {
 	builderFactory := transaction.NewModelBuilderFactory(detailsTypeResolver, documentBuilder, logger)
 	csvEntryFactory := transaction.NewCSVEntryFactory(logger)
 	processor := transaction.NewProcessor(builderFactory, transactionRepoMock, csvEntryFactory, csvReaderMock, csvWriterMock, documentDownloaderMock, logger)
-	handler := transaction.NewHandler(listClient, detailsClient, transactionsTypeResolver, processor, logger)
+	normalizer := details.NewTransactionResponseNormalizer(logger)
+	handler := transaction.NewHandler(listClient, detailsClient, normalizer, transactionsTypeResolver, processor, logger)
 
 	csvReaderMock.EXPECT().Read(gomock.Any()).AnyTimes().Return([]filesystem.CSVEntry{}, nil)
 
-	for i, testCase := range testCases {
+	for testCaseName, testCase := range testCases {
 		readerMock.
 			EXPECT().
 			Read(transactions.RequestDataType, gomock.Any()).
@@ -103,6 +106,6 @@ func TestItDoesReturnErrorIfTransactionTypeUnsupported(t *testing.T) {
 
 		err := handler.Handle()
 
-		assert.NoError(t, err, fmt.Sprintf("case %d", i))
+		assert.NoError(t, err, fmt.Sprintf("case '%s'", testCaseName))
 	}
 }

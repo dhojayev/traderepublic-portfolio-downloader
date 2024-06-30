@@ -31,13 +31,13 @@ func main() {
 		logger.Panic(err)
 	}
 
-	application, err := CreateLocalApp(responsesBaseDir, logger)
+	application, err := ProvideLocalApp(responsesBaseDir, logger)
 	if err != nil {
 		logger.Panic(err)
 	}
 
 	if !args.LocalMode {
-		application, err = CreateRemoteApp(logger)
+		application, err = ProvideRemoteApp(logger)
 		if err != nil {
 			logger.Panic(err)
 		}

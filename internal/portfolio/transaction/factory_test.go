@@ -20,16 +20,16 @@ func TestMakeSupported(t *testing.T) {
 	testCases := fakes.TransactionTestCasesSupported
 	factory := transaction.NewCSVEntryFactory(log.New())
 
-	for i, testCase := range testCases {
+	for testCaseName, testCase := range testCases {
 		actual, err := factory.Make(testCase.Transaction)
 
-		assert.NoError(t, err, fmt.Sprintf("case %d", i))
+		assert.NoError(t, err, fmt.Sprintf("case '%s'", testCaseName))
 
 		if err != nil {
 			continue
 		}
 
-		assertHelper(t, testCase.CSVEntry, actual, i)
+		assertHelper(t, testCase.CSVEntry, actual, testCaseName)
 	}
 }
 
@@ -39,10 +39,10 @@ func TestMakeUnsupported(t *testing.T) {
 	testCases := fakes.TransactionTestCasesUnsupported
 	factory := transaction.NewCSVEntryFactory(log.New())
 
-	for i, testCase := range testCases {
+	for testCaseName, testCase := range testCases {
 		_, err := factory.Make(testCase.Transaction)
 
-		assert.Error(t, err, fmt.Sprintf("case %d", i))
+		assert.Error(t, err, fmt.Sprintf("case '%s'", testCaseName))
 	}
 }
 
@@ -52,79 +52,79 @@ func TestMakeUnknown(t *testing.T) {
 	testCases := fakes.TransactionTestCasesUnknown
 	factory := transaction.NewCSVEntryFactory(log.New())
 
-	for i, testCase := range testCases {
+	for testCaseName, testCase := range testCases {
 		_, err := factory.Make(testCase.Transaction)
 
-		assert.Error(t, err, fmt.Sprintf("case %d", i))
+		assert.Error(t, err, fmt.Sprintf("case '%s'", testCaseName))
 	}
 }
 
 // helper to assert float64 fields.
-func assertHelper(t *testing.T, expected, actual filesystem.CSVEntry, testCaseNum int) {
+func assertHelper(t *testing.T, expected, actual filesystem.CSVEntry, testCaseName string) {
 	t.Helper()
 
 	assert.Equal(
 		t,
 		expected.Type,
 		actual.Type,
-		fmt.Sprintf("case %d: type does not match", testCaseNum),
+		fmt.Sprintf("case '%s': type does not match", testCaseName),
 	)
 
 	assert.NotEqual(
 		t,
 		internal.DateTime{},
 		actual.Timestamp,
-		fmt.Sprintf("case %d: timestamp is empty", testCaseNum),
+		fmt.Sprintf("case '%s': timestamp is empty", testCaseName),
 	)
 
 	assert.Equal(
 		t,
 		expected.Timestamp,
 		actual.Timestamp,
-		fmt.Sprintf("case %d: timestamp does not match", testCaseNum),
+		fmt.Sprintf("case '%s': timestamp does not match", testCaseName),
 	)
 
 	assert.Equal(
 		t,
 		floatToStr(expected.Shares),
 		floatToStr(actual.Shares),
-		fmt.Sprintf("case %d: shares amount does not match", testCaseNum),
+		fmt.Sprintf("case '%s': shares amount does not match", testCaseName),
 	)
 	assert.Equal(
 		t,
 		floatToStr(expected.Rate),
 		floatToStr(actual.Rate),
-		fmt.Sprintf("case %d: rate does not match", testCaseNum),
+		fmt.Sprintf("case '%s': rate does not match", testCaseName),
 	)
 	assert.Equal(
 		t,
 		floatToStr(expected.Commission),
 		floatToStr(actual.Commission),
-		fmt.Sprintf("case %d: commission amount does not match", testCaseNum),
+		fmt.Sprintf("case '%s': commission amount does not match", testCaseName),
 	)
 	assert.Equal(
 		t,
 		floatToStr(expected.Yield),
 		floatToStr(actual.Yield),
-		fmt.Sprintf("case %d: yield does not match", testCaseNum),
+		fmt.Sprintf("case '%s': yield does not match", testCaseName),
 	)
 	assert.Equal(
 		t,
 		floatToStr(expected.Profit),
 		floatToStr(actual.Profit),
-		fmt.Sprintf("case %d: profit does not match", testCaseNum),
+		fmt.Sprintf("case '%s': profit does not match", testCaseName),
 	)
 	assert.Equal(
 		t,
 		floatToStr(expected.Debit),
 		floatToStr(actual.Debit),
-		fmt.Sprintf("case %d: debit amount does not match", testCaseNum),
+		fmt.Sprintf("case '%s': debit amount does not match", testCaseName),
 	)
 	assert.Equal(
 		t,
 		floatToStr(expected.Credit),
 		floatToStr(actual.Credit),
-		fmt.Sprintf("case %d: credit amount does not match", testCaseNum),
+		fmt.Sprintf("case '%s': credit amount does not match", testCaseName),
 	)
 }
 

@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"slices"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/activitylog"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
-	log "github.com/sirupsen/logrus"
 )
 
 type HandlerInterface interface {
@@ -17,6 +18,7 @@ type HandlerInterface interface {
 type Handler struct {
 	listClient    activitylog.ClientInterface
 	detailsClient details.ClientInterface
+	normalizer    details.ResponseNormalizerInterface
 	processor     ProcessorInterface
 	logger        *log.Logger
 }
@@ -24,12 +26,14 @@ type Handler struct {
 func NewHandler(
 	listClient activitylog.ClientInterface,
 	detailsClient details.ClientInterface,
+	normalizer details.ResponseNormalizerInterface,
 	processor ProcessorInterface,
 	logger *log.Logger,
 ) Handler {
 	return Handler{
 		listClient:    listClient,
 		detailsClient: detailsClient,
+		normalizer:    normalizer,
 		processor:     processor,
 		logger:        logger,
 	}
@@ -61,7 +65,14 @@ func (h Handler) Handle() error {
 			return fmt.Errorf("could not fetch activity log entry details: %w", err)
 		}
 
-		if err := h.processor.Process(detailsEntry); err != nil {
+		normalizedResponse, err := h.normalizer.Normalize(detailsEntry)
+		if err != nil {
+			counter.Skipped().Add(1)
+
+			continue
+		}
+
+		if err := h.processor.Process(normalizedResponse); err != nil {
 			return fmt.Errorf("activity processor error: %w", err)
 		}
 
@@ -69,7 +80,8 @@ func (h Handler) Handle() error {
 	}
 
 	h.logger.Infof(
-		"Activity log entries completed: %d, skipped: %d",
+		"Activity log entries total: %d; completed %d; skipped: %d",
+		counter.Processed().Load()+counter.Skipped().Load(),
 		counter.Processed().Load(),
 		counter.Skipped().Load(),
 	)
