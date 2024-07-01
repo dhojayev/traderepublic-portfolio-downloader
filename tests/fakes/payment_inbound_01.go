@@ -7,6 +7,7 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/transactions"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/instrument"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/transaction"
 )
 
@@ -116,12 +117,16 @@ var PaymentInbound01 = TransactionTestCase{
 		Type:   transaction.TypeDeposit,
 		Status: "executed",
 		Total:  200,
+		Instrument: instrument.Model{
+			Icon: "logos/timeline_plus_circle/v2",
+			Type: instrument.TypeCash,
+		},
 	},
 	CSVEntry: filesystem.CSVEntry{
 		ID:        "1ae661c0-b3f1-4a81-a909-79567161b014",
 		Status:    "executed",
 		Type:      transaction.TypeDeposit,
-		AssetType: transaction.InstrumentTypeCash,
+		AssetType: string(instrument.TypeCash),
 		Credit:    200,
 	},
 }

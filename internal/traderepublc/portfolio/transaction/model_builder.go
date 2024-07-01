@@ -10,6 +10,7 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/document"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/instrument"
 )
 
 var (
@@ -22,21 +23,28 @@ type ModelBuilderFactoryInterface interface {
 	Create(eventType transactions.EventType, response details.NormalizedResponse) (ModelBuilderInterface, error)
 }
 
+type ModelBuilderInterface interface {
+	Build() (Model, error)
+}
+
 type ModelBuilderFactory struct {
-	resolver         details.TypeResolverInterface
-	documentsBuilder document.ModelBuilderInterface
-	logger           *log.Logger
+	resolver          details.TypeResolverInterface
+	instrumentBuilder instrument.ModelBuilderInterface
+	documentsBuilder  document.ModelBuilderInterface
+	logger            *log.Logger
 }
 
 func NewModelBuilderFactory(
 	resolver details.TypeResolverInterface,
+	instrumentBuilder instrument.ModelBuilderInterface,
 	documentsBuilder document.ModelBuilderInterface,
 	logger *log.Logger,
 ) ModelBuilderFactory {
 	return ModelBuilderFactory{
-		resolver:         resolver,
-		documentsBuilder: documentsBuilder,
-		logger:           logger,
+		resolver:          resolver,
+		instrumentBuilder: instrumentBuilder,
+		documentsBuilder:  documentsBuilder,
+		logger:            logger,
 	}
 }
 
@@ -54,7 +62,7 @@ func (f ModelBuilderFactory) Create(
 		return nil, fmt.Errorf("resolver error: %w", err)
 	}
 
-	baseBuilder := NewBaseModelBuilder(response, f.documentsBuilder, f.logger)
+	baseBuilder := NewBaseModelBuilder(response, f.instrumentBuilder, f.documentsBuilder, f.logger)
 	purchaseBuilder := NewPurchaseBuilder(baseBuilder)
 
 	switch responseType {
@@ -83,34 +91,29 @@ func (f ModelBuilderFactory) Create(
 	return nil, ErrModelBuilderUnknownType
 }
 
-type ModelBuilderInterface interface {
-	Build() (Model, error)
-}
-
 type BaseModelBuilder struct {
-	response         details.NormalizedResponse
-	documentsBuilder document.ModelBuilderInterface
-	logger           *log.Logger
+	response          details.NormalizedResponse
+	instrumentBuilder instrument.ModelBuilderInterface
+	documentsBuilder  document.ModelBuilderInterface
+	logger            *log.Logger
 }
 
 func NewBaseModelBuilder(
 	response details.NormalizedResponse,
+	instrumentBuilder instrument.ModelBuilderInterface,
 	documentsBuilder document.ModelBuilderInterface,
 	logger *log.Logger,
 ) BaseModelBuilder {
 	return BaseModelBuilder{
-		response:         response,
-		documentsBuilder: documentsBuilder,
-		logger:           logger,
+		response:          response,
+		instrumentBuilder: instrumentBuilder,
+		documentsBuilder:  documentsBuilder,
+		logger:            logger,
 	}
 }
 
 func (b BaseModelBuilder) ExtractStatus() (string, error) {
 	return b.response.Header.Data.Status, nil
-}
-
-func (b BaseModelBuilder) ExtractInstrumentIcon() (string, error) {
-	return b.response.Header.Data.Icon, nil
 }
 
 func (b BaseModelBuilder) ExtractTimestamp() (time.Time, error) {
@@ -120,29 +123,6 @@ func (b BaseModelBuilder) ExtractTimestamp() (time.Time, error) {
 	}
 
 	return timestamp, nil
-}
-
-func (b BaseModelBuilder) ExtractInstrumentISIN() (string, error) {
-	isin, valid := b.response.Header.Action.Payload.(string)
-
-	if !valid || isin == "" {
-		isin, _ = ExtractInstrumentNameFromIcon(b.response.Header.Data.Icon)
-	}
-
-	return isin, nil
-}
-
-func (b BaseModelBuilder) ExtractInstrumentName() (string, error) {
-	asset, err := b.response.Overview.GetDataByTitles(
-		details.OverviewDataTitleAsset,
-		details.OverviewDataTitleUnderlyingAsset,
-		details.OverviewDataTitleSecurity,
-	)
-	if err != nil {
-		return "", fmt.Errorf("could not get overview section asset: %w", err)
-	}
-
-	return asset.Detail.Text, nil
 }
 
 func (b BaseModelBuilder) ExtractSharesAmount() (float64, error) {
@@ -281,16 +261,6 @@ func (b PurchaseBuilder) Build() (Model, error) {
 		return model, b.HandleErr(err)
 	}
 
-	model.Instrument.ISIN, err = b.ExtractInstrumentISIN()
-	if err != nil {
-		return model, b.HandleErr(err)
-	}
-
-	model.Instrument.Name, err = b.ExtractInstrumentName()
-	if err != nil {
-		return model, b.HandleErr(err)
-	}
-
 	model.Shares, err = b.ExtractSharesAmount()
 	if err != nil {
 		return model, b.HandleErr(err)
@@ -311,10 +281,14 @@ func (b PurchaseBuilder) Build() (Model, error) {
 		return model, b.HandleErr(err)
 	}
 
-	model.Instrument.Icon, _ = b.ExtractInstrumentIcon()
+	model.Instrument, err = b.instrumentBuilder.Build(b.response)
+	if err != nil {
+		return model, b.HandleErr(err)
+	}
+
 	model.Documents, _ = b.BuildDocuments(model)
 
-	return model, err
+	return model, nil
 }
 
 type SaleBuilder struct {
@@ -461,6 +435,7 @@ func (b DepositBuilder) Build() (Model, error) {
 		return model, b.HandleErr(err)
 	}
 
+	model.Instrument, _ = b.instrumentBuilder.Build(b.response)
 	model.Documents, _ = b.BuildDocuments(model)
 
 	return model, nil
@@ -543,6 +518,7 @@ func (b InterestPayoutBuilder) Build() (Model, error) {
 		}
 	}
 
+	model.Instrument, _ = b.instrumentBuilder.Build(b.response)
 	model.Documents, _ = b.BuildDocuments(model)
 
 	return model, nil

@@ -11,7 +11,6 @@ import (
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/reader"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/details"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/document"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/transaction"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/tests/fakes"
 )
@@ -27,10 +26,7 @@ func TestModelBuilderBuildSupported(t *testing.T) {
 	readerMock := reader.NewMockInterface(controller)
 	detailsClient := details.NewClient(readerMock, logger)
 	normalizer := details.NewTransactionResponseNormalizer(logger)
-	resolver := details.NewTypeResolver(logger)
-	documentDateResolver := document.NewDateResolver(logger)
-	documentBuilder := document.NewModelBuilder(documentDateResolver, logger)
-	builderFactory := transaction.NewModelBuilderFactory(resolver, documentBuilder, logger)
+	builderFactory := transaction.ProvideModelBuilderFactory(logger)
 
 	for testCaseName, testCase := range testCases {
 		readerMock.
@@ -70,10 +66,7 @@ func TestModelBuilderBuildUnsupported(t *testing.T) {
 	readerMock := reader.NewMockInterface(controller)
 	detailsClient := details.NewClient(readerMock, logger)
 	normalizer := details.NewTransactionResponseNormalizer(logger)
-	resolver := details.NewTypeResolver(logger)
-	documentDateResolver := document.NewDateResolver(logger)
-	documentBuilder := document.NewModelBuilder(documentDateResolver, logger)
-	builderFactory := transaction.NewModelBuilderFactory(resolver, documentBuilder, logger)
+	builderFactory := transaction.ProvideModelBuilderFactory(logger)
 
 	for testCaseName, testCase := range testCases {
 		readerMock.
@@ -104,10 +97,7 @@ func TestModelBuilderBuildUnknown(t *testing.T) {
 	readerMock := reader.NewMockInterface(controller)
 	detailsClient := details.NewClient(readerMock, logger)
 	normalizer := details.NewTransactionResponseNormalizer(logger)
-	resolver := details.NewTypeResolver(logger)
-	documentDateResolver := document.NewDateResolver(logger)
-	documentBuilder := document.NewModelBuilder(documentDateResolver, logger)
-	builderFactory := transaction.NewModelBuilderFactory(resolver, documentBuilder, logger)
+	builderFactory := transaction.ProvideModelBuilderFactory(logger)
 
 	for testCaseName, testCase := range testCases {
 		readerMock.

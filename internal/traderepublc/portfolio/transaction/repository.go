@@ -9,7 +9,3 @@ import (
 type RepositoryInterface interface {
 	database.RepositoryInterface[*Model]
 }
-
-type InstrumentRepositoryInterface interface {
-	database.RepositoryInterface[*Instrument]
-}

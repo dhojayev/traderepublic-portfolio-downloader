@@ -8,6 +8,7 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/document"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/instrument"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/transaction"
 )
 
@@ -259,10 +260,11 @@ var BenefitsSpareChangeExecution01 = TransactionTestCase{
 	EventType: transactions.EventTypeBenefitsSpareChangeExecution,
 	Transaction: transaction.Model{
 		UUID: "265cb9c0-664a-45d4-b179-3061f196dd2a",
-		Instrument: transaction.Instrument{
+		Instrument: instrument.Model{
 			ISIN: "DE000A0F5UF5",
 			Name: "NASDAQ100 USD (Dist)",
 			Icon: "logos/DE000A0F5UF5/v2",
+			Type: instrument.TypeETF,
 		},
 		Type:   transaction.TypeRoundUp,
 		Status: "executed",
@@ -297,7 +299,7 @@ var BenefitsSpareChangeExecution01 = TransactionTestCase{
 		ID:         "265cb9c0-664a-45d4-b179-3061f196dd2a",
 		Status:     "executed",
 		Type:       transaction.TypeRoundUp,
-		AssetType:  transaction.InstrumentTypeETF,
+		AssetType:  string(instrument.TypeETF),
 		Name:       "NASDAQ100 USD (Dist)",
 		Instrument: "DE000A0F5UF5",
 		Shares:     0.006882,

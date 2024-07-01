@@ -16,8 +16,22 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/document"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/instrument"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/writer"
 )
+
+func ProvideModelBuilderFactory(logger *log.Logger) ModelBuilderFactory {
+	wire.Build(
+		details.DefaultSet,
+		instrument.ProvideModelBuilder,
+		document.DefaultSet,
+		NewModelBuilderFactory,
+
+		wire.Bind(new(instrument.ModelBuilderInterface), new(instrument.ModelBuilder)),
+	)
+
+	return ModelBuilderFactory{}
+}
 
 func ProvideHandler(
 	responseReader reader.Interface,
@@ -29,9 +43,9 @@ func ProvideHandler(
 		transactions.DefaultSet,
 		details.DefaultSet,
 		details.TransactionSet,
-		filesystem.CSVSet,
 		document.DefaultSet,
-		NewModelBuilderFactory,
+		filesystem.CSVSet,
+		ProvideModelBuilderFactory,
 		NewCSVEntryFactory,
 		ProvideTransactionRepository,
 		NewProcessor,
@@ -47,8 +61,4 @@ func ProvideHandler(
 
 func ProvideTransactionRepository(db *gorm.DB, logger *log.Logger) (*database.Repository[*Model], error) {
 	return database.NewRepository[*Model](db, logger)
-}
-
-func ProvideInstrumentRepository(db *gorm.DB, logger *log.Logger) (*database.Repository[*Instrument], error) {
-	return database.NewRepository[*Instrument](db, logger)
 }

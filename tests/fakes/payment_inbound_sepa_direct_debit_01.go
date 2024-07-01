@@ -8,6 +8,7 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/document"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/instrument"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/transaction"
 )
 
@@ -183,6 +184,10 @@ var PaymentInboundSepaDirectDebit01 = TransactionTestCase{
 		Type:   transaction.TypeDeposit,
 		Status: "executed",
 		Total:  500,
+		Instrument: instrument.Model{
+			Icon: "logos/timeline_plus_circle/v2",
+			Type: instrument.TypeCash,
+		},
 		Documents: []document.Model{
 			{
 				TransactionUUID: "ddc4ed4f-0314-42cf-8a65-930da1354348",
@@ -198,7 +203,7 @@ var PaymentInboundSepaDirectDebit01 = TransactionTestCase{
 		ID:        "ddc4ed4f-0314-42cf-8a65-930da1354348",
 		Status:    "executed",
 		Type:      transaction.TypeDeposit,
-		AssetType: transaction.InstrumentTypeCash,
+		AssetType: string(instrument.TypeCash),
 		Credit:    500,
 	},
 }

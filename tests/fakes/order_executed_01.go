@@ -8,6 +8,7 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/document"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/instrument"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/transaction"
 )
 
@@ -157,10 +158,11 @@ var (
 		EventType: transactions.EventTypeOrderExecuted,
 		Transaction: transaction.Model{
 			UUID: "b20e367c-5542-4fab-9fd6-6faa5e7ab582",
-			Instrument: transaction.Instrument{
+			Instrument: instrument.Model{
 				ISIN: "DE000SH0MW59",
 				Name: "CAC",
 				Icon: "logos/FR0003500008/v2",
+				Type: instrument.TypeOther,
 			},
 			Type:       transaction.TypePurchase,
 			Status:     "executed",
@@ -191,7 +193,7 @@ var (
 			ID:         "b20e367c-5542-4fab-9fd6-6faa5e7ab582",
 			Status:     "executed",
 			Type:       transaction.TypePurchase,
-			AssetType:  transaction.InstrumentTypeOther,
+			AssetType:  string(instrument.TypeOther),
 			Name:       "CAC",
 			Instrument: "DE000SH0MW59",
 			Shares:     40,

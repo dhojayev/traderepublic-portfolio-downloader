@@ -9,17 +9,6 @@ import (
 
 var ErrNoMatch = errors.New("value did not match the pattern")
 
-func ExtractInstrumentNameFromIcon(src string) (string, error) {
-	pattern := regexp.MustCompile(`.*[^/]/(.*)/.*`)
-	matches := pattern.FindStringSubmatch(src)
-
-	if len(matches) == 0 {
-		return "", ErrNoMatch
-	}
-
-	return matches[1], nil
-}
-
 func ParseFloatWithPeriod(src string) (float64, error) {
 	pattern := regexp.MustCompile(`^(\d+)\.?(\d*)$`)
 	matches := pattern.FindStringSubmatch(src)

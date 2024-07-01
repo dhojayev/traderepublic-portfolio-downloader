@@ -8,6 +8,7 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/document"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/instrument"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/transaction"
 )
 
@@ -126,6 +127,10 @@ var InterestPayoutCreated02 = TransactionTestCase{
 		Type:   transaction.TypeInterestPayout,
 		Status: "executed",
 		Total:  20.28,
+		Instrument: instrument.Model{
+			Icon: "logos/timeline_interest_new/v2",
+			Type: instrument.TypeCash,
+		},
 		Documents: []document.Model{
 			{
 				TransactionUUID: "79bea4ff-5552-45a1-85b5-8977e29f3d04",
@@ -141,7 +146,7 @@ var InterestPayoutCreated02 = TransactionTestCase{
 		ID:        "79bea4ff-5552-45a1-85b5-8977e29f3d04",
 		Status:    "executed",
 		Type:      transaction.TypeInterestPayout,
-		AssetType: transaction.InstrumentTypeCash,
+		AssetType: string(instrument.TypeCash),
 		Credit:    20.28,
 		Documents: []string{
 			"2024-03/79bea4ff-5552-45a1-85b5-8977e29f3d04/Abrechnung.pdf",

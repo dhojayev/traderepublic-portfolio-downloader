@@ -13,6 +13,7 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/document"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/instrument"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/writer"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
@@ -20,15 +21,21 @@ import (
 
 // Injectors from wire.go:
 
+func ProvideModelBuilderFactory(logger *logrus.Logger) ModelBuilderFactory {
+	typeResolver := details.NewTypeResolver(logger)
+	modelBuilder := instrument.ProvideModelBuilder(logger)
+	dateResolver := document.NewDateResolver(logger)
+	documentModelBuilder := document.NewModelBuilder(dateResolver, logger)
+	modelBuilderFactory := NewModelBuilderFactory(typeResolver, modelBuilder, documentModelBuilder, logger)
+	return modelBuilderFactory
+}
+
 func ProvideHandler(responseReader reader.Interface, responseWriter writer.Interface, dbConnection *gorm.DB, logger *logrus.Logger) (Handler, error) {
 	client := transactions.NewClient(responseReader, logger)
 	detailsClient := details.NewClient(responseReader, logger)
 	transactionResponseNormalizer := details.NewTransactionResponseNormalizer(logger)
 	eventTypeResolver := transactions.NewEventTypeResolver(logger)
-	typeResolver := details.NewTypeResolver(logger)
-	dateResolver := document.NewDateResolver(logger)
-	modelBuilder := document.NewModelBuilder(dateResolver, logger)
-	modelBuilderFactory := NewModelBuilderFactory(typeResolver, modelBuilder, logger)
+	modelBuilderFactory := ProvideModelBuilderFactory(logger)
 	repository, err := ProvideTransactionRepository(dbConnection, logger)
 	if err != nil {
 		return Handler{}, err
@@ -46,8 +53,4 @@ func ProvideHandler(responseReader reader.Interface, responseWriter writer.Inter
 
 func ProvideTransactionRepository(db *gorm.DB, logger *logrus.Logger) (*database.Repository[*Model], error) {
 	return database.NewRepository[*Model](db, logger)
-}
-
-func ProvideInstrumentRepository(db *gorm.DB, logger *logrus.Logger) (*database.Repository[*Instrument], error) {
-	return database.NewRepository[*Instrument](db, logger)
 }

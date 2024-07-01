@@ -8,6 +8,7 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/document"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/instrument"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/transaction"
 )
 
@@ -193,10 +194,11 @@ var OrderExecuted03 = TransactionTestCase{
 	EventType: transactions.EventTypeOrderExecuted,
 	Transaction: transaction.Model{
 		UUID: "a3b8e625-a6e9-4269-9529-01ebb86d69bb",
-		Instrument: transaction.Instrument{
+		Instrument: instrument.Model{
 			ISIN: "US6701002056",
 			Name: "Novo Nordisk (ADR)",
 			Icon: "logos/US6701002056/v2",
+			Type: instrument.TypeOther,
 		},
 		Type:       transaction.TypeSale,
 		Status:     "executed",
@@ -238,7 +240,7 @@ var OrderExecuted03 = TransactionTestCase{
 		ID:         "a3b8e625-a6e9-4269-9529-01ebb86d69bb",
 		Status:     "executed",
 		Type:       transaction.TypeSale,
-		AssetType:  transaction.InstrumentTypeOther,
+		AssetType:  string(instrument.TypeOther),
 		Name:       "Novo Nordisk (ADR)",
 		Instrument: "US6701002056",
 		Shares:     -5,

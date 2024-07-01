@@ -60,7 +60,7 @@ func (f CSVEntryFactory) Make(transaction Model) (filesystem.CSVEntry, error) {
 	}
 
 	return filesystem.NewCSVEntry(transaction.UUID, transaction.Status, transaction.Type,
-		transaction.Instrument.Type(), transaction.Instrument.Name, transaction.Instrument.ISIN,
+		string(transaction.Instrument.Type), transaction.Instrument.Name, transaction.Instrument.ISIN,
 		shares, rate, yield, profit, commission, debit, credit, taxAmount, investedAmount,
 		internal.DateTime{Time: transaction.Timestamp},
 		documents,

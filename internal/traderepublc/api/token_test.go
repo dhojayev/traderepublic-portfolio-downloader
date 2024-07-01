@@ -10,29 +10,13 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api"
 )
 
-func TestNewTokenFromHeader(t *testing.T) {
+func TestItCanCreateNewTokenFromHeader(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {
-		header        http.Header
-		mustReturnErr bool
-		expected      string
+		header   http.Header
+		expected string
 	}{
-		{
-			header: http.Header{
-				"Content-type": []string{"application/json"},
-			},
-			mustReturnErr: true,
-		},
-		{
-			header: http.Header{
-				"Content-type": []string{"application/json"},
-				"Set-Cookie": []string{
-					"JSESSIONID=22192A210742959A362F7820ECC81311; Path=/; Secure; HttpOnly",
-				},
-			},
-			mustReturnErr: true,
-		},
 		{
 			header: http.Header{
 				"Content-type": []string{"application/json"},
@@ -58,12 +42,30 @@ func TestNewTokenFromHeader(t *testing.T) {
 	for i, testCase := range testCases {
 		token, err := api.NewTokenFromHeader("session", testCase.header)
 
-		if !testCase.mustReturnErr {
-			assert.NoError(t, err, fmt.Sprintf("case %d", i))
-		}
-
 		assert.NoError(t, err, fmt.Sprintf("case %d", i))
 		assert.Equal(t, "session", token.Name(), fmt.Sprintf("case %d", i))
 		assert.Equal(t, testCase.expected, token.Value(), fmt.Sprintf("case %d", i))
+	}
+}
+
+func TestItReturnsErrorOnNoSessionInHeader(t *testing.T) {
+	t.Parallel()
+
+	testCases := []http.Header{
+		{
+			"Content-type": []string{"application/json"},
+		},
+		{
+			"Content-type": []string{"application/json"},
+			"Set-Cookie": []string{
+				"JSESSIONID=22192A210742959A362F7820ECC81311; Path=/; Secure; HttpOnly",
+			},
+		},
+	}
+
+	for i, testCase := range testCases {
+		_, err := api.NewTokenFromHeader("session", testCase)
+
+		assert.Error(t, err, fmt.Sprintf("case %d", i))
 	}
 }

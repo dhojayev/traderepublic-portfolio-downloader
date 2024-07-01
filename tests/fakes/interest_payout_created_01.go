@@ -8,6 +8,7 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/document"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/instrument"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/transaction"
 )
 
@@ -358,6 +359,10 @@ var InterestPayoutCreated01 = TransactionTestCase{
 		Status:    "executed",
 		Total:     0.07,
 		TaxAmount: 0.02,
+		Instrument: instrument.Model{
+			Icon: "logos/timeline_interest_new/v2",
+			Type: instrument.TypeCash,
+		},
 		Documents: []document.Model{
 			{
 				TransactionUUID: "c30c2952-ff0e-4fdb-bb8c-dfe1a8c35ce6",
@@ -373,7 +378,7 @@ var InterestPayoutCreated01 = TransactionTestCase{
 		ID:        "c30c2952-ff0e-4fdb-bb8c-dfe1a8c35ce6",
 		Status:    "executed",
 		Type:      transaction.TypeInterestPayout,
-		AssetType: transaction.InstrumentTypeCash,
+		AssetType: string(instrument.TypeCash),
 		Name:      "Savings account",
 		Credit:    0.07,
 		TaxAmount: 0.02,
