@@ -1,8 +1,6 @@
 package fakes
 
-import (
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
-)
+import "github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/transactions"
 
 var CardSuccessfulTransaction01 = TransactionTestCase{
 	TimelineTransactionsData: TimelineTransactionsTestData{

@@ -1,6 +1,6 @@
 package fakes
 
-import "github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/activitylog"
+import "github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/activitylog"
 
 var DocumentsCreated01 = ActivityLogTestCase{
 	ActivityLogData: ActivityLogTestData{
