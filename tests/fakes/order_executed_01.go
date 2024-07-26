@@ -4,11 +4,12 @@ import (
 	"time"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/details"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/transactions"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/document"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/instrument"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/transaction"
 )
 
 var (
@@ -157,10 +158,11 @@ var (
 		EventType: transactions.EventTypeOrderExecuted,
 		Transaction: transaction.Model{
 			UUID: "b20e367c-5542-4fab-9fd6-6faa5e7ab582",
-			Instrument: transaction.Instrument{
+			Instrument: instrument.Model{
 				ISIN: "DE000SH0MW59",
 				Name: "CAC",
 				Icon: "logos/FR0003500008/v2",
+				Type: instrument.TypeOther,
 			},
 			Type:       transaction.TypePurchase,
 			Status:     "executed",
@@ -190,8 +192,8 @@ var (
 		CSVEntry: filesystem.CSVEntry{
 			ID:         "b20e367c-5542-4fab-9fd6-6faa5e7ab582",
 			Status:     "executed",
-			Type:       "Purchase",
-			AssetType:  "Other",
+			Type:       transaction.TypePurchase,
+			AssetType:  string(instrument.TypeOther),
 			Name:       "CAC",
 			Instrument: "DE000SH0MW59",
 			Shares:     40,

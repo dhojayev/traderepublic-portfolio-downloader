@@ -42,7 +42,7 @@ func (r CSVReader) Read(filepath string) ([]CSVEntry, error) {
 		}
 	}()
 
-	if err := gocsv.UnmarshalFile(file, &entries); err != nil { // Load clients from file
+	if err := gocsv.UnmarshalFile(file, &entries); err != nil {
 		return entries, fmt.Errorf("csv unmarshall error: %w", err)
 	}
 

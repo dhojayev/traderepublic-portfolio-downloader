@@ -4,11 +4,12 @@ import (
 	"time"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/details"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/transactions"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/document"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/instrument"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/transaction"
 )
 
 var SSPCorporateActionInvoiceCash01 = TransactionTestCase{
@@ -177,10 +178,11 @@ var SSPCorporateActionInvoiceCash01 = TransactionTestCase{
 	EventType: transactions.EventTypeSSPCorporateActionInvoiceCash,
 	Transaction: transaction.Model{
 		UUID: "c578258f-563d-49f8-85fc-fb652d8354d9",
-		Instrument: transaction.Instrument{
+		Instrument: instrument.Model{
 			ISIN: "DE000A0F5UF5",
 			Name: "NASDAQ100 USD (Dist)",
 			Icon: "logos/DE000A0F5UF5/v2",
+			Type: instrument.TypeETF,
 		},
 		Type:   transaction.TypeDividendPayout,
 		Status: "executed",
@@ -202,7 +204,7 @@ var SSPCorporateActionInvoiceCash01 = TransactionTestCase{
 		ID:         "c578258f-563d-49f8-85fc-fb652d8354d9",
 		Status:     "executed",
 		Type:       transaction.TypeDividendPayout,
-		AssetType:  transaction.InstrumentTypeOther,
+		AssetType:  string(instrument.TypeETF),
 		Name:       "NASDAQ100 USD (Dist)",
 		Instrument: "DE000A0F5UF5",
 		Profit:     0.27,

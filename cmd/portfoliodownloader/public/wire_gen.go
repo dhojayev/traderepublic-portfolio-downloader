@@ -8,12 +8,12 @@ package main
 
 import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/cmd/portfoliodownloader"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/websocket"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/database"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/activity"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/reader"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/websocket"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/activity"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/transaction"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/writer"
 	"github.com/google/wire"
 	"github.com/sirupsen/logrus"

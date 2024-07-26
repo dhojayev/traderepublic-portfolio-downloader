@@ -5,9 +5,9 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/auth"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/activity"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/auth"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/activity"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/transaction"
 )
 
 type App struct {

@@ -4,11 +4,12 @@ import (
 	"time"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/details"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/transactions"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/document"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/instrument"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/transaction"
 )
 
 var Credit01 = TransactionTestCase{
@@ -202,10 +203,11 @@ var Credit01 = TransactionTestCase{
 	EventType: transactions.EventTypeCredit,
 	Transaction: transaction.Model{
 		UUID: "23cf72a9-3888-4918-898c-c3bc38346ba1",
-		Instrument: transaction.Instrument{
+		Instrument: instrument.Model{
 			ISIN: "IE00BK1PV551",
 			Name: "MSCI World USD (Dist)",
 			Icon: "logos/IE00BK1PV551/v2",
+			Type: instrument.TypeETF,
 		},
 		Documents: []document.Model{
 			{
@@ -226,8 +228,8 @@ var Credit01 = TransactionTestCase{
 	CSVEntry: filesystem.CSVEntry{
 		ID:         "23cf72a9-3888-4918-898c-c3bc38346ba1",
 		Status:     "executed",
-		Type:       "Dividends",
-		AssetType:  "ETF",
+		Type:       transaction.TypeDividendPayout,
+		AssetType:  string(instrument.TypeETF),
 		Name:       "MSCI World USD (Dist)",
 		Instrument: "IE00BK1PV551",
 		Shares:     10.344033,

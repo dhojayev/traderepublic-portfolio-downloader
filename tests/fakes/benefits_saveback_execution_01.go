@@ -4,11 +4,12 @@ import (
 	"time"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/details"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/transactions"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/document"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/instrument"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/transaction"
 )
 
 var BenefitsSavebackExecution01 = TransactionTestCase{
@@ -143,10 +144,11 @@ var BenefitsSavebackExecution01 = TransactionTestCase{
 	EventType: transactions.EventTypeBenefitsSavebackExecution,
 	Transaction: transaction.Model{
 		UUID: "73fc417a-62ef-4179-a85e-9f3b29224567",
-		Instrument: transaction.Instrument{
+		Instrument: instrument.Model{
 			ISIN: "XF000DOT0011",
 			Name: "Polkadot",
 			Icon: "logos/XF000DOT0011/v2",
+			Type: instrument.TypeCryptocurrency,
 		},
 		Type:   transaction.TypeSaveback,
 		Status: "executed",
@@ -175,8 +177,8 @@ var BenefitsSavebackExecution01 = TransactionTestCase{
 	CSVEntry: filesystem.CSVEntry{
 		ID:         "73fc417a-62ef-4179-a85e-9f3b29224567",
 		Status:     "executed",
-		Type:       "Saveback",
-		AssetType:  "Cryptocurrency",
+		Type:       transaction.TypeSaveback,
+		AssetType:  string(instrument.TypeCryptocurrency),
 		Name:       "Polkadot",
 		Instrument: "XF000DOT0011",
 		Shares:     2.270212,

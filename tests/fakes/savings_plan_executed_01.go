@@ -4,11 +4,12 @@ import (
 	"time"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/details"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/transactions"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/document"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/instrument"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/transaction"
 )
 
 var SavingsPlanExecuted01 = TransactionTestCase{
@@ -285,10 +286,11 @@ var SavingsPlanExecuted01 = TransactionTestCase{
 	EventType: transactions.EventTypeSavingsPlanExecuted,
 	Transaction: transaction.Model{
 		UUID: "7c9be07c-7b88-4a49-a4be-425094388b8e",
-		Instrument: transaction.Instrument{
+		Instrument: instrument.Model{
 			ISIN: "IE00BK1PV551",
 			Name: "MSCI World USD (Dist)",
 			Icon: "logos/IE00BK1PV551/v2",
+			Type: instrument.TypeETF,
 		},
 		Type:   transaction.TypePurchase,
 		Status: "executed",
@@ -309,8 +311,8 @@ var SavingsPlanExecuted01 = TransactionTestCase{
 	CSVEntry: filesystem.CSVEntry{
 		ID:         "7c9be07c-7b88-4a49-a4be-425094388b8e",
 		Status:     "executed",
-		Type:       "Purchase",
-		AssetType:  "ETF",
+		Type:       transaction.TypePurchase,
+		AssetType:  string(instrument.TypeETF),
 		Name:       "MSCI World USD (Dist)",
 		Instrument: "IE00BK1PV551",
 		Shares:     6.887811,

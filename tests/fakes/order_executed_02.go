@@ -4,11 +4,12 @@ import (
 	"time"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/document"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/details"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/transactions"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/document"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/instrument"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/transaction"
 )
 
 var OrderExecuted02 = TransactionTestCase{
@@ -281,10 +282,11 @@ var OrderExecuted02 = TransactionTestCase{
 	EventType: transactions.EventTypeOrderExecuted,
 	Transaction: transaction.Model{
 		UUID: "1d9ad3b5-e65c-41f6-9c7d-96baa2a2ecad",
-		Instrument: transaction.Instrument{
+		Instrument: instrument.Model{
 			ISIN: "DE000A0F5UF5",
 			Name: "NASDAQ100 USD (Dist)",
 			Icon: "logos/DE000A0F5UF5/v2",
+			Type: instrument.TypeETF,
 		},
 		Type:       transaction.TypePurchase,
 		Status:     "executed",
@@ -322,8 +324,8 @@ var OrderExecuted02 = TransactionTestCase{
 	CSVEntry: filesystem.CSVEntry{
 		ID:         "1d9ad3b5-e65c-41f6-9c7d-96baa2a2ecad",
 		Status:     "executed",
-		Type:       "Purchase",
-		AssetType:  "ETF",
+		Type:       transaction.TypePurchase,
+		AssetType:  string(instrument.TypeETF),
 		Name:       "NASDAQ100 USD (Dist)",
 		Instrument: "DE000A0F5UF5",
 		Shares:     1,

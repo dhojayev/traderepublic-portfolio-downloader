@@ -4,10 +4,11 @@ import (
 	"time"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/details"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/portfolio/transaction"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/details"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/transactions"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/instrument"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/transaction"
 )
 
 var PaymentOutbound01 = TransactionTestCase{
@@ -73,12 +74,16 @@ var PaymentOutbound01 = TransactionTestCase{
 		Total:     1,
 		CreatedAt: time.Time{},
 		UpdatedAt: time.Time{},
+		Instrument: instrument.Model{
+			Icon: "logos/timeline_minus_circle/v2",
+			Type: instrument.TypeCash,
+		},
 	},
 	CSVEntry: filesystem.CSVEntry{
 		ID:        "a2597441-45f4-4ae2-a881-ab4a65aa0f0e",
 		Status:    "executed",
-		Type:      "Withdrawal",
-		AssetType: "Other",
+		Type:      transaction.TypeWithdrawal,
+		AssetType: string(instrument.TypeCash),
 		Debit:     1,
 	},
 }
