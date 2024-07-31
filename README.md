@@ -65,7 +65,18 @@ The application performs the same functions as Trade Republic's official fronten
 
 ## Usage
 
-### Choosing the Right Binary for Your OS and Architecture
+### Running in Docker
+
+With Docker running on your host machine run the following commands:
+
+```shell
+docker build -t portfoliodownloader .
+docker run --rm --env TZ=Europe/Berlin -v ./responses:/opt/portfoliodownloader/responses -v ./documents:/opt/portfoliodownloader/documents -t portfoliodownloader
+```
+
+### Running on the host machine
+
+#### Choosing the Right Binary for Your OS and Architecture
 
 Download one of the binaries from the [releases](https://github.com/dhojayev/traderepublic-portfolio-downloader/releases) section according to the table below:
 
