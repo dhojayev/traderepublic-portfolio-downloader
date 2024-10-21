@@ -1,6 +1,6 @@
 services:
   go:
-    image: golang:1.22.3-alpine
+    image: golang:1.23.2-alpine
     restart: no
     stdin_open: true
     tty: true

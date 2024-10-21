@@ -35,6 +35,7 @@ func NewMessage(data []byte) (Message, error) {
 		return msg, fmt.Errorf("could not convert id string to int: %w", err)
 	}
 
+	//nolint:gosec // disable G115 until its fixed
 	msg.id = uint(id)
 	msg.state = parts[1]
 	msg.data = []byte(strings.Join(parts[2:], " "))
