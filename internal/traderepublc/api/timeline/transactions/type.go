@@ -14,6 +14,7 @@ const (
 	EventTypePaymentOutbound               EventType = "PAYMENT_OUTBOUND"
 	EventTypeOrderExecuted                 EventType = "ORDER_EXECUTED"
 	EventTypeSavingsPlanExecuted           EventType = "SAVINGS_PLAN_EXECUTED"
+	EventTypeSavingsPlanInvoiceCreated     EventType = "SAVINGS_PLAN_INVOICE_CREATED"
 	EventTypeInterestPayoutCreated         EventType = "INTEREST_PAYOUT_CREATED"
 	EventTypeCredit                        EventType = "CREDIT"
 	EventTypeBenefitsSavebackExecution     EventType = "benefits_saveback_execution"
@@ -44,6 +45,7 @@ func NewEventTypeResolver(logger *log.Logger) EventTypeResolver {
 			EventTypePaymentOutbound,
 			EventTypeOrderExecuted,
 			EventTypeSavingsPlanExecuted,
+			EventTypeSavingsPlanInvoiceCreated,
 			EventTypeInterestPayoutCreated,
 			EventTypeCredit,
 			EventTypeBenefitsSavebackExecution,

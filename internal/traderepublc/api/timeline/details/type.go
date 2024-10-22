@@ -4,6 +4,7 @@ package details
 
 import (
 	"errors"
+	"slices"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
@@ -72,7 +73,12 @@ func (r TypeResolver) Resolve(eventType transactions.EventType, response Normali
 }
 
 func PurchaseDetector(eventType transactions.EventType, response NormalizedResponse) bool {
-	if eventType == transactions.EventTypeSavingsPlanExecuted {
+	supportedEventTypes := []transactions.EventType{
+		transactions.EventTypeSavingsPlanExecuted,
+		transactions.EventTypeSavingsPlanInvoiceCreated,
+	}
+
+	if slices.Contains(supportedEventTypes, eventType) {
 		return true
 	}
 

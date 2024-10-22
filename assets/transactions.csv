@@ -11,3 +11,4 @@ ddc4ed4f-0314-42cf-8a65-930da1354348,executed,23 Jul 23 21:05 +0000,Deposit,Cash
 a2597441-45f4-4ae2-a881-ab4a65aa0f0e,executed,11 Jan 24 08:55 +0000,Withdrawal,Cash,,,0,0,0,0,0,1,0,0,[]
 c578258f-563d-49f8-85fc-fb652d8354d9,executed,01 Jun 24 06:22 +0000,Dividends,ETF,NASDAQ100 USD (Dist),DE000A0F5UF5,1.203461,0.25,0,0.27,0,0,0.27,0,"[""2024-06/c578258f-563d-49f8-85fc-fb652d8354d9/Dokumente.pdf""]"
 7c9be07c-7b88-4a49-a4be-425094388b8e,executed,11 Nov 23 13:40 +0000,Purchase,ETF,MSCI World USD (Dist),IE00BK1PV551,6.887811,72.592,0,0,0,500,0,0,"[""2023-11/7c9be07c-7b88-4a49-a4be-425094388b8e/Abrechnung Ausführung.pdf""]"
+398687aa-748b-47aa-951a-8583c5d141bf,executed,09 Oct 24 15:20 +0000,Purchase,Other,Amazon.com,US0231351067,0.005941,168.3,0,0,0,1,0,0,"[""2024-10/398687aa-748b-47aa-951a-8583c5d141bf/Abrechnung Ausführung.pdf""]"
