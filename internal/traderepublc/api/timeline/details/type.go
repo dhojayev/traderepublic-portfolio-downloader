@@ -49,6 +49,7 @@ func NewTypeResolver(logger *log.Logger) TypeResolver {
 			TypeRoundUpTransaction:        RoundUpDetector,
 			TypeSavebackTransaction:       SavebackDetector,
 			TypeInterestPayoutTransaction: InterestPayoutDetector,
+			TypeCardPaymentTransaction:    CardPaymentDetector,
 
 			// Detectors with the highest performance hit should be listed in the bottom.
 			TypePurchaseTransaction: PurchaseDetector,
@@ -130,4 +131,9 @@ func DividendPayoutDetector(eventType transactions.EventType, _ NormalizedRespon
 
 func WithdrawalDetector(eventType transactions.EventType, _ NormalizedResponse) bool {
 	return eventType == transactions.EventTypePaymentOutbound
+}
+
+func CardPaymentDetector(eventType transactions.EventType, response NormalizedResponse) bool {
+	// TODO(yann): incomplete. What about failed transactions / refunds?
+	return eventType == transactions.EventTypeCardSuccessfulTransaction
 }
