@@ -533,8 +533,6 @@ func NewPaymentTransactionBuilder(baseBuilder BaseModelBuilder) PaymentTransacti
 }
 
 func (b PaymentTransactionBuilder) ExtractTotalAmount() (float64, error) {
-	// example string: "Du hast 2,00\u00a0€ ausgegeben"
-	// TODO: as per given example: maybe unicode errors occur while parsing?
 	totalAmountStr, err := ParseNumericValueFromString(b.response.Header.Title)
 	if err != nil {
 		return 0, err
