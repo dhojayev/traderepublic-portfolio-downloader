@@ -134,6 +134,6 @@ func WithdrawalDetector(eventType transactions.EventType, _ NormalizedResponse) 
 }
 
 func CardPaymentDetector(eventType transactions.EventType, response NormalizedResponse) bool {
-	// TODO(yann): incomplete. What about failed transactions / refunds?
+	// TODO: incomplete. What about failed transactions / refunds?
 	return eventType == transactions.EventTypeCardSuccessfulTransaction
 }
