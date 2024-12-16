@@ -118,11 +118,18 @@ func (b BaseModelBuilder) ExtractStatus() (string, error) {
 
 func (b BaseModelBuilder) ExtractTimestamp() (time.Time, error) {
 	timestamp, err := time.Parse(details.ResponseTimeFormat, b.response.Header.Data.Timestamp)
-	if err != nil {
-		return time.Time{}, fmt.Errorf("could not parse header section timestamp: %w", err)
+
+	if err == nil {
+		return timestamp, nil
 	}
 
-	return timestamp, nil
+	timestamp, err = time.Parse(details.ResponseTimeFormatAlt, b.response.Header.Data.Timestamp)
+
+	if err == nil {
+		return timestamp, nil
+	}
+
+	return time.Time{}, fmt.Errorf("could not parse header section timestamp: %w", err)
 }
 
 func (b BaseModelBuilder) ExtractSharesAmount() (float64, error) {
@@ -212,7 +219,10 @@ func (b BaseModelBuilder) ExtractTaxAmount() (float64, error) {
 
 	taxAmount, err := ParseFloatWithComma(taxData.Detail.Text, false)
 	if err != nil {
-		return 0, fmt.Errorf("could not parse transaction section tax amount to float: %w", err)
+		taxAmount, err = ParseFloatWithPeriod(taxData.Detail.Text)
+		if err != nil {
+			return 0, fmt.Errorf("could not parse transaction section tax amount to float: %w", err)
+		}
 	}
 
 	return taxAmount, nil
@@ -514,7 +524,10 @@ func (b InterestPayoutBuilder) Build() (Model, error) {
 
 		model.Total, err = ParseFloatWithComma(totalAmountStr, false)
 		if err != nil {
-			return model, b.HandleErr(err)
+			model.Total, err = ParseFloatWithPeriod(totalAmountStr)
+			if err != nil {
+				return model, b.HandleErr(err)
+			}
 		}
 	}
 

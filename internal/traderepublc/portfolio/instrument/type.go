@@ -33,7 +33,7 @@ func NewTypeResolver(logger *log.Logger) TypeResolver {
 
 func (r TypeResolver) Resolve(instrument Model) Type {
 	switch {
-	case instrument.Name == "":
+	case instrument.Name == "", strings.HasPrefix(instrument.Name, isinPrefixCash):
 		return TypeCash
 	case strings.HasSuffix(instrument.Name, isinSuffixDist), strings.HasSuffix(instrument.Name, isinSuffixAcc):
 		return TypeETF

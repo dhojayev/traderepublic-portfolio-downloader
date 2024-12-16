@@ -10,7 +10,7 @@ import (
 var ErrNoMatch = errors.New("value did not match the pattern")
 
 func ParseFloatWithPeriod(src string) (float64, error) {
-	pattern := regexp.MustCompile(`^(\d+)\.?(\d*)$`)
+	pattern := regexp.MustCompile(`^[^\d]*(\d+)\.?(\d*)$`)
 	matches := pattern.FindStringSubmatch(src)
 
 	if len(matches) == 0 {
@@ -28,7 +28,7 @@ func ParseFloatWithPeriod(src string) (float64, error) {
 }
 
 func ParseFloatWithComma(src string, isNegative bool) (float64, error) {
-	pattern := regexp.MustCompile(`^\+?\s?(\d+)\.?(\d*),?(\d*).*$`)
+	pattern := regexp.MustCompile(`^\+?\s?(\d+)\.?(\d*),(\d+).*$`)
 	matches := pattern.FindStringSubmatch(src)
 
 	if len(matches) == 0 {
