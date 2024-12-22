@@ -7,6 +7,7 @@ import (
 const (
 	isinPrefixLending = "XS"
 	isinPrefixCrypto  = "XF000"
+	isinPrefixCash    = "Cash"
 	isinSuffixDist    = "(Dist)"
 	isinSuffixAcc     = "(Acc)"
 )

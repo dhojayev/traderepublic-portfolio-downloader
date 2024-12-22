@@ -127,6 +127,12 @@ func assertHelper(t *testing.T, expected, actual filesystem.CSVEntry, testCaseNa
 		floatToStr(actual.Credit),
 		fmt.Sprintf("case '%s': credit amount does not match", testCaseName),
 	)
+	assert.Equal(
+		t,
+		floatToStr(expected.TaxAmount),
+		floatToStr(actual.TaxAmount),
+		fmt.Sprintf("case '%s': tax amount does not match", testCaseName),
+	)
 }
 
 // converts float64 to string to simplify assertions since data written into CSV will be in string anyway.

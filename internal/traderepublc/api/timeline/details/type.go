@@ -121,7 +121,7 @@ func DepositDetector(eventType transactions.EventType, _ NormalizedResponse) boo
 }
 
 func InterestPayoutDetector(eventType transactions.EventType, _ NormalizedResponse) bool {
-	return eventType == transactions.EventTypeInterestPayoutCreated
+	return eventType == transactions.EventTypeInterestPayoutCreated || eventType == transactions.EventTypeInterestPayout
 }
 
 func DividendPayoutDetector(eventType transactions.EventType, _ NormalizedResponse) bool {
