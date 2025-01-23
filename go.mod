@@ -12,7 +12,7 @@ require (
 	github.com/stretchr/testify v1.9.0
 	github.com/thlib/go-timezone-local v0.0.0-20210907160436-ef149e42d28e
 	go.uber.org/mock v0.4.0
-	golang.org/x/term v0.18.0
+	golang.org/x/term v0.28.0
 	gorm.io/gorm v1.25.9
 )
 
@@ -37,7 +37,7 @@ require (
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	golang.org/x/net v0.23.0 // indirect
-	golang.org/x/sys v0.21.0 // indirect
+	golang.org/x/net v0.34.0 // indirect
+	golang.org/x/sys v0.29.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
