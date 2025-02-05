@@ -4,7 +4,7 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
 )
 
-type CSVEntry struct {
+type DepotTransactionCSVEntry struct {
 	ID             string
 	Status         string
 	Timestamp      internal.DateTime
@@ -24,13 +24,13 @@ type CSVEntry struct {
 	Documents      []string
 }
 
-func NewCSVEntry(
+func NewDepotTransactionCSVEntry(
 	id, status, transactionType, assetType, name, instrument string,
 	shares, rate, yield, profit, commission, debit, credit, taxAmount, investedAmount float64,
 	timestamp internal.DateTime,
 	documents []string,
-) CSVEntry {
-	return CSVEntry{
+) DepotTransactionCSVEntry {
+	return DepotTransactionCSVEntry{
 		ID:             id,
 		Status:         status,
 		Timestamp:      timestamp,
@@ -48,5 +48,41 @@ func NewCSVEntry(
 		TaxAmount:      taxAmount,
 		InvestedAmount: investedAmount,
 		Documents:      documents,
+	}
+}
+
+type CardTransactionCSVEntry struct {
+	ID                    string
+	Status                string
+	Timestamp             internal.DateTime
+	Type                  string
+	Card                  string
+	Merchant              string
+	OriginalCurrency      string  `csv:"OriginalCurrency"`
+	OriginalAmount        float64 `csv:"Original amount"`
+	ExchangeRate          float64
+	ReferenceExchangeRate float64 `csv:"Reference exchange rate"`
+	Debit                 float64
+	Credit                float64
+}
+
+func NewCardTransactionCSVEntry(
+	id, status, transactionType, card, merchant, originalCurrency string,
+	timestamp internal.DateTime,
+	originalAmount, exchangeRate, refExchangeRate, debit, credit float64,
+) CardTransactionCSVEntry {
+	return CardTransactionCSVEntry{
+		ID:                    id,
+		Status:                status,
+		Timestamp:             timestamp,
+		Type:                  transactionType,
+		Card:                  card,
+		Merchant:              merchant,
+		OriginalCurrency:      originalCurrency,
+		OriginalAmount:        originalAmount,
+		ExchangeRate:          exchangeRate,
+		ReferenceExchangeRate: refExchangeRate,
+		Debit:                 debit,
+		Credit:                credit,
 	}
 }

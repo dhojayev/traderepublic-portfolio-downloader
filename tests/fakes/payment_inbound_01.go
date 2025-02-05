@@ -122,7 +122,7 @@ var PaymentInbound01 = TransactionTestCase{
 			Type: instrument.TypeCash,
 		},
 	},
-	CSVEntry: filesystem.CSVEntry{
+	DepotTransactionCSVEntry: filesystem.DepotTransactionCSVEntry{
 		ID:        "1ae661c0-b3f1-4a81-a909-79567161b014",
 		Status:    "executed",
 		Type:      transaction.TypeDeposit,
@@ -133,7 +133,7 @@ var PaymentInbound01 = TransactionTestCase{
 
 func init() {
 	PaymentInbound01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2023-05-21T08:25:53.360+0000")
-	PaymentInbound01.CSVEntry.Timestamp = internal.DateTime{Time: PaymentInbound01.Transaction.Timestamp}
+	PaymentInbound01.DepotTransactionCSVEntry.Timestamp = internal.DateTime{Time: PaymentInbound01.Transaction.Timestamp}
 
 	RegisterSupported("PaymentInbound01", PaymentInbound01)
 }

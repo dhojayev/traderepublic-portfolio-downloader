@@ -199,7 +199,7 @@ var PaymentInboundSepaDirectDebit01 = TransactionTestCase{
 			},
 		},
 	},
-	CSVEntry: filesystem.CSVEntry{
+	DepotTransactionCSVEntry: filesystem.DepotTransactionCSVEntry{
 		ID:        "ddc4ed4f-0314-42cf-8a65-930da1354348",
 		Status:    "executed",
 		Type:      transaction.TypeDeposit,
@@ -210,7 +210,7 @@ var PaymentInboundSepaDirectDebit01 = TransactionTestCase{
 
 func init() {
 	PaymentInboundSepaDirectDebit01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2023-07-23T21:05:22.543+0000")
-	PaymentInboundSepaDirectDebit01.CSVEntry.Timestamp = internal.DateTime{Time: PaymentInboundSepaDirectDebit01.Transaction.Timestamp}
+	PaymentInboundSepaDirectDebit01.DepotTransactionCSVEntry.Timestamp = internal.DateTime{Time: PaymentInboundSepaDirectDebit01.Transaction.Timestamp}
 
 	RegisterSupported("PaymentInboundSepaDirectDebit01", PaymentInboundSepaDirectDebit01)
 }

@@ -332,7 +332,7 @@ var SavingsPlanInvoiceCreated01 = TransactionTestCase{
 			},
 		},
 	},
-	CSVEntry: filesystem.CSVEntry{
+	DepotTransactionCSVEntry: filesystem.DepotTransactionCSVEntry{
 		ID:         "398687aa-748b-47aa-951a-8583c5d141bf",
 		Status:     "executed",
 		Type:       transaction.TypePurchase,
@@ -347,7 +347,7 @@ var SavingsPlanInvoiceCreated01 = TransactionTestCase{
 
 func init() {
 	SavingsPlanInvoiceCreated01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2024-10-09T15:20:39.847+0000")
-	SavingsPlanInvoiceCreated01.CSVEntry.Timestamp = internal.DateTime{Time: SavingsPlanInvoiceCreated01.Transaction.Timestamp}
+	SavingsPlanInvoiceCreated01.DepotTransactionCSVEntry.Timestamp = internal.DateTime{Time: SavingsPlanInvoiceCreated01.Transaction.Timestamp}
 
 	RegisterSupported("SavingsPlanInvoiceCreated01", SavingsPlanInvoiceCreated01)
 }

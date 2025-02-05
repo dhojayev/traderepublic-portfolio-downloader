@@ -225,7 +225,7 @@ var Credit01 = TransactionTestCase{
 		Rate:   0.28,
 		Total:  2.94,
 	},
-	CSVEntry: filesystem.CSVEntry{
+	DepotTransactionCSVEntry: filesystem.DepotTransactionCSVEntry{
 		ID:         "23cf72a9-3888-4918-898c-c3bc38346ba1",
 		Status:     "executed",
 		Type:       transaction.TypeDividendPayout,
@@ -241,7 +241,7 @@ var Credit01 = TransactionTestCase{
 
 func init() {
 	Credit01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2023-12-13T12:44:28.857+0000")
-	Credit01.CSVEntry.Timestamp = internal.DateTime{Time: Credit01.Transaction.Timestamp}
+	Credit01.DepotTransactionCSVEntry.Timestamp = internal.DateTime{Time: Credit01.Transaction.Timestamp}
 
 	RegisterSupported("Credit01", Credit01)
 }

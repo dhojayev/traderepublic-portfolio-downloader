@@ -226,7 +226,7 @@ var TradeInvoice01 = TransactionTestCase{
 			},
 		},
 	},
-	CSVEntry: filesystem.CSVEntry{
+	DepotTransactionCSVEntry: filesystem.DepotTransactionCSVEntry{
 		ID:         "91aa5f02-27f0-4a9e-8733-f90dee41f2cc",
 		Status:     "executed",
 		Type:       transaction.TypePurchase,
@@ -242,7 +242,7 @@ var TradeInvoice01 = TransactionTestCase{
 
 func init() {
 	TradeInvoice01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2024-06-17T12:02:07.095+0000")
-	TradeInvoice01.CSVEntry.Timestamp = internal.DateTime{Time: TradeInvoice01.Transaction.Timestamp}
+	TradeInvoice01.DepotTransactionCSVEntry.Timestamp = internal.DateTime{Time: TradeInvoice01.Transaction.Timestamp}
 
 	RegisterSupported("TradeInvoice01", TradeInvoice01)
 }

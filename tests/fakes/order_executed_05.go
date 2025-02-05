@@ -282,14 +282,14 @@ var OrderExecuted05 = TransactionTestCase{
   ]
 }`),
 	},
-	EventType:   transactions.EventTypeOrderExecuted,
-	Transaction: transaction.Model{},
-	CSVEntry:    filesystem.CSVEntry{},
+	EventType:                transactions.EventTypeOrderExecuted,
+	Transaction:              transaction.Model{},
+	DepotTransactionCSVEntry: filesystem.DepotTransactionCSVEntry{},
 }
 
 func init() {
 	OrderExecuted05.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2023-09-12T06:35:52.879+0000")
-	OrderExecuted05.CSVEntry.Timestamp = internal.DateTime{Time: OrderExecuted05.Transaction.Timestamp}
+	OrderExecuted05.DepotTransactionCSVEntry.Timestamp = internal.DateTime{Time: OrderExecuted05.Transaction.Timestamp}
 
 	RegisterUnknown("OrderExecuted05", OrderExecuted05)
 }

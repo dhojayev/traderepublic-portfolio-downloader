@@ -39,10 +39,10 @@ func (m *MockCSVReaderInterface) EXPECT() *MockCSVReaderInterfaceMockRecorder {
 }
 
 // Read mocks base method.
-func (m *MockCSVReaderInterface) Read(filepath string) ([]CSVEntry, error) {
+func (m *MockCSVReaderInterface) Read(filepath string) ([]DepotTransactionCSVEntry, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Read", filepath)
-	ret0, _ := ret[0].([]CSVEntry)
+	ret0, _ := ret[0].([]DepotTransactionCSVEntry)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

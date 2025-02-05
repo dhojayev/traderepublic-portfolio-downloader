@@ -174,7 +174,7 @@ var BenefitsSavebackExecution01 = TransactionTestCase{
 			},
 		},
 	},
-	CSVEntry: filesystem.CSVEntry{
+	DepotTransactionCSVEntry: filesystem.DepotTransactionCSVEntry{
 		ID:         "73fc417a-62ef-4179-a85e-9f3b29224567",
 		Status:     "executed",
 		Type:       transaction.TypeSaveback,
@@ -189,7 +189,7 @@ var BenefitsSavebackExecution01 = TransactionTestCase{
 
 func init() {
 	BenefitsSavebackExecution01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2024-03-22T18:15:06.448+0000")
-	BenefitsSavebackExecution01.CSVEntry.Timestamp = internal.DateTime{Time: BenefitsSavebackExecution01.Transaction.Timestamp}
+	BenefitsSavebackExecution01.DepotTransactionCSVEntry.Timestamp = internal.DateTime{Time: BenefitsSavebackExecution01.Transaction.Timestamp}
 
 	RegisterSupported("BenefitsSavebackExecution01", BenefitsSavebackExecution01)
 }
