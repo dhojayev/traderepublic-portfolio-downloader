@@ -62,7 +62,7 @@ func (n TransactionResponseNormalizer) Normalize(response Response) (NormalizedR
 
 	resp.Documents, err = n.SectionTypeDocuments(response)
 	if err != nil {
-		n.logger.Warnf("could not deserialize documents section: %v", err)
+		n.logger.Debugf("could not deserialize documents section: %v", err)
 	}
 
 	return resp, nil

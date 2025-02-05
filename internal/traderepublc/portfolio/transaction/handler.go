@@ -71,6 +71,7 @@ func (h Handler) Handle() error {
 
 			continue
 		case errors.Is(err, transactions.ErrEventTypeUnsupported):
+			h.logger.Debug(err)
 			h.logger.WithFields(infoFields).Warn("Unsupported transaction skipped")
 			counter.Skipped().Add(1)
 
