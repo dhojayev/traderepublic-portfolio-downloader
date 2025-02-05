@@ -13,7 +13,7 @@ const (
 	EventTypePaymentInboundSepaDirectDebit EventType = "PAYMENT_INBOUND_SEPA_DIRECT_DEBIT"
 	EventTypePaymentOutbound               EventType = "PAYMENT_OUTBOUND"
 	EventTypeOrderExecuted                 EventType = "ORDER_EXECUTED"
-        EventTypeTradeInvoiceCreated           EventType = "TRADE_INVOICE"
+	EventTypeTradeInvoiceCreated           EventType = "TRADE_INVOICE"
 	EventTypeSavingsPlanExecuted           EventType = "SAVINGS_PLAN_EXECUTED"
 	EventTypeSavingsPlanInvoiceCreated     EventType = "SAVINGS_PLAN_INVOICE_CREATED"
 	EventTypeInterestPayoutCreated         EventType = "INTEREST_PAYOUT_CREATED"
@@ -46,7 +46,7 @@ func NewEventTypeResolver(logger *log.Logger) EventTypeResolver {
 			EventTypePaymentInboundSepaDirectDebit,
 			EventTypePaymentOutbound,
 			EventTypeOrderExecuted,
-                        EventTypeTradeInvoiceCreated,
+			EventTypeTradeInvoiceCreated,
 			EventTypeSavingsPlanExecuted,
 			EventTypeSavingsPlanInvoiceCreated,
 			EventTypeInterestPayoutCreated,

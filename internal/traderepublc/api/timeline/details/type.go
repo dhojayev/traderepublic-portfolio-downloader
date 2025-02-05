@@ -18,7 +18,6 @@ const (
 	TypeUnsupported               Type = "Unsupported"
 	TypeSaleTransaction           Type = "Sale"
 	TypePurchaseTransaction       Type = "Purchase"
-        TypeTradeInvoiceTransaction   Type = "Trade Invoice"
 	TypeDividendPayoutTransaction Type = "Dividend payout"
 	TypeRoundUpTransaction        Type = "Round up"
 	TypeSavebackTransaction       Type = "Saveback"
@@ -75,7 +74,7 @@ func (r TypeResolver) Resolve(eventType transactions.EventType, response Normali
 
 func PurchaseDetector(eventType transactions.EventType, response NormalizedResponse) bool {
 	supportedEventTypes := []transactions.EventType{
-                transactions.EventTypeTradeInvoiceCreated,
+		transactions.EventTypeTradeInvoiceCreated,
 		transactions.EventTypeSavingsPlanExecuted,
 		transactions.EventTypeSavingsPlanInvoiceCreated,
 	}
