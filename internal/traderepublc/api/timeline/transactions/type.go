@@ -4,6 +4,7 @@ package transactions
 
 import (
 	"errors"
+	"fmt"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -69,5 +70,5 @@ func (e EventTypeResolver) Resolve(response ResponseItem) (EventType, error) {
 		return t, nil
 	}
 
-	return "", ErrEventTypeUnsupported
+	return "", fmt.Errorf("%w: %s", ErrEventTypeUnsupported, response.EventType)
 }
