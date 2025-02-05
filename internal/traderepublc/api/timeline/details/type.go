@@ -74,6 +74,7 @@ func (r TypeResolver) Resolve(eventType transactions.EventType, response Normali
 
 func PurchaseDetector(eventType transactions.EventType, response NormalizedResponse) bool {
 	supportedEventTypes := []transactions.EventType{
+		transactions.EventTypeTradeInvoiceCreated,
 		transactions.EventTypeSavingsPlanExecuted,
 		transactions.EventTypeSavingsPlanInvoiceCreated,
 	}
