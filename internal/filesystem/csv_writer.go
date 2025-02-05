@@ -11,7 +11,7 @@ import (
 )
 
 type CSVWriterInterface interface {
-	Write(filepath string, entry CSVEntry) error
+	Write(filepath string, entry DepotTransactionCSVEntry) error
 }
 
 type CSVWriter struct {
@@ -24,8 +24,8 @@ func NewCSVWriter(logger *log.Logger) CSVWriter {
 	}
 }
 
-func (w CSVWriter) Write(filepath string, entry CSVEntry) error {
-	entries := []CSVEntry{entry}
+func (w CSVWriter) Write(filepath string, entry DepotTransactionCSVEntry) error {
+	entries := []DepotTransactionCSVEntry{entry}
 	newFile := false
 
 	_, err := os.Stat(filepath)

@@ -189,7 +189,7 @@ var (
 				},
 			},
 		},
-		CSVEntry: filesystem.CSVEntry{
+		DepotTransactionCSVEntry: filesystem.DepotTransactionCSVEntry{
 			ID:         "b20e367c-5542-4fab-9fd6-6faa5e7ab582",
 			Status:     "executed",
 			Type:       transaction.TypePurchase,
@@ -206,7 +206,7 @@ var (
 
 func init() {
 	OrderExecuted01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2022-03-29T09:43:31.570+0000")
-	OrderExecuted01.CSVEntry.Timestamp = internal.DateTime{Time: OrderExecuted01.Transaction.Timestamp}
+	OrderExecuted01.DepotTransactionCSVEntry.Timestamp = internal.DateTime{Time: OrderExecuted01.Transaction.Timestamp}
 
 	RegisterSupported("OrderExecuted01", OrderExecuted01)
 }

@@ -86,7 +86,7 @@ func TestItDoesReturnErrorIfTransactionTypeUnsupported(t *testing.T) {
 	normalizer := details.NewTransactionResponseNormalizer(logger)
 	handler := transaction.NewHandler(listClient, detailsClient, normalizer, transactionsTypeResolver, processor, logger)
 
-	csvReaderMock.EXPECT().Read(gomock.Any()).AnyTimes().Return([]filesystem.CSVEntry{}, nil)
+	csvReaderMock.EXPECT().Read(gomock.Any()).AnyTimes().Return([]filesystem.DepotTransactionCSVEntry{}, nil)
 
 	for testCaseName, testCase := range testCases {
 		readerMock.
