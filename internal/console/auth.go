@@ -27,7 +27,7 @@ func NewAuthService(client auth.ClientInterface) *AuthService {
 func (s *AuthService) AcquireCredentials() error {
 	var phoneNumber string
 
-	fmt.Print("Enter phone number in international format (+49xxxxxxxxxxxxx): \n")
+	fmt.Print("Enter phone number in international format (+34xxxxxxxxxxxxx): \n")
 
 	if _, err := fmt.Scanln(&phoneNumber); err != nil {
 		return fmt.Errorf("could not acquire phone number: %w", err)

@@ -6,3 +6,7 @@
 /documents
 vendor
 .DS_Store
+*.pdf
+*.json
+*.session
+*.refresh
