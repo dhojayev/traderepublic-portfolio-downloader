@@ -1,6 +1,8 @@
 package main
 
 type Args struct {
-	LocalMode bool `arg:"-l,--local" help:"Read json file from local fs instead of calling trade republic api"`
-	TraceMode bool `arg:"--trace" help:"Enable trace mode"`
+	WriteResponseFiles bool `arg:"-w,--write-responses" help:"write API responses to the file system"`
+	DebugMode          bool `arg:"--debug" help:"enable debug mode"`
+	TraceMode          bool `arg:"--trace" help:"enable trace mode"`
+	LocalMode          bool `arg:"-l,--local" help:"Run in local mode"`
 }

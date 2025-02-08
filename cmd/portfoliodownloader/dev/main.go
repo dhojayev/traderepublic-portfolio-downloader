@@ -5,6 +5,7 @@ import (
 	nested "github.com/antonfisher/nested-logrus-formatter"
 	log "github.com/sirupsen/logrus"
 
+	"github.com/dhojayev/traderepublic-portfolio-downloader/cmd/portfoliodownloader"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
 )
 
@@ -31,16 +32,17 @@ func main() {
 		logger.Panic(err)
 	}
 
-	application, err := ProvideLocalApp(responsesBaseDir, logger)
-	if err != nil {
-		logger.Panic(err)
+	var application portfoliodownloader.App
+	var err error
+
+	if args.LocalMode {
+		application, err = ProvideLocalApp(responsesBaseDir, logger)
+	} else {
+		application, err = ProvideRemoteApp(logger)
 	}
 
-	if !args.LocalMode {
-		application, err = ProvideRemoteApp(logger)
-		if err != nil {
-			logger.Panic(err)
-		}
+	if err != nil {
+		logger.Panic(err)
 	}
 
 	if err := application.Run(); err != nil {
