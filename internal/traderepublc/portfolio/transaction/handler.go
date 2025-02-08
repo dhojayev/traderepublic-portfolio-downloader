@@ -86,6 +86,8 @@ func (h Handler) Handle() error {
 			counter.Skipped().Add(1)
 
 			continue
+		default:
+			return err
 		}
 	}
 
