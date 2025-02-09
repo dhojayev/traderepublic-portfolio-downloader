@@ -10,11 +10,11 @@ type DateTime struct {
 }
 
 func (date *DateTime) MarshalCSV() (string, error) {
-	return date.Time.Format(time.RFC822), nil
+	return date.Time.In(time.Local).Format(time.RFC822Z), nil
 }
 
 func (date *DateTime) UnmarshalCSV(csv string) error {
-	t, err := time.Parse(time.RFC822, csv)
+	t, err := time.Parse(time.RFC822Z, csv)
 	if err != nil {
 		return fmt.Errorf("could not parse datetime: %w", err)
 	}
