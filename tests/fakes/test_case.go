@@ -20,7 +20,7 @@ type TransactionTestCase struct {
 	TimelineDetailsData      TimelineDetailsTestData
 	EventType                transactions.EventType
 	Transaction              transaction.Model
-	CSVEntry                 filesystem.CSVEntry
+	DepotTransactionCSVEntry filesystem.DepotTransactionCSVEntry
 }
 
 type ActivityLogTestCase struct {

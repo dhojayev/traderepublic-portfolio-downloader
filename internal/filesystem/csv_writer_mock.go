@@ -39,7 +39,7 @@ func (m *MockCSVWriterInterface) EXPECT() *MockCSVWriterInterfaceMockRecorder {
 }
 
 // Write mocks base method.
-func (m *MockCSVWriterInterface) Write(filepath string, entry CSVEntry) error {
+func (m *MockCSVWriterInterface) Write(filepath string, entry DepotTransactionCSVEntry) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Write", filepath, entry)
 	ret0, _ := ret[0].(error)

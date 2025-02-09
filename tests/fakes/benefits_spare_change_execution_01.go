@@ -295,7 +295,7 @@ var BenefitsSpareChangeExecution01 = TransactionTestCase{
 			},
 		},
 	},
-	CSVEntry: filesystem.CSVEntry{
+	DepotTransactionCSVEntry: filesystem.DepotTransactionCSVEntry{
 		ID:         "265cb9c0-664a-45d4-b179-3061f196dd2a",
 		Status:     "executed",
 		Type:       transaction.TypeRoundUp,
@@ -310,7 +310,7 @@ var BenefitsSpareChangeExecution01 = TransactionTestCase{
 
 func init() {
 	BenefitsSpareChangeExecution01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2024-01-04T12:26:52.110+0000")
-	BenefitsSpareChangeExecution01.CSVEntry.Timestamp = internal.DateTime{Time: BenefitsSpareChangeExecution01.Transaction.Timestamp}
+	BenefitsSpareChangeExecution01.DepotTransactionCSVEntry.Timestamp = internal.DateTime{Time: BenefitsSpareChangeExecution01.Transaction.Timestamp}
 
 	RegisterSupported("BenefitsSpareChangeExecution01", BenefitsSpareChangeExecution01)
 }

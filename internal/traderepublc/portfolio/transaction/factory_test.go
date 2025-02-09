@@ -29,8 +29,8 @@ func TestMakeSupported(t *testing.T) {
 			continue
 		}
 
-		assert.Equal(t, testCase.CSVEntry.AssetType, actual.AssetType, fmt.Sprintf("case '%s'", testCaseName))
-		assertHelper(t, testCase.CSVEntry, actual, testCaseName)
+		assert.Equal(t, testCase.DepotTransactionCSVEntry.AssetType, actual.AssetType, fmt.Sprintf("case '%s'", testCaseName))
+		assertHelper(t, testCase.DepotTransactionCSVEntry, actual, testCaseName)
 	}
 }
 
@@ -61,7 +61,7 @@ func TestMakeUnknown(t *testing.T) {
 }
 
 // helper to assert float64 fields.
-func assertHelper(t *testing.T, expected, actual filesystem.CSVEntry, testCaseName string) {
+func assertHelper(t *testing.T, expected, actual filesystem.DepotTransactionCSVEntry, testCaseName string) {
 	t.Helper()
 
 	assert.Equal(

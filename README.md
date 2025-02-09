@@ -1,5 +1,12 @@
 # Trade Republic Portfolio Downloader
 
+![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/dhojayev/traderepublic-portfolio-downloader)
+ [![Go Report Card](https://goreportcard.com/badge/github.com/dhojayev/traderepublic-portfolio-downloader)](https://goreportcard.com/report/github.com/dhojayev/traderepublic-portfolio-downloader) ![GitHub branch check runs](https://img.shields.io/github/check-runs/dhojayev/traderepublic-portfolio-downloader/main)
+![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/dhojayev/traderepublic-portfolio-downloader/total) ![GitHub commits since latest release](https://img.shields.io/github/commits-since/dhojayev/traderepublic-portfolio-downloader/latest)
+
+
+
+
 ## Preamble
 
 This project exists because Trade Republic does not provide a comprehensive view of all purchases and sales. While it is possible to see current holdings in analytics, there is no way to view the analytics of sold assets and their profit. All sale transactions must be tracked manually to understand trading benefits better. This project was created to fill that gap by providing a better representation of trading activities.

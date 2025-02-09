@@ -20,7 +20,7 @@ func NewCSVEntryFactory(logger *log.Logger) CSVEntryFactory {
 	}
 }
 
-func (f CSVEntryFactory) Make(transaction Model) (filesystem.CSVEntry, error) {
+func (f CSVEntryFactory) Make(transaction Model) (filesystem.DepotTransactionCSVEntry, error) {
 	var debit, credit, taxAmount, investedAmount float64
 
 	yield := transaction.Yield
@@ -47,7 +47,7 @@ func (f CSVEntryFactory) Make(transaction Model) (filesystem.CSVEntry, error) {
 		profit = transaction.Total
 		credit = transaction.Total
 	default:
-		return filesystem.CSVEntry{}, fmt.Errorf(
+		return filesystem.DepotTransactionCSVEntry{}, fmt.Errorf(
 			"unsupported type '%s' received: %w",
 			transaction.Type,
 			errors.New("unsupported value object received"),
@@ -60,7 +60,7 @@ func (f CSVEntryFactory) Make(transaction Model) (filesystem.CSVEntry, error) {
 		documents = append(documents, doc.Filepath)
 	}
 
-	return filesystem.NewCSVEntry(transaction.UUID, transaction.Status, transaction.Type,
+	return filesystem.NewDepotTransactionCSVEntry(transaction.UUID, transaction.Status, transaction.Type,
 		string(transaction.Instrument.Type), transaction.Instrument.Name, transaction.Instrument.ISIN,
 		shares, rate, yield, profit, commission, debit, credit, taxAmount, investedAmount,
 		internal.DateTime{Time: transaction.Timestamp},

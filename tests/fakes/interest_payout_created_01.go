@@ -374,7 +374,7 @@ var InterestPayoutCreated01 = TransactionTestCase{
 			},
 		},
 	},
-	CSVEntry: filesystem.CSVEntry{
+	DepotTransactionCSVEntry: filesystem.DepotTransactionCSVEntry{
 		ID:        "c30c2952-ff0e-4fdb-bb8c-dfe1a8c35ce6",
 		Status:    "executed",
 		Type:      transaction.TypeInterestPayout,
@@ -387,7 +387,7 @@ var InterestPayoutCreated01 = TransactionTestCase{
 
 func init() {
 	InterestPayoutCreated01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2023-11-06T11:22:52.544+0000")
-	InterestPayoutCreated01.CSVEntry.Timestamp = internal.DateTime{Time: InterestPayoutCreated01.Transaction.Timestamp}
+	InterestPayoutCreated01.DepotTransactionCSVEntry.Timestamp = internal.DateTime{Time: InterestPayoutCreated01.Transaction.Timestamp}
 
 	RegisterSupported("InterestPayoutCreated01", InterestPayoutCreated01)
 }

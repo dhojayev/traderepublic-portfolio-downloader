@@ -321,7 +321,7 @@ var OrderExecuted02 = TransactionTestCase{
 			},
 		},
 	},
-	CSVEntry: filesystem.CSVEntry{
+	DepotTransactionCSVEntry: filesystem.DepotTransactionCSVEntry{
 		ID:         "1d9ad3b5-e65c-41f6-9c7d-96baa2a2ecad",
 		Status:     "executed",
 		Type:       transaction.TypePurchase,
@@ -337,7 +337,7 @@ var OrderExecuted02 = TransactionTestCase{
 
 func init() {
 	OrderExecuted02.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2023-11-23T15:45:24.252+0000")
-	OrderExecuted02.CSVEntry.Timestamp = internal.DateTime{Time: OrderExecuted02.Transaction.Timestamp}
+	OrderExecuted02.DepotTransactionCSVEntry.Timestamp = internal.DateTime{Time: OrderExecuted02.Transaction.Timestamp}
 
 	RegisterSupported("OrderExecuted01", OrderExecuted02)
 }

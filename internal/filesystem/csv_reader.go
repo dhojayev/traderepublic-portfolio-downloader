@@ -13,7 +13,7 @@ import (
 )
 
 type CSVReaderInterface interface {
-	Read(filepath string) ([]CSVEntry, error)
+	Read(filepath string) ([]DepotTransactionCSVEntry, error)
 }
 
 type CSVReader struct {
@@ -26,8 +26,8 @@ func NewCSVReader(logger *log.Logger) CSVReader {
 	}
 }
 
-func (r CSVReader) Read(filepath string) ([]CSVEntry, error) {
-	var entries []CSVEntry
+func (r CSVReader) Read(filepath string) ([]DepotTransactionCSVEntry, error) {
+	var entries []DepotTransactionCSVEntry
 
 	file, err := os.OpenFile(filepath, os.O_RDWR, os.ModePerm)
 	if err != nil {

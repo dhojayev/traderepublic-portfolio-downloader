@@ -200,7 +200,7 @@ var SSPCorporateActionInvoiceCash01 = TransactionTestCase{
 			},
 		},
 	},
-	CSVEntry: filesystem.CSVEntry{
+	DepotTransactionCSVEntry: filesystem.DepotTransactionCSVEntry{
 		ID:         "c578258f-563d-49f8-85fc-fb652d8354d9",
 		Status:     "executed",
 		Type:       transaction.TypeDividendPayout,
@@ -216,7 +216,7 @@ var SSPCorporateActionInvoiceCash01 = TransactionTestCase{
 
 func init() {
 	SSPCorporateActionInvoiceCash01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2024-06-01T06:22:43.505+0000")
-	SSPCorporateActionInvoiceCash01.CSVEntry.Timestamp = internal.DateTime{Time: SSPCorporateActionInvoiceCash01.Transaction.Timestamp}
+	SSPCorporateActionInvoiceCash01.DepotTransactionCSVEntry.Timestamp = internal.DateTime{Time: SSPCorporateActionInvoiceCash01.Transaction.Timestamp}
 
 	RegisterSupported("SSPCorporateActionInvoiceCash01", SSPCorporateActionInvoiceCash01)
 }
