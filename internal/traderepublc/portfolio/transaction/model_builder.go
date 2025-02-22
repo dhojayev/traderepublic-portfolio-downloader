@@ -168,7 +168,10 @@ func (b BaseModelBuilder) ExtractRateValue() (float64, error) {
 
 	rate, err := ParseFloatWithComma(rateData.Detail.Text, rateData.Detail.Trend == details.TrendNegative)
 	if err != nil {
-		return 0, fmt.Errorf("could not parse transaction section rate to float: %w", err)
+		rate, err = ParseFloatWithPeriod(rateData.Detail.Text)
+		if err != nil {
+			return 0, fmt.Errorf("could not parse transaction section rate to float: %w", err)
+		}
 	}
 
 	return rate, nil
@@ -198,14 +201,20 @@ func (b BaseModelBuilder) ExtractCommissionAmount() (float64, error) {
 }
 
 func (b BaseModelBuilder) ExtractTotalAmount() (float64, error) {
-	totalData, err := b.response.Transaction.GetDataByTitles(details.TransactionDataTitleTotal)
+	totalData, err := b.response.Transaction.GetDataByTitles(
+		details.TransactionDataTitleTotal,
+		details.TransactionDataTitleTotalAlt,
+	)
 	if err != nil {
 		return 0, fmt.Errorf("could not get transaction section total: %w", err)
 	}
 
 	total, err := ParseFloatWithComma(totalData.Detail.Text, totalData.Detail.Trend == details.TrendNegative)
 	if err != nil {
-		return 0, fmt.Errorf("could not parse transaction section total to float: %w", err)
+		total, err = ParseFloatWithPeriod(totalData.Detail.Text)
+		if err != nil {
+			return 0, fmt.Errorf("could not parse transaction section total to float: %w", err)
+		}
 	}
 
 	return total, nil
