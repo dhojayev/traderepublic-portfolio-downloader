@@ -5,7 +5,6 @@ import (
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/instrument"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/transaction"
@@ -89,7 +88,7 @@ var PaymentOutbound01 = TransactionTestCase{
 }
 
 func init() {
-	PaymentOutbound01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2024-01-11T08:55:22.185+0000")
+	PaymentOutbound01.Transaction.Timestamp, _ = internal.ParseTimestamp("2024-01-11T08:55:22.185+0000")
 	PaymentOutbound01.CSVEntry.Timestamp = internal.DateTime{Time: PaymentOutbound01.Transaction.Timestamp}
 
 	RegisterSupported("PaymentOutbound01", PaymentOutbound01)

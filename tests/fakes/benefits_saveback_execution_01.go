@@ -1,11 +1,8 @@
 package fakes
 
 import (
-	"time"
-
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/document"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/instrument"
@@ -188,7 +185,7 @@ var BenefitsSavebackExecution01 = TransactionTestCase{
 }
 
 func init() {
-	BenefitsSavebackExecution01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2024-03-22T18:15:06.448+0000")
+	BenefitsSavebackExecution01.Transaction.Timestamp, _ = internal.ParseTimestamp("2024-03-22T18:15:06.448+0000")
 	BenefitsSavebackExecution01.CSVEntry.Timestamp = internal.DateTime{Time: BenefitsSavebackExecution01.Transaction.Timestamp}
 
 	RegisterSupported("BenefitsSavebackExecution01", BenefitsSavebackExecution01)

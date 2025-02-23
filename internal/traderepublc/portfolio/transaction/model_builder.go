@@ -7,6 +7,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/document"
@@ -117,13 +118,7 @@ func (b BaseModelBuilder) ExtractStatus() (string, error) {
 }
 
 func (b BaseModelBuilder) ExtractTimestamp() (time.Time, error) {
-	timestamp, err := time.Parse(details.ResponseTimeFormat, b.response.Header.Data.Timestamp)
-
-	if err == nil {
-		return timestamp, nil
-	}
-
-	timestamp, err = time.Parse(details.ResponseTimeFormatAlt, b.response.Header.Data.Timestamp)
+	timestamp, err := internal.ParseTimestamp(b.response.Header.Data.Timestamp)
 
 	if err == nil {
 		return timestamp, nil

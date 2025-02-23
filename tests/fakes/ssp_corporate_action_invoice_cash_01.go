@@ -1,11 +1,8 @@
 package fakes
 
 import (
-	"time"
-
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/document"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/instrument"
@@ -215,7 +212,7 @@ var SSPCorporateActionInvoiceCash01 = TransactionTestCase{
 }
 
 func init() {
-	SSPCorporateActionInvoiceCash01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2024-06-01T06:22:43.505+0000")
+	SSPCorporateActionInvoiceCash01.Transaction.Timestamp, _ = internal.ParseTimestamp("2024-06-01T06:22:43.505+0000")
 	SSPCorporateActionInvoiceCash01.CSVEntry.Timestamp = internal.DateTime{Time: SSPCorporateActionInvoiceCash01.Transaction.Timestamp}
 
 	RegisterSupported("SSPCorporateActionInvoiceCash01", SSPCorporateActionInvoiceCash01)

@@ -66,7 +66,7 @@ func (p Processor) Process(response details.NormalizedResponse) error {
 }
 
 func (p Processor) extractTimestamp(response details.NormalizedResponse) (time.Time, error) {
-	timestamp, err := time.Parse(details.ResponseTimeFormat, response.Header.Data.Timestamp)
+	timestamp, err := internal.ParseTimestamp(response.Header.Data.Timestamp)
 	if err != nil {
 		return time.Time{}, fmt.Errorf("could not parse header section timestamp: %w", err)
 	}

@@ -1,8 +1,6 @@
 package fakes
 
 import (
-	"time"
-
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/details"
@@ -209,7 +207,7 @@ var PaymentInboundSepaDirectDebit01 = TransactionTestCase{
 }
 
 func init() {
-	PaymentInboundSepaDirectDebit01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2023-07-23T21:05:22.543+0000")
+	PaymentInboundSepaDirectDebit01.Transaction.Timestamp, _ = internal.ParseTimestamp("2023-07-23T21:05:22.543+0000")
 	PaymentInboundSepaDirectDebit01.CSVEntry.Timestamp = internal.DateTime{Time: PaymentInboundSepaDirectDebit01.Transaction.Timestamp}
 
 	RegisterSupported("PaymentInboundSepaDirectDebit01", PaymentInboundSepaDirectDebit01)

@@ -1,11 +1,8 @@
 package fakes
 
 import (
-	"time"
-
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/transaction"
 )
@@ -288,7 +285,7 @@ var OrderExecuted05 = TransactionTestCase{
 }
 
 func init() {
-	OrderExecuted05.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2023-09-12T06:35:52.879+0000")
+	OrderExecuted05.Transaction.Timestamp, _ = internal.ParseTimestamp("2023-09-12T06:35:52.879+0000")
 	OrderExecuted05.CSVEntry.Timestamp = internal.DateTime{Time: OrderExecuted05.Transaction.Timestamp}
 
 	RegisterUnknown("OrderExecuted05", OrderExecuted05)

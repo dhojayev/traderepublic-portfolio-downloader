@@ -1,5 +1,7 @@
 package internal
 
+import "time"
+
 const (
 	// RestAPIBaseURI Trade Republic's REST API base URI.
 	RestAPIBaseURI = "https://api.traderepublic.com/api/v1"
@@ -20,6 +22,12 @@ const (
 	// ResponseActionTypeTimelineDetail represents the value the app will look for in order to determine
 	// if any details can be fetched.
 	ResponseActionTypeTimelineDetail = "timelineDetail"
+
+	// ResponseTimeFormat represents the default date time format in the response.
+	ResponseTimeFormat = "2006-01-02T15:04:05-0700"
+
+	// ResponseTimeFormatAlt represents the alternative date time format in the response.
+	ResponseTimeFormatAlt = time.RFC3339Nano
 
 	// CSVFilename filename under which a CSV file with transaction entries has to be saved.
 	CSVFilename = "./transactions.csv"

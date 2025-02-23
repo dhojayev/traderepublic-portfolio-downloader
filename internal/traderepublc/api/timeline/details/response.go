@@ -7,8 +7,6 @@ import (
 )
 
 const (
-	ResponseTimeFormat                      = "2006-01-02T15:04:05-0700"
-	ResponseTimeFormatAlt                   = "2006-01-02T15:04:05.000000-07:00"
 	ResponseSectionTypeValueHeader          = "header"
 	ResponseSectionTypeValueTable           = "table"
 	ResponseSectionTypeValueHorizontalTable = "horizontalTable"

@@ -28,3 +28,19 @@ func GetRuntimeTimezone(logger *log.Logger) error {
 
 	return nil
 }
+
+func ParseTimestamp(src string) (time.Time, error) {
+	timestamp, err := time.Parse(ResponseTimeFormat, src)
+
+	if err == nil {
+		return timestamp, nil
+	}
+
+	timestamp, err2 := time.Parse(ResponseTimeFormatAlt, src)
+
+	if err2 == nil {
+		return timestamp, nil
+	}
+
+	return time.Time{}, fmt.Errorf("could not parse timestamp 2 times: '%w' and '%w'", err, err2)
+}
