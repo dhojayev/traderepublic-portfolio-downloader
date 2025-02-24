@@ -76,6 +76,7 @@ func PurchaseDetector(eventType transactions.EventType, response NormalizedRespo
 	supportedEventTypes := []transactions.EventType{
 		transactions.EventTypeTradeInvoiceCreated,
 		transactions.EventTypeSavingsPlanExecuted,
+		transactions.EventTypeTradingSavingsPlanExecuted,
 		transactions.EventTypeSavingsPlanInvoiceCreated,
 	}
 

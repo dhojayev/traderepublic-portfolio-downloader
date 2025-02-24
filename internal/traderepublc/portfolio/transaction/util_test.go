@@ -79,6 +79,7 @@ func TestParseFloatWithPeriod(t *testing.T) {
 		{input: "1000.00", expected: 1000},
 		{input: "1921.89", expected: 1921.89},
 		{input: "10000.00", expected: 10000},
+		{input: "138.26 €", expected: 138.26},
 	}
 
 	for i, testCase := range testCases {

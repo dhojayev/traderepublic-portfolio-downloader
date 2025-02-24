@@ -56,13 +56,13 @@ linters:
     - sloglint
     - stylecheck
     - tagliatelle
-    - tenv
     - testpackage
     - thelper
     - tparallel
     - unconvert
     - unparam
     - usestdlibvars
+    - usetesting
     - varnamelen
     - wastedassign
     - whitespace

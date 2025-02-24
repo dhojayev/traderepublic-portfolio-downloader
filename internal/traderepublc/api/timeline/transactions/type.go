@@ -16,6 +16,7 @@ const (
 	EventTypeOrderExecuted                 EventType = "ORDER_EXECUTED"
 	EventTypeTradeInvoiceCreated           EventType = "TRADE_INVOICE"
 	EventTypeSavingsPlanExecuted           EventType = "SAVINGS_PLAN_EXECUTED"
+	EventTypeTradingSavingsPlanExecuted    EventType = "trading_savingsplan_executed"
 	EventTypeSavingsPlanInvoiceCreated     EventType = "SAVINGS_PLAN_INVOICE_CREATED"
 	EventTypeInterestPayoutCreated         EventType = "INTEREST_PAYOUT_CREATED"
 	EventTypeInterestPayout                EventType = "INTEREST_PAYOUT"
@@ -49,6 +50,7 @@ func NewEventTypeResolver(logger *log.Logger) EventTypeResolver {
 			EventTypeOrderExecuted,
 			EventTypeTradeInvoiceCreated,
 			EventTypeSavingsPlanExecuted,
+			EventTypeTradingSavingsPlanExecuted,
 			EventTypeSavingsPlanInvoiceCreated,
 			EventTypeInterestPayoutCreated,
 			EventTypeInterestPayout,

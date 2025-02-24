@@ -28,6 +28,7 @@ const (
 	TransactionDataTitleRateAlt3            = "Dividende pro Aktie"
 	TransactionDataTitleCommission          = "Gebühr"
 	TransactionDataTitleTotal               = "Gesamt"
+	TransactionDataTitleTotalAlt            = "Summe"
 	TransactionDataTitleTax                 = "Steuern"
 	PerformanceDataTitleYield               = "Rendite"
 	PerformanceDataTitleProfit              = "Gewinn"
