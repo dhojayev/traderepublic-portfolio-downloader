@@ -19,6 +19,11 @@ func TestModelBuilderBuildSupported(t *testing.T) {
 	t.Parallel()
 
 	testCases := fakes.TransactionTestCasesSupported
+
+	if len(testCases) == 0 {
+		t.Error("no test cases found")
+	}
+	
 	logger := log.New()
 	logger.Out = io.Discard
 

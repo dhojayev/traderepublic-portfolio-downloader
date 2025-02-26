@@ -20,6 +20,10 @@ func TestClient_Get(t *testing.T) {
 
 	testCases := fakes.ActivityLogTestCasesSupported
 
+	if len(testCases) == 0 {
+		t.Error("no test cases found")
+	}
+
 	logger := log.New()
 	logger.Out = io.Discard
 

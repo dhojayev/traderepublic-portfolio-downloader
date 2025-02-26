@@ -10,29 +10,6 @@ import (
 )
 
 var InterestPayoutCreated02 = TransactionTestCase{
-	TimelineTransactionsData: TimelineTransactionsTestData{
-		Raw: []byte(`{
-				"action": {
-					"payload": "79bea4ff-5552-45a1-85b5-8977e29f3d04",
-					"type": "timelineDetail"
-				},
-				"amount": {
-					"currency": "EUR",
-					"fractionDigits": 2,
-					"value": 20.28
-				},
-				"badge": null,
-				"eventType": "INTEREST_PAYOUT_CREATED",
-				"icon": "logos/timeline_interest_new/v2",
-				"id": "79bea4ff-5552-45a1-85b5-8977e29f3d04",
-				"status": "EXECUTED",
-				"subAmount": null,
-				"subtitle": "4,00% p.a.",
-				"timestamp": "2024-03-03T20:45:47.367+0000",
-				"title": "Zinsen"
-		}`),
-		Unmarshalled: transactions.ResponseItem{},
-	},
 	TimelineDetailsData: TimelineDetailsTestData{
 		Raw: []byte(`{
   "id": "79bea4ff-5552-45a1-85b5-8977e29f3d04",

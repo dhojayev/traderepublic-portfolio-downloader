@@ -26,6 +26,10 @@ func TestItNormalizesSupportTransactionDetails(t *testing.T) {
 		"BenefitsSpareChangeExecution01":  fakes.BenefitsSpareChangeExecution01,
 	}
 
+	if len(testCases) == 0 {
+		t.Error("no test cases found")
+	}
+
 	logger := log.New()
 	logger.Out = io.Discard
 
