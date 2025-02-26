@@ -26,7 +26,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.23.2'
+          go-version: '1.24.0'
           check-latest: true
 
       - uses: wangyoucao577/go-release-action@v1
@@ -34,7 +34,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           goos: ${{ matrix.goos }}
           goarch: ${{ matrix.goarch }}
-          goversion: "1.23.2"
+          goversion: "1.24.0"
           project_path: "./cmd/portfoliodownloader/public"
           binary_name: "portfoliodownloader"
           extra_files: LICENSE README.md
