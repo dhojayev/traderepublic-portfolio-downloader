@@ -12,15 +12,16 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/reader"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/tests"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/tests/fakes"
+	timeline_test "github.com/dhojayev/traderepublic-portfolio-downloader/tests/fakes/timeline"
 )
 
 func TestClient_Get(t *testing.T) {
 	t.Parallel()
 
-	testCases := map[string]fakes.TransactionTestCase{
-		"CardSuccessfulTransaction01": fakes.CardSuccessfulTransaction01,
-		"CardSuccessfulTransaction02": fakes.CardSuccessfulTransaction02,
+	testCases := timeline_test.TestCases
+
+	if len(testCases) == 0 {
+		t.Error("no test cases found")
 	}
 
 	logger := log.New()
@@ -35,7 +36,7 @@ func TestClient_Get(t *testing.T) {
 			EXPECT().
 			Read("timelineTransactions", gomock.Any()).
 			DoAndReturn(func(_ string, _ map[string]any) (reader.JSONResponse, error) {
-				return reader.NewJSONResponse(tests.WrapItemsResponse(testCase.TimelineTransactionsData.Raw)), nil
+				return reader.NewJSONResponse(tests.WrapItemsResponse(testCase.RawResponse)), nil
 			})
 
 		var actual []transactions.ResponseItem
@@ -48,6 +49,6 @@ func TestClient_Get(t *testing.T) {
 		}
 
 		assert.Len(t, actual, 1, fmt.Sprintf("case '%s'", testCaseName))
-		assert.Equal(t, testCase.TimelineTransactionsData.Unmarshalled, actual[0], fmt.Sprintf("case '%s'", testCaseName))
+		assert.Equal(t, testCase.Unmarshalled, actual[0], fmt.Sprintf("case '%s'", testCaseName))
 	}
 }

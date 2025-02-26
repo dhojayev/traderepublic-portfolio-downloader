@@ -15,6 +15,19 @@ var (
 	ActivityLogTestCasesSupported   = make(map[string]ActivityLogTestCase)
 )
 
+type TimelineFakeData struct {
+	RawResponse  []byte
+	Unmarshalled transactions.ResponseItem
+}
+
+type TimelineDetailsFakeData struct {
+	Parent       *TimelineFakeData
+	RawResponse  []byte
+	Unmarshalled details.NormalizedResponse
+	Model        transaction.Model
+	CSVEntry     filesystem.CSVEntry
+}
+
 type TransactionTestCase struct {
 	TimelineTransactionsData TimelineTransactionsTestData
 	TimelineDetailsData      TimelineDetailsTestData
