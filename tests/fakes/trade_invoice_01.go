@@ -12,9 +12,6 @@ import (
 var TradeInvoice01 = TransactionTestCase{
 	TimelineTransactionsData: TimelineTransactionsTestData{
 		Raw: []byte(`{
-		"items":
-		[
-			{
 				"action": {
 					"payload": "91aa5f02-27f0-4a9e-8733-f90dee41f2cc",
 					"type": "timelineDetail"
@@ -36,8 +33,6 @@ var TradeInvoice01 = TransactionTestCase{
 				"subtitle": "Kauforder",
 				"timestamp": "2024-06-17T12:02:07.095+0000",
 				"title": "AT\u0026T"
-    	}
-		]
 	}`),
 		Unmarshalled: transactions.ResponseItem{
 			Action: transactions.ResponseItemAction{

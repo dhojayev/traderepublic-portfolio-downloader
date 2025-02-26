@@ -11,6 +11,7 @@ import (
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/reader"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/transactions"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/tests"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/tests/fakes"
 )
 
@@ -34,7 +35,7 @@ func TestClient_Get(t *testing.T) {
 			EXPECT().
 			Read("timelineTransactions", gomock.Any()).
 			DoAndReturn(func(_ string, _ map[string]any) (reader.JSONResponse, error) {
-				return reader.NewJSONResponse(testCase.TimelineTransactionsData.Raw), nil
+				return reader.NewJSONResponse(tests.WrapItemsResponse(testCase.TimelineTransactionsData.Raw)), nil
 			})
 
 		var actual []transactions.ResponseItem

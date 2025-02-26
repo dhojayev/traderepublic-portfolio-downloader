@@ -17,6 +17,7 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/websocket"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/document"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/transaction"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/tests"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/tests/fakes"
 )
 
@@ -93,7 +94,7 @@ func TestItDoesReturnErrorIfTransactionTypeUnsupported(t *testing.T) {
 			EXPECT().
 			Read(transactions.RequestDataType, gomock.Any()).
 			Times(1).
-			Return(reader.NewJSONResponse(testCase.TimelineTransactionsData.Raw), nil)
+			Return(reader.NewJSONResponse(tests.WrapItemsResponse(testCase.TimelineTransactionsData.Raw)), nil)
 
 		readerMock.
 			EXPECT().

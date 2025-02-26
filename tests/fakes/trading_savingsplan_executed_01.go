@@ -11,7 +11,7 @@ import (
 
 var TradingSavingsplanExecuted01 = TransactionTestCase{
 	TimelineTransactionsData: TimelineTransactionsTestData{
-		Raw: []byte(`{"items": {
+		Raw: []byte(`{
       "action": {
         "payload": "a8e1d370-2edd-43a3-bbfa-7894695add44",
         "type": "timelineDetail"
@@ -33,7 +33,6 @@ var TradingSavingsplanExecuted01 = TransactionTestCase{
       "subtitle": "Sparplan ausgeführt",
       "timestamp": "2025-02-17T13:37:21.936+0000",
       "title": "FTSE All-World USD (Dist)"
-    }
 	  }`),
 		Unmarshalled: transactions.ResponseItem{
 			Action: transactions.ResponseItemAction{

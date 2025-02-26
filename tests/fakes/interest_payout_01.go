@@ -13,30 +13,25 @@ import (
 var InterestPayout01 = TransactionTestCase{
 	TimelineTransactionsData: TimelineTransactionsTestData{
 		Raw: []byte(`{
-		"items": 
-			[
-				{
-      "action": {
-        "payload": "4b33616d-1f9b-4e84-a88e-6dd12cdc0b7e",
-        "type": "timelineDetail"
-      },
-      "amount": {
-        "currency": "EUR",
-        "fractionDigits": 2,
-        "value": 40.55
-      },
-      "badge": null,
-      "eventType": "INTEREST_PAYOUT",
-      "icon": "logos/timeline_interest_new/v2",
-      "id": "4b33616d-1f9b-4e84-a88e-6dd12cdc0b7e",
-      "status": "EXECUTED",
-      "subAmount": null,
-      "subtitle": "3,25 % p.a.",
-      "timestamp": "2024-12-01T00:57:13.464+0000",
-      "title": "Zinsen"
-    }
-			]
-		}`),
+						"action": {
+							"payload": "4b33616d-1f9b-4e84-a88e-6dd12cdc0b7e",
+							"type": "timelineDetail"
+						},
+						"amount": {
+							"currency": "EUR",
+							"fractionDigits": 2,
+							"value": 40.55
+						},
+						"badge": null,
+						"eventType": "INTEREST_PAYOUT",
+						"icon": "logos/timeline_interest_new/v2",
+						"id": "4b33616d-1f9b-4e84-a88e-6dd12cdc0b7e",
+						"status": "EXECUTED",
+						"subAmount": null,
+						"subtitle": "3,25 % p.a.",
+						"timestamp": "2024-12-01T00:57:13.464+0000",
+						"title": "Zinsen"
+					}`),
 		Unmarshalled: transactions.ResponseItem{
 			Action: transactions.ResponseItemAction{
 				Payload: "4b33616d-1f9b-4e84-a88e-6dd12cdc0b7e",

@@ -5,8 +5,6 @@ import "github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderep
 var ReferenceAccountChanged01 = ActivityLogTestCase{
 	ActivityLogData: ActivityLogTestData{
 		Raw: []byte(`{
-		"items": [
-			{
 			"action": {
 				"payload": { 
 					"verificationTransfer": false
@@ -19,8 +17,6 @@ var ReferenceAccountChanged01 = ActivityLogTestCase{
 			"subtitle": "Geändert",
 			"timestamp": "2023-11-16T17:28:56.013+0000",
 			"title": "Auszahlungskonto"
-			}
-		]
 		}`),
 		Unmarshalled: activitylog.ResponseItem{
 			Action: activitylog.ResponseItemAction{

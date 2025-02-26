@@ -13,9 +13,6 @@ import (
 var InterestPayoutCreated01 = TransactionTestCase{
 	TimelineTransactionsData: TimelineTransactionsTestData{
 		Raw: []byte(`{
-		"items": 
-			[
-				{
 					"action": {
 						"payload": "c30c2952-ff0e-4fdb-bb8c-dfe1a8c35ce6",
 						"type": "timelineDetail"
@@ -34,8 +31,6 @@ var InterestPayoutCreated01 = TransactionTestCase{
 					"subtitle": "2,00% p.a.",
 					"timestamp": "2023-11-06T11:22:52.544+0000",
 					"title": "Zinsen"
-				}
-			]
 		}`),
 		Unmarshalled: transactions.ResponseItem{
 			Action: transactions.ResponseItemAction{

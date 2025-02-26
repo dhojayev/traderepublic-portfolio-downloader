@@ -12,8 +12,6 @@ import (
 var SSPCorporateActionInvoiceCash01 = TransactionTestCase{
 	TimelineTransactionsData: TimelineTransactionsTestData{
 		Raw: []byte(`{
-		"items": [
-				{
 					"action": {
 						"payload": "c578258f-563d-49f8-85fc-fb652d8354d9",
 						"type": "timelineDetail"
@@ -32,8 +30,6 @@ var SSPCorporateActionInvoiceCash01 = TransactionTestCase{
 					"subtitle": "Bardividende",
 					"timestamp": "2024-06-01T06:22:43.505+0000",
 					"title": "NASDAQ100 USD (Dist)"
-				}
-		]
 }`),
 		Unmarshalled: transactions.ResponseItem{
 			Action: transactions.ResponseItemAction{

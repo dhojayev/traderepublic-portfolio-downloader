@@ -5,9 +5,6 @@ import "github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderep
 var CardSuccessfulTransaction01 = TransactionTestCase{
 	TimelineTransactionsData: TimelineTransactionsTestData{
 		Raw: []byte(`{
-		"items": 
-			[
-				{
 					"action": {
 						"payload": "6221f5fb-b8fa-4ad6-8c99-c3fb3c31da10",
 						"type": "timelineDetail"
@@ -26,8 +23,6 @@ var CardSuccessfulTransaction01 = TransactionTestCase{
 					"subtitle": null,
 					"timestamp": "2024-05-27T13:51:55.167+0000",
 					"title": "Aldi"
-				}
-			]
 }`),
 		Unmarshalled: transactions.ResponseItem{
 			Action: transactions.ResponseItemAction{

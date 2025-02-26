@@ -11,6 +11,7 @@ import (
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/reader"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/activitylog"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/tests"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/tests/fakes"
 )
 
@@ -31,7 +32,7 @@ func TestClient_Get(t *testing.T) {
 			EXPECT().
 			Read(activitylog.RequestDataType, gomock.Any()).
 			DoAndReturn(func(_ string, _ map[string]any) (reader.JSONResponse, error) {
-				return reader.NewJSONResponse(testCase.ActivityLogData.Raw), nil
+				return reader.NewJSONResponse(tests.WrapItemsResponse(testCase.ActivityLogData.Raw)), nil
 			})
 
 		var actual []activitylog.ResponseItem

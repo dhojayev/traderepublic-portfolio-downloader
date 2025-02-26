@@ -5,8 +5,6 @@ import "github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderep
 var DocumentsCreated01 = ActivityLogTestCase{
 	ActivityLogData: ActivityLogTestData{
 		Raw: []byte(`{
-		"items": [
-			{
 				"action": {
 					"payload": "55600b18-d064-4346-a143-2df1013de583",
 					"type": "timelineDetail"
@@ -17,8 +15,6 @@ var DocumentsCreated01 = ActivityLogTestCase{
 				"subtitle": "Hinzugefügt",
 				"timestamp": "2023-09-12T06:56:19.127+0000",
 				"title": "Rechtliche Dokumente"
-			}
-		]
 	}`),
 		Unmarshalled: activitylog.ResponseItem{
 			Action: activitylog.ResponseItemAction{

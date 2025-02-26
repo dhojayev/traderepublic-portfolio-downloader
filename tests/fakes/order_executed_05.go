@@ -10,9 +10,6 @@ import (
 var OrderExecuted05 = TransactionTestCase{
 	TimelineTransactionsData: TimelineTransactionsTestData{
 		Raw: []byte(`{
-    "items": 
-    [
-      {
         "action": {
           "payload": "eb6ee8c7-2cff-4dcc-ab70-3ca7f31f0371",
           "type": "timelineDetail"
@@ -31,8 +28,6 @@ var OrderExecuted05 = TransactionTestCase{
         "subtitle": "Kauforder",
         "timestamp": "2023-09-12T06:35:52.879+0000",
         "title": "Anleihe Feb. 2024"
-      }
-     ]
    }`),
 		Unmarshalled: transactions.ResponseItem{
 			Action: transactions.ResponseItemAction{
