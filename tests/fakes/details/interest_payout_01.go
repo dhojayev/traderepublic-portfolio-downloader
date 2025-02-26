@@ -1,18 +1,18 @@
-package fakes
+package details_test
 
 import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/details"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/document"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/instrument"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/transaction"
+	timeline_test "github.com/dhojayev/traderepublic-portfolio-downloader/tests/fakes/timeline"
 )
 
-var InterestPayout01 = TransactionTestCase{
-	TimelineDetailsData: TimelineDetailsTestData{
-		Raw: []byte(`{
+var InterestPayout01 = Fake{
+	Parent: &timeline_test.InterestPayout01,
+	RawResponse: []byte(`{
   "id": "4b33616d-1f9b-4e84-a88e-6dd12cdc0b7e",
   "sections": [
     {
@@ -150,109 +150,108 @@ var InterestPayout01 = TransactionTestCase{
     }
   ]
 }`),
-		Normalized: details.NormalizedResponse{
-			ID: "4b33616d-1f9b-4e84-a88e-6dd12cdc0b7e",
-			Header: details.NormalizedResponseHeaderSection{
-				Data: details.NormalizedResponseHeaderSectionData{
-					Icon:      "logos/timeline_interest_new/v2",
-					Status:    "executed",
-					Timestamp: "2024-12-01T01:57:20.170969+01:00",
-				},
-				Title: "Du hast €40.55 erhalten",
-				Type:  "header",
+	Unmarshalled: details.NormalizedResponse{
+		ID: "4b33616d-1f9b-4e84-a88e-6dd12cdc0b7e",
+		Header: details.NormalizedResponseHeaderSection{
+			Data: details.NormalizedResponseHeaderSectionData{
+				Icon:      "logos/timeline_interest_new/v2",
+				Status:    "executed",
+				Timestamp: "2024-12-01T01:57:20.170969+01:00",
 			},
-			Overview: details.NormalizedResponseOverviewSection{
-				NormalizedResponseTableSection: details.NormalizedResponseTableSection{
-					Data: []details.NormalizedResponseTableSectionData{
-						{
-							Detail: details.NormalizedResponseTableSectionDataDetail{
-								FunctionalStyle: "EXECUTED",
-								Text:            "Ausgeführt",
-								Type:            "status",
-							},
-							Style: "plain",
-							Title: "Status",
-						},
-						{
-							Detail: details.NormalizedResponseTableSectionDataDetail{
-								Text: "€20,617.87",
-								Type: "text",
-							},
-							Style: "plain",
-							Title: "Durchschnittssaldo",
-						},
-						{
-							Detail: details.NormalizedResponseTableSectionDataDetail{
-								Text: "3.25 %",
-								Type: "text",
-							},
-							Style: "plain",
-							Title: "Jährliche Rate",
-						},
-						{
-							Detail: details.NormalizedResponseTableSectionDataDetail{
-								Text: "Cash",
-								Type: "text",
-							},
-							Style: "plain",
-							Title: "Asset",
-						},
-					},
-					Title: "Übersicht",
-					Type:  "table",
-				},
-			},
-			Transaction: details.NormalizedResponseTransactionSection{
-				NormalizedResponseTableSection: details.NormalizedResponseTableSection{
-					Data: []details.NormalizedResponseTableSectionData{
-						{
-							Detail: details.NormalizedResponseTableSectionDataDetail{
-								Text: "€55.07",
-								Type: "text",
-							},
-							Style: "plain",
-							Title: "Angesammelt",
-						},
-						{
-							Detail: details.NormalizedResponseTableSectionDataDetail{
-								Text: "€14.52",
-								Type: "text",
-							},
-							Style: "plain",
-							Title: "Steuern",
-						},
-						{
-							Detail: details.NormalizedResponseTableSectionDataDetail{
-								Text: "€40.55",
-								Type: "text",
-							},
-							Style: "highlighted",
-							Title: "Gesamt",
-						},
-					},
-					Title: "Transaktion",
-					Type:  "table",
-				},
-			},
-			Documents: details.NormalizedResponseDocumentsSection{
-				Data: []details.NormalizedResponseDocumentsSectionData{
+			Title: "Du hast €40.55 erhalten",
+			Type:  "header",
+		},
+		Overview: details.NormalizedResponseOverviewSection{
+			NormalizedResponseTableSection: details.NormalizedResponseTableSection{
+				Data: []details.NormalizedResponseTableSectionData{
 					{
-						Action: details.NormalizedResponseSectionAction{
-							Payload: "https://traderepublic-postbox-platform-production.s3.eu-central-1.amazonaws.com/timeline/postbox",
-							Type:    "browserModal",
+						Detail: details.NormalizedResponseTableSectionDataDetail{
+							FunctionalStyle: "EXECUTED",
+							Text:            "Ausgeführt",
+							Type:            "status",
 						},
-						ID:          "4b33616d-1f9b-4e84-a88e-6dd12cdc0b7e",
-						PostboxType: "INTEREST_PAYOUT_INVOICE",
-						Title:       "Abrechnung",
+						Style: "plain",
+						Title: "Status",
+					},
+					{
+						Detail: details.NormalizedResponseTableSectionDataDetail{
+							Text: "€20,617.87",
+							Type: "text",
+						},
+						Style: "plain",
+						Title: "Durchschnittssaldo",
+					},
+					{
+						Detail: details.NormalizedResponseTableSectionDataDetail{
+							Text: "3.25 %",
+							Type: "text",
+						},
+						Style: "plain",
+						Title: "Jährliche Rate",
+					},
+					{
+						Detail: details.NormalizedResponseTableSectionDataDetail{
+							Text: "Cash",
+							Type: "text",
+						},
+						Style: "plain",
+						Title: "Asset",
 					},
 				},
-				Title: "Dokumente",
-				Type:  "documents",
+				Title: "Übersicht",
+				Type:  "table",
 			},
 		},
+		Transaction: details.NormalizedResponseTransactionSection{
+			NormalizedResponseTableSection: details.NormalizedResponseTableSection{
+				Data: []details.NormalizedResponseTableSectionData{
+					{
+						Detail: details.NormalizedResponseTableSectionDataDetail{
+							Text: "€55.07",
+							Type: "text",
+						},
+						Style: "plain",
+						Title: "Angesammelt",
+					},
+					{
+						Detail: details.NormalizedResponseTableSectionDataDetail{
+							Text: "€14.52",
+							Type: "text",
+						},
+						Style: "plain",
+						Title: "Steuern",
+					},
+					{
+						Detail: details.NormalizedResponseTableSectionDataDetail{
+							Text: "€40.55",
+							Type: "text",
+						},
+						Style: "highlighted",
+						Title: "Gesamt",
+					},
+				},
+				Title: "Transaktion",
+				Type:  "table",
+			},
+		},
+		Documents: details.NormalizedResponseDocumentsSection{
+			Data: []details.NormalizedResponseDocumentsSectionData{
+				{
+					Action: details.NormalizedResponseSectionAction{
+						Payload: "https://traderepublic-postbox-platform-production.s3.eu-central-1.amazonaws.com/timeline/postbox",
+						Type:    "browserModal",
+					},
+					ID:          "4b33616d-1f9b-4e84-a88e-6dd12cdc0b7e",
+					PostboxType: "INTEREST_PAYOUT_INVOICE",
+					Title:       "Abrechnung",
+				},
+			},
+			Title: "Dokumente",
+			Type:  "documents",
+		},
 	},
-	EventType: transactions.EventTypeInterestPayout,
-	Transaction: transaction.Model{
+	// EventType: transactions.EventTypeInterestPayout,
+	Model: transaction.Model{
 		UUID:      "4b33616d-1f9b-4e84-a88e-6dd12cdc0b7e",
 		Type:      transaction.TypeInterestPayout,
 		Status:    "executed",
@@ -285,8 +284,8 @@ var InterestPayout01 = TransactionTestCase{
 }
 
 func init() {
-	InterestPayout01.Transaction.Timestamp, _ = internal.ParseTimestamp("2024-12-01T01:57:20.170969+01:00")
-	InterestPayout01.CSVEntry.Timestamp = internal.DateTime{Time: InterestPayout01.Transaction.Timestamp}
+	InterestPayout01.Model.Timestamp, _ = internal.ParseTimestamp("2024-12-01T01:57:20.170969+01:00")
+	InterestPayout01.CSVEntry.Timestamp = internal.DateTime{Time: InterestPayout01.Model.Timestamp}
 
-	RegisterSupported("InterestPayout01", InterestPayout01)
+	TestCasesSupported["InterestPayout01"] = InterestPayout01
 }

@@ -1,17 +1,15 @@
-package fakes
+package details_test
 
 import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/document"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/instrument"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/transaction"
 )
 
-var BenefitsSavebackExecution01 = TransactionTestCase{
-	TimelineDetailsData: TimelineDetailsTestData{
-		Raw: []byte(`{
+var BenefitsSavebackExecution01 = Fake{
+	RawResponse: []byte(`{
 		"id": "73fc417a-62ef-4179-a85e-9f3b29224567",
 		"sections": [
 		  {
@@ -137,9 +135,9 @@ var BenefitsSavebackExecution01 = TransactionTestCase{
 		  }
 		]
 	  }`),
-	},
-	EventType: transactions.EventTypeBenefitsSavebackExecution,
-	Transaction: transaction.Model{
+
+	// EventType: transactions.EventTypeBenefitsSavebackExecution,
+	Model: transaction.Model{
 		UUID: "73fc417a-62ef-4179-a85e-9f3b29224567",
 		Instrument: instrument.Model{
 			ISIN: "XF000DOT0011",
@@ -185,8 +183,8 @@ var BenefitsSavebackExecution01 = TransactionTestCase{
 }
 
 func init() {
-	BenefitsSavebackExecution01.Transaction.Timestamp, _ = internal.ParseTimestamp("2024-03-22T18:15:06.448+0000")
-	BenefitsSavebackExecution01.CSVEntry.Timestamp = internal.DateTime{Time: BenefitsSavebackExecution01.Transaction.Timestamp}
+	BenefitsSavebackExecution01.Model.Timestamp, _ = internal.ParseTimestamp("2024-03-22T18:15:06.448+0000")
+	BenefitsSavebackExecution01.CSVEntry.Timestamp = internal.DateTime{Time: BenefitsSavebackExecution01.Model.Timestamp}
 
-	RegisterSupported("BenefitsSavebackExecution01", BenefitsSavebackExecution01)
+	TestCasesSupported["BenefitsSavebackExecution01"] = BenefitsSavebackExecution01
 }

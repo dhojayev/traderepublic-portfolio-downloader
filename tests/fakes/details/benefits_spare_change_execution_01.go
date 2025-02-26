@@ -1,18 +1,16 @@
-package fakes
+package details_test
 
 import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/details"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/document"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/instrument"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/transaction"
 )
 
-var BenefitsSpareChangeExecution01 = TransactionTestCase{
-	TimelineDetailsData: TimelineDetailsTestData{
-		Raw: []byte(`{
+var BenefitsSpareChangeExecution01 = Fake{
+	RawResponse: []byte(`{
 		"id": "265cb9c0-664a-45d4-b179-3061f196dd2a",
 		"sections": [
 		  {
@@ -132,131 +130,130 @@ var BenefitsSpareChangeExecution01 = TransactionTestCase{
 		  }
 		]
 	  }`),
-		Normalized: details.NormalizedResponse{
-			ID: "265cb9c0-664a-45d4-b179-3061f196dd2a",
-			Header: details.NormalizedResponseHeaderSection{
-				Action: details.NormalizedResponseSectionAction{
-					Payload: "DE000A0F5UF5",
-					Type:    "instrumentDetail",
-				},
-				Data: details.NormalizedResponseHeaderSectionData{
-					Icon:      "logos/DE000A0F5UF5/v2",
-					Status:    "executed",
-					Timestamp: "2024-01-04T12:26:52.110+0000",
-				},
-				Title: "Du hast 1,09 € investiert",
-				Type:  "header",
+	Unmarshalled: details.NormalizedResponse{
+		ID: "265cb9c0-664a-45d4-b179-3061f196dd2a",
+		Header: details.NormalizedResponseHeaderSection{
+			Action: details.NormalizedResponseSectionAction{
+				Payload: "DE000A0F5UF5",
+				Type:    "instrumentDetail",
 			},
-			Overview: details.NormalizedResponseOverviewSection{
-				NormalizedResponseTableSection: details.NormalizedResponseTableSection{
-					Data: []details.NormalizedResponseTableSectionData{
-						{
-							Detail: details.NormalizedResponseTableSectionDataDetail{
-								FunctionalStyle: "EXECUTED",
-								Text:            "Ausgeführt",
-								Type:            "status",
-							},
-							Style: "plain",
-							Title: "Status",
-						},
-						{
-							Detail: details.NormalizedResponseTableSectionDataDetail{
-								Text: "Round up",
-								Type: "text",
-							},
-							Style: "plain",
-							Title: "Ordertyp",
-						},
-						{
-							Detail: details.NormalizedResponseTableSectionDataDetail{
-								Text: "NASDAQ100 USD (Dist)",
-								Type: "text",
-							},
-							Style: "plain",
-							Title: "Asset",
-						},
-					},
-					Title: "Übersicht",
-					Type:  "table",
-				},
+			Data: details.NormalizedResponseHeaderSectionData{
+				Icon:      "logos/DE000A0F5UF5/v2",
+				Status:    "executed",
+				Timestamp: "2024-01-04T12:26:52.110+0000",
 			},
-			Transaction: details.NormalizedResponseTransactionSection{
-				NormalizedResponseTableSection: details.NormalizedResponseTableSection{
-					Data: []details.NormalizedResponseTableSectionData{
-						{
-							Detail: details.NormalizedResponseTableSectionDataDetail{
-								Text: "0.006882",
-								Type: "text",
-							},
-							Style: "plain",
-							Title: "Aktien",
-						},
-						{
-							Detail: details.NormalizedResponseTableSectionDataDetail{
-								Text: "158,38 €",
-								Type: "text",
-							},
-							Style: "plain",
-							Title: "Aktienkurs",
-						},
-						{
-							Detail: details.NormalizedResponseTableSectionDataDetail{
-								Text: "Kostenlos",
-								Type: "text",
-							},
-							Style: "plain",
-							Title: "Gebühr",
-						},
-						{
-							Detail: details.NormalizedResponseTableSectionDataDetail{
-								Text: "1,09 €",
-								Type: "text",
-							},
-							Style: "plain",
-							Title: "Gesamt",
-						},
-					},
-					Title: "Transaktion",
-					Type:  "table",
-				},
-			},
-			Documents: details.NormalizedResponseDocumentsSection{
-				Data: []details.NormalizedResponseDocumentsSectionData{
+			Title: "Du hast 1,09 € investiert",
+			Type:  "header",
+		},
+		Overview: details.NormalizedResponseOverviewSection{
+			NormalizedResponseTableSection: details.NormalizedResponseTableSection{
+				Data: []details.NormalizedResponseTableSectionData{
 					{
-						Action: details.NormalizedResponseSectionAction{
-							Payload: "https://traderepublic-postbox-platform-production.s3.eu-central-1.amazonaws.com/timeline/postbox",
-							Type:    "browserModal",
+						Detail: details.NormalizedResponseTableSectionDataDetail{
+							FunctionalStyle: "EXECUTED",
+							Text:            "Ausgeführt",
+							Type:            "status",
 						},
-						ID:          "9df4c2e1-0de2-4900-aa8c-af5371ed58f6",
-						PostboxType: "BENEFIT_DEACTIVATED",
-						Title:       "Deaktivierung",
+						Style: "plain",
+						Title: "Status",
 					},
 					{
-						Action: details.NormalizedResponseSectionAction{
-							Payload: "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox",
-							Type:    "browserModal",
+						Detail: details.NormalizedResponseTableSectionDataDetail{
+							Text: "Round up",
+							Type: "text",
 						},
-						ID:          "3a8ebf86-a2bb-463e-8bfd-28fd705359ff",
-						PostboxType: "SAVINGS_PLAN_EXECUTED_V2",
-						Title:       "Abrechnung Ausführung",
+						Style: "plain",
+						Title: "Ordertyp",
 					},
 					{
-						Action: details.NormalizedResponseSectionAction{
-							Payload: "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox",
-							Type:    "browserModal",
+						Detail: details.NormalizedResponseTableSectionDataDetail{
+							Text: "NASDAQ100 USD (Dist)",
+							Type: "text",
 						},
-						ID:          "e2dfa755-e039-45c7-b7bb-1ac024844f75",
-						PostboxType: "COSTS_INFO_SAVINGS_PLAN_V2",
-						Title:       "Kosteninformation",
+						Style: "plain",
+						Title: "Asset",
 					},
 				},
-				Title: "Documents",
-				Type:  "documents",
+				Title: "Übersicht",
+				Type:  "table",
 			},
 		},
+		Transaction: details.NormalizedResponseTransactionSection{
+			NormalizedResponseTableSection: details.NormalizedResponseTableSection{
+				Data: []details.NormalizedResponseTableSectionData{
+					{
+						Detail: details.NormalizedResponseTableSectionDataDetail{
+							Text: "0.006882",
+							Type: "text",
+						},
+						Style: "plain",
+						Title: "Aktien",
+					},
+					{
+						Detail: details.NormalizedResponseTableSectionDataDetail{
+							Text: "158,38 €",
+							Type: "text",
+						},
+						Style: "plain",
+						Title: "Aktienkurs",
+					},
+					{
+						Detail: details.NormalizedResponseTableSectionDataDetail{
+							Text: "Kostenlos",
+							Type: "text",
+						},
+						Style: "plain",
+						Title: "Gebühr",
+					},
+					{
+						Detail: details.NormalizedResponseTableSectionDataDetail{
+							Text: "1,09 €",
+							Type: "text",
+						},
+						Style: "plain",
+						Title: "Gesamt",
+					},
+				},
+				Title: "Transaktion",
+				Type:  "table",
+			},
+		},
+		Documents: details.NormalizedResponseDocumentsSection{
+			Data: []details.NormalizedResponseDocumentsSectionData{
+				{
+					Action: details.NormalizedResponseSectionAction{
+						Payload: "https://traderepublic-postbox-platform-production.s3.eu-central-1.amazonaws.com/timeline/postbox",
+						Type:    "browserModal",
+					},
+					ID:          "9df4c2e1-0de2-4900-aa8c-af5371ed58f6",
+					PostboxType: "BENEFIT_DEACTIVATED",
+					Title:       "Deaktivierung",
+				},
+				{
+					Action: details.NormalizedResponseSectionAction{
+						Payload: "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox",
+						Type:    "browserModal",
+					},
+					ID:          "3a8ebf86-a2bb-463e-8bfd-28fd705359ff",
+					PostboxType: "SAVINGS_PLAN_EXECUTED_V2",
+					Title:       "Abrechnung Ausführung",
+				},
+				{
+					Action: details.NormalizedResponseSectionAction{
+						Payload: "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox",
+						Type:    "browserModal",
+					},
+					ID:          "e2dfa755-e039-45c7-b7bb-1ac024844f75",
+					PostboxType: "COSTS_INFO_SAVINGS_PLAN_V2",
+					Title:       "Kosteninformation",
+				},
+			},
+			Title: "Documents",
+			Type:  "documents",
+		},
 	},
-	EventType: transactions.EventTypeBenefitsSpareChangeExecution,
-	Transaction: transaction.Model{
+	// EventType: transactions.EventTypeBenefitsSpareChangeExecution,
+	Model: transaction.Model{
 		UUID: "265cb9c0-664a-45d4-b179-3061f196dd2a",
 		Instrument: instrument.Model{
 			ISIN: "DE000A0F5UF5",
@@ -307,8 +304,8 @@ var BenefitsSpareChangeExecution01 = TransactionTestCase{
 }
 
 func init() {
-	BenefitsSpareChangeExecution01.Transaction.Timestamp, _ = internal.ParseTimestamp("2024-01-04T12:26:52.110+0000")
-	BenefitsSpareChangeExecution01.CSVEntry.Timestamp = internal.DateTime{Time: BenefitsSpareChangeExecution01.Transaction.Timestamp}
+	BenefitsSpareChangeExecution01.Model.Timestamp, _ = internal.ParseTimestamp("2024-01-04T12:26:52.110+0000")
+	BenefitsSpareChangeExecution01.CSVEntry.Timestamp = internal.DateTime{Time: BenefitsSpareChangeExecution01.Model.Timestamp}
 
-	RegisterSupported("BenefitsSpareChangeExecution01", BenefitsSpareChangeExecution01)
+	TestCasesSupported["BenefitsSpareChangeExecution01"] = BenefitsSpareChangeExecution01
 }

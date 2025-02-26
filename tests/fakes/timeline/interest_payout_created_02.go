@@ -2,10 +2,9 @@ package timeline_test
 
 import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/transactions"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/tests/fakes"
 )
 
-var InterestPayoutCreated02 = fakes.TimelineFakeData{
+var InterestPayoutCreated02 = Fake{
 	RawResponse: []byte(`{
       "action": {
         "payload": "79bea4ff-5552-45a1-85b5-8977e29f3d04",

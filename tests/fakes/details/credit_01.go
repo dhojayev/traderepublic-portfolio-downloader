@@ -1,18 +1,16 @@
-package fakes
+package details_test
 
 import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/details"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/document"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/instrument"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/transaction"
 )
 
-var Credit01 = TransactionTestCase{
-	TimelineDetailsData: TimelineDetailsTestData{
-		Raw: []byte(`{
+var Credit01 = Fake{
+	RawResponse: []byte(`{
 		"id": "23cf72a9-3888-4918-898c-c3bc38346ba1",
 		"sections": [
 		  {
@@ -109,97 +107,96 @@ var Credit01 = TransactionTestCase{
 		  }
 		]
 	  }`),
-		Normalized: details.NormalizedResponse{
-			ID: "23cf72a9-3888-4918-898c-c3bc38346ba1",
-			Header: details.NormalizedResponseHeaderSection{
-				Action: details.NormalizedResponseSectionAction{
-					Payload: nil,
-					Type:    "",
-				},
-				Data: details.NormalizedResponseHeaderSectionData{
-					Icon:      "logos/IE00BK1PV551/v2",
-					Status:    "executed",
-					Timestamp: "2023-12-13T12:44:28.857+0000",
-				},
-				Title: "Du hast 2,94 € erhalten",
-				Type:  "header",
+	Unmarshalled: details.NormalizedResponse{
+		ID: "23cf72a9-3888-4918-898c-c3bc38346ba1",
+		Header: details.NormalizedResponseHeaderSection{
+			Action: details.NormalizedResponseSectionAction{
+				Payload: nil,
+				Type:    "",
 			},
-			Overview: details.NormalizedResponseOverviewSection{
-				NormalizedResponseTableSection: details.NormalizedResponseTableSection{
-					Data: []details.NormalizedResponseTableSectionData{
-						{
-							Detail: details.NormalizedResponseTableSectionDataDetail{
-								Text: "Ausschüttung",
-								Type: "text",
-							},
-							Style: "plain",
-							Title: "Ereignis",
-						},
-						{
-							Detail: details.NormalizedResponseTableSectionDataDetail{
-								Text: "MSCI World USD (Dist)",
-								Type: "text",
-							},
-							Style: "plain",
-							Title: "Asset",
-						},
-					},
-					Title: "Übersicht",
-					Type:  "table",
-				},
+			Data: details.NormalizedResponseHeaderSectionData{
+				Icon:      "logos/IE00BK1PV551/v2",
+				Status:    "executed",
+				Timestamp: "2023-12-13T12:44:28.857+0000",
 			},
-			Transaction: details.NormalizedResponseTransactionSection{
-				NormalizedResponseTableSection: details.NormalizedResponseTableSection{
-					Data: []details.NormalizedResponseTableSectionData{
-						{
-							Detail: details.NormalizedResponseTableSectionDataDetail{
-								Text: "10,344033",
-								Type: "text",
-							},
-							Style: "plain",
-							Title: "Anteile",
-						},
-						{
-							Detail: details.NormalizedResponseTableSectionDataDetail{
-								Text: "0,28 €",
-								Type: "text",
-							},
-							Style: "plain",
-							Title: "Dividende je Aktie",
-						},
-						{
-							Detail: details.NormalizedResponseTableSectionDataDetail{
-								Text: "+ 2,94 €",
-								Type: "text",
-							},
-							Style: "highlighted",
-							Title: "Gesamt",
-						},
-					},
-					Title: "Transaktion",
-					Type:  "table",
-				},
-			},
-			Documents: details.NormalizedResponseDocumentsSection{
-				Data: []details.NormalizedResponseDocumentsSectionData{
+			Title: "Du hast 2,94 € erhalten",
+			Type:  "header",
+		},
+		Overview: details.NormalizedResponseOverviewSection{
+			NormalizedResponseTableSection: details.NormalizedResponseTableSection{
+				Data: []details.NormalizedResponseTableSectionData{
 					{
-						Action: details.NormalizedResponseSectionAction{
-							Payload: "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
-							Type:    "browserModal",
+						Detail: details.NormalizedResponseTableSectionDataDetail{
+							Text: "Ausschüttung",
+							Type: "text",
 						},
-						Detail:      "13.12.2023",
-						ID:          "df244c67-8907-4365-bb89-ce26e1fadea5",
-						PostboxType: "INCOME",
-						Title:       "Abrechnung",
+						Style: "plain",
+						Title: "Ereignis",
+					},
+					{
+						Detail: details.NormalizedResponseTableSectionDataDetail{
+							Text: "MSCI World USD (Dist)",
+							Type: "text",
+						},
+						Style: "plain",
+						Title: "Asset",
 					},
 				},
-				Title: "Dokumente",
-				Type:  "documents",
+				Title: "Übersicht",
+				Type:  "table",
 			},
 		},
+		Transaction: details.NormalizedResponseTransactionSection{
+			NormalizedResponseTableSection: details.NormalizedResponseTableSection{
+				Data: []details.NormalizedResponseTableSectionData{
+					{
+						Detail: details.NormalizedResponseTableSectionDataDetail{
+							Text: "10,344033",
+							Type: "text",
+						},
+						Style: "plain",
+						Title: "Anteile",
+					},
+					{
+						Detail: details.NormalizedResponseTableSectionDataDetail{
+							Text: "0,28 €",
+							Type: "text",
+						},
+						Style: "plain",
+						Title: "Dividende je Aktie",
+					},
+					{
+						Detail: details.NormalizedResponseTableSectionDataDetail{
+							Text: "+ 2,94 €",
+							Type: "text",
+						},
+						Style: "highlighted",
+						Title: "Gesamt",
+					},
+				},
+				Title: "Transaktion",
+				Type:  "table",
+			},
+		},
+		Documents: details.NormalizedResponseDocumentsSection{
+			Data: []details.NormalizedResponseDocumentsSectionData{
+				{
+					Action: details.NormalizedResponseSectionAction{
+						Payload: "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
+						Type:    "browserModal",
+					},
+					Detail:      "13.12.2023",
+					ID:          "df244c67-8907-4365-bb89-ce26e1fadea5",
+					PostboxType: "INCOME",
+					Title:       "Abrechnung",
+				},
+			},
+			Title: "Dokumente",
+			Type:  "documents",
+		},
 	},
-	EventType: transactions.EventTypeCredit,
-	Transaction: transaction.Model{
+	// EventType: transactions.EventTypeCredit,
+	Model: transaction.Model{
 		UUID: "23cf72a9-3888-4918-898c-c3bc38346ba1",
 		Instrument: instrument.Model{
 			ISIN: "IE00BK1PV551",
@@ -238,8 +235,8 @@ var Credit01 = TransactionTestCase{
 }
 
 func init() {
-	Credit01.Transaction.Timestamp, _ = internal.ParseTimestamp("2023-12-13T12:44:28.857+0000")
-	Credit01.CSVEntry.Timestamp = internal.DateTime{Time: Credit01.Transaction.Timestamp}
+	Credit01.Model.Timestamp, _ = internal.ParseTimestamp("2023-12-13T12:44:28.857+0000")
+	Credit01.CSVEntry.Timestamp = internal.DateTime{Time: Credit01.Model.Timestamp}
 
-	RegisterSupported("Credit01", Credit01)
+	TestCasesSupported["Credit01"] = Credit01
 }

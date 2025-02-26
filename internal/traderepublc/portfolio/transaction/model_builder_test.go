@@ -11,19 +11,20 @@ import (
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/reader"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/details"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/transaction"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/tests/fakes"
+	details_test "github.com/dhojayev/traderepublic-portfolio-downloader/tests/fakes/details"
 )
 
 func TestModelBuilderBuildSupported(t *testing.T) {
 	t.Parallel()
 
-	testCases := fakes.TransactionTestCasesSupported
+	testCases := details_test.TestCasesSupported
 
 	if len(testCases) == 0 {
 		t.Error("no test cases found")
 	}
-	
+
 	logger := log.New()
 	logger.Out = io.Discard
 
@@ -34,11 +35,17 @@ func TestModelBuilderBuildSupported(t *testing.T) {
 	builderFactory := transaction.ProvideModelBuilderFactory(logger)
 
 	for testCaseName, testCase := range testCases {
+		if testCase.Parent == nil {
+			t.Errorf("case '%s' does not contain parent", testCaseName)
+
+			continue
+		}
+
 		readerMock.
 			EXPECT().
 			Read("timelineDetailV2", gomock.Any()).
 			DoAndReturn(func(_ string, _ map[string]any) (reader.JSONResponse, error) {
-				return reader.NewJSONResponse(testCase.TimelineDetailsData.Raw), nil
+				return reader.NewJSONResponse(testCase.RawResponse), nil
 			})
 
 		var response details.Response
@@ -49,7 +56,7 @@ func TestModelBuilderBuildSupported(t *testing.T) {
 		normalizedResponse, err := normalizer.Normalize(response)
 		assert.NoError(t, err, fmt.Sprintf("case '%s'", testCaseName))
 
-		builder, err := builderFactory.Create(testCase.EventType, normalizedResponse)
+		builder, err := builderFactory.Create(transactions.EventType(testCase.Parent.Unmarshalled.EventType), normalizedResponse)
 		assert.NoError(t, err, fmt.Sprintf("case '%s'", testCaseName))
 
 		if err != nil {
@@ -58,14 +65,19 @@ func TestModelBuilderBuildSupported(t *testing.T) {
 
 		actual, err := builder.Build()
 		assert.NoError(t, err, fmt.Sprintf("case '%s'", testCaseName))
-		assert.Equal(t, testCase.Transaction, actual, fmt.Sprintf("case '%s'", testCaseName))
+		assert.Equal(t, testCase.Model, actual, fmt.Sprintf("case '%s'", testCaseName))
 	}
 }
 
 func TestModelBuilderBuildUnsupported(t *testing.T) {
 	t.Parallel()
 
-	testCases := fakes.TransactionTestCasesUnsupported
+	testCases := details_test.TestCasesUnsupported
+
+	if len(testCases) == 0 {
+		t.Error("no test cases found")
+	}
+
 	logger := log.New()
 	controller := gomock.NewController(t)
 	readerMock := reader.NewMockInterface(controller)
@@ -74,11 +86,17 @@ func TestModelBuilderBuildUnsupported(t *testing.T) {
 	builderFactory := transaction.ProvideModelBuilderFactory(logger)
 
 	for testCaseName, testCase := range testCases {
+		if testCase.Parent == nil {
+			t.Errorf("case '%s' does not contain parent", testCaseName)
+
+			continue
+		}
+
 		readerMock.
 			EXPECT().
 			Read("timelineDetailV2", gomock.Any()).
 			DoAndReturn(func(_ string, _ map[string]any) (reader.JSONResponse, error) {
-				return reader.NewJSONResponse(testCase.TimelineDetailsData.Raw), nil
+				return reader.NewJSONResponse(testCase.RawResponse), nil
 			})
 
 		var response details.Response
@@ -88,7 +106,7 @@ func TestModelBuilderBuildUnsupported(t *testing.T) {
 
 		normalizedResponse, _ := normalizer.Normalize(response)
 
-		_, err = builderFactory.Create(testCase.EventType, normalizedResponse)
+		_, err = builderFactory.Create(transactions.EventType(testCase.Parent.Unmarshalled.EventType), normalizedResponse)
 		assert.Error(t, err, fmt.Sprintf("case '%s'", testCaseName))
 	}
 }
@@ -96,7 +114,12 @@ func TestModelBuilderBuildUnsupported(t *testing.T) {
 func TestModelBuilderBuildUnknown(t *testing.T) {
 	t.Parallel()
 
-	testCases := fakes.TransactionTestCasesUnknown
+	testCases := details_test.TestCasesUnknown
+
+	if len(testCases) == 0 {
+		t.Error("no test cases found")
+	}
+
 	logger := log.New()
 	controller := gomock.NewController(t)
 	readerMock := reader.NewMockInterface(controller)
@@ -105,11 +128,17 @@ func TestModelBuilderBuildUnknown(t *testing.T) {
 	builderFactory := transaction.ProvideModelBuilderFactory(logger)
 
 	for testCaseName, testCase := range testCases {
+		if testCase.Parent == nil {
+			t.Errorf("case '%s' does not contain parent", testCaseName)
+
+			continue
+		}
+
 		readerMock.
 			EXPECT().
 			Read("timelineDetailV2", gomock.Any()).
 			DoAndReturn(func(_ string, _ map[string]any) (reader.JSONResponse, error) {
-				return reader.NewJSONResponse(testCase.TimelineDetailsData.Raw), nil
+				return reader.NewJSONResponse(testCase.RawResponse), nil
 			})
 
 		var response details.Response
@@ -120,7 +149,7 @@ func TestModelBuilderBuildUnknown(t *testing.T) {
 		normalizedResponse, err := normalizer.Normalize(response)
 		assert.NoError(t, err, fmt.Sprintf("case '%s'", testCaseName))
 
-		builder, err := builderFactory.Create(testCase.EventType, normalizedResponse)
+		builder, err := builderFactory.Create(transactions.EventType(testCase.Parent.Unmarshalled.EventType), normalizedResponse)
 		assert.NoError(t, err, fmt.Sprintf("case '%s'", testCaseName))
 
 		if err != nil {
