@@ -8,14 +8,15 @@ import (
 )
 
 const (
-	TypePurchase       = "Purchase"
-	TypeSale           = "Sale"
-	TypeDividendPayout = "Dividends"
-	TypeRoundUp        = "Round up"
-	TypeSaveback       = "Saveback"
-	TypeDeposit        = "Deposit"
-	TypeWithdrawal     = "Withdrawal"
-	TypeInterestPayout = "Interest payout"
+	TypePurchase               = "Purchase"
+	TypeSale                   = "Sale"
+	TypeDividendPayout         = "Dividends"
+	TypeRoundUp                = "Round up"
+	TypeSaveback               = "Saveback"
+	TypeDeposit                = "Deposit"
+	TypeWithdrawal             = "Withdrawal"
+	TypeInterestPayout         = "Interest payout"
+	TypeCardPaymentTransaction = "Card payment"
 )
 
 type Model struct {
