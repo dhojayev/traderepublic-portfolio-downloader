@@ -1,6 +1,6 @@
 module github.com/dhojayev/traderepublic-portfolio-downloader
 
-go 1.24.0
+go 1.24.1
 
 require (
 	github.com/alexflint/go-arg v1.4.3

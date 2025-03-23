@@ -136,13 +136,8 @@ func (b BaseModelBuilder) ExtractSharesAmount() (float64, error) {
 		return 0, fmt.Errorf("could not get transaction section shares: %w", err)
 	}
 
-	shares, err := ParseFloatWithPeriod(sharesData.Detail.Text)
+	shares, err := ParseFloatFromResponse(sharesData.Detail.Text)
 	if err != nil {
-		shares, err = ParseFloatWithComma(sharesData.Detail.Text, sharesData.Detail.Trend == details.TrendNegative)
-		if err == nil {
-			return shares, nil
-		}
-
 		return 0, fmt.Errorf("could not parse transaction section shares to float: %w", err)
 	}
 
@@ -161,12 +156,13 @@ func (b BaseModelBuilder) ExtractRateValue() (float64, error) {
 			"could not get transaction section rate: %w", err)
 	}
 
-	rate, err := ParseFloatWithComma(rateData.Detail.Text, rateData.Detail.Trend == details.TrendNegative)
+	rate, err := ParseFloatFromResponse(rateData.Detail.Text)
 	if err != nil {
-		rate, err = ParseFloatWithPeriod(rateData.Detail.Text)
-		if err != nil {
-			return 0, fmt.Errorf("could not parse transaction section rate to float: %w", err)
-		}
+		return 0, fmt.Errorf("could not parse transaction section rate to float: %w", err)
+	}
+
+	if rateData.Detail.Trend == details.TrendNegative {
+		rate = -rate
 	}
 
 	return rate, nil
@@ -180,16 +176,17 @@ func (b BaseModelBuilder) ExtractCommissionAmount() (float64, error) {
 		}
 	}
 
-	commission, err := ParseFloatWithComma(
-		commissionData.Detail.Text,
-		commissionData.Detail.Trend == details.TrendNegative,
-	)
+	commission, err := ParseFloatFromResponse(commissionData.Detail.Text)
 	if err != nil {
 		if !errors.Is(err, ErrNoMatch) {
 			return 0, fmt.Errorf("could not parse transaction section commission to float: %w", err)
 		}
 
 		commission = 0
+	}
+
+	if commissionData.Detail.Trend == details.TrendNegative {
+		commission = -commission
 	}
 
 	return commission, nil
@@ -204,12 +201,13 @@ func (b BaseModelBuilder) ExtractTotalAmount() (float64, error) {
 		return 0, fmt.Errorf("could not get transaction section total: %w", err)
 	}
 
-	total, err := ParseFloatWithComma(totalData.Detail.Text, totalData.Detail.Trend == details.TrendNegative)
+	total, err := ParseFloatFromResponse(totalData.Detail.Text)
 	if err != nil {
-		total, err = ParseFloatWithPeriod(totalData.Detail.Text)
-		if err != nil {
-			return 0, fmt.Errorf("could not parse transaction section total to float: %w", err)
-		}
+		return 0, fmt.Errorf("could not parse transaction section total to float: %w", err)
+	}
+
+	if totalData.Detail.Trend == details.TrendNegative {
+		total = -total
 	}
 
 	return total, nil
@@ -221,12 +219,9 @@ func (b BaseModelBuilder) ExtractTaxAmount() (float64, error) {
 		return 0, fmt.Errorf("could not get transaction section tax amount: %w", err)
 	}
 
-	taxAmount, err := ParseFloatWithComma(taxData.Detail.Text, false)
+	taxAmount, err := ParseFloatFromResponse(taxData.Detail.Text)
 	if err != nil {
-		taxAmount, err = ParseFloatWithPeriod(taxData.Detail.Text)
-		if err != nil {
-			return 0, fmt.Errorf("could not parse transaction section tax amount to float: %w", err)
-		}
+		return 0, fmt.Errorf("could not parse transaction section tax amount to float: %w", err)
 	}
 
 	return taxAmount, nil
@@ -319,9 +314,13 @@ func (b SaleBuilder) ExtractPerformanceFloatVal(titles ...string) (float64, erro
 		return 0, fmt.Errorf("could not get performance section data by titles %v: %w", titles, err)
 	}
 
-	floatData, err := ParseFloatWithComma(stringData.Detail.Text, stringData.Detail.Trend == details.TrendNegative)
+	floatData, err := ParseFloatFromResponse(stringData.Detail.Text)
 	if err != nil {
 		return 0, fmt.Errorf("could not parse performance section data to float by titles %v: %w", titles, err)
+	}
+
+	if stringData.Detail.Trend == details.TrendNegative {
+		floatData = -floatData
 	}
 
 	return floatData, nil
@@ -456,12 +455,7 @@ func (b DepositBuilder) Build() (Model, error) {
 }
 
 func (b DepositBuilder) ExtractTotalAmount() (float64, error) {
-	totalAmountStr, err := ParseNumericValueFromString(b.response.Header.Title)
-	if err != nil {
-		return 0, err
-	}
-
-	total, err := ParseFloatWithComma(totalAmountStr, false)
+	total, err := ParseFloatFromResponse(b.response.Header.Title)
 	if err != nil {
 		return total, err
 	}
@@ -521,17 +515,9 @@ func (b InterestPayoutBuilder) Build() (Model, error) {
 
 	model.Total, err = b.ExtractTotalAmount()
 	if err != nil {
-		totalAmountStr, err := ParseNumericValueFromString(b.response.Header.Title)
+		model.Total, err = ParseFloatFromResponse(b.response.Header.Title)
 		if err != nil {
 			return model, b.HandleErr(err)
-		}
-
-		model.Total, err = ParseFloatWithComma(totalAmountStr, false)
-		if err != nil {
-			model.Total, err = ParseFloatWithPeriod(totalAmountStr)
-			if err != nil {
-				return model, b.HandleErr(err)
-			}
 		}
 	}
 
