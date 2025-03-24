@@ -16,6 +16,11 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/writer"
 )
 
+const (
+	MsgTypeSub   = "sub"
+	MsgTypeUnsub = "unsub"
+)
+
 var ErrMsgErrorStateReceived = errors.New("error state received")
 
 type Reader struct {
@@ -50,6 +55,8 @@ func (r *Reader) connect() error {
 		return fmt.Errorf("could not send connect msg: %w", err)
 	}
 
+	r.logger.Trace("sent connect msg")
+
 	_, msg, err := r.conn.ReadMessage()
 	if err != nil {
 		return fmt.Errorf("could not read connect msg: %w", err)
@@ -78,23 +85,26 @@ func (r *Reader) Close() error {
 	return nil
 }
 
-//nolint:cyclop
+// Read this method has to be re-implemented to enable tests and reduce complexity
+// deprecated
+//
+//nolint:cyclop,gocognit,funlen
 func (r *Reader) Read(dataType string, req reader.Request) (reader.JSONResponse, error) {
 	r.subID++
 
 	resp := reader.NewJSONResponse(nil)
 
-	dataBytes, err := r.createWritableDataBytes(dataType, req)
+	dataBytes, err := r.createWritableDataBytes(MsgTypeSub, dataType, req)
 	if err != nil {
 		return resp, err
 	}
 
 	err = r.conn.WriteMessage(websocket.TextMessage, dataBytes)
 	if err != nil {
-		return resp, fmt.Errorf("could not send message: %w", err)
+		return resp, fmt.Errorf("could not sub: %w", err)
 	}
 
-	r.logger.WithField("message", string(dataBytes)).Trace("sent message")
+	r.logger.WithField("message", string(dataBytes)).Trace("sent sub message")
 
 	for {
 		_, msg, err := r.conn.ReadMessage()
@@ -113,37 +123,63 @@ func (r *Reader) Read(dataType string, req reader.Request) (reader.JSONResponse,
 		case message.HasContinueState():
 			continue
 		case message.HasErrorState():
-			if message.HasAuthErrMsg() {
-				if loginErr := r.authService.Login(); loginErr != nil {
-					return resp, fmt.Errorf("could not re-login: %w", loginErr)
-				}
-
-				if err = r.reconnect(); err != nil {
-					return resp, err
-				}
-
-				return r.Read(dataType, req)
+			responseErrors, err := message.GetErrors()
+			if err != nil {
+				return resp, fmt.Errorf("could not get errors: %w", err)
 			}
 
-			return resp, fmt.Errorf("%w: %s", ErrMsgErrorStateReceived, msg)
+			for _, responseError := range responseErrors.Errors {
+				switch {
+				case responseError.IsAuthError():
+					continue
+				case responseError.IsUnauthorizedError():
+					if loginErr := r.authService.Login(); loginErr != nil {
+						return resp, fmt.Errorf("could not re-login: %w", loginErr)
+					}
+
+					if err = r.reconnect(); err != nil {
+						return resp, err
+					}
+
+					return r.Read(dataType, req)
+
+				default:
+					return resp, fmt.Errorf("%w: %s", ErrMsgErrorStateReceived, msg)
+				}
+			}
+		}
+
+		dataBytes, err = r.createWritableDataBytes(MsgTypeUnsub, "", nil)
+		if err == nil {
+			err = r.conn.WriteMessage(websocket.TextMessage, dataBytes)
+			if err != nil {
+				r.logger.Warnf("could not send unsub: %s", err)
+			}
+
+			r.logger.WithField("message", string(dataBytes)).Trace("sent unsub message")
 		}
 
 		if err := r.writer.Bytes(dataType, message.Data()); err != nil {
 			return resp, fmt.Errorf("could not write message: %w", err)
 		}
 
-		return reader.NewJSONResponse(message.Data()), nil
+		result := reader.NewJSONResponse(message.Data())
+
+		return result, nil
 	}
 }
 
-func (r *Reader) createWritableDataBytes(dataType string, dataMap map[string]any) ([]byte, error) {
+func (r *Reader) createWritableDataBytes(msgType string, dataType string, dataMap map[string]any) ([]byte, error) {
 	data := dataMap
 
 	if data == nil {
 		data = make(map[string]any)
 	}
 
-	data["type"] = dataType
+	if dataType != "" {
+		data["type"] = dataType
+	}
+
 	data["token"] = r.authService.SessionToken().Value()
 
 	dataBytes, err := json.Marshal(data)
@@ -151,5 +187,5 @@ func (r *Reader) createWritableDataBytes(dataType string, dataMap map[string]any
 		return nil, fmt.Errorf("could not marshal data into json: %w", err)
 	}
 
-	return []byte(fmt.Sprintf("sub %d %s", r.subID, dataBytes)), nil
+	return []byte(fmt.Sprintf("%s %d %s", msgType, r.subID, dataBytes)), nil
 }

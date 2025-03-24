@@ -74,7 +74,9 @@ func (c *Client) Login(phoneNumber, pin string) (api.LoginResponse, error) {
 	}
 
 	if sessionToken.Value() != "" {
-		c.sessionToken = sessionToken
+		if err = c.writeSessionToken(sessionToken); err != nil {
+			return resp, err
+		}
 	}
 
 	return resp, nil
@@ -90,15 +92,12 @@ func (c *Client) ProvideOTP(processID, otp string) error {
 		return fmt.Errorf("could not validate otp: %w", err)
 	}
 
-	c.sessionToken = sessionToken
-	c.refreshToken = refreshToken
-
-	if err = c.sessionToken.WriteToFile(); err != nil {
-		return fmt.Errorf("could not save token into file: %w", err)
+	if err := c.writeSessionToken(sessionToken); err != nil {
+		return err
 	}
 
-	if err = c.refreshToken.WriteToFile(); err != nil {
-		return fmt.Errorf("could not save token into file: %w", err)
+	if err := c.writeRefreshToken(refreshToken); err != nil {
+		return err
 	}
 
 	return nil
@@ -112,9 +111,29 @@ func (c *Client) refreshSession() {
 		c.logger.Warnf("could not refresh session: %s", err)
 	}
 
-	c.sessionToken = sessionToken
+	_ = c.writeSessionToken(sessionToken)
 }
 
 func (c *Client) SessionToken() api.Token {
 	return c.sessionToken
+}
+
+func (c *Client) writeSessionToken(sessionToken api.Token) error {
+	c.sessionToken = sessionToken
+
+	if err := c.sessionToken.WriteToFile(); err != nil {
+		return fmt.Errorf("could not write session token file: %w", err)
+	}
+
+	return nil
+}
+
+func (c *Client) writeRefreshToken(refreshToken api.Token) error {
+	c.refreshToken = refreshToken
+
+	if err := c.refreshToken.WriteToFile(); err != nil {
+		return fmt.Errorf("could not write refresh token file: %w", err)
+	}
+
+	return nil
 }

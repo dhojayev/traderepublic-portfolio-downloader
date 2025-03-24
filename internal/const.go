@@ -11,13 +11,13 @@ const (
 
 	// HTTPUserAgent used for all HTTP communications.
 	HTTPUserAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) " +
-		"AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15"
+		"AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
 
 	// CookieNamePrefix prefix used by Trade Republic for its auth cookies.
 	CookieNamePrefix = "tr_"
 
 	// SessionRefreshInterval represents in how many seconds session has to be refreshed to keep it alive.
-	SessionRefreshInterval = 60
+	SessionRefreshInterval = 120
 
 	// ResponseActionTypeTimelineDetail represents the value the app will look for in order to determine
 	// if any details can be fetched.
