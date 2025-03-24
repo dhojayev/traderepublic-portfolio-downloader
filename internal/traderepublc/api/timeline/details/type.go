@@ -118,8 +118,13 @@ func SavebackDetector(eventType transactions.EventType, _ NormalizedResponse) bo
 }
 
 func DepositDetector(eventType transactions.EventType, _ NormalizedResponse) bool {
-	return eventType == transactions.EventTypePaymentInbound ||
-		eventType == transactions.EventTypePaymentInboundSepaDirectDebit
+	supportedEventTypes := []transactions.EventType{
+		transactions.EventTypePaymentInbound,
+		transactions.EventTypeIncomingTransferDelegation,
+		transactions.EventTypePaymentInboundSepaDirectDebit,
+	}
+
+	return slices.Contains(supportedEventTypes, eventType)
 }
 
 func InterestPayoutDetector(eventType transactions.EventType, _ NormalizedResponse) bool {
@@ -127,7 +132,12 @@ func InterestPayoutDetector(eventType transactions.EventType, _ NormalizedRespon
 }
 
 func DividendPayoutDetector(eventType transactions.EventType, _ NormalizedResponse) bool {
-	return eventType == transactions.EventTypeCredit || eventType == transactions.EventTypeSSPCorporateActionInvoiceCash
+	supportedEventTypes := []transactions.EventType{
+		transactions.EventTypeCredit,
+		transactions.EventTypeSSPCorporateActionInvoiceCash,
+	}
+
+	return slices.Contains(supportedEventTypes, eventType)
 }
 
 func WithdrawalDetector(eventType transactions.EventType, _ NormalizedResponse) bool {
