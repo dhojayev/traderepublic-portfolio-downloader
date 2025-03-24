@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"slices"
 
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/reader"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/reader"
 )
 
 // WSListGetterClientInterface represents a Websocket client that can make "list" requests.

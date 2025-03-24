@@ -20,6 +20,7 @@ import (
 type MockTypeResolverInterface struct {
 	ctrl     *gomock.Controller
 	recorder *MockTypeResolverInterfaceMockRecorder
+	isgomock struct{}
 }
 
 // MockTypeResolverInterfaceMockRecorder is the mock recorder for MockTypeResolverInterface.
