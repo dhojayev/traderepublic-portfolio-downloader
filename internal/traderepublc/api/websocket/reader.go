@@ -17,11 +17,15 @@ import (
 )
 
 const (
+	ConnectMsg = "connect 31 {\"locale\":\"de\",\"platformId\":\"webtrading\"," +
+		"\"platformVersion\":\"chrome - 134.0.0\",\"clientId\":\"app.traderepublic.com\",\"clientVersion\":\"3.174.0\"}"
 	MsgTypeSub   = "sub"
 	MsgTypeUnsub = "unsub"
 )
 
-var ErrMsgErrorStateReceived = errors.New("error state received")
+var (
+	ErrMsgErrorStateReceived = errors.New("error state received")
+)
 
 type Reader struct {
 	authService console.AuthServiceInterface
@@ -51,7 +55,7 @@ func (r *Reader) connect() error {
 
 	r.conn = conn
 
-	if err = r.conn.WriteMessage(websocket.TextMessage, []byte(`connect 31 {"locale": "de"}`)); err != nil {
+	if err = r.conn.WriteMessage(websocket.TextMessage, []byte(ConnectMsg)); err != nil {
 		return fmt.Errorf("could not send connect msg: %w", err)
 	}
 

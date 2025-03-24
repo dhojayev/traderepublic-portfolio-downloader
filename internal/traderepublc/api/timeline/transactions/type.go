@@ -21,6 +21,7 @@ const (
 	EventTypeInterestPayoutCreated         EventType = "INTEREST_PAYOUT_CREATED"
 	EventTypeInterestPayout                EventType = "INTEREST_PAYOUT"
 	EventTypeCredit                        EventType = "CREDIT"
+	EventTypeIncomingTransferDelegation    EventType = "INCOMING_TRANSFER_DELEGATION"
 	EventTypeBenefitsSavebackExecution     EventType = "benefits_saveback_execution"
 	EventTypeBenefitsSpareChangeExecution  EventType = "benefits_spare_change_execution"
 	EventTypeSSPCorporateActionInvoiceCash EventType = "ssp_corporate_action_invoice_cash"
@@ -55,6 +56,7 @@ func NewEventTypeResolver(logger *log.Logger) EventTypeResolver {
 			EventTypeInterestPayoutCreated,
 			EventTypeInterestPayout,
 			EventTypeCredit,
+			EventTypeIncomingTransferDelegation,
 			EventTypeBenefitsSavebackExecution,
 			EventTypeBenefitsSpareChangeExecution,
 			EventTypeSSPCorporateActionInvoiceCash,
