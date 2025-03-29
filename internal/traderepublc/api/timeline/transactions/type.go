@@ -58,6 +58,7 @@ func NewEventTypeResolver(logger *log.Logger) EventTypeResolver {
 			EventTypeBenefitsSavebackExecution,
 			EventTypeBenefitsSpareChangeExecution,
 			EventTypeSSPCorporateActionInvoiceCash,
+			EventTypeCardSuccessfulTransaction,
 		},
 		logger: logger,
 	}
