@@ -19,6 +19,7 @@ import (
 type MockDownloaderInterface struct {
 	ctrl     *gomock.Controller
 	recorder *MockDownloaderInterfaceMockRecorder
+	isgomock struct{}
 }
 
 // MockDownloaderInterfaceMockRecorder is the mock recorder for MockDownloaderInterface.
