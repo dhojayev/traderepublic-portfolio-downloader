@@ -21,7 +21,7 @@ jobs:
           check-latest: true
 
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v6
+        uses: golangci/golangci-lint-action@v7
 
       - name: Test
         run: make test
@@ -34,7 +34,7 @@ jobs:
       matrix:
         goos: [ linux, windows, darwin ]
         goarch: [ amd64, arm64 ]
-    
+
     steps:
       - uses: actions/checkout@v4
 
