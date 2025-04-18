@@ -1,4 +1,4 @@
-.PHONY: all init generate lint test build-darwin-amd64 build-darwin-arm64 build-windows-386 build-windows-amd64 build-linux-386 build-linux-amd64 build-linux-arm64
+.PHONY: all init generate lint test reset build-darwin-amd64 build-darwin-arm64 build-windows-386 build-windows-amd64 build-linux-386 build-linux-amd64 build-linux-arm64
 
 all: lint test
 
@@ -7,6 +7,7 @@ init:
 
 generate:
 	rm -f **/*_mock.go
+	./scripts/generate-rest-client.sh
 	go generate ./...
 	go run ./cmd/example-generator
 	
@@ -15,6 +16,9 @@ lint:
 
 test:
 	go test -v ./...
+
+reset:
+	rm -rf .session .refresh responses documents transactions.csv
 
 build-darwin-amd64:
 	GOOS=darwin GOARCH=amd64 go build -v -o /tmp/portfoliodownloader/public/portfoliodownloader-darwin-amd64 ./cmd/portfoliodownloader/public

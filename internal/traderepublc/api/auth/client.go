@@ -24,13 +24,13 @@ type ClientInterface interface {
 }
 
 type Client struct {
-	apiClient    api.Client
+	apiClient    api.ClientInterface
 	logger       *log.Logger
 	sessionToken api.Token
 	refreshToken api.Token
 }
 
-func NewClient(apiClient api.Client, logger *log.Logger) (*Client, error) {
+func NewClient(apiClient api.ClientInterface, logger *log.Logger) (*Client, error) {
 	client := &Client{
 		apiClient: apiClient,
 		logger:    logger,

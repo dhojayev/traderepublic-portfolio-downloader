@@ -2,9 +2,9 @@
 set -e
 
 # Generate the client code
-$HOME/go/bin/oapi-codegen -config internal/traderepublc/api/restclient/openapi-config.yaml openapi-rest.yaml > internal/traderepublc/api/restclient/openapi.gen.go
+$HOME/go/bin/oapi-codegen -config internal/traderepublc/api/restclient/openapi-config.yaml openapi-rest.yaml > internal/traderepublc/api/restclient/openapi_gen.go
 
 # Format the generated code
-go fmt internal/traderepublc/api/restclient/openapi.gen.go
+go fmt internal/traderepublc/api/restclient/openapi_gen.go
 
 echo "REST API client generated successfully!"

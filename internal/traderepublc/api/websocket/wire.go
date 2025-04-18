@@ -25,7 +25,7 @@ var DefaultSet = wire.NewSet(
 func ProvideReader(responseWriter writer.Interface, logger *log.Logger) (*Reader, error) {
 	wire.Build(
 		auth.DefaultSet,
-		api.DefaultSet,
+		api.ClientSet,
 		console.DefaultSet,
 		NewReader,
 	)
