@@ -13,9 +13,6 @@ const (
 	HTTPUserAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) " +
 		"AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
 
-	// CookieNamePrefix prefix used by Trade Republic for its auth cookies.
-	CookieNamePrefix = "tr_"
-
 	// SessionRefreshInterval represents in how many seconds session has to be refreshed to keep it alive.
 	SessionRefreshInterval = 120
 

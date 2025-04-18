@@ -6,17 +6,14 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
+
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/details"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/transactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/document"
 
 	log "github.com/sirupsen/logrus"
-)
-
-const (
-	csvFilename     = "./transactions.csv"
-	documentBaseDir = "./documents/transactions"
 )
 
 type ProcessorInterface interface {
@@ -55,7 +52,7 @@ func NewProcessor(
 
 //nolint:cyclop
 func (p Processor) Process(eventType transactions.EventType, response details.NormalizedResponse) error {
-	csvEntries, err := p.csvReader.Read(csvFilename)
+	csvEntries, err := p.csvReader.Read(internal.CSVFilename)
 	if err != nil {
 		return fmt.Errorf("csv reader read error: %w", err)
 	}
@@ -95,12 +92,12 @@ func (p Processor) Process(eventType transactions.EventType, response details.No
 		return fmt.Errorf("could not make csv entry: %w", err)
 	}
 
-	if err := p.csvWriter.Write(csvFilename, entry); err != nil {
+	if err := p.csvWriter.Write(internal.CSVFilename, entry); err != nil {
 		return fmt.Errorf("could not save transaction to file: %w", err)
 	}
 
 	for _, doc := range transaction.Documents {
-		err = p.docDownloader.Download(documentBaseDir, doc)
+		err = p.docDownloader.Download(internal.TransactionDocumentsBaseDir, doc)
 		if err == nil {
 			continue
 		}
