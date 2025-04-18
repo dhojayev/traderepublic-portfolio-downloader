@@ -1,6 +1,7 @@
 package api_test
 
 import (
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/restclient"
 	"errors"
 	"testing"
 
@@ -24,13 +25,14 @@ func TestClient_Login_Success(t *testing.T) {
 	mockClient := api.NewMockClientInterface(ctrl)
 
 	// Set up expectations
-	loginRequest := api.LoginRequest{
+	loginRequest := restclient.APILoginRequest{
 		PhoneNumber: "+1234567890",
 		Pin:         "1234",
 	}
 	refreshToken := api.NewToken(api.TokenNameRefresh, "")
-	expectedResponse := api.LoginResponse{
-		ProcessID: testProcessID,
+	processID := testProcessID
+		expectedResponse := restclient.APILoginResponse{
+		ProcessId: &processID,
 	}
 	expectedSessionToken := api.NewToken(api.TokenNameSession, "test-session-token")
 
@@ -43,7 +45,7 @@ func TestClient_Login_Success(t *testing.T) {
 
 	// Verify results
 	assert.NoError(t, err)
-	assert.Equal(t, "test-process-id", response.ProcessID)
+	assert.Equal(t, testProcessID, *response.ProcessId)
 	assert.Equal(t, "test-session-token", sessionToken.Value())
 }
 
@@ -57,7 +59,7 @@ func TestClient_Login_Error(t *testing.T) {
 	mockClient := api.NewMockClientInterface(ctrl)
 
 	// Set up expectations
-	loginRequest := api.LoginRequest{
+	loginRequest := restclient.APILoginRequest{
 		PhoneNumber: "+1234567890",
 		Pin:         "wrong-pin",
 	}
@@ -66,7 +68,7 @@ func TestClient_Login_Error(t *testing.T) {
 
 	mockClient.EXPECT().
 		Login(gomock.Eq(loginRequest), gomock.Eq(refreshToken)).
-		Return(api.LoginResponse{}, api.NewToken(api.TokenNameSession, ""), expectedError)
+		Return(restclient.APILoginResponse{}, api.NewToken(api.TokenNameSession, ""), expectedError)
 
 	// Call Login
 	_, _, err := mockClient.Login(loginRequest, refreshToken)
@@ -216,7 +218,7 @@ func TestClient_RequestError(t *testing.T) {
 	mockClient := api.NewMockClientInterface(ctrl)
 
 	// Set up expectations for Login
-	loginRequest := api.LoginRequest{
+	loginRequest := restclient.APILoginRequest{
 		PhoneNumber: "+1234567890",
 		Pin:         "1234",
 	}
@@ -225,7 +227,7 @@ func TestClient_RequestError(t *testing.T) {
 
 	mockClient.EXPECT().
 		Login(gomock.Eq(loginRequest), gomock.Eq(refreshToken)).
-		Return(api.LoginResponse{}, api.NewToken(api.TokenNameSession, ""), loginError)
+		Return(restclient.APILoginResponse{}, api.NewToken(api.TokenNameSession, ""), loginError)
 
 	// Set up expectations for PostOTP
 	processID := testProcessID

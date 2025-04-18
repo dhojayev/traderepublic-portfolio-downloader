@@ -12,6 +12,7 @@ package api
 import (
 	reflect "reflect"
 
+	restclient "github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/restclient"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -40,10 +41,10 @@ func (m *MockClientInterface) EXPECT() *MockClientInterfaceMockRecorder {
 }
 
 // Login mocks base method.
-func (m *MockClientInterface) Login(requestBody LoginRequest, refreshToken Token) (LoginResponse, Token, error) {
+func (m *MockClientInterface) Login(requestBody restclient.APILoginRequest, refreshToken Token) (restclient.APILoginResponse, Token, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Login", requestBody, refreshToken)
-	ret0, _ := ret[0].(LoginResponse)
+	ret0, _ := ret[0].(restclient.APILoginResponse)
 	ret1, _ := ret[1].(Token)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2

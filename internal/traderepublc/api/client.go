@@ -53,8 +53,11 @@ func NewClient(logger *log.Logger) (*Client, error) {
 }
 
 // Login logs in with phone number and PIN.
-func (c *Client) Login(requestBody LoginRequest, refreshToken Token) (LoginResponse, Token, error) {
-	var responseBody LoginResponse
+func (c *Client) Login(
+	requestBody restclient.APILoginRequest,
+	refreshToken Token,
+) (restclient.APILoginResponse, Token, error) {
+	var responseBody restclient.APILoginResponse
 
 	sessionToken := NewToken(TokenNameSession, "")
 
@@ -67,14 +70,8 @@ func (c *Client) Login(requestBody LoginRequest, refreshToken Token) (LoginRespo
 		return nil
 	}
 
-	// Convert our request to the restclient format
-	restRequest := restclient.APILoginRequest{
-		PhoneNumber: requestBody.PhoneNumber,
-		Pin:         requestBody.Pin,
-	}
-
 	// Make the login request
-	resp, err := c.client.LoginWithResponse(context.Background(), restRequest, reqEditor)
+	resp, err := c.client.LoginWithResponse(context.Background(), requestBody, reqEditor)
 	if err != nil {
 		return responseBody, sessionToken, fmt.Errorf("could not login: %w", err)
 	}
@@ -97,9 +94,9 @@ func (c *Client) Login(requestBody LoginRequest, refreshToken Token) (LoginRespo
 		}
 	}
 
-	// Extract the process ID
-	if resp.JSON200 != nil && resp.JSON200.ProcessId != nil {
-		responseBody.ProcessID = *resp.JSON200.ProcessId
+	// Set the response body
+	if resp.JSON200 != nil {
+		responseBody = *resp.JSON200
 	}
 
 	return responseBody, sessionToken, nil

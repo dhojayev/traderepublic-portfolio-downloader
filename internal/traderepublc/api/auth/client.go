@@ -3,6 +3,7 @@
 package auth
 
 import (
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/restclient"
 	"errors"
 	"fmt"
 	"io/fs"
@@ -18,7 +19,7 @@ type (
 )
 
 type ClientInterface interface {
-	Login(phoneNumber, pin string) (api.LoginResponse, error)
+	Login(phoneNumber, pin string) (restclient.APILoginResponse, error)
 	ProvideOTP(processID, otp string) error
 	SessionToken() api.Token
 }
@@ -61,9 +62,9 @@ func NewClient(apiClient api.ClientInterface, logger *log.Logger) (*Client, erro
 	return client, nil
 }
 
-func (c *Client) Login(phoneNumber, pin string) (api.LoginResponse, error) {
+func (c *Client) Login(phoneNumber, pin string) (restclient.APILoginResponse, error) {
 	resp, sessionToken, err := c.apiClient.Login(
-		api.LoginRequest{
+		restclient.APILoginRequest{
 			PhoneNumber: phoneNumber,
 			Pin:         pin,
 		},

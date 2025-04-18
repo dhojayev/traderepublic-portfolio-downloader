@@ -1,13 +1,6 @@
 package api
 
-type LoginRequest struct {
-	PhoneNumber string `json:"phoneNumber"`
-	Pin         string `json:"pin"`
-}
-
-type LoginResponse struct {
-	ProcessID string `json:"processId,omitempty"`
-}
+// WebSocket response types
 
 type WSListResponse struct {
 	Items   []any                 `json:"items"`

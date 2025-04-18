@@ -57,7 +57,7 @@ func (s *AuthService) Login() error {
 		return fmt.Errorf("could not login: %w", err)
 	}
 
-	if resp.ProcessID == "" {
+	if resp.ProcessId == nil || *resp.ProcessId == "" {
 		return nil
 	}
 
@@ -68,7 +68,7 @@ func (s *AuthService) Login() error {
 
 	otp := string(input)
 
-	if err := s.client.ProvideOTP(resp.ProcessID, otp); err != nil {
+	if err := s.client.ProvideOTP(*resp.ProcessId, otp); err != nil {
 		return fmt.Errorf("could not validate otp: %w", err)
 	}
 
