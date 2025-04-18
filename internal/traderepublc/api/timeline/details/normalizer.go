@@ -56,7 +56,7 @@ func (n TransactionResponseNormalizer) Normalize(response Response) (NormalizedR
 			resp.Transaction = NormalizedResponseTransactionSection{tableSection}
 		case SectionTitleSavingPlan:
 		default:
-			n.logger.Warnf("unknown section title: %v", tableSection.Title)
+			n.logger.Debugf("unknown section title: %v", tableSection.Title)
 		}
 	}
 

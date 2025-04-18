@@ -19,6 +19,7 @@ import (
 type MockEventTypeResolverInterface struct {
 	ctrl     *gomock.Controller
 	recorder *MockEventTypeResolverInterfaceMockRecorder
+	isgomock struct{}
 }
 
 // MockEventTypeResolverInterfaceMockRecorder is the mock recorder for MockEventTypeResolverInterface.

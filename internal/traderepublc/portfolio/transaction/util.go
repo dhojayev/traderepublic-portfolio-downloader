@@ -5,57 +5,31 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
+	"strings"
 )
 
 var ErrNoMatch = errors.New("value did not match the pattern")
 
-func ParseFloatWithPeriod(src string) (float64, error) {
-	pattern := regexp.MustCompile(`^[^\d]*(\d+)\.?(\d*)(\s.)?$`)
+func ParseFloatFromResponse(src string) (float64, error) {
+	pattern := regexp.MustCompile(`(\d+(?:\.\d+)*|\d+)(?:,(\d+))?`)
 	matches := pattern.FindStringSubmatch(src)
 
 	if len(matches) == 0 {
 		return 0, ErrNoMatch
 	}
 
-	value := matches[1] + "." + matches[2]
+	wholePart := matches[1]
+	decimalPart := matches[2]
+	strFloat := wholePart
 
-	valueFloat, err := strconv.ParseFloat(value, 64)
+	if decimalPart != "" {
+		strFloat = strings.ReplaceAll(wholePart, ".", "") + "." + decimalPart
+	}
+
+	value, err := strconv.ParseFloat(strFloat, 64)
 	if err != nil {
-		return 0, fmt.Errorf("could not parse float from '%s': %w", value, err)
+		return 0, fmt.Errorf("could not parse float from '%s': %w", src, err)
 	}
 
-	return valueFloat, nil
-}
-
-func ParseFloatWithComma(src string, isNegative bool) (float64, error) {
-	pattern := regexp.MustCompile(`^\+?\s?(\d+)\.?(\d*),(\d+).*$`)
-	matches := pattern.FindStringSubmatch(src)
-
-	if len(matches) == 0 {
-		return 0, ErrNoMatch
-	}
-
-	value := matches[1] + matches[2] + "." + matches[3]
-
-	valueFloat, err := strconv.ParseFloat(value, 64)
-	if err != nil {
-		return 0, fmt.Errorf("could not parse float from '%s': %w", value, err)
-	}
-
-	if isNegative {
-		valueFloat = -valueFloat
-	}
-
-	return valueFloat, nil
-}
-
-func ParseNumericValueFromString(src string) (string, error) {
-	pattern := regexp.MustCompile(`(\d+\.?\d*,?\d+)`)
-	matches := pattern.FindStringSubmatch(src)
-
-	if len(matches) == 0 {
-		return "", ErrNoMatch
-	}
-
-	return matches[1], nil
+	return value, nil
 }

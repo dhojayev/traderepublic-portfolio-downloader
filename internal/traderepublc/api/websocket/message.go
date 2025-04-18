@@ -12,8 +12,6 @@ const (
 	minDataParts  = 2
 	stateContinue = "C"
 	stateError    = "E"
-
-	errorCodeAuth = "AUTHENTICATION_ERROR"
 )
 
 type Message struct {
@@ -51,20 +49,14 @@ func (m Message) HasContinueState() bool {
 	return m.state == stateContinue
 }
 
-func (m Message) HasAuthErrMsg() bool {
-	var respErr ResponseErrors
+func (m Message) GetErrors() (ResponseErrors, error) {
+	var responseErrors ResponseErrors
 
-	if err := json.Unmarshal(m.data, &respErr); err != nil {
-		return false
+	if err := json.Unmarshal(m.data, &responseErrors); err != nil {
+		return responseErrors, fmt.Errorf("could not parse errors: %w", err)
 	}
 
-	for _, v := range respErr.Errors {
-		if v.ErrorCode == errorCodeAuth {
-			return true
-		}
-	}
-
-	return false
+	return responseErrors, nil
 }
 
 func (m Message) ID() uint {
