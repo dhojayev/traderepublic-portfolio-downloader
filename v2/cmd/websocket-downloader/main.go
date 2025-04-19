@@ -17,6 +17,12 @@ import (
 )
 
 const (
+	// Filepaths for saving responses.
+	filepathTransactions = "./debug/transactions"
+
+	// Filepaths for saving details.
+	filepathDetails = "./debug/details"
+
 	// Default timeout in seconds.
 	defaultTimeoutSeconds = 60
 
@@ -442,7 +448,7 @@ func processTransactions(
 
 // createDirectories creates the necessary directories for saving responses.
 func createDirectories() error {
-	dirs := []string{"transactions", "details"}
+	dirs := []string{filepathTransactions, filepathDetails}
 	for _, dir := range dirs {
 		if err := os.MkdirAll(dir, dirPermissions); err != nil {
 			return fmt.Errorf("failed to create directory %s: %w", dir, err)
@@ -455,7 +461,7 @@ func createDirectories() error {
 // saveTransactionsData saves the transactions data to a file.
 func saveTransactionsData(filename string, data []byte) error {
 	// Save raw response data
-	rawFilename := filepath.Join("transactions", filename+".raw.json")
+	rawFilename := filepath.Join(filepathTransactions, filename+".raw.json")
 	if err := os.WriteFile(rawFilename, data, filePermissions); err != nil {
 		return fmt.Errorf("failed to write raw file: %w", err)
 	}
@@ -472,7 +478,7 @@ func saveTransactionsData(filename string, data []byte) error {
 	}
 
 	// Save formatted data to file.
-	formattedFilename := filepath.Join("transactions", filename+".json")
+	formattedFilename := filepath.Join(filepathTransactions, filename+".json")
 	if err := os.WriteFile(formattedFilename, formattedData, filePermissions); err != nil {
 		return fmt.Errorf("failed to write file: %w", err)
 	}
@@ -510,7 +516,7 @@ func saveIndividualTransaction(transaction TransactionItem) error {
 	}
 
 	// Save to file
-	transFilename := filepath.Join("transactions", transaction.ID+".json")
+	transFilename := filepath.Join(filepathTransactions, transaction.ID+".json")
 	if err := os.WriteFile(transFilename, transactionData, filePermissions); err != nil {
 		return fmt.Errorf("failed to write transaction file: %w", err)
 	}
@@ -522,7 +528,7 @@ func saveIndividualTransaction(transaction TransactionItem) error {
 // saveDetailsData saves the details data to a file.
 func saveDetailsData(id string, data []byte) error {
 	// Save raw response data
-	rawFilename := filepath.Join("details", id+".raw.json")
+	rawFilename := filepath.Join(filepathDetails, id+".raw.json")
 	if err := os.WriteFile(rawFilename, data, filePermissions); err != nil {
 		return fmt.Errorf("failed to write raw file: %w", err)
 	}
@@ -539,7 +545,7 @@ func saveDetailsData(id string, data []byte) error {
 	}
 
 	// Save formatted data to file
-	formattedFilename := filepath.Join("details", id+".json")
+	formattedFilename := filepath.Join(filepathDetails, id+".json")
 	if err := os.WriteFile(formattedFilename, formattedData, filePermissions); err != nil {
 		return fmt.Errorf("failed to write file: %w", err)
 	}
