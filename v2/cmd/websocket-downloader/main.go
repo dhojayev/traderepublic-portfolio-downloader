@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/console"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/auth"
@@ -69,7 +70,9 @@ func main() {
 	// Create directories for saving responses
 	if err := createDirectories(); err != nil {
 		logger.Error("Failed to create directories", "error", err)
+		
 		exitCode = 1
+
 		return
 	}
 
@@ -84,10 +87,10 @@ func main() {
 	// Create and connect WebSocket client
 	wsClient, ctx, cancel, err := setupWebSocketClient(logger, sessionToken, config.timeoutSecs)
 	if err != nil {
-				exitCode = 1
+		exitCode = 1
 
-				return
-			}
+		return
+	}
 
 	defer cancel()
 
@@ -139,9 +142,11 @@ func setupLogger(debug bool) *slog.Logger {
 }
 
 // authenticate performs authentication and returns a session token.
+//
+//nolint:cyclop,funlen
 func authenticate(logger *slog.Logger) (string, error) {
 	// Create credentials service for storing tokens
-	credentials := auth.NewFileCredentialsService()
+	credentials := auth.NewFileCredentialsService(internal.AuthTokenFilename)
 
 	// Try to load existing tokens first
 	if err := credentials.Load(); err == nil {
@@ -165,18 +170,22 @@ func authenticate(logger *slog.Logger) (string, error) {
 	// If environment variables are not set, prompt the user
 	if phoneNumber == "" {
 		var err error
+		
 		phoneNumber, err = inputHandler.GetPhoneNumber()
 		if err != nil {
 			logger.Error("Failed to get phone number", "error", err)
+
 			return "", fmt.Errorf("failed to get phone number: %w", err)
 		}
 	}
 
 	if pin == "" {
 		var err error
+		
 		pin, err = inputHandler.GetPIN()
 		if err != nil {
 			logger.Error("Failed to get PIN", "error", err)
+
 			return "", fmt.Errorf("failed to get PIN: %w", err)
 		}
 	}
@@ -210,6 +219,7 @@ func authenticate(logger *slog.Logger) (string, error) {
 		otp, err := inputHandler.GetOTP()
 		if err != nil {
 			logger.Error("Failed to get OTP", "error", err)
+			
 			return "", fmt.Errorf("failed to get OTP: %w", err)
 		}
 
@@ -224,13 +234,13 @@ func authenticate(logger *slog.Logger) (string, error) {
 		// Store tokens using credentials service
 		if err := credentials.Store(token.SessionToken(), token.RefreshToken()); err != nil {
 			logger.Error("Failed to store tokens", "error", err)
-			// Non-fatal error, continue with the session token
 		}
 
 		return token.SessionToken(), nil
 	}
 
 	logger.Info("Successfully authenticated")
+
 	return credentials.GetSessionToken(), nil
 }
 

@@ -10,6 +10,6 @@ type (
 )
 
 type ClientInterface interface {
-	Login(PhoneNumber, Pin) (ProcessID, error)
-	ProvideOTP(ProcessID, OTP) (Token, error)
+	Login(phoneNumber PhoneNumber, pin Pin) (ProcessID, error)
+	ProvideOTP(processID ProcessID, otp OTP) (Token, error)
 }

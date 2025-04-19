@@ -13,10 +13,6 @@ import (
 const (
 	// HTTP status code threshold for error responses.
 	statusCodeError = http.StatusBadRequest
-
-	// Cookie names.
-	cookieNameSession = "tr_session"
-	cookieNameRefresh = "tr_refresh"
 )
 
 // Client is a client that uses the generated OpenAPI client.

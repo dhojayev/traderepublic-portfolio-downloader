@@ -13,6 +13,7 @@ func main() {
 
 	_ = godotenv.Load(".env")
 	debugMode := os.Getenv("DEBUG") == "true"
+	
 	arg.MustParse(&args)
 
 	logLevel := slog.LevelInfo

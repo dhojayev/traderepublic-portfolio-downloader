@@ -54,9 +54,10 @@ func (c *Client) ProvideOTP(processID ProcessID, otp OTP) (Token, error) {
 	return ExtractTokenFromCookies(cookies), nil
 }
 
-// ExtractTokenFromCookies creates a Token from HTTP cookies
+// ExtractTokenFromCookies creates a Token from HTTP cookies.
 func ExtractTokenFromCookies(cookies []*http.Cookie) Token {
 	var sessionValue, refreshValue string
+
 	for _, cookie := range cookies {
 		switch cookie.Name {
 		case "tr_session":
