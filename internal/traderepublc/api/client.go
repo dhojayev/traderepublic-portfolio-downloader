@@ -1,173 +1,178 @@
 package api
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
+	"errors"
 	"fmt"
-	"io"
 	"net/http"
 
 	log "github.com/sirupsen/logrus"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/header"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/restclient"
 )
 
+const (
+	// HTTP status code threshold for error responses.
+	statusCodeError = http.StatusBadRequest
+
+	// Cookie names.
+	cookieNameSession = "tr_session"
+	cookieNameRefresh = "tr_refresh"
+)
+
+// Client is a client that uses the generated OpenAPI client.
 type Client struct {
+	client *restclient.ClientWithResponses
 	logger *log.Logger
 }
 
-func NewClient(logger *log.Logger) Client {
-	return Client{
-		logger: logger,
+// NewClient creates a new client that uses the generated OpenAPI client.
+func NewClient(logger *log.Logger) (*Client, error) {
+	// Create a request editor to add common headers
+	reqEditor := func(_ context.Context, req *http.Request) error {
+		req.Header.Set("User-Agent", internal.HTTPUserAgent)
+		req.Header.Set("Content-Type", "application/json")
+
+		return nil
 	}
+
+	// Create the client with the base URL and request editor
+	client, err := restclient.NewClientWithResponses(
+		internal.RestAPIBaseURI,
+		restclient.WithRequestEditorFn(reqEditor),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("could not create REST client: %w", err)
+	}
+
+	return &Client{
+		client: client,
+		logger: logger,
+	}, nil
 }
 
-func (c *Client) Login(requestBody LoginRequest, refreshToken Token) (LoginResponse, Token, error) {
-	var responseBody LoginResponse
+// Login logs in with phone number and PIN.
+func (c *Client) Login(
+	requestBody restclient.APILoginRequest,
+	refreshToken Token,
+) (restclient.APILoginResponse, Token, error) {
+	var responseBody restclient.APILoginResponse
 
 	sessionToken := NewToken(TokenNameSession, "")
 
-	requestBodyBytes, err := json.Marshal(requestBody)
+	// Create a request editor to add the refresh token if available
+	reqEditor := func(_ context.Context, req *http.Request) error {
+		if refreshToken.Value() != "" {
+			req.Header.Set("Cookie", cookieNameRefresh+"="+refreshToken.Value())
+		}
+
+		return nil
+	}
+
+	// Make the login request
+	resp, err := c.client.LoginWithResponse(context.Background(), requestBody, reqEditor)
 	if err != nil {
-		return responseBody, sessionToken, fmt.Errorf("could not marshal json: %w", err)
+		return responseBody, sessionToken, fmt.Errorf("could not login: %w", err)
 	}
 
-	req, err := http.NewRequestWithContext(
-		context.Background(),
-		http.MethodPost,
-		fmt.Sprintf("%s/%s", internal.RestAPIBaseURI, "auth/web/login"),
-		bytes.NewReader(requestBodyBytes),
-	)
-	if err != nil {
-		return responseBody, sessionToken, fmt.Errorf("could not create login request: %w", err)
+	// Check for error response
+	if resp.StatusCode() >= statusCodeError {
+		return responseBody, sessionToken, fmt.Errorf(
+			"login failed with status code %d: %s",
+			resp.StatusCode(),
+			string(resp.Body),
+		)
 	}
 
-	h := header.NewHeaders().WithContentTypeJSON()
-	if refreshToken.Value() != "" {
-		h = h.WithRefreshToken(refreshToken.Value())
+	// Extract the session token from the response
+	for _, cookie := range resp.HTTPResponse.Cookies() {
+		if cookie.Name == cookieNameSession {
+			sessionToken = NewToken(TokenNameSession, cookie.Value)
+
+			break
+		}
 	}
 
-	req.Header = h.AsHTTPHeader()
-
-	resp, err := c.request(req)
-	if err != nil {
-		return responseBody, sessionToken, err
-	}
-
-	defer func() { _ = resp.Body.Close() }()
-
-	sessionToken, _ = NewTokenFromHeader(TokenNameSession, resp.Header)
-
-	if err = c.readResponseBody(resp.Body, &responseBody); err != nil {
-		return responseBody, sessionToken, err
+	// Set the response body
+	if resp.JSON200 != nil {
+		responseBody = *resp.JSON200
 	}
 
 	return responseBody, sessionToken, nil
 }
 
+// PostOTP verifies the OTP.
 func (c *Client) PostOTP(processID, otp string) (Token, Token, error) {
 	sessionToken := NewToken(TokenNameSession, "")
 	refreshToken := NewToken(TokenNameRefresh, "")
 
-	req, err := http.NewRequestWithContext(
-		context.Background(),
-		http.MethodPost,
-		fmt.Sprintf("%s/%s/%s/%s", internal.RestAPIBaseURI, "auth/web/login", processID, otp),
-		nil,
-	)
-	if err != nil {
-		return sessionToken, refreshToken, fmt.Errorf("could not create otp request: %w", err)
+	if processID == "" {
+		return sessionToken, refreshToken, errors.New("processID cannot be empty")
 	}
 
-	req.Header = header.NewHeaders().WithContentTypeJSON().AsHTTPHeader()
-
-	resp, err := c.request(req)
+	// Make the OTP verification request
+	resp, err := c.client.VerifyOTPWithResponse(context.Background(), processID, otp)
 	if err != nil {
-		return sessionToken, refreshToken, err
+		return sessionToken, refreshToken, fmt.Errorf("could not validate otp: %w", err)
 	}
 
-	defer func() { _ = resp.Body.Close() }()
-
-	c.logger.Tracef("%#v", resp.Header)
-
-	sessionToken, err = NewTokenFromHeader(TokenNameSession, resp.Header)
-	if err != nil {
-		return sessionToken, refreshToken, fmt.Errorf("could not parse session token from header: %w", err)
+	// Check for error response
+	if resp.StatusCode() >= statusCodeError {
+		return sessionToken, refreshToken, fmt.Errorf(
+			"OTP verification failed with status code %d: %s",
+			resp.StatusCode(),
+			string(resp.Body),
+		)
 	}
 
-	refreshToken, err = NewTokenFromHeader(TokenNameRefresh, resp.Header)
-	if err != nil {
-		return sessionToken, refreshToken, fmt.Errorf("could not parse refresh token from header: %w", err)
+	// Extract the tokens from the response
+	for _, cookie := range resp.HTTPResponse.Cookies() {
+		switch cookie.Name {
+		case cookieNameSession:
+			sessionToken = NewToken(TokenNameSession, cookie.Value)
+		case cookieNameRefresh:
+			refreshToken = NewToken(TokenNameRefresh, cookie.Value)
+		}
 	}
-
-	c.logger.Debug("received session and refresh tokens")
 
 	return sessionToken, refreshToken, nil
 }
 
+// Session refreshes the session token.
 func (c *Client) Session(refreshToken Token) (Token, error) {
 	sessionToken := NewToken(TokenNameSession, "")
-	url := fmt.Sprintf("%s/%s", internal.RestAPIBaseURI, "auth/web/session")
 
-	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, url, nil)
-	if err != nil {
-		return sessionToken, fmt.Errorf("could not create session request: %w", err)
+	// Create a request editor to add the refresh token
+	reqEditor := func(_ context.Context, req *http.Request) error {
+		req.Header.Set("Cookie", "tr_refresh="+refreshToken.Value())
+
+		return nil
 	}
 
-	req.Header = header.NewHeaders().WithContentTypeJSON().WithRefreshToken(refreshToken.Value()).AsHTTPHeader()
-
-	resp, err := c.request(req)
+	// Make the session refresh request
+	resp, err := c.client.RefreshSessionWithResponse(context.Background(), reqEditor)
 	if err != nil {
-		return sessionToken, fmt.Errorf("could not request session endpoint: %w", err)
+		return sessionToken, fmt.Errorf("could not refresh session: %w", err)
 	}
 
-	defer func() { _ = resp.Body.Close() }()
+	// Check for error response
+	if resp.StatusCode() >= statusCodeError {
+		return sessionToken, fmt.Errorf(
+			"session refresh failed with status code %d: %s",
+			resp.StatusCode(),
+			string(resp.Body),
+		)
+	}
 
-	sessionToken, _ = NewTokenFromHeader(TokenNameSession, resp.Header)
+	// Extract the session token from the response
+	for _, cookie := range resp.HTTPResponse.Cookies() {
+		if cookie.Name == cookieNameSession {
+			sessionToken = NewToken(TokenNameSession, cookie.Value)
+
+			break
+		}
+	}
 
 	return sessionToken, nil
-}
-
-func (c *Client) request(req *http.Request) (*http.Response, error) {
-	c.logger.
-		WithFields(log.Fields{
-			"method": req.Method,
-			"url":    req.URL.String(),
-		}).
-		Trace("executing request")
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return resp, fmt.Errorf("could not make request: %w", err)
-	}
-
-	if resp.StatusCode < http.StatusBadRequest {
-		return resp, nil
-	}
-
-	respBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return resp, fmt.Errorf("could not parse response body: %w", err)
-	}
-
-	return resp, fmt.Errorf("request failed with status code '%d': %s", resp.StatusCode, respBody)
-}
-
-func (c *Client) readResponseBody(body io.ReadCloser, v any) error {
-	responseBodyBytes, err := io.ReadAll(body)
-	if err != nil {
-		return fmt.Errorf("could not read response: %w", err)
-	}
-
-	c.logger.
-		WithField("body", string(responseBodyBytes)).
-		Debug("received success response")
-
-	if err = json.Unmarshal(responseBodyBytes, v); err != nil {
-		return fmt.Errorf("could not unmarshal login response: %w", err)
-	}
-
-	return nil
 }

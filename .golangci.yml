@@ -1,5 +1,5 @@
+version: "2"
 linters:
-  # https://golangci-lint.run/usage/linters/
   enable:
     - asciicheck
     - bidichk
@@ -54,7 +54,7 @@ linters:
     - reassign
     - revive
     - sloglint
-    - stylecheck
+    - staticcheck
     - tagliatelle
     - testpackage
     - thelper
@@ -69,33 +69,47 @@ linters:
     - wrapcheck
     - wsl
     - zerologlint
-
-linters-settings:
-  godot:
-    exclude:
-      - "^ @"
-
-  varnamelen:
-    ignore-names:
-      - err
-      - id
-      - k
-      - i
-      - v
-
-issues:
-  exclude-rules:
-      - path: wire\.go
-        linters:
+  settings:
+    godot:
+      exclude:
+        - ^ @
+    varnamelen:
+      ignore-names:
+        - err
+        - id
+        - k
+        - i
+        - v
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - linters:
           - gochecknoglobals
-      - path: _test\.go
-        linters:
+        path: wire\.go
+      - linters:
           - funlen
           - lll
           - wrapcheck
-      - path: tests/.*\.go
-        linters:
+        path: _test\.go
+      - linters:
           - dupl
           - gochecknoglobals
           - lll
           - mnd
+        path: tests/.*\.go
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$

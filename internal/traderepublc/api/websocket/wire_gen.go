@@ -19,7 +19,10 @@ import (
 // Injectors from wire.go:
 
 func ProvideReader(responseWriter writer.Interface, logger *logrus.Logger) (*Reader, error) {
-	client := api.NewClient(logger)
+	client, err := api.NewClient(logger)
+	if err != nil {
+		return nil, err
+	}
 	authClient, err := auth.NewClient(client, logger)
 	if err != nil {
 		return nil, err

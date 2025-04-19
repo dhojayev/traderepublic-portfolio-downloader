@@ -2,18 +2,13 @@ package api
 
 import (
 	"fmt"
-	"net/http"
 	"os"
-	"strings"
-
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
 )
 
 const (
 	TokenNameSession TokenName = "session"
 	TokenNameRefresh TokenName = "refresh"
 
-	headerSetCookie = "Set-Cookie"
 	filePermissions = 0o600
 )
 
@@ -37,34 +32,6 @@ func NewToken(name TokenName, value string) Token {
 		name:  name,
 		value: value,
 	}
-}
-
-func NewTokenFromHeader(name TokenName, header http.Header) (Token, error) {
-	token := Token{name: name}
-
-	cookieHeader := header.Values(headerSetCookie)
-	if len(cookieHeader) == 0 {
-		return token, fmt.Errorf("could not find '%s' in header", headerSetCookie)
-	}
-
-	found := false
-
-	for _, v := range cookieHeader {
-		if !strings.Contains(v, string(name)) {
-			continue
-		}
-
-		found = true
-		cookieName := internal.CookieNamePrefix + name
-		startPos := len(cookieName) + 1
-		token.value = v[startPos:strings.Index(v, ";")]
-	}
-
-	if !found {
-		return token, fmt.Errorf("could not find '%s' token cookie in header", name)
-	}
-
-	return token, nil
 }
 
 func NewTokenFromFile(name TokenName) (Token, error) {
