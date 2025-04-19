@@ -1,21 +1,21 @@
 package websocketclient_test
 
 import (
-	"log"
-	"os"
 	"testing"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/websocketclient"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/websocketclient"
 )
 
 func TestNewClient(t *testing.T) {
 	t.Parallel()
 
 	// Create a logger
-	logger := log.New(os.Stdout, "test: ", log.LstdFlags)
+	logger := log.New()
 
 	// Create a client
 	client, err := websocketclient.NewClient(

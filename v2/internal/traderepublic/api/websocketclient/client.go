@@ -5,16 +5,17 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"net/url"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/gorilla/websocket"
 
-	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal"
 )
 
 const (
@@ -32,9 +33,8 @@ const (
 	StateError    = "E"
 
 	// Subscription types.
-	TypeTimeline   = "timeline"
-	TypePortfolio  = "portfolio"
-	TypeInstrument = "instrument"
+	TypeTimelineTransactions = "timelineTransactions"
+	TypeTimelineDetail       = "timelineDetailV2"
 
 	// Reconnect delay.
 	reconnectDelay = 5 * time.Second
@@ -115,7 +115,7 @@ type Client struct {
 // NewClient creates a new WebSocket client.
 func NewClient(options ...ClientOption) (*Client, error) {
 	client := &Client{
-		logger: log.New(log.Writer(), "websocket-client: ", log.LstdFlags),
+		logger: log.New(),
 	}
 
 	for _, option := range options {
@@ -187,39 +187,49 @@ func (c *Client) Close() error {
 	return nil
 }
 
-// SubscribeToTimeline subscribes to timeline data.
-func (c *Client) SubscribeToTimeline(ctx context.Context) (<-chan []byte, error) {
-	data := map[string]interface{}{
-		"type":  TypeTimeline,
+// prepareSubscription prepares a subscription request with the given parameters.
+func (c *Client) prepareSubscription(dataType string, params map[string]any) map[string]any {
+	data := map[string]any{
+		"type":  dataType,
 		"token": c.sessionToken,
 	}
 
+	// Add additional parameters
+	for k, v := range params {
+		data[k] = v
+	}
+
+	return data
+}
+
+// SubscribeToTimelineTransactions subscribes to timeline transactions data.
+func (c *Client) SubscribeToTimelineTransactions(ctx context.Context) (<-chan []byte, error) {
+	return c.SubscribeToTimelineTransactionsWithCursor(ctx, "")
+}
+
+// SubscribeToTimelineTransactionsWithCursor subscribes to timeline transactions data with a cursor.
+func (c *Client) SubscribeToTimelineTransactionsWithCursor(ctx context.Context, cursor string) (<-chan []byte, error) {
+	params := map[string]any{}
+
+	// Add cursor if provided
+	if cursor != "" {
+		params["after"] = cursor
+	}
+
+	data := c.prepareSubscription(TypeTimelineTransactions, params)
+	
 	return c.subscribe(ctx, data)
 }
 
-// SubscribeToPortfolio subscribes to portfolio data.
-func (c *Client) SubscribeToPortfolio(ctx context.Context) (<-chan []byte, error) {
-	data := map[string]interface{}{
-		"type":  TypePortfolio,
-		"token": c.sessionToken,
-	}
-
-	return c.subscribe(ctx, data)
-}
-
-// SubscribeToInstrument subscribes to instrument data.
-func (c *Client) SubscribeToInstrument(ctx context.Context, instrumentID string) (<-chan []byte, error) {
-	data := map[string]interface{}{
-		"type":  TypeInstrument,
-		"id":    instrumentID,
-		"token": c.sessionToken,
-	}
-
+// SubscribeToTimelineDetail subscribes to timeline detail data.
+func (c *Client) SubscribeToTimelineDetail(ctx context.Context, itemID string) (<-chan []byte, error) {
+	data := c.prepareSubscription(TypeTimelineDetail, map[string]any{"id": itemID})
+	
 	return c.subscribe(ctx, data)
 }
 
 // subscribe subscribes to a data type.
-func (c *Client) subscribe(ctx context.Context, data map[string]interface{}) (<-chan []byte, error) {
+func (c *Client) subscribe(ctx context.Context, data map[string]any) (<-chan []byte, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -363,7 +373,7 @@ func (c *Client) unsubscribe(subID uint) {
 	}
 
 	// Create unsubscribe message
-	data := map[string]interface{}{
+	data := map[string]any{
 		"token": c.sessionToken,
 	}
 
