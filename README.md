@@ -4,7 +4,22 @@
  [![Go Report Card](https://goreportcard.com/badge/github.com/dhojayev/traderepublic-portfolio-downloader)](https://goreportcard.com/report/github.com/dhojayev/traderepublic-portfolio-downloader) ![GitHub branch check runs](https://img.shields.io/github/check-runs/dhojayev/traderepublic-portfolio-downloader/main)
 ![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/dhojayev/traderepublic-portfolio-downloader/total) ![GitHub commits since latest release](https://img.shields.io/github/commits-since/dhojayev/traderepublic-portfolio-downloader/latest)
 
-
+> ## 🚧 Major Rewrite in Progress 🚧
+>
+> We are currently working on a complete rewrite of this application (see the `v2` directory). The new version will address:
+>
+> - Improved code maintainability and testability
+> - Better error handling and user experience
+> - More modular architecture with proper dependency injection
+> - Enhanced WebSocket client implementation
+> - Support for all transaction types, including card transactions
+> - Concurrent processing for significantly faster handling of large transaction volumes
+> - Comprehensive test coverage
+> - Stricter adherence to Go best practices
+>
+> The rewrite will eventually become version 2.0.0. The current version remains functional but will only receive critical bug fixes until the new version is released.
+>
+> **Want to help?** Check out the [issues](https://github.com/dhojayev/traderepublic-portfolio-downloader/issues) or explore the `v2` directory to contribute to the rewrite.
 
 
 ## Preamble
@@ -106,14 +121,14 @@ After downloading a binary for your OS, run it in the terminal:
 
 ```shell
 ➜  traderepublic-portfolio-downloader git:(main) ✗ ./bin/portfoliodownloader
-Enter phone number in international format (+49xxxxxxxxxxxxx): 
+Enter phone number in international format (+49xxxxxxxxxxxxx):
 ```
 
 Enter your registered mobile number in international format:
 
 ```shell
 ➜  traderepublic-portfolio-downloader git:(main) ✗ ./bin/portfoliodownloader
-Enter phone number in international format (+49xxxxxxxxxxxxx): 
+Enter phone number in international format (+49xxxxxxxxxxxxx):
 +491234567890
 ```
 
@@ -121,7 +136,7 @@ Provide your PIN and hit enter:
 
 ```shell
 ➜  traderepublic-portfolio-downloader git:(main) ✗ ./bin/portfoliodownloader
-Enter phone number in international format (+49xxxxxxxxxxxxx): 
+Enter phone number in international format (+49xxxxxxxxxxxxx):
 +491234567890
 Enter pin:
 ```
@@ -130,7 +145,7 @@ Enter the OTP received from Trade Republic and hit enter:
 
 ```shell
 ➜  traderepublic-portfolio-downloader git:(main) ✗ ./bin/portfoliodownloader
-Enter phone number in international format (+49xxxxxxxxxxxxx): 
+Enter phone number in international format (+49xxxxxxxxxxxxx):
 +491234567890
 Enter pin:
 Enter 2FA token:
@@ -140,7 +155,7 @@ You will see the progress of the download and processing:
 
 ```shell
 ➜  traderepublic-portfolio-downloader git:(main) ✗ ./bin/portfoliodownloader
-Enter phone number in international format (+49xxxxxxxxxxxxx): 
+Enter phone number in international format (+49xxxxxxxxxxxxx):
 +491234567890
 Enter pin:
 Enter 2FA token:
@@ -168,8 +183,8 @@ Jun 16 22:15:13.484 [INFO] Activity log entries total: 42; completed: 29; skippe
 All documents are saved under `documents` directory followed by:
 * `transactions` or `activity` based on document type.
 * Date in `YYYY-mm` format, e.g.: `2020-01`
-* UUID related to its transaction or activity log entry. 
-* Document name, e.g. `Abrechnung Ausführung.pdf` 
+* UUID related to its transaction or activity log entry.
+* Document name, e.g. `Abrechnung Ausführung.pdf`
 
 Exmaples:
 * `documents/transactions/2023-11/67bd11bb-327e-475d-b715-5876bab61c5c/Abrechnung Ausführung.pdf`
