@@ -5,129 +5,66 @@ package auth
 import (
 	"errors"
 	"fmt"
-	"io/fs"
-	"log/slog"
+	"net/http"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/restclient"
 )
 
-type (
-	PhoneNumber string
-	Pin         string
-)
-
 type Client struct {
-	apiClient    api.ClientInterface
-	logger       *slog.Logger
-	sessionToken api.Token
-	refreshToken api.Token
+	apiClient api.ClientInterface
 }
 
-func NewClient(apiClient api.ClientInterface, logger *slog.Logger) (*Client, error) {
+func NewClient(apiClient api.ClientInterface) (*Client, error) {
 	client := &Client{
 		apiClient: apiClient,
-		logger:    logger,
 	}
-
-	sessionToken, err := api.NewTokenFromFile(api.TokenNameSession)
-	if err != nil && !errors.Is(err, fs.ErrNotExist) {
-		return nil, fmt.Errorf("could not read session token file: %w", err)
-	}
-
-	client.sessionToken = sessionToken
-
-	refreshToken, err := api.NewTokenFromFile(api.TokenNameRefresh)
-	if err != nil && !errors.Is(err, fs.ErrNotExist) {
-		return nil, fmt.Errorf("could not read refresh token file: %w", err)
-	}
-
-	client.refreshToken = refreshToken
-
-	go func() {
-		for range SessionRefreshTicker.C {
-			client.refreshSession()
-		}
-	}()
-
-	client.refreshSession()
 
 	return client, nil
 }
 
-func (c *Client) Login(phoneNumber, pin string) (restclient.APILoginResponse, error) {
-	resp, sessionToken, err := c.apiClient.Login(
-		restclient.APILoginRequest{
-			PhoneNumber: phoneNumber,
-			Pin:         pin,
-		},
-		c.refreshToken,
-	)
-	if err != nil {
-		return resp, fmt.Errorf("could not login: %w", err)
+func (c *Client) Login(phoneNumber PhoneNumber, pin Pin) (ProcessID, error) {
+	// Create the login request
+	request := restclient.APILoginRequest{
+		PhoneNumber: string(phoneNumber),
+		Pin:         string(pin),
 	}
 
-	if sessionToken.Value() != "" {
-		if err = c.writeSessionToken(sessionToken); err != nil {
-			return resp, err
+	// Call the API client's Login method
+	processID, err := c.apiClient.Login(request)
+	if err != nil {
+		return "", fmt.Errorf("could not login: %w", err)
+	}
+
+	return ProcessID(processID), nil
+}
+
+func (c *Client) ProvideOTP(processID ProcessID, otp OTP) (Token, error) {
+	if processID == "" {
+		return Token{}, errors.New("processID cannot be empty")
+	}
+
+	// Call the API client's PostOTP method
+	cookies, err := c.apiClient.PostOTP(string(processID), string(otp))
+	if err != nil {
+		return Token{}, fmt.Errorf("could not validate otp: %w", err)
+	}
+
+	// Extract session and refresh tokens from cookies and return them
+	return ExtractTokenFromCookies(cookies), nil
+}
+
+// ExtractTokenFromCookies creates a Token from HTTP cookies
+func ExtractTokenFromCookies(cookies []*http.Cookie) Token {
+	var sessionValue, refreshValue string
+	for _, cookie := range cookies {
+		switch cookie.Name {
+		case "tr_session":
+			sessionValue = cookie.Value
+		case "tr_refresh":
+			refreshValue = cookie.Value
 		}
 	}
 
-	return resp, nil
-}
-
-func (c *Client) ProvideOTP(processID, otp string) error {
-	if processID == "" {
-		return errors.New("processID cannot be empty")
-	}
-
-	sessionToken, refreshToken, err := c.apiClient.PostOTP(processID, otp)
-	if err != nil {
-		return fmt.Errorf("could not validate otp: %w", err)
-	}
-
-	if err := c.writeSessionToken(sessionToken); err != nil {
-		return err
-	}
-
-	if err := c.writeRefreshToken(refreshToken); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (c *Client) refreshSession() {
-	c.logger.Debug("refreshing session token")
-
-	sessionToken, err := c.apiClient.Session(c.refreshToken)
-	if err != nil {
-		c.logger.Warn("could not refresh session", "error", err)
-	}
-
-	_ = c.writeSessionToken(sessionToken)
-}
-
-func (c *Client) SessionToken() api.Token {
-	return c.sessionToken
-}
-
-func (c *Client) writeSessionToken(sessionToken api.Token) error {
-	c.sessionToken = sessionToken
-
-	if err := c.sessionToken.WriteToFile(); err != nil {
-		return fmt.Errorf("could not write session token file: %w", err)
-	}
-
-	return nil
-}
-
-func (c *Client) writeRefreshToken(refreshToken api.Token) error {
-	c.refreshToken = refreshToken
-
-	if err := c.refreshToken.WriteToFile(); err != nil {
-		return fmt.Errorf("could not write refresh token file: %w", err)
-	}
-
-	return nil
+	return NewTokenWithValues(sessionValue, refreshValue)
 }

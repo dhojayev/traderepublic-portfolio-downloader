@@ -1,3 +1,5 @@
+/.env
+/.auth
 /debug
 /.refresh
 /.session

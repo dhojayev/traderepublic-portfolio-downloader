@@ -2,16 +2,17 @@
 
 package api
 
-import "github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/restclient"
+import (
+	"net/http"
+
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/restclient"
+)
 
 // ClientInterface is the interface for the Trade Republic API client.
 type ClientInterface interface {
 	// Login logs in with phone number and PIN.
-	Login(requestBody restclient.APILoginRequest, refreshToken Token) (restclient.APILoginResponse, Token, error)
+	Login(requestBody restclient.APILoginRequest) (string, error)
 
 	// PostOTP verifies the OTP.
-	PostOTP(processID, otp string) (Token, Token, error)
-
-	// Session refreshes the session token.
-	Session(refreshToken Token) (Token, error)
+	PostOTP(processID, otp string) ([]*http.Cookie, error)
 }

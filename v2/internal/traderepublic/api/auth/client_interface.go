@@ -2,13 +2,14 @@
 
 package auth
 
-import (
-	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/restclient"
+type (
+	PhoneNumber string
+	Pin         string
+	OTP         string
+	ProcessID   string
 )
 
 type ClientInterface interface {
-	Login(phoneNumber, pin string) (restclient.APILoginResponse, error)
-	ProvideOTP(processID, otp string) error
-	SessionToken() api.Token
+	Login(PhoneNumber, Pin) (ProcessID, error)
+	ProvideOTP(ProcessID, OTP) (Token, error)
 }

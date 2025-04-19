@@ -16,6 +16,8 @@ const (
 	// SessionRefreshInterval represents in how many seconds session has to be refreshed to keep it alive.
 	SessionRefreshInterval = 120
 
+	AuthTokenFilename = "./.auth"
+
 	// ResponseActionTypeTimelineDetail represents the value the app will look for in order to determine
 	// if any details can be fetched.
 	ResponseActionTypeTimelineDetail = "timelineDetail"

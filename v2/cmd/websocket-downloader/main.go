@@ -11,9 +11,11 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/console"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/auth"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/websocketclient"
+	"github.com/joho/godotenv"
 )
 
 const (
@@ -58,9 +60,18 @@ func main() {
 		os.Exit(exitCode)
 	}()
 
+	_ = godotenv.Load(".env")
+
 	// Parse command line flags and set up logging
 	config := parseFlags()
 	logger := setupLogger(config.debug)
+
+	// Create directories for saving responses
+	if err := createDirectories(); err != nil {
+		logger.Error("Failed to create directories", "error", err)
+		exitCode = 1
+		return
+	}
 
 	// Authenticate and get session token
 	sessionToken, err := authenticate(logger)
@@ -73,23 +84,14 @@ func main() {
 	// Create and connect WebSocket client
 	wsClient, ctx, cancel, err := setupWebSocketClient(logger, sessionToken, config.timeoutSecs)
 	if err != nil {
-		exitCode = 1
+				exitCode = 1
 
-		return
-	}
+				return
+			}
 
 	defer cancel()
 
 	defer wsClient.Close()
-
-	// Create directories for saving responses
-	if err := createDirectories(); err != nil {
-		logger.Error("Failed to create directories", "error", err)
-
-		exitCode = 1
-
-		return
-	}
 
 	logger.Info("Will save both raw and formatted responses to the filesystem")
 
@@ -138,25 +140,57 @@ func setupLogger(debug bool) *slog.Logger {
 
 // authenticate performs authentication and returns a session token.
 func authenticate(logger *slog.Logger) (string, error) {
-	// Get credentials from environment variables
+	// Create credentials service for storing tokens
+	credentials := auth.NewFileCredentialsService()
+
+	// Try to load existing tokens first
+	if err := credentials.Load(); err == nil {
+		sessionToken := credentials.GetSessionToken()
+		if sessionToken != "" {
+			logger.Info("Using existing session token")
+
+			// We'll verify the token by making a test API call later
+			// If it fails, we'll need to re-authenticate
+			return sessionToken, nil
+		}
+	}
+
+	// Create input handler for user interaction
+	inputHandler := console.NewInputHandler()
+
+	// If no valid tokens found, proceed with authentication
 	phoneNumber := os.Getenv("TR_PHONE_NUMBER")
 	pin := os.Getenv("TR_PIN")
 
-	if phoneNumber == "" || pin == "" {
-		logger.Error("Please set TR_PHONE_NUMBER and TR_PIN environment variables")
+	// If environment variables are not set, prompt the user
+	if phoneNumber == "" {
+		var err error
+		phoneNumber, err = inputHandler.GetPhoneNumber()
+		if err != nil {
+			logger.Error("Failed to get phone number", "error", err)
+			return "", fmt.Errorf("failed to get phone number: %w", err)
+		}
+	}
 
-		return "", errors.New("missing credentials")
+	if pin == "" {
+		var err error
+		pin, err = inputHandler.GetPIN()
+		if err != nil {
+			logger.Error("Failed to get PIN", "error", err)
+			return "", fmt.Errorf("failed to get PIN: %w", err)
+		}
 	}
 
 	// Create API client and authenticate
-	apiClient, err := api.NewClient(logger)
+	apiClient, err := api.NewClient()
 	if err != nil {
 		logger.Error("Failed to create API client", "error", err)
 
 		return "", fmt.Errorf("failed to create API client: %w", err)
 	}
 
-	authClient, err := auth.NewClient(apiClient, logger)
+	// Create auth client
+	authClient, err := auth.NewClient(apiClient)
 	if err != nil {
 		logger.Error("Failed to create auth client", "error", err)
 
@@ -164,41 +198,40 @@ func authenticate(logger *slog.Logger) (string, error) {
 	}
 
 	// Login
-	resp, err := authClient.Login(phoneNumber, pin)
+	processID, err := authClient.Login(auth.PhoneNumber(phoneNumber), auth.Pin(pin))
 	if err != nil {
 		logger.Error("Failed to login", "error", err)
 
 		return "", fmt.Errorf("failed to login: %w", err)
 	}
 
-	// Handle 2FA if needed
-	processID := ""
-	if resp.ProcessId != nil {
-		processID = *resp.ProcessId
-	}
-
 	if processID != "" {
-		fmt.Println("2FA required, please check your phone for the code")
+		// Get OTP from user
+		otp, err := inputHandler.GetOTP()
+		if err != nil {
+			logger.Error("Failed to get OTP", "error", err)
+			return "", fmt.Errorf("failed to get OTP: %w", err)
+		}
 
-		var otp string
-
-		fmt.Print("Enter 2FA code: ")
-		_, _ = fmt.Scanln(&otp)
-
-		err = authClient.ProvideOTP(processID, otp)
+		// Get tokens from OTP verification
+		token, err := authClient.ProvideOTP(processID, auth.OTP(otp))
 		if err != nil {
 			logger.Error("Failed to validate OTP", "error", err)
 
 			return "", fmt.Errorf("failed to validate OTP: %w", err)
 		}
+
+		// Store tokens using credentials service
+		if err := credentials.Store(token.SessionToken(), token.RefreshToken()); err != nil {
+			logger.Error("Failed to store tokens", "error", err)
+			// Non-fatal error, continue with the session token
+		}
+
+		return token.SessionToken(), nil
 	}
 
-	// Get session token
-	sessionToken := authClient.SessionToken().Value()
-
 	logger.Info("Successfully authenticated")
-
-	return sessionToken, nil
+	return credentials.GetSessionToken(), nil
 }
 
 // setupWebSocketClient creates and connects a WebSocket client.
