@@ -1,0 +1,130 @@
+openapi: 3.0.3
+info:
+  title: Trade Republic REST API
+  description: |
+    REST API for Trade Republic authentication.
+    This specification only includes the REST endpoints, not the WebSocket message types.
+  version: 1.0.0
+servers:
+  - url: https://api.traderepublic.com/api/v1
+    description: Trade Republic REST API
+
+components:
+  securitySchemes:
+    sessionToken:
+      type: apiKey
+      in: cookie
+      name: tr_session
+      description: Session token obtained after login
+    refreshToken:
+      type: apiKey
+      in: cookie
+      name: tr_refresh
+      description: Refresh token obtained after OTP verification
+
+  schemas:
+    APILoginRequest:
+      type: object
+      required:
+        - phoneNumber
+        - pin
+      properties:
+        phoneNumber:
+          type: string
+          description: User's phone number
+        pin:
+          type: string
+          description: User's PIN
+
+    APILoginResponse:
+      type: object
+      properties:
+        processId:
+          type: string
+          description: Process ID for OTP verification
+
+paths:
+  /auth/web/login:
+    post:
+      summary: Login with phone number and PIN
+      description: Initiates the login process with phone number and PIN
+      operationId: login
+      tags:
+        - Authentication
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/APILoginRequest'
+      responses:
+        '200':
+          description: Login successful or OTP required
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+              description: Session token (if login is successful without OTP)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APILoginResponse'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+
+  /auth/web/login/{processId}/{otp}:
+    post:
+      summary: Verify OTP
+      description: Verifies the OTP sent to the user's phone
+      operationId: verifyOTP
+      tags:
+        - Authentication
+      security: []
+      parameters:
+        - name: processId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Process ID received from login
+        - name: otp
+          in: path
+          required: true
+          schema:
+            type: string
+          description: One-time password received via SMS
+      responses:
+        '200':
+          description: OTP verification successful
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+              description: Session and refresh tokens
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+
+  /auth/web/session:
+    get:
+      summary: Refresh session
+      description: Refreshes the session token using the refresh token
+      operationId: refreshSession
+      tags:
+        - Authentication
+      security:
+        - refreshToken: []
+      responses:
+        '200':
+          description: Session refreshed successfully
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+              description: New session token
+        '401':
+          description: Unauthorized

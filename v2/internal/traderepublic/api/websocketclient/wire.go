@@ -1,13 +1,13 @@
 package websocketclient
 
 import (
-	log "github.com/sirupsen/logrus"
+	"log/slog"
 
 	"github.com/google/wire"
 )
 
 // ProvideClient provides a WebSocket client.
-func ProvideClient(logger *log.Logger, sessionToken string) (*Client, error) {
+func ProvideClient(logger *slog.Logger, sessionToken string) (*Client, error) {
 	return NewClient(
 		WithLogger(logger),
 		WithSessionToken(sessionToken),

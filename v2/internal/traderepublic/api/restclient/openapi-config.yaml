@@ -1,0 +1,7 @@
+package: restclient
+generate:
+  models: true
+  client: true
+  strict-server: false
+  chi-server: false
+  embedded-spec: true

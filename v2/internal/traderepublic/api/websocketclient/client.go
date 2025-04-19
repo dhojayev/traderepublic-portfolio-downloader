@@ -5,13 +5,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/url"
+	"os"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
-
-	log "github.com/sirupsen/logrus"
 
 	"github.com/gorilla/websocket"
 
@@ -89,7 +89,7 @@ func (e ErrorDetail) IsUnauthorizedError() bool {
 type ClientOption func(*Client)
 
 // WithLogger sets the logger for the client.
-func WithLogger(logger *log.Logger) ClientOption {
+func WithLogger(logger *slog.Logger) ClientOption {
 	return func(c *Client) {
 		c.logger = logger
 	}
@@ -106,7 +106,7 @@ func WithSessionToken(token string) ClientOption {
 type Client struct {
 	conn         *websocket.Conn
 	sessionToken string
-	logger       *log.Logger
+	logger       *slog.Logger
 	subID        uint
 	mu           sync.Mutex
 	closed       bool
@@ -115,7 +115,7 @@ type Client struct {
 // NewClient creates a new WebSocket client.
 func NewClient(options ...ClientOption) (*Client, error) {
 	client := &Client{
-		logger: log.New(),
+		logger: slog.New(slog.NewTextHandler(os.Stdout, nil)),
 	}
 
 	for _, option := range options {
@@ -135,7 +135,7 @@ func (c *Client) Connect(ctx context.Context) error {
 	}
 
 	websocketURL := url.URL{Scheme: "wss", Host: internal.WebsocketBaseHost, Path: "/"}
-	c.logger.Printf("connecting to %s", websocketURL.String())
+	c.logger.Info("connecting to WebSocket", "url", websocketURL.String())
 
 	// Create header with user agent
 	header := make(map[string][]string)
@@ -155,7 +155,7 @@ func (c *Client) Connect(ctx context.Context) error {
 		return fmt.Errorf("could not send connect message: %w", err)
 	}
 
-	c.logger.Println("sent connect message")
+	c.logger.Info("sent connect message")
 
 	// Read the response
 	_, msg, err := c.conn.ReadMessage()
@@ -163,7 +163,7 @@ func (c *Client) Connect(ctx context.Context) error {
 		return fmt.Errorf("could not read connect response: %w", err)
 	}
 
-	c.logger.Printf("received connect response: %s", string(msg))
+	c.logger.Info("received connect response", "response", string(msg))
 
 	return nil
 }
@@ -217,14 +217,14 @@ func (c *Client) SubscribeToTimelineTransactionsWithCursor(ctx context.Context, 
 	}
 
 	data := c.prepareSubscription(TypeTimelineTransactions, params)
-	
+
 	return c.subscribe(ctx, data)
 }
 
 // SubscribeToTimelineDetail subscribes to timeline detail data.
 func (c *Client) SubscribeToTimelineDetail(ctx context.Context, itemID string) (<-chan []byte, error) {
 	data := c.prepareSubscription(TypeTimelineDetail, map[string]any{"id": itemID})
-	
+
 	return c.subscribe(ctx, data)
 }
 
@@ -265,7 +265,7 @@ func (c *Client) subscribe(ctx context.Context, data map[string]any) (<-chan []b
 		return nil, fmt.Errorf("could not send subscription message: %w", err)
 	}
 
-	c.logger.Printf("sent subscription message: %s", msg)
+	c.logger.Info("sent subscription message", "message", msg)
 
 	// Create channel for data
 	dataCh := make(chan []byte, channelBufferSize)
@@ -285,18 +285,18 @@ func (c *Client) readMessages(ctx context.Context, subID uint, dataCh chan<- []b
 	for {
 		select {
 		case <-ctx.Done():
-			c.logger.Println("context done, stopping message reader")
+			c.logger.Info("context done, stopping message reader")
 
 			return
 		default:
 			// Read message
 			_, msg, err := c.conn.ReadMessage()
 			if err != nil {
-				c.logger.Printf("error reading message: %v", err)
+				c.logger.Error("error reading message", "error", err)
 
 				// Try to reconnect
 				if err := c.reconnect(ctx); err != nil {
-					c.logger.Printf("could not reconnect: %v", err)
+					c.logger.Error("could not reconnect", "error", err)
 
 					return
 				}
@@ -307,7 +307,7 @@ func (c *Client) readMessages(ctx context.Context, subID uint, dataCh chan<- []b
 			// Parse message
 			message, err := parseMessage(msg)
 			if err != nil {
-				c.logger.Printf("error parsing message: %v", err)
+				c.logger.Error("error parsing message", "error", err)
 
 				continue
 			}
@@ -325,7 +325,7 @@ func (c *Client) readMessages(ctx context.Context, subID uint, dataCh chan<- []b
 				case dataCh <- message.Data:
 					// Data sent
 				default:
-					c.logger.Println("channel full, dropping message")
+					c.logger.Warn("channel full, dropping message")
 				}
 
 				// Unsubscribe after receiving data
@@ -335,13 +335,13 @@ func (c *Client) readMessages(ctx context.Context, subID uint, dataCh chan<- []b
 
 			case StateContinue:
 				// Continue reading
-				c.logger.Println("received continue message")
+				c.logger.Info("received continue message")
 
 			case StateError:
 				// Parse error
 				var errorResp ErrorResponse
 				if err := json.Unmarshal(message.Data, &errorResp); err != nil {
-					c.logger.Printf("error parsing error response: %v", err)
+					c.logger.Error("error parsing error response", "error", err)
 
 					continue
 				}
@@ -349,13 +349,13 @@ func (c *Client) readMessages(ctx context.Context, subID uint, dataCh chan<- []b
 				// Handle error
 				for _, errorDetail := range errorResp.Errors {
 					if errorDetail.IsUnauthorizedError() {
-						c.logger.Println("unauthorized error, session expired")
+						c.logger.Warn("unauthorized error, session expired")
 
 						return
 					}
 				}
 
-				c.logger.Printf("received error message: %s", string(message.Data))
+				c.logger.Error("received error message", "data", string(message.Data))
 
 				return
 			}
@@ -380,7 +380,7 @@ func (c *Client) unsubscribe(subID uint) {
 	// Marshal data to JSON
 	dataBytes, err := json.Marshal(data)
 	if err != nil {
-		c.logger.Printf("could not marshal unsubscribe data: %v", err)
+		c.logger.Error("could not marshal unsubscribe data", "error", err)
 
 		return
 	}
@@ -390,12 +390,12 @@ func (c *Client) unsubscribe(subID uint) {
 
 	// Send unsubscribe message
 	if err = c.conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
-		c.logger.Printf("could not send unsubscribe message: %v", err)
+		c.logger.Error("could not send unsubscribe message", "error", err)
 
 		return
 	}
 
-	c.logger.Printf("sent unsubscribe message: %s", msg)
+	c.logger.Info("sent unsubscribe message", "message", msg)
 }
 
 // reconnect reconnects to the WebSocket server.
@@ -415,7 +415,7 @@ func (c *Client) reconnect(ctx context.Context) error {
 
 	// Connect to the WebSocket server
 	websocketURL := url.URL{Scheme: "wss", Host: internal.WebsocketBaseHost, Path: "/"}
-	c.logger.Printf("reconnecting to %s", websocketURL.String())
+	c.logger.Info("reconnecting to WebSocket", "url", websocketURL.String())
 
 	// Create header with user agent
 	header := make(map[string][]string)
@@ -434,7 +434,7 @@ func (c *Client) reconnect(ctx context.Context) error {
 		return fmt.Errorf("could not send connect message: %w", err)
 	}
 
-	c.logger.Println("sent connect message")
+	c.logger.Info("sent connect message")
 
 	// Read the response
 	_, msg, err := c.conn.ReadMessage()
@@ -442,7 +442,7 @@ func (c *Client) reconnect(ctx context.Context) error {
 		return fmt.Errorf("could not read connect response: %w", err)
 	}
 
-	c.logger.Printf("received connect response: %s", string(msg))
+	c.logger.Info("received connect response", "response", string(msg))
 
 	return nil
 }
