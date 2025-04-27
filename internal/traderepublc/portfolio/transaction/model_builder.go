@@ -83,9 +83,9 @@ func (f ModelBuilderFactory) Create(
 		return NewWithdrawBuilder(NewDepositBuilder(baseBuilder)), nil
 	case details.TypeInterestPayoutTransaction:
 		return NewInterestPayoutBuilder(baseBuilder), nil
-	case
-		details.TypeUnsupported,
-		details.TypeCardPaymentTransaction:
+	case details.TypeCardPaymentTransaction:
+		return NewPaymentTransactionBuilder(baseBuilder), nil
+	case details.TypeUnsupported:
 		return nil, ErrModelBuilderUnsupportedType
 	}
 
@@ -523,6 +523,67 @@ func (b InterestPayoutBuilder) Build() (Model, error) {
 
 	model.Instrument, _ = b.instrumentBuilder.Build(b.response)
 	model.Documents, _ = b.BuildDocuments(model)
+
+	return model, nil
+}
+
+type PaymentTransactionBuilder struct {
+	BaseModelBuilder
+}
+
+func NewPaymentTransactionBuilder(baseBuilder BaseModelBuilder) PaymentTransactionBuilder {
+	return PaymentTransactionBuilder{BaseModelBuilder: baseBuilder}
+}
+
+func (b PaymentTransactionBuilder) ExtractTotalAmount() (float64, error) {
+	totalAmountStr, err := ParseNumericValueFromString(b.response.Header.Title)
+	if err != nil {
+		return 0, err
+	}
+
+	total, err := ParseFloatWithComma(totalAmountStr, false)
+	if err != nil {
+		return total, err
+	}
+
+	return total, nil
+}
+
+func (b PaymentTransactionBuilder) Build() (Model, error) {
+	var err error
+
+	// data is mapped as follows:
+	// paid amount: -> model.Total
+	// beneficiary: -> model.Instrument.Name
+
+	model := Model{
+		UUID: b.response.ID,
+		Type: TypeCardPaymentTransaction,
+	}
+
+	model.Total, err = b.ExtractTotalAmount()
+	if err != nil {
+		return model, b.HandleErr(err)
+	}
+
+	model.Instrument, err = b.instrumentBuilder.Build(b.response)
+	if err != nil {
+		return model, b.HandleErr(err)
+	}
+
+	// TypeResolver executed in instance of instrumentBuilder can't detect if an isntrument name refers to a beneficiary.
+	// Thus it maps card payments to Other. We manually overwrite this here.
+	model.Instrument.Type = instrument.TypeCash
+
+	model.Status, err = b.ExtractStatus()
+	if err != nil {
+		return model, b.HandleErr(err)
+	}
+
+	model.Timestamp, err = b.ExtractTimestamp()
+	if err != nil {
+		return model, b.HandleErr(err)
+	}
 
 	return model, nil
 }
