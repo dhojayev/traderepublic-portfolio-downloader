@@ -3,7 +3,7 @@ module github.com/dhojayev/traderepublic-portfolio-downloader/v2
 go 1.24.2
 
 require (
-	github.com/getkin/kin-openapi v0.131.0
+	github.com/getkin/kin-openapi v0.132.0
 	github.com/gorilla/websocket v1.5.3
 	github.com/oapi-codegen/runtime v1.1.1
 	github.com/stretchr/testify v1.11.1
@@ -63,6 +63,7 @@ require (
 	github.com/dave/dst v0.27.3 // indirect
 	github.com/denis-tingaikin/go-header v0.5.0 // indirect
 	github.com/dlclark/regexp2 v1.11.5 // indirect
+	github.com/dprotaso/go-yit v0.0.0-20220510233725-9ba8df137936 // indirect
 	github.com/ettle/strcase v0.2.0 // indirect
 	github.com/fatih/color v1.18.0 // indirect
 	github.com/fatih/structtag v1.2.0 // indirect
@@ -144,6 +145,7 @@ require (
 	github.com/nishanths/exhaustive v0.12.0 // indirect
 	github.com/nishanths/predeclared v0.2.2 // indirect
 	github.com/nunnatsa/ginkgolinter v0.21.0 // indirect
+	github.com/oapi-codegen/oapi-codegen/v2 v2.5.0 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
 	github.com/polyfloyd/go-errorlint v1.8.0 // indirect
@@ -170,6 +172,8 @@ require (
 	github.com/sivchari/containedctx v1.0.3 // indirect
 	github.com/sonatard/noctx v0.4.0 // indirect
 	github.com/sourcegraph/go-diff v0.7.0 // indirect
+	github.com/speakeasy-api/jsonpath v0.6.0 // indirect
+	github.com/speakeasy-api/openapi-overlay v0.10.2 // indirect
 	github.com/spf13/afero v1.14.0 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/spf13/cobra v1.10.1 // indirect
@@ -189,6 +193,7 @@ require (
 	github.com/ultraware/whitespace v0.2.0 // indirect
 	github.com/uudashr/gocognit v1.2.0 // indirect
 	github.com/uudashr/iface v1.4.1 // indirect
+	github.com/vmware-labs/yaml-jsonpath v0.3.2 // indirect
 	github.com/xen0n/gosmopolitan v1.3.0 // indirect
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
 	github.com/yagipy/maintidx v1.0.0 // indirect
@@ -237,5 +242,6 @@ require (
 
 tool (
 	github.com/golangci/golangci-lint/v2/cmd/golangci-lint
+	github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen
 	go.uber.org/mock/mockgen
 )
