@@ -32,7 +32,7 @@ func NewClient() (*Client, error) {
 
 	// Create the client with the base URL and request editor
 	client, err := traderepublic.NewClientWithResponses(
-		internal.RestAPIBaseURI,
+		traderepublic.ServerUrlTradeRepublicRESTAPI,
 		traderepublic.WithRequestEditorFn(reqEditor),
 	)
 	if err != nil {

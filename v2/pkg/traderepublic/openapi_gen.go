@@ -24,6 +24,9 @@ const (
 	RefreshTokenScopes = "refreshToken.Scopes"
 )
 
+// ServerUrlTradeRepublicRESTAPI defines the Server URL for Trade Republic REST API
+const ServerUrlTradeRepublicRESTAPI = "https://api.traderepublic.com/api/v1"
+
 // APILoginRequest defines model for APILoginRequest.
 type APILoginRequest struct {
 	// PhoneNumber User's phone number

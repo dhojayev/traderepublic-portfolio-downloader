@@ -3,9 +3,6 @@ package internal
 import "time"
 
 const (
-	// RestAPIBaseURI Trade Republic's REST API base URI.
-	RestAPIBaseURI = "https://api.traderepublic.com/api/v1"
-
 	// WebsocketBaseHost Trade Republic's websocket base host.
 	WebsocketBaseHost = "api.traderepublic.com"
 

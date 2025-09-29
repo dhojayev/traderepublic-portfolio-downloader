@@ -1,3 +1,5 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/oapi-codegen/oapi-codegen/HEAD/configuration-schema.json
+
 package: traderepublic
 generate:
   models: true
@@ -5,3 +7,4 @@ generate:
   strict-server: false
   chi-server: false
   embedded-spec: true
+  server-urls: true
