@@ -412,6 +412,7 @@ func processTransactions(
 		logger.Debug("Waiting for timeline detail data")
 
 		var detailsData []byte
+
 		select {
 		case data := <-detailsCh:
 			detailsData = data

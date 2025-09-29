@@ -17,7 +17,7 @@ func NewInputHandler() InputHandler {
 func (h InputHandler) GetPhoneNumber() (string, error) {
 	var phoneNumber string
 
-	fmt.Print("Enter phone number in international format (+49xxxxxxxxxxxxx): \n")
+	fmt.Println("Enter phone number in international format (+49xxxxxxxxxxxxx):")
 
 	if _, err := fmt.Scanln(&phoneNumber); err != nil {
 		return "", fmt.Errorf("could not read phone number: %w", err)

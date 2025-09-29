@@ -32,6 +32,7 @@ func main() {
 	apiClient, err := api.NewClient()
 	if err != nil {
 		log.Error("Error creating API client", "error", err)
+
 		return
 	}
 

@@ -89,11 +89,11 @@ func TestGetPhoneNumber(t *testing.T) {
 				if err != nil {
 					assert.Contains(t, err.Error(), testCase.errorContains, "Error message should contain expected text")
 				}
-				
+
 				return
 			}
 
-			assert.NoError(t, err, "Should not return an error")
+			require.NoError(t, err, "Should not return an error")
 			assert.Equal(t, testCase.expected, result, "Result should match expected value")
 		})
 	}

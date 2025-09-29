@@ -53,8 +53,8 @@ func (c *Client) ObtainProcessID() (ProcessID, error) {
 
 	// Create the login request
 	request := restclient.APILoginRequest{
-		PhoneNumber: string(phoneNumber),
-		Pin:         string(pin),
+		PhoneNumber: phoneNumber,
+		Pin:         pin,
 	}
 
 	// Call the API client's Login method
@@ -79,7 +79,7 @@ func (c *Client) ProvideOTP(processID ProcessID) (Token, error) {
 	}
 
 	// Call the API client's PostOTP method
-	cookies, err := c.apiClient.PostOTP(string(processID), string(otp))
+	cookies, err := c.apiClient.PostOTP(string(processID), otp)
 	if err != nil {
 		return token, fmt.Errorf("could not validate otp: %w", err)
 	}
