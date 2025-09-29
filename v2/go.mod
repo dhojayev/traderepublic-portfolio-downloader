@@ -8,7 +8,7 @@ require (
 	github.com/gorilla/websocket v1.5.3
 	github.com/oapi-codegen/runtime v1.1.1
 	github.com/stretchr/testify v1.11.1
-	go.uber.org/mock v0.5.1
+	go.uber.org/mock v0.6.0
 )
 
 require (
@@ -236,4 +236,7 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-tool github.com/golangci/golangci-lint/v2/cmd/golangci-lint
+tool (
+	github.com/golangci/golangci-lint/v2/cmd/golangci-lint
+	go.uber.org/mock/mockgen
+)

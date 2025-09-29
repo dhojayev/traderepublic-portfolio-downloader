@@ -36,8 +36,8 @@ func main() {
 	}
 
 	app := NewApp(
-		console.NewInputHandler(),
-		auth.NewClient(apiClient),
+		auth.NewClient(console.NewInputHandler(), apiClient),
+		auth.NewFileCredentialsService(""),
 		log,
 	)
 

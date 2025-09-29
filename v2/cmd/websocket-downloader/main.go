@@ -160,36 +160,6 @@ func authenticate(logger *slog.Logger) (string, error) {
 		}
 	}
 
-	// Create input handler for user interaction
-	inputHandler := console.NewInputHandler()
-
-	// If no valid tokens found, proceed with authentication
-	phoneNumber := os.Getenv("TR_PHONE_NUMBER")
-	pin := os.Getenv("TR_PIN")
-
-	// If environment variables are not set, prompt the user
-	if phoneNumber == "" {
-		var err error
-
-		phoneNumber, err = inputHandler.GetPhoneNumber()
-		if err != nil {
-			logger.Error("Failed to get phone number", "error", err)
-
-			return "", fmt.Errorf("failed to get phone number: %w", err)
-		}
-	}
-
-	if pin == "" {
-		var err error
-
-		pin, err = inputHandler.GetPIN()
-		if err != nil {
-			logger.Error("Failed to get PIN", "error", err)
-
-			return "", fmt.Errorf("failed to get PIN: %w", err)
-		}
-	}
-
 	// Create API client and authenticate
 	apiClient, err := api.NewClient()
 	if err != nil {
@@ -199,44 +169,24 @@ func authenticate(logger *slog.Logger) (string, error) {
 	}
 
 	// Create auth client
-	authClient := auth.NewClient(apiClient)
+	authClient := auth.NewClient(console.NewInputHandler(), apiClient)
 
 	// Login
-	processID, err := authClient.Login(auth.PhoneNumber(phoneNumber), auth.Pin(pin))
+	token, err := authClient.Login()
 	if err != nil {
-		logger.Error("Failed to login", "error", err)
+		logger.Error("Failed to validate OTP", "error", err)
 
-		return "", fmt.Errorf("failed to login: %w", err)
+		return "", fmt.Errorf("failed to validate OTP: %w", err)
 	}
 
-	if processID != "" {
-		// Get OTP from user
-		otp, err := inputHandler.GetOTP()
-		if err != nil {
-			logger.Error("Failed to get OTP", "error", err)
-
-			return "", fmt.Errorf("failed to get OTP: %w", err)
-		}
-
-		// Get tokens from OTP verification
-		token, err := authClient.ProvideOTP(processID, auth.OTP(otp))
-		if err != nil {
-			logger.Error("Failed to validate OTP", "error", err)
-
-			return "", fmt.Errorf("failed to validate OTP: %w", err)
-		}
-
-		// Store tokens using credentials service
-		if err := credentials.Store(token); err != nil {
-			logger.Error("Failed to store tokens", "error", err)
-		}
-
-		return token.Session(), nil
+	// Store tokens using credentials service
+	if err := credentials.Store(token); err != nil {
+		logger.Error("Failed to store tokens", "error", err)
 	}
 
 	logger.Info("Successfully authenticated")
 
-	return credentials.GetToken().Session(), nil
+	return token.Session(), nil
 }
 
 // setupWebSocketClient creates and connects a WebSocket client.
