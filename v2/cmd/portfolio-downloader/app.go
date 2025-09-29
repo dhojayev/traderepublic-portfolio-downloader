@@ -1,26 +1,32 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
+	"time"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/auth"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/message"
 )
 
 type App struct {
 	authClient         *auth.Client
 	credentialsService auth.CredentialsServiceInterface
+	messageClient      message.ClientInterface
 	log                *slog.Logger
 }
 
 func NewApp(
 	authClient *auth.Client,
 	credentialsService auth.CredentialsServiceInterface,
+	messageClient message.ClientInterface,
 	log *slog.Logger,
 ) App {
 	return App{
 		authClient:         authClient,
 		credentialsService: credentialsService,
+		messageClient:      messageClient,
 		log:                log,
 	}
 }
@@ -36,7 +42,12 @@ func (a *App) Run() error {
 		}
 	}
 
-	a.log.Info("Credentials loaded successfully")
+	err = a.messageClient.SubscribeToTimelineTransactions(context.Background())
+	if err != nil {
+		return fmt.Errorf("subscription failed: %w", err)
+	}
+
+	time.Sleep(time.Minute * 10)
 
 	return nil
 }

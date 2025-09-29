@@ -8,6 +8,9 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/console"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/auth"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/message"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/message/publisher"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/websocketclient"
 	"github.com/joho/godotenv"
 )
 
@@ -29,6 +32,8 @@ func main() {
 		Level:     logLevel,
 	}))
 
+	credentialsService := auth.NewFileCredentialsService("")
+
 	apiClient, err := api.NewClient()
 	if err != nil {
 		log.Error("Error creating API client", "error", err)
@@ -36,13 +41,17 @@ func main() {
 		return
 	}
 
+	messageClient := message.NewClient(credentialsService, websocketclient.NewClient(publisher.NewPublisher(log), log), log)
+
 	app := NewApp(
 		auth.NewClient(console.NewInputHandler(), apiClient),
-		auth.NewFileCredentialsService(""),
+		credentialsService,
+		messageClient,
 		log,
 	)
 
-	if err := app.Run(); err != nil {
+	err = app.Run()
+	if err != nil {
 		log.Error("Error running app", "error", err)
 	}
 }

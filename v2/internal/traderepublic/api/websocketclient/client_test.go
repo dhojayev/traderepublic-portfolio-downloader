@@ -21,7 +21,6 @@ func TestNewClient(t *testing.T) {
 	// Create a client
 	client, err := websocketclient.NewClient(
 		websocketclient.WithLogger(logger),
-		websocketclient.WithSessionToken("test-token"),
 	)
 
 	// Verify results

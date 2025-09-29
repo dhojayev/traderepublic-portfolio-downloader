@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"log/slog"
 	"net/url"
-	"os"
 	"strconv"
 	"strings"
 	"sync"
@@ -16,6 +15,7 @@ import (
 	"github.com/gorilla/websocket"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/message/publisher"
 )
 
 const (
@@ -85,44 +85,22 @@ func (e ErrorDetail) IsUnauthorizedError() bool {
 	return e.Code == "UNAUTHORIZED"
 }
 
-// ClientOption is a function that configures a Client.
-type ClientOption func(*Client)
-
-// WithLogger sets the logger for the client.
-func WithLogger(logger *slog.Logger) ClientOption {
-	return func(c *Client) {
-		c.logger = logger
-	}
-}
-
-// WithSessionToken sets the session token for the client.
-func WithSessionToken(token string) ClientOption {
-	return func(c *Client) {
-		c.sessionToken = token
-	}
-}
-
 // Client is a WebSocket client for the Trade Republic API.
 type Client struct {
 	conn         *websocket.Conn
-	sessionToken string
+	publisher    publisher.PublisherInterface
 	logger       *slog.Logger
-	subID        uint
+	currentSubID uint
 	mu           sync.Mutex
 	closed       bool
 }
 
 // NewClient creates a new WebSocket client.
-func NewClient(options ...ClientOption) (*Client, error) {
-	client := &Client{
-		logger: slog.New(slog.NewTextHandler(os.Stdout, nil)),
+func NewClient(publisher publisher.PublisherInterface, logger *slog.Logger) *Client {
+	return &Client{
+		publisher: publisher,
+		logger:    logger,
 	}
-
-	for _, option := range options {
-		option(client)
-	}
-
-	return client, nil
 }
 
 // Connect connects to the WebSocket server.
@@ -187,49 +165,8 @@ func (c *Client) Close() error {
 	return nil
 }
 
-// prepareSubscription prepares a subscription request with the given parameters.
-func (c *Client) prepareSubscription(dataType string, params map[string]any) map[string]any {
-	data := map[string]any{
-		"type":  dataType,
-		"token": c.sessionToken,
-	}
-
-	// Add additional parameters
-	for k, v := range params {
-		data[k] = v
-	}
-
-	return data
-}
-
-// SubscribeToTimelineTransactions subscribes to timeline transactions data.
-func (c *Client) SubscribeToTimelineTransactions(ctx context.Context) (<-chan []byte, error) {
-	return c.SubscribeToTimelineTransactionsWithCursor(ctx, "")
-}
-
-// SubscribeToTimelineTransactionsWithCursor subscribes to timeline transactions data with a cursor.
-func (c *Client) SubscribeToTimelineTransactionsWithCursor(ctx context.Context, cursor string) (<-chan []byte, error) {
-	params := map[string]any{}
-
-	// Add cursor if provided
-	if cursor != "" {
-		params["after"] = cursor
-	}
-
-	data := c.prepareSubscription(TypeTimelineTransactions, params)
-
-	return c.subscribe(ctx, data)
-}
-
-// SubscribeToTimelineDetail subscribes to timeline detail data.
-func (c *Client) SubscribeToTimelineDetail(ctx context.Context, itemID string) (<-chan []byte, error) {
-	data := c.prepareSubscription(TypeTimelineDetail, map[string]any{"id": itemID})
-
-	return c.subscribe(ctx, data)
-}
-
 // subscribe subscribes to a data type.
-func (c *Client) subscribe(ctx context.Context, data map[string]any) (<-chan []byte, error) {
+func (c *Client) Subscribe(ctx context.Context, data map[string]any) (<-chan []byte, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -241,15 +178,8 @@ func (c *Client) subscribe(ctx context.Context, data map[string]any) (<-chan []b
 		return nil, ErrConnectionClosed
 	}
 
-	if c.sessionToken == "" {
-		return nil, ErrAuthRequired
-	}
-
-	c.subID++
-	subID := c.subID
-
-	// Add token to data
-	data["token"] = c.sessionToken
+	c.currentSubID++
+	subID := c.currentSubID
 
 	// Marshal data to JSON
 	dataBytes, err := json.Marshal(data)
@@ -267,20 +197,17 @@ func (c *Client) subscribe(ctx context.Context, data map[string]any) (<-chan []b
 
 	c.logger.Info("sent subscription message", "message", msg)
 
-	// Create channel for data
-	dataCh := make(chan []byte, channelBufferSize)
+	sub := c.publisher.Subscribe(string(subID))
 
 	// Start goroutine to read messages
-	go c.readMessages(ctx, subID, dataCh)
+	go c.readMessages(ctx, subID)
 
-	return dataCh, nil
+	return sub, nil
 }
 
 // readMessages reads messages from the WebSocket and sends them to the channel.
-//
-//nolint:gocognit,cyclop,funlen
-func (c *Client) readMessages(ctx context.Context, subID uint, dataCh chan<- []byte) {
-	defer close(dataCh)
+func (c *Client) readMessages(ctx context.Context, subID uint) {
+	defer c.publisher.Close(string(subID))
 
 	for {
 		select {
@@ -294,14 +221,7 @@ func (c *Client) readMessages(ctx context.Context, subID uint, dataCh chan<- []b
 			if err != nil {
 				c.logger.Error("error reading message", "error", err)
 
-				// Try to reconnect
-				if err := c.reconnect(ctx); err != nil {
-					c.logger.Error("could not reconnect", "error", err)
-
-					return
-				}
-
-				continue
+				return
 			}
 
 			// Parse message
@@ -312,24 +232,11 @@ func (c *Client) readMessages(ctx context.Context, subID uint, dataCh chan<- []b
 				continue
 			}
 
-			// Check if message is for this subscription
-			if message.ID != subID {
-				continue
-			}
-
 			// Handle message based on state
 			switch message.State {
 			case StateData:
-				// Send data to channel
-				select {
-				case dataCh <- message.Data:
-					// Data sent
-				default:
-					c.logger.Warn("channel full, dropping message")
-				}
-
-				// Unsubscribe after receiving data
-				c.unsubscribe(subID)
+				c.publisher.Publish(message.Data, string(subID))
+				c.unsubscribe(subID, "")
 
 				return
 
@@ -364,7 +271,7 @@ func (c *Client) readMessages(ctx context.Context, subID uint, dataCh chan<- []b
 }
 
 // unsubscribe unsubscribes from a subscription.
-func (c *Client) unsubscribe(subID uint) {
+func (c *Client) unsubscribe(subID uint, token string) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -374,7 +281,7 @@ func (c *Client) unsubscribe(subID uint) {
 
 	// Create unsubscribe message
 	data := map[string]any{
-		"token": c.sessionToken,
+		"token": token,
 	}
 
 	// Marshal data to JSON

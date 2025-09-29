@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"sync"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/console"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api"
@@ -15,6 +16,7 @@ import (
 type Client struct {
 	inputHandler console.InputHandlerInterface
 	apiClient    api.ClientInterface
+	mu           sync.Mutex
 }
 
 func NewClient(inputHandler console.InputHandlerInterface, apiClient api.ClientInterface) *Client {
@@ -26,6 +28,9 @@ func NewClient(inputHandler console.InputHandlerInterface, apiClient api.ClientI
 
 func (c *Client) Login() (Token, error) {
 	var token Token
+
+	c.mu.Lock()
+	defer c.mu.Unlock()
 
 	processID, err := c.ObtainProcessID()
 	if err != nil {

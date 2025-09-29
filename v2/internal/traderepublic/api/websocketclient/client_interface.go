@@ -12,12 +12,6 @@ type ClientInterface interface {
 	// Close closes the WebSocket connection.
 	Close() error
 
-	// SubscribeToTimelineTransactions subscribes to timeline transactions data.
-	SubscribeToTimelineTransactions(ctx context.Context) (<-chan []byte, error)
-
-	// SubscribeToTimelineTransactionsWithCursor subscribes to timeline transactions data with a cursor.
-	SubscribeToTimelineTransactionsWithCursor(ctx context.Context, cursor string) (<-chan []byte, error)
-
-	// SubscribeToTimelineDetail subscribes to timeline detail data.
-	SubscribeToTimelineDetail(ctx context.Context, itemID string) (<-chan []byte, error)
+	// Subscribe subscribes to a data type.
+	Subscribe(ctx context.Context, data map[string]any) (<-chan []byte, error)
 }
