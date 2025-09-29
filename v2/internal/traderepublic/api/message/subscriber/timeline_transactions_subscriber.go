@@ -9,11 +9,7 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/writer"
 )
 
-type SubscriberInterface interface {
-	Listen()
-}
-
-type Subscriber struct {
+type TimelineTransactionsSubscriber struct {
 	name    string
 	ch      <-chan []byte
 	writer  writer.Writer
@@ -22,15 +18,15 @@ type Subscriber struct {
 	mu      sync.Mutex
 }
 
-func NewSubscriber(name string, ch <-chan []byte, writer writer.Writer, log *slog.Logger) *Subscriber {
-	return &Subscriber{
+func NewSubscriber(name string, ch <-chan []byte, writer writer.Writer, log *slog.Logger) *TimelineTransactionsSubscriber {
+	return &TimelineTransactionsSubscriber{
 		name:   name,
 		ch:     ch,
 		writer: writer,
 		log:    log,
 	}
 }
-func (s *Subscriber) Listen() {
+func (s *TimelineTransactionsSubscriber) Listen() {
 	go func() {
 		for data := range s.ch {
 			s.mu.Lock()

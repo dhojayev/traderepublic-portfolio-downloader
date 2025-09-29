@@ -8,13 +8,15 @@ import (
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/auth"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/message"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/message/subscriber"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/writer"
 )
 
 type App struct {
 	authClient         *auth.Client
 	credentialsService auth.CredentialsServiceInterface
 	messageClient      message.ClientInterface
-	log                *slog.Logger
+	logger             *slog.Logger
 }
 
 func NewApp(
@@ -27,14 +29,14 @@ func NewApp(
 		authClient:         authClient,
 		credentialsService: credentialsService,
 		messageClient:      messageClient,
-		log:                log,
+		logger:             log,
 	}
 }
 
 func (a *App) Run() error {
 	err := a.credentialsService.Load()
 	if err != nil {
-		a.log.Warn("Failed to load credentials, need to authenticate", "error", err)
+		a.logger.Warn("Failed to load credentials, need to authenticate", "error", err)
 
 		err := a.authenticate()
 		if err != nil {
@@ -42,10 +44,13 @@ func (a *App) Run() error {
 		}
 	}
 
-	err = a.messageClient.SubscribeToTimelineTransactions(context.Background())
+	ch, err := a.messageClient.SubscribeToTimelineTransactions(context.Background())
 	if err != nil {
 		return fmt.Errorf("subscription failed: %w", err)
 	}
+
+	sub := subscriber.NewSubscriber("timelineTransactions", ch, writer.NewResponseWriter(), a.logger)
+	sub.Listen()
 
 	time.Sleep(time.Minute * 5)
 
@@ -63,7 +68,7 @@ func (a *App) authenticate() error {
 		return fmt.Errorf("failed to store credentials: %w", err)
 	}
 
-	a.log.Info("Authentication successful")
+	a.logger.Info("Authentication successful")
 
 	return nil
 }

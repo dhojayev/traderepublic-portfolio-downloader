@@ -6,9 +6,7 @@ import (
 	"log/slog"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/auth"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/message/subscriber"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/websocketclient"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/writer"
 )
 
 const (
@@ -18,7 +16,8 @@ const (
 )
 
 type ClientInterface interface {
-	SubscribeToTimelineTransactions(ctx context.Context) error
+	SubscribeToTimelineTransactions(ctx context.Context) (<-chan []byte, error)
+	SubscribeToTimelineDetail(ctx context.Context, itemID string) (<-chan []byte, error)
 }
 
 type Client struct {
@@ -36,15 +35,15 @@ func NewClient(credentialsService auth.CredentialsServiceInterface, wsClient web
 }
 
 // SubscribeToTimelineTransactions subscribes to timeline transactions data.
-func (c *Client) SubscribeToTimelineTransactions(ctx context.Context) error {
+func (c *Client) SubscribeToTimelineTransactions(ctx context.Context) (<-chan []byte, error) {
 	ch, err := c.SubscribeToTimelineTransactionsWithCursor(ctx, "")
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	var response struct {
 		Cursors struct {
-			After *string `json:"after",omitempty`
+			After *string `json:"after", omitempty`
 		} `json:"cursors"`
 	}
 
@@ -54,7 +53,7 @@ func (c *Client) SubscribeToTimelineTransactions(ctx context.Context) error {
 
 	err = json.Unmarshal(data, &response)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	go func() {
@@ -79,10 +78,7 @@ func (c *Client) SubscribeToTimelineTransactions(ctx context.Context) error {
 		}
 	}()
 
-	subscriber := subscriber.NewSubscriber("timelineTransactions", unifiedChannel, writer.NewResponseWriter(), c.logger)
-	subscriber.Listen()
-
-	return nil
+	return unifiedChannel, nil
 }
 
 // SubscribeToTimelineTransactionsWithCursor subscribes to timeline transactions data with a cursor.

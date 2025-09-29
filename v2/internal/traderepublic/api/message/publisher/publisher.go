@@ -2,12 +2,6 @@ package publisher
 
 import "log/slog"
 
-type PublisherInterface interface {
-	Subscribe(topic string) <-chan []byte
-	Publish(msg []byte, topic string)
-	Close(topic string)
-}
-
 type Publisher struct {
 	logger      *slog.Logger
 	subscribers map[string]chan []byte

@@ -88,7 +88,7 @@ func (e ErrorDetail) IsUnauthorizedError() bool {
 // Client is a WebSocket client for the Trade Republic API.
 type Client struct {
 	conn         *websocket.Conn
-	publisher    publisher.PublisherInterface
+	publisher    publisher.Interface
 	logger       *slog.Logger
 	currentSubID uint
 	mu           sync.Mutex
@@ -96,7 +96,7 @@ type Client struct {
 }
 
 // NewClient creates a new WebSocket client.
-func NewClient(publisher publisher.PublisherInterface, logger *slog.Logger) *Client {
+func NewClient(publisher publisher.Interface, logger *slog.Logger) *Client {
 	return &Client{
 		publisher: publisher,
 		logger:    logger,
