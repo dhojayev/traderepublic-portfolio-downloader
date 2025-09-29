@@ -7,6 +7,7 @@ import (
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/auth"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/websocketclient"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/pkg/traderepublic"
 )
 
 const (
@@ -41,11 +42,7 @@ func (c *Client) SubscribeToTimelineTransactions(ctx context.Context) (<-chan []
 		return nil, err
 	}
 
-	var response struct {
-		Cursors struct {
-			After *string `json:"after", omitempty`
-		} `json:"cursors"`
-	}
+	var response traderepublic.TimelineTransactionsSchemaJson
 
 	unifiedChannel := make(chan []byte, 1)
 	data := <-ch

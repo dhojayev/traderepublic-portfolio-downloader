@@ -5,7 +5,8 @@ all: lint test
 generate:
 	set -e
 	go tool oapi-codegen -config pkg/traderepublic/openapi-config.yml pkg/traderepublic/openapi.yml > pkg/traderepublic/openapi_gen.go
-	go fmt pkg/traderepublic/openapi_gen.go
+	go tool go-jsonschema -p traderepublic pkg/traderepublic/timeline_transactions.schema.json > pkg/traderepublic/timeline_transactions_gen.go
+	go fmt ./pkg/traderepublic/...
 	go generate ./...
 
 lint:
