@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/websocketclient"
@@ -24,7 +25,7 @@ func TestNewClient(t *testing.T) {
 	)
 
 	// Verify results
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, client)
 }
 
@@ -69,20 +70,20 @@ func TestMockClient(t *testing.T) {
 
 	// Call methods
 	err := mockClient.Connect(ctx)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	ch1, err := mockClient.SubscribeToTimelineTransactions(ctx)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, timelineReadCh, ch1)
 
 	ch2, err := mockClient.SubscribeToTimelineTransactionsWithCursor(ctx, "cursor123")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, timelineWithCursorReadCh, ch2)
 
 	ch3, err := mockClient.SubscribeToTimelineDetail(ctx, "US0378331005")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, timelineDetailReadCh, ch3)
 
 	err = mockClient.Close()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 }

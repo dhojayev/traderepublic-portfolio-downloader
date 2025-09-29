@@ -52,7 +52,7 @@ func (d Downloader) Download(baseDir string, document Model) error {
 		return fmt.Errorf("could not create directory for document: %w", err)
 	}
 
-	req, err := http.NewRequest(http.MethodGet, document.URL, nil)
+	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, document.URL, nil)
 	if err != nil {
 		return fmt.Errorf("could not create request for document download: %w", err)
 	}

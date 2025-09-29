@@ -103,6 +103,7 @@ linters:
           - mnd
         path: tests/.*\.go
     paths:
+      - v2$
       - third_party$
       - builtin$
       - examples$

@@ -4,9 +4,15 @@
  [![Go Report Card](https://goreportcard.com/badge/github.com/dhojayev/traderepublic-portfolio-downloader)](https://goreportcard.com/report/github.com/dhojayev/traderepublic-portfolio-downloader) ![GitHub branch check runs](https://img.shields.io/github/check-runs/dhojayev/traderepublic-portfolio-downloader/main)
 ![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/dhojayev/traderepublic-portfolio-downloader/total) ![GitHub commits since latest release](https://img.shields.io/github/commits-since/dhojayev/traderepublic-portfolio-downloader/latest)
 
-> ## 🚧 Major Rewrite in Progress 🚧
+> ## 🔄 V2 Development Resumed
 >
-> We are currently working on a complete rewrite of this application (see the `v2` directory). The new version will address:
+> Development of version 2 has resumed after a long break. Current status:
+>
+> - ✅ Authentication workflow has been completely rewritten
+> - 🚧 WebSocket response handling is the next focus area
+> - ❌ The current version (v1) is no longer maintained and is broken due to Trade Republic API changes
+>
+> The v2 rewrite aims to deliver:
 >
 > - Improved code maintainability and testability
 > - Better error handling and user experience
@@ -17,7 +23,7 @@
 > - Comprehensive test coverage
 > - Stricter adherence to Go best practices
 >
-> The rewrite will eventually become version 2.0.0. The current version remains functional but will only receive critical bug fixes until the new version is released.
+> **Note:** There is no estimated completion date for v2. The current version will not receive any updates or fixes.
 >
 > **Want to help?** Check out the [issues](https://github.com/dhojayev/traderepublic-portfolio-downloader/issues) or explore the `v2` directory to contribute to the rewrite.
 

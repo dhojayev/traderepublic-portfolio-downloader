@@ -18,12 +18,12 @@ func NewTokenWithValues(sessionValue, refreshValue string) Token {
 	}
 }
 
-// SessionToken returns the session token value.
-func (t Token) SessionToken() string {
+// Session returns the session token value.
+func (t Token) Session() string {
 	return t.session
 }
 
-// RefreshToken returns the refresh token value.
-func (t Token) RefreshToken() string {
+// Refresh returns the refresh token value.
+func (t Token) Refresh() string {
 	return t.refresh
 }

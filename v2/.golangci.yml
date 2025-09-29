@@ -1,0 +1,16 @@
+version: "2"
+linters:
+  default: all
+  disable:
+    - depguard
+    - wsl
+  enable:
+    - wsl_v5
+  settings:
+    wsl_v5:
+      allow-first-in-block: true
+      allow-whole-block: false
+      branch-max-lines: 2
+  exclusions:
+    paths:
+      - cmd/websocket-downloader/main.go
