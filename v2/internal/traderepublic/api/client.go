@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/restclient"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/pkg/traderepublic"
 )
 
 const (
@@ -17,7 +17,7 @@ const (
 
 // Client is a client that uses the generated OpenAPI client.
 type Client struct {
-	client *restclient.ClientWithResponses
+	client *traderepublic.ClientWithResponses
 }
 
 // NewClient creates a new client that uses the generated OpenAPI client.
@@ -31,9 +31,9 @@ func NewClient() (*Client, error) {
 	}
 
 	// Create the client with the base URL and request editor
-	client, err := restclient.NewClientWithResponses(
+	client, err := traderepublic.NewClientWithResponses(
 		internal.RestAPIBaseURI,
-		restclient.WithRequestEditorFn(reqEditor),
+		traderepublic.WithRequestEditorFn(reqEditor),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("could not create REST client: %w", err)
@@ -45,7 +45,7 @@ func NewClient() (*Client, error) {
 }
 
 // Login logs in with phone number and PIN.
-func (c *Client) Login(requestBody restclient.APILoginRequest) (string, error) {
+func (c *Client) Login(requestBody traderepublic.APILoginRequest) (string, error) {
 	// Make the login request
 	resp, err := c.client.LoginWithResponse(context.Background(), requestBody)
 	if err != nil {

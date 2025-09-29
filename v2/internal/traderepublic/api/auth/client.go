@@ -10,7 +10,7 @@ import (
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/console"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/restclient"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/pkg/traderepublic"
 )
 
 type Client struct {
@@ -57,7 +57,7 @@ func (c *Client) ObtainProcessID() (ProcessID, error) {
 	}
 
 	// Create the login request
-	request := restclient.APILoginRequest{
+	request := traderepublic.APILoginRequest{
 		PhoneNumber: phoneNumber,
 		Pin:         pin,
 	}

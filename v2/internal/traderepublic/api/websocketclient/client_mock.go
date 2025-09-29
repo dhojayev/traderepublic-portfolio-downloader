@@ -68,47 +68,17 @@ func (mr *MockClientInterfaceMockRecorder) Connect(ctx any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Connect", reflect.TypeOf((*MockClientInterface)(nil).Connect), ctx)
 }
 
-// SubscribeToTimelineDetail mocks base method.
-func (m *MockClientInterface) SubscribeToTimelineDetail(ctx context.Context, itemID string) (<-chan []byte, error) {
+// Subscribe mocks base method.
+func (m *MockClientInterface) Subscribe(ctx context.Context, data map[string]any) (<-chan []byte, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SubscribeToTimelineDetail", ctx, itemID)
+	ret := m.ctrl.Call(m, "Subscribe", ctx, data)
 	ret0, _ := ret[0].(<-chan []byte)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// SubscribeToTimelineDetail indicates an expected call of SubscribeToTimelineDetail.
-func (mr *MockClientInterfaceMockRecorder) SubscribeToTimelineDetail(ctx, itemID any) *gomock.Call {
+// Subscribe indicates an expected call of Subscribe.
+func (mr *MockClientInterfaceMockRecorder) Subscribe(ctx, data any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SubscribeToTimelineDetail", reflect.TypeOf((*MockClientInterface)(nil).SubscribeToTimelineDetail), ctx, itemID)
-}
-
-// SubscribeToTimelineTransactions mocks base method.
-func (m *MockClientInterface) SubscribeToTimelineTransactions(ctx context.Context) (<-chan []byte, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SubscribeToTimelineTransactions", ctx)
-	ret0, _ := ret[0].(<-chan []byte)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// SubscribeToTimelineTransactions indicates an expected call of SubscribeToTimelineTransactions.
-func (mr *MockClientInterfaceMockRecorder) SubscribeToTimelineTransactions(ctx any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SubscribeToTimelineTransactions", reflect.TypeOf((*MockClientInterface)(nil).SubscribeToTimelineTransactions), ctx)
-}
-
-// SubscribeToTimelineTransactionsWithCursor mocks base method.
-func (m *MockClientInterface) SubscribeToTimelineTransactionsWithCursor(ctx context.Context, cursor string) (<-chan []byte, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SubscribeToTimelineTransactionsWithCursor", ctx, cursor)
-	ret0, _ := ret[0].(<-chan []byte)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// SubscribeToTimelineTransactionsWithCursor indicates an expected call of SubscribeToTimelineTransactionsWithCursor.
-func (mr *MockClientInterfaceMockRecorder) SubscribeToTimelineTransactionsWithCursor(ctx, cursor any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SubscribeToTimelineTransactionsWithCursor", reflect.TypeOf((*MockClientInterface)(nil).SubscribeToTimelineTransactionsWithCursor), ctx, cursor)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Subscribe", reflect.TypeOf((*MockClientInterface)(nil).Subscribe), ctx, data)
 }
