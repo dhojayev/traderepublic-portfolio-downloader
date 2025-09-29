@@ -15,12 +15,10 @@ type Client struct {
 	apiClient api.ClientInterface
 }
 
-func NewClient(apiClient api.ClientInterface) (*Client, error) {
-	client := &Client{
+func NewClient(apiClient api.ClientInterface) *Client {
+	return &Client{
 		apiClient: apiClient,
 	}
-
-	return client, nil
 }
 
 func (c *Client) Login(phoneNumber PhoneNumber, pin Pin) (ProcessID, error) {

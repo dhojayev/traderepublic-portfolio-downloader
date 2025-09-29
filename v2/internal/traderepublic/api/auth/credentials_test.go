@@ -28,8 +28,11 @@ func TestFileCredentialsService(t *testing.T) {
 		// Create a new credentials service with the test file path
 		service := auth.NewFileCredentialsService(testFile)
 
+		// Create a token with test values
+		testToken := auth.NewTokenWithValues(testSessionToken, testRefreshToken)
+
 		// Store the credentials
-		err := service.Store(testSessionToken, testRefreshToken)
+		err := service.Store(testToken)
 		require.NoError(t, err, "Storing credentials should not error")
 
 		// Create a new service to load the credentials
@@ -40,8 +43,9 @@ func TestFileCredentialsService(t *testing.T) {
 		require.NoError(t, err, "Loading credentials should not error")
 
 		// Check that the loaded credentials match the stored ones
-		assert.Equal(t, testSessionToken, loadService.GetSessionToken(), "Session token should match")
-		assert.Equal(t, testRefreshToken, loadService.GetRefreshToken(), "Refresh token should match")
+		loadedToken := loadService.GetToken()
+		assert.Equal(t, testSessionToken, loadedToken.Session(), "Session token should match")
+		assert.Equal(t, testRefreshToken, loadedToken.Refresh(), "Refresh token should match")
 	})
 
 	t.Run("Load Non-existent File", func(t *testing.T) {
@@ -65,8 +69,11 @@ func TestFileCredentialsService(t *testing.T) {
 		// Create a new credentials service with the test file path
 		service := auth.NewFileCredentialsService(testFile)
 
+		// Create an empty token
+		emptyToken := auth.NewTokenWithValues("", "")
+
 		// Store empty tokens
-		err := service.Store("", "")
+		err := service.Store(emptyToken)
 		require.NoError(t, err, "Storing empty tokens should not error")
 
 		// Create a new service to load the credentials
@@ -77,8 +84,9 @@ func TestFileCredentialsService(t *testing.T) {
 		require.NoError(t, err, "Loading credentials should not error")
 
 		// Check that the loaded credentials are empty
-		assert.Empty(t, loadService.GetSessionToken(), "Session token should be empty")
-		assert.Empty(t, loadService.GetRefreshToken(), "Refresh token should be empty")
+		loadedToken := loadService.GetToken()
+		assert.Empty(t, loadedToken.Session(), "Session token should be empty")
+		assert.Empty(t, loadedToken.Refresh(), "Refresh token should be empty")
 	})
 
 	t.Run("Overwrite Existing Tokens", func(t *testing.T) {
@@ -89,15 +97,20 @@ func TestFileCredentialsService(t *testing.T) {
 		// Create a new credentials service with the test file path
 		service := auth.NewFileCredentialsService(testFile)
 
+		// Create initial token
+		initialToken := auth.NewTokenWithValues(testSessionToken, testRefreshToken)
+
 		// Store initial tokens
-		err := service.Store(testSessionToken, testRefreshToken)
+		err := service.Store(initialToken)
 		require.NoError(t, err, "Storing initial tokens should not error")
 
-		// Store new tokens
+		// Create new token
 		newSessionToken := "new-session-token"
 		newRefreshToken := "new-refresh-token"
+		newToken := auth.NewTokenWithValues(newSessionToken, newRefreshToken)
 
-		err = service.Store(newSessionToken, newRefreshToken)
+		// Store new tokens
+		err = service.Store(newToken)
 		require.NoError(t, err, "Storing new tokens should not error")
 
 		// Create a new service to load the credentials
@@ -108,7 +121,8 @@ func TestFileCredentialsService(t *testing.T) {
 		require.NoError(t, err, "Loading credentials should not error")
 
 		// Check that the loaded credentials match the new tokens
-		assert.Equal(t, newSessionToken, loadService.GetSessionToken(), "Session token should match new token")
-		assert.Equal(t, newRefreshToken, loadService.GetRefreshToken(), "Refresh token should match new token")
+		loadedToken := loadService.GetToken()
+		assert.Equal(t, newSessionToken, loadedToken.Session(), "Session token should match new token")
+		assert.Equal(t, newRefreshToken, loadedToken.Refresh(), "Refresh token should match new token")
 	})
 }

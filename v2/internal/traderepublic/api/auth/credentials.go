@@ -12,26 +12,10 @@ const (
 	refreshTokenKey = "REFRESH_TOKEN"
 )
 
-// CredentialsService manages authentication credentials.
-type CredentialsService interface {
-	// Load loads credentials from storage
-	Load() error
-
-	// Store stores credentials to storage
-	Store(sessionToken, refreshToken string) error
-
-	// GetSessionToken returns the current session token
-	GetSessionToken() string
-
-	// GetRefreshToken returns the current refresh token
-	GetRefreshToken() string
-}
-
-// FileCredentialsService implements CredentialsService using file storage.
+// FileCredentialsService implements CredentialsServiceInterface using file storage.
 type FileCredentialsService struct {
-	filePath     string
-	sessionToken string
-	refreshToken string
+	filePath string
+	token    Token
 }
 
 // NewFileCredentialsService creates a new file-based credentials service.
@@ -53,20 +37,18 @@ func (s *FileCredentialsService) Load() error {
 		return fmt.Errorf("failed to read '%s' file: %w", s.filePath, err)
 	}
 
-	s.sessionToken = env[sessionTokenKey]
-	s.refreshToken = env[refreshTokenKey]
+	s.token = NewTokenWithValues(env[sessionTokenKey], env[refreshTokenKey])
 
 	return nil
 }
 
 // Store stores credentials to a file.
-func (s *FileCredentialsService) Store(sessionToken, refreshToken string) error {
-	s.sessionToken = sessionToken
-	s.refreshToken = refreshToken
+func (s *FileCredentialsService) Store(token Token) error {
+	s.token = token
 
 	if err := godotenv.Write(map[string]string{
-		sessionTokenKey: s.sessionToken,
-		refreshTokenKey: s.refreshToken,
+		sessionTokenKey: token.Session(),
+		refreshTokenKey: token.Refresh(),
 	}, s.filePath); err != nil {
 		return fmt.Errorf("failed to write tokens to '%s' file: %w", s.filePath, err)
 	}
@@ -74,12 +56,7 @@ func (s *FileCredentialsService) Store(sessionToken, refreshToken string) error 
 	return nil
 }
 
-// GetSessionToken returns the current session token.
-func (s *FileCredentialsService) GetSessionToken() string {
-	return s.sessionToken
-}
-
-// GetRefreshToken returns the current refresh token.
-func (s *FileCredentialsService) GetRefreshToken() string {
-	return s.refreshToken
+// GetToken returns the current token.
+func (s *FileCredentialsService) GetToken() Token {
+	return s.token
 }

@@ -70,7 +70,7 @@ func main() {
 	// Create directories for saving responses
 	if err := createDirectories(); err != nil {
 		logger.Error("Failed to create directories", "error", err)
-		
+
 		exitCode = 1
 
 		return
@@ -150,7 +150,7 @@ func authenticate(logger *slog.Logger) (string, error) {
 
 	// Try to load existing tokens first
 	if err := credentials.Load(); err == nil {
-		sessionToken := credentials.GetSessionToken()
+		sessionToken := credentials.GetToken().Session()
 		if sessionToken != "" {
 			logger.Info("Using existing session token")
 
@@ -170,7 +170,7 @@ func authenticate(logger *slog.Logger) (string, error) {
 	// If environment variables are not set, prompt the user
 	if phoneNumber == "" {
 		var err error
-		
+
 		phoneNumber, err = inputHandler.GetPhoneNumber()
 		if err != nil {
 			logger.Error("Failed to get phone number", "error", err)
@@ -181,7 +181,7 @@ func authenticate(logger *slog.Logger) (string, error) {
 
 	if pin == "" {
 		var err error
-		
+
 		pin, err = inputHandler.GetPIN()
 		if err != nil {
 			logger.Error("Failed to get PIN", "error", err)
@@ -199,12 +199,7 @@ func authenticate(logger *slog.Logger) (string, error) {
 	}
 
 	// Create auth client
-	authClient, err := auth.NewClient(apiClient)
-	if err != nil {
-		logger.Error("Failed to create auth client", "error", err)
-
-		return "", fmt.Errorf("failed to create auth client: %w", err)
-	}
+	authClient := auth.NewClient(apiClient)
 
 	// Login
 	processID, err := authClient.Login(auth.PhoneNumber(phoneNumber), auth.Pin(pin))
@@ -219,7 +214,7 @@ func authenticate(logger *slog.Logger) (string, error) {
 		otp, err := inputHandler.GetOTP()
 		if err != nil {
 			logger.Error("Failed to get OTP", "error", err)
-			
+
 			return "", fmt.Errorf("failed to get OTP: %w", err)
 		}
 
@@ -232,16 +227,16 @@ func authenticate(logger *slog.Logger) (string, error) {
 		}
 
 		// Store tokens using credentials service
-		if err := credentials.Store(token.SessionToken(), token.RefreshToken()); err != nil {
+		if err := credentials.Store(token); err != nil {
 			logger.Error("Failed to store tokens", "error", err)
 		}
 
-		return token.SessionToken(), nil
+		return token.Session(), nil
 	}
 
 	logger.Info("Successfully authenticated")
 
-	return credentials.GetSessionToken(), nil
+	return credentials.GetToken().Session(), nil
 }
 
 // setupWebSocketClient creates and connects a WebSocket client.
