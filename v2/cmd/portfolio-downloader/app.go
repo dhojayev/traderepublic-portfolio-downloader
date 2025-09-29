@@ -47,7 +47,7 @@ func (a *App) Run() error {
 		return fmt.Errorf("subscription failed: %w", err)
 	}
 
-	time.Sleep(time.Minute * 10)
+	time.Sleep(time.Minute * 5)
 
 	return nil
 }

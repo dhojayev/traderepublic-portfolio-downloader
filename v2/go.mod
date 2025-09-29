@@ -4,7 +4,6 @@ go 1.24.2
 
 require (
 	github.com/getkin/kin-openapi v0.131.0
-	github.com/google/wire v0.6.0
 	github.com/gorilla/websocket v1.5.3
 	github.com/oapi-codegen/runtime v1.1.1
 	github.com/stretchr/testify v1.11.1

@@ -28,6 +28,8 @@ const (
 	// ResponseTimeFormatAlt represents the alternative date time format in the response.
 	ResponseTimeFormatAlt = time.RFC3339Nano
 
+	ResponseBaseDir = "./debug/responses"
+
 	// CSVFilename filename under which a CSV file with transaction entries has to be saved.
 	CSVFilename = "./transactions.csv"
 

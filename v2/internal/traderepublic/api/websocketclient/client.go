@@ -179,7 +179,7 @@ func (c *Client) Subscribe(ctx context.Context, data map[string]any) (<-chan []b
 	}
 
 	c.currentSubID++
-	subID := c.currentSubID
+	subID := strconv.FormatUint(uint64(c.currentSubID), 10)
 
 	// Marshal data to JSON
 	dataBytes, err := json.Marshal(data)
@@ -188,7 +188,7 @@ func (c *Client) Subscribe(ctx context.Context, data map[string]any) (<-chan []b
 	}
 
 	// Create subscription message
-	msg := fmt.Sprintf("%s %d %s", MsgTypeSub, subID, string(dataBytes))
+	msg := fmt.Sprintf("%s %s %s", MsgTypeSub, subID, string(dataBytes))
 
 	// Send subscription message
 	if err = c.conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
@@ -197,7 +197,7 @@ func (c *Client) Subscribe(ctx context.Context, data map[string]any) (<-chan []b
 
 	c.logger.Info("sent subscription message", "message", msg)
 
-	sub := c.publisher.Subscribe(string(subID))
+	sub := c.publisher.Subscribe(subID)
 
 	// Start goroutine to read messages
 	go c.readMessages(ctx, subID)
@@ -206,8 +206,8 @@ func (c *Client) Subscribe(ctx context.Context, data map[string]any) (<-chan []b
 }
 
 // readMessages reads messages from the WebSocket and sends them to the channel.
-func (c *Client) readMessages(ctx context.Context, subID uint) {
-	defer c.publisher.Close(string(subID))
+func (c *Client) readMessages(ctx context.Context, subID string) {
+	defer c.publisher.Close(subID)
 
 	for {
 		select {
@@ -271,7 +271,7 @@ func (c *Client) readMessages(ctx context.Context, subID uint) {
 }
 
 // unsubscribe unsubscribes from a subscription.
-func (c *Client) unsubscribe(subID uint, token string) {
+func (c *Client) unsubscribe(subID string, token string) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 

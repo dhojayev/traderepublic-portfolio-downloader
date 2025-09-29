@@ -2,10 +2,13 @@ package message
 
 import (
 	"context"
+	"encoding/json"
 	"log/slog"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/auth"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/message/subscriber"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/websocketclient"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/writer"
 )
 
 const (
@@ -39,7 +42,44 @@ func (c *Client) SubscribeToTimelineTransactions(ctx context.Context) error {
 		return err
 	}
 
-	subscriber := NewSubscriber("timelineTransactions", ch, c.logger)
+	var response struct {
+		Cursors struct {
+			After *string `json:"after",omitempty`
+		} `json:"cursors"`
+	}
+
+	unifiedChannel := make(chan []byte, 1)
+	data := <-ch
+	unifiedChannel <- data
+
+	err = json.Unmarshal(data, &response)
+	if err != nil {
+		return err
+	}
+
+	go func() {
+		for response.Cursors.After != nil {
+			ch, err = c.SubscribeToTimelineTransactionsWithCursor(ctx, *response.Cursors.After)
+			if err != nil {
+				c.logger.Error("error subscribing to timeline transactions", "error", err)
+
+				return
+			}
+
+			data = <-ch
+
+			err = json.Unmarshal(data, &response)
+			if err != nil {
+				c.logger.Error("error subscribing to timeline transactions", "error", err)
+
+				return
+			}
+
+			unifiedChannel <- data
+		}
+	}()
+
+	subscriber := subscriber.NewSubscriber("timelineTransactions", unifiedChannel, writer.NewResponseWriter(), c.logger)
 	subscriber.Listen()
 
 	return nil
