@@ -74,11 +74,7 @@ func (c *Client) SubscribeToTimelineTransactionsWithCursor(ctx context.Context, 
 	data := traderepublic.WebsocketSubRequestSchemaJson{
 		Token: c.credentialsService.GetToken().Session(),
 		Type:  traderepublic.WebsocketSubRequestSchemaJsonTypeTimelineTransactions,
-	}
-
-	// Add cursor if provided
-	if cursor != "" {
-		data.After = &cursor
+		After: &cursor,
 	}
 
 	c.wsClient.Connect(ctx)

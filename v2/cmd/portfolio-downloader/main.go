@@ -6,12 +6,15 @@ import (
 	"time"
 
 	"github.com/alexflint/go-arg"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/bus"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/console"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/file"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/auth"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/message"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/message/publisher"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/websocketclient"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/writer"
 	"github.com/joho/godotenv"
 )
 
@@ -44,8 +47,13 @@ func main() {
 		return
 	}
 
+	handler := file.NewRawResponseHandler(writer.NewResponseWriter())
+	eventBus := bus.New()
+
+	eventBus.Subscribe(bus.TopicTimelineTransactions, handler.Handle)
+
 	messageClient := message.NewClient(credentialsService, websocketclient.NewClient(publisher.NewPublisher()))
-	app := NewApp(auth.NewClient(console.NewInputHandler(), apiClient), credentialsService, messageClient)
+	app := NewApp(auth.NewClient(console.NewInputHandler(), apiClient), credentialsService, messageClient, eventBus)
 
 	err = app.Run()
 	if err != nil {

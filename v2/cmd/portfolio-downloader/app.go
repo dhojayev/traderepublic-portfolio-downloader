@@ -5,27 +5,30 @@ import (
 	"fmt"
 	"log/slog"
 
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/bus"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/auth"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/message"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/message/subscriber"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/writer"
 )
 
 type App struct {
 	authClient         *auth.Client
 	credentialsService auth.CredentialsServiceInterface
 	messageClient      message.ClientInterface
+	eventBus           *bus.EventBus
 }
 
 func NewApp(
 	authClient *auth.Client,
 	credentialsService auth.CredentialsServiceInterface,
 	messageClient message.ClientInterface,
+	eventBus *bus.EventBus,
 ) App {
 	return App{
 		authClient:         authClient,
 		credentialsService: credentialsService,
 		messageClient:      messageClient,
+		eventBus:           eventBus,
 	}
 }
 
@@ -45,7 +48,8 @@ func (a *App) Run() error {
 		return fmt.Errorf("subscription failed: %w", err)
 	}
 
-	sub := subscriber.NewSubscriber("timelineTransactions", ch, writer.NewResponseWriter())
+	sub := subscriber.NewMessageSubscriber(bus.TopicTimelineTransactions, ch, a.eventBus)
+
 	sub.Listen()
 
 	return nil

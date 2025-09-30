@@ -20,11 +20,11 @@ func New() *EventBus {
 	}
 }
 
-func (b *EventBus) Subscribe(eventName string, handler EventHandler) {
+func (b *EventBus) Subscribe(topic string, handler EventHandler) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
 
-	b.subscribers[eventName] = append(b.subscribers[eventName], handler)
+	b.subscribers[topic] = append(b.subscribers[topic], handler)
 }
 
 func (b *EventBus) Publish(topic string, data any) {
