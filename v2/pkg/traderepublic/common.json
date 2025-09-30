@@ -1,5 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/dhojayev/traderepublic-portfolio-downloader/refs/heads/main/v2/pkg/common.json",
   "definitions": {
     "uuid": {
       "type": "string",

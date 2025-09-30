@@ -908,22 +908,6 @@ func (j *HeaderSection) UnmarshalJSON(value []byte) error {
 	return nil
 }
 
-type Icon string
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *Icon) UnmarshalJSON(value []byte) error {
-	type Plain Icon
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	if matched, _ := regexp.MatchString(`^logos/([A-Z0-9]+|timeline_interest_new|merchant-[a-f0-9-]+|XF[0-9A-Z]+|contacts-[A-Z]-[A-Za-z]+|bank_[a-z0-9_]+)/v2$`, string(plain)); !matched {
-		return fmt.Errorf("field %s pattern match: must match %s", "", `^logos/([A-Z0-9]+|timeline_interest_new|merchant-[a-f0-9-]+|XF[0-9A-Z]+|contacts-[A-Z]-[A-Za-z]+|bank_[a-z0-9_]+)/v2$`)
-	}
-	*j = Icon(plain)
-	return nil
-}
-
 type InterestRow struct {
 	// Detail corresponds to the JSON schema field "detail".
 	Detail InterestRowDetail `json:"detail" yaml:"detail" mapstructure:"detail"`
@@ -1114,22 +1098,6 @@ func (j *InterestRow) UnmarshalJSON(value []byte) error {
 	return nil
 }
 
-type Money string
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *Money) UnmarshalJSON(value []byte) error {
-	type Plain Money
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	if matched, _ := regexp.MatchString(`^[+-]?[0-9]+,[0-9]{2} [€$]$`, string(plain)); !matched {
-		return fmt.Errorf("field %s pattern match: must match %s", "", `^[+-]?[0-9]+,[0-9]{2} [€$]$`)
-	}
-	*j = Money(plain)
-	return nil
-}
-
 type NoteSection struct {
 	// Content corresponds to the JSON schema field "content".
 	Content *string `json:"content,omitempty" yaml:"content,omitempty" mapstructure:"content,omitempty"`
@@ -1314,22 +1282,6 @@ func (j *PaymentRow) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	*j = PaymentRow(plain)
-	return nil
-}
-
-type Percentage string
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *Percentage) UnmarshalJSON(value []byte) error {
-	type Plain Percentage
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	if matched, _ := regexp.MatchString(`^[0-9]+,[0-9]{2} %$`, string(plain)); !matched {
-		return fmt.Errorf("field %s pattern match: must match %s", "", `^[0-9]+,[0-9]{2} %$`)
-	}
-	*j = Percentage(plain)
 	return nil
 }
 
@@ -2019,7 +1971,7 @@ func (j *TableSection) UnmarshalJSON(value []byte) error {
 	return nil
 }
 
-type TimelineDetailSchemaJson struct {
+type TimelineDetailJson struct {
 	// Id corresponds to the JSON schema field "id".
 	Id Uuid `json:"id" yaml:"id" mapstructure:"id"`
 
@@ -2028,40 +1980,22 @@ type TimelineDetailSchemaJson struct {
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *TimelineDetailSchemaJson) UnmarshalJSON(value []byte) error {
+func (j *TimelineDetailJson) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["id"]; raw != nil && !ok {
-		return fmt.Errorf("field id in TimelineDetailSchemaJson: required")
+		return fmt.Errorf("field id in TimelineDetailJson: required")
 	}
 	if _, ok := raw["sections"]; raw != nil && !ok {
-		return fmt.Errorf("field sections in TimelineDetailSchemaJson: required")
+		return fmt.Errorf("field sections in TimelineDetailJson: required")
 	}
-	type Plain TimelineDetailSchemaJson
+	type Plain TimelineDetailJson
 	var plain Plain
 	if err := json.Unmarshal(value, &plain); err != nil {
 		return err
 	}
-	*j = TimelineDetailSchemaJson(plain)
-	return nil
-}
-
-type Timestamp time.Time
-
-type Uuid string
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *Uuid) UnmarshalJSON(value []byte) error {
-	type Plain Uuid
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	if matched, _ := regexp.MatchString(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`, string(plain)); !matched {
-		return fmt.Errorf("field %s pattern match: must match %s", "", `^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)
-	}
-	*j = Uuid(plain)
+	*j = TimelineDetailJson(plain)
 	return nil
 }

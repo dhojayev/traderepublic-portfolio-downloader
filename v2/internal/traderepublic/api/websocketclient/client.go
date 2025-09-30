@@ -23,9 +23,9 @@ const (
 	MsgTypeUnsub = "unsub"
 
 	// Message states.
-	StateData     = traderepublic.WebsocketResponseSchemaJsonStateA
-	StateContinue = traderepublic.WebsocketResponseSchemaJsonStateC
-	StateError    = traderepublic.WebsocketResponseSchemaJsonStateE
+	StateData     = traderepublic.WsResponseJsonStateA
+	StateContinue = traderepublic.WsResponseJsonStateC
+	StateError    = traderepublic.WsResponseJsonStateE
 
 	// Minimum parts in a message.
 	minMessageParts = 2
@@ -93,7 +93,7 @@ func (c *Client) Connect() error {
 
 	c.conn = conn
 	c.closed = false
-	data := traderepublic.WebsocketConnectRequestSchemaJson{}
+	data := traderepublic.WsConnectRequestJson{}
 
 	// Use default values from schema
 	_ = data.UnmarshalJSON([]byte("{}"))
@@ -147,7 +147,7 @@ func (c *Client) Close() error {
 }
 
 // subscribe subscribes to a data type.
-func (c *Client) Subscribe(data traderepublic.WebsocketSubRequestSchemaJson) (<-chan []byte, error) {
+func (c *Client) Subscribe(data traderepublic.WsSubRequestJson) (<-chan []byte, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -263,8 +263,8 @@ func (c *Client) unsubscribe(subID int) {
 }
 
 // parseMessage parses a message from the WebSocket.
-func parseMessage(data []byte) (traderepublic.WebsocketResponseSchemaJson, error) {
-	var msg traderepublic.WebsocketResponseSchemaJson
+func parseMessage(data []byte) (traderepublic.WsResponseJson, error) {
+	var msg traderepublic.WsResponseJson
 
 	parts := strings.Split(string(data), " ")
 
@@ -279,7 +279,7 @@ func parseMessage(data []byte) (traderepublic.WebsocketResponseSchemaJson, error
 	}
 
 	msg.ID = int(id)
-	msg.State = traderepublic.WebsocketResponseSchemaJsonState(parts[1])
+	msg.State = traderepublic.WsResponseJsonState(parts[1])
 
 	// Parse data if available
 	if len(parts) > minMessageParts {

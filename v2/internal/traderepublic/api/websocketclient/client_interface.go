@@ -15,5 +15,5 @@ type ClientInterface interface {
 	Close() error
 
 	// Subscribe subscribes to a data type.
-	Subscribe(data traderepublic.WebsocketSubRequestSchemaJson) (<-chan []byte, error)
+	Subscribe(data traderepublic.WsSubRequestJson) (<-chan []byte, error)
 }

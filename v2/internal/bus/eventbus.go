@@ -5,11 +5,6 @@ import (
 	"sync"
 )
 
-const (
-	EventNameTimelineTransactionsReceived = "timeline_transactions_received"
-	EventNameTimelineDetailV2Received     = "timeline_detail_v2_received"
-)
-
 type Event struct {
 	Topic string
 	ID    string

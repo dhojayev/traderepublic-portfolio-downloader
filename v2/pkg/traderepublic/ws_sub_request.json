@@ -1,5 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dhojayev/traderepublic-portfolio-downloader/refs/heads/main/v2/pkg/traderepublic/ws_sub_request.json",
     "type": "object",
     "required": [
         "type",
@@ -10,14 +11,20 @@
             "type": "string"
         },
         "id": {
-            "type": "string",
-            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            "type": "string"
         },
         "type": {
             "type": "string",
             "enum": [
                 "timelineTransactions",
-                "timelineDetailV2"
+                "timelineDetailV2",
+                "instrument"
+            ]
+        },
+        "jurisdiction": {
+            "type": "string",
+            "enum": [
+                "DE"
             ]
         },
         "token": {

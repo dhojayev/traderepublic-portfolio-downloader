@@ -69,7 +69,7 @@ func (mr *MockClientInterfaceMockRecorder) Connect() *gomock.Call {
 }
 
 // Subscribe mocks base method.
-func (m *MockClientInterface) Subscribe(data traderepublic.WebsocketSubRequestSchemaJson) (<-chan []byte, error) {
+func (m *MockClientInterface) Subscribe(data traderepublic.WsSubRequestJson) (<-chan []byte, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Subscribe", data)
 	ret0, _ := ret[0].(<-chan []byte)

@@ -22,7 +22,7 @@ func NewHandler(eventBus *bus.EventBus, msgClient message.ClientInterface) *Hand
 }
 
 func (h *Handler) Handle(event bus.Event) {
-	var transactions traderepublic.TimelineTransactionsSchemaJson
+	var transactions traderepublic.TimelineTransactionsJson
 
 	err := transactions.UnmarshalJSON(event.Data.([]byte))
 	if err != nil {

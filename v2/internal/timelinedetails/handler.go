@@ -15,10 +15,10 @@ func NewHandler() *Handler {
 }
 
 func (h *Handler) Handle(event bus.Event) {
-	var details traderepublic.TimelineDetailSchemaJson
+	var details traderepublic.TimelineDetailJson
 
 	err := details.UnmarshalJSON(event.Data.([]byte))
 	if err != nil {
-		slog.Error("failed to unmarshal timeline detail", "id", event.ID,  "error", err)
+		slog.Error("failed to unmarshal timeline detail", "id", event.ID, "error", err)
 	}
 }

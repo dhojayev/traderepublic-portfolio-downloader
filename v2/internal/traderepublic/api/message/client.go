@@ -14,7 +14,8 @@ import (
 
 type ClientInterface interface {
 	SubscribeToTimelineTransactions(ctx context.Context) error
-	SubscribeToTimelineDetailV2(ctx context.Context, itemID string) error
+	SubscribeToTimelineDetailV2(ctx context.Context, uuid traderepublic.Uuid) error
+	SubsribeToInstrument(ctx context.Context, isin string) error
 }
 
 type Client struct {
@@ -48,7 +49,7 @@ func (c *Client) SubscribeToTimelineTransactions(ctx context.Context) error {
 		data,
 	))
 
-	var response traderepublic.TimelineTransactionsSchemaJson
+	var response traderepublic.TimelineTransactionsJson
 
 	err = response.UnmarshalJSON(data)
 	if err != nil {
@@ -95,9 +96,9 @@ func (c *Client) SubscribeToTimelineTransactions(ctx context.Context) error {
 
 // SubscribeToTimelineTransactionsWithCursor subscribes to timeline transactions data with a cursor.
 func (c *Client) SubscribeToTimelineTransactionsWithCursor(ctx context.Context, cursor string) (<-chan []byte, error) {
-	data := traderepublic.WebsocketSubRequestSchemaJson{
+	data := traderepublic.WsSubRequestJson{
 		Token: c.credentialsService.GetToken().Session(),
-		Type:  traderepublic.WebsocketSubRequestSchemaJsonTypeTimelineTransactions,
+		Type:  traderepublic.WsSubRequestJsonTypeTimelineTransactions,
 		After: &cursor,
 	}
 
@@ -105,11 +106,12 @@ func (c *Client) SubscribeToTimelineTransactionsWithCursor(ctx context.Context, 
 }
 
 // SubscribeToTimelineDetail subscribes to timeline detail data.
-func (c *Client) SubscribeToTimelineDetailV2(ctx context.Context, itemID string) error {
-	data := traderepublic.WebsocketSubRequestSchemaJson{
+func (c *Client) SubscribeToTimelineDetailV2(ctx context.Context, uuid traderepublic.Uuid) error {
+	itemID := string(uuid)
+	data := traderepublic.WsSubRequestJson{
 		Id:    &itemID,
 		Token: c.credentialsService.GetToken().Session(),
-		Type:  traderepublic.WebsocketSubRequestSchemaJsonTypeTimelineDetailV2,
+		Type:  traderepublic.WsSubRequestJsonTypeTimelineDetailV2,
 	}
 
 	ch, err := c.wsClient.Subscribe(data)
@@ -124,6 +126,34 @@ func (c *Client) SubscribeToTimelineDetailV2(ctx context.Context, itemID string)
 			bus.TopicTimelineDetailsV2,
 			itemID,
 			bus.EventNameTimelineDetailV2Received,
+			data,
+		))
+	}()
+
+	return nil
+}
+
+func (c *Client) SubsribeToInstrument(ctx context.Context, isin string) error {
+	jurisdiction := traderepublic.WsSubRequestJsonJurisdictionDE
+	data := traderepublic.WsSubRequestJson{
+		Id:           &isin,
+		Token:        c.credentialsService.GetToken().Session(),
+		Type:         traderepublic.WsSubRequestJsonTypeInstrument,
+		Jurisdiction: &jurisdiction,
+	}
+
+	ch, err := c.wsClient.Subscribe(data)
+	if err != nil {
+		return nil
+	}
+
+	go func() {
+		data := <-ch
+
+		c.eventBus.Publish(bus.NewEvent(
+			bus.TopicInstrument,
+			isin,
+			bus.EventNameInstrumentReceived,
 			data,
 		))
 	}()

@@ -1,5 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/dhojayev/traderepublic-portfolio-downloader/refs/heads/main/v2/pkg/traderepublic/timeline_transactions.json",
   "type": "object",
   "required": [
     "items",
@@ -24,10 +25,7 @@
           "deleted"
         ],
         "properties": {
-          "id": {
-            "type": "string",
-            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
-          },
+          "id": { "$ref": "common.json#/definitions/uuid" },
           "timestamp": {
             "type": "string"
           },
@@ -131,10 +129,7 @@
                   "timelineDetail"
                 ]
               },
-              "payload": {
-                "type": "string",
-                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
-              }
+              "payload": { "$ref": "common.json#/definitions/uuid" }
             }
           },
           "eventType": {

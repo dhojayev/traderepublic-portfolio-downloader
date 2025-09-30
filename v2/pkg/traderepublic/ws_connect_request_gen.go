@@ -4,7 +4,7 @@ package traderepublic
 
 import "encoding/json"
 
-type WebsocketConnectRequestSchemaJson struct {
+type WsConnectRequestJson struct {
 	// ClientId corresponds to the JSON schema field "clientId".
 	ClientId string `json:"clientId" yaml:"clientId" mapstructure:"clientId"`
 
@@ -22,12 +22,12 @@ type WebsocketConnectRequestSchemaJson struct {
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *WebsocketConnectRequestSchemaJson) UnmarshalJSON(value []byte) error {
+func (j *WsConnectRequestJson) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
-	type Plain WebsocketConnectRequestSchemaJson
+	type Plain WsConnectRequestJson
 	var plain Plain
 	if err := json.Unmarshal(value, &plain); err != nil {
 		return err
@@ -47,6 +47,6 @@ func (j *WebsocketConnectRequestSchemaJson) UnmarshalJSON(value []byte) error {
 	if v, ok := raw["platformVersion"]; !ok || v == nil {
 		plain.PlatformVersion = "chrome - 140.0.0"
 	}
-	*j = WebsocketConnectRequestSchemaJson(plain)
+	*j = WsConnectRequestJson(plain)
 	return nil
 }
