@@ -8,7 +8,6 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/bus"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/auth"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/message"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/message/subscriber"
 )
 
 type App struct {
@@ -43,14 +42,10 @@ func (a *App) Run() error {
 		}
 	}
 
-	ch, err := a.messageClient.SubscribeToTimelineTransactions(context.Background())
+	err = a.messageClient.SubscribeToTimelineTransactions(context.Background())
 	if err != nil {
 		return fmt.Errorf("subscription failed: %w", err)
 	}
-
-	sub := subscriber.NewMessageSubscriber(bus.TopicTimelineTransactions, ch, a.eventBus)
-
-	sub.Listen()
 
 	return nil
 }

@@ -9,9 +9,9 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "./cmd/portfoliodownloader/public",
-            "args": ["-w", "--debug"],
-            "cwd": "${workspaceFolder}"
+            "program": "./v2/cmd/portfolio-downloader",
+            "args": ["--debug"],
+            "cwd": "${workspaceFolder}/v2"
         },
         {
             "name": "Launch Package Dev",

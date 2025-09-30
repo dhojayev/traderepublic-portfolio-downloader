@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log/slog"
 	"os"
 	"time"
@@ -9,6 +10,7 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/bus"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/console"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/file"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/timelinetransactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/auth"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/message"
@@ -19,6 +21,10 @@ import (
 )
 
 func main() {
+	ctx, cancel := context.WithCancel(context.Background())
+
+	defer cancel()
+
 	var args Args
 
 	_ = godotenv.Load(".env")
@@ -47,12 +53,19 @@ func main() {
 		return
 	}
 
-	handler := file.NewRawResponseHandler(writer.NewResponseWriter())
+	wHandler := file.NewEventWriterHandler(writer.NewResponseWriter())
 	eventBus := bus.New()
 
-	eventBus.Subscribe(bus.TopicTimelineTransactions, handler.Handle)
+	eventBus.Subscribe(bus.TopicTimelineTransactions, wHandler.Handle)
+	eventBus.Subscribe(bus.TopicTimelineDetailsV2, wHandler.Handle)
 
-	messageClient := message.NewClient(credentialsService, websocketclient.NewClient(publisher.NewPublisher()))
+	wsclient := websocketclient.NewClient(publisher.NewPublisher(), ctx)
+
+	messageClient := message.NewClient(eventBus, credentialsService, wsclient)
+	ttHandler := timelinetransactions.NewHandler(eventBus, messageClient)
+
+	eventBus.Subscribe(bus.TopicTimelineTransactions, ttHandler.Handle)
+
 	app := NewApp(auth.NewClient(console.NewInputHandler(), apiClient), credentialsService, messageClient, eventBus)
 
 	err = app.Run()

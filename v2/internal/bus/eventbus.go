@@ -1,10 +1,29 @@
 package bus
 
-import "sync"
+import (
+	"log/slog"
+	"sync"
+)
+
+const (
+	EventNameTimelineTransactionsReceived = "timeline_transactions_received"
+	EventNameTimelineDetailV2Received     = "timeline_detail_v2_received"
+)
 
 type Event struct {
-	Name string
-	Data any
+	Topic string
+	ID    string
+	Name  string
+	Data  any
+}
+
+func NewEvent(topic, id, name string, data any) Event {
+	return Event{
+		Topic: topic,
+		ID:    id,
+		Name:  name,
+		Data:  data,
+	}
 }
 
 type EventHandler func(Event)
@@ -27,15 +46,15 @@ func (b *EventBus) Subscribe(topic string, handler EventHandler) {
 	b.subscribers[topic] = append(b.subscribers[topic], handler)
 }
 
-func (b *EventBus) Publish(topic string, data any) {
+func (b *EventBus) Publish(event Event) {
 	b.mu.RLock()
 	defer b.mu.RUnlock()
 
-	if handlers, found := b.subscribers[topic]; found {
-		event := Event{Name: topic, Data: data}
-
+	if handlers, found := b.subscribers[event.Topic]; found {
 		for _, handler := range handlers {
 			go handler(event)
 		}
 	}
+
+	slog.Debug("event published", "topic", event.Topic, "id", event.ID, "name", event.Name)
 }

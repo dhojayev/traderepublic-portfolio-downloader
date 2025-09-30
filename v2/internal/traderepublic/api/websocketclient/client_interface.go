@@ -3,19 +3,17 @@
 package websocketclient
 
 import (
-	"context"
-
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/pkg/traderepublic"
 )
 
 // ClientInterface is the interface for the WebSocket client.
 type ClientInterface interface {
 	// Connect connects to the WebSocket server.
-	Connect(ctx context.Context) error
+	Connect() error
 
 	// Close closes the WebSocket connection.
 	Close() error
 
 	// Subscribe subscribes to a data type.
-	Subscribe(ctx context.Context, data traderepublic.WebsocketSubRequestSchemaJson) (<-chan []byte, error)
+	Subscribe(data traderepublic.WebsocketSubRequestSchemaJson) (<-chan []byte, error)
 }
