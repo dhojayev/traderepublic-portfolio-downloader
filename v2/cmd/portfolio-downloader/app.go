@@ -1,34 +1,40 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/bus"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/auth"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/message"
 )
 
 type App struct {
 	authClient         *auth.Client
 	credentialsService auth.CredentialsServiceInterface
-	log                *slog.Logger
+	messageClient      message.ClientInterface
+	eventBus           *bus.EventBus
 }
 
 func NewApp(
 	authClient *auth.Client,
 	credentialsService auth.CredentialsServiceInterface,
-	log *slog.Logger,
+	messageClient message.ClientInterface,
+	eventBus *bus.EventBus,
 ) App {
 	return App{
 		authClient:         authClient,
 		credentialsService: credentialsService,
-		log:                log,
+		messageClient:      messageClient,
+		eventBus:           eventBus,
 	}
 }
 
 func (a *App) Run() error {
 	err := a.credentialsService.Load()
 	if err != nil {
-		a.log.Warn("Failed to load credentials, need to authenticate", "error", err)
+		slog.Warn("Failed to load credentials, need to authenticate", "error", err)
 
 		err := a.authenticate()
 		if err != nil {
@@ -36,7 +42,12 @@ func (a *App) Run() error {
 		}
 	}
 
-	a.log.Info("Credentials loaded successfully")
+	slog.Info("Starting downloading transactions")
+
+	err = a.messageClient.SubscribeToTimelineTransactions(context.Background())
+	if err != nil {
+		return fmt.Errorf("subscription failed: %w", err)
+	}
 
 	return nil
 }
@@ -52,7 +63,7 @@ func (a *App) authenticate() error {
 		return fmt.Errorf("failed to store credentials: %w", err)
 	}
 
-	a.log.Info("Authentication successful")
+	slog.Info("Authentication successful")
 
 	return nil
 }

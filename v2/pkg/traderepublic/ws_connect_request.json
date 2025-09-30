@@ -1,0 +1,35 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dhojayev/traderepublic-portfolio-downloader/refs/heads/main/v2/pkg/ws_connect_request.json",
+    "type": "object",
+    "required": [
+        "locale",
+        "platformId",
+        "platformVersion",
+        "clientId",
+        "clientVersion"
+    ],
+    "properties": {
+        "locale": {
+            "type": "string",
+            "default": "de"
+        },
+        "platformId": {
+            "type": "string",
+            "default": "webtrading"
+        },
+        "platformVersion": {
+            "type": "string",
+            "default": "chrome - 140.0.0"
+        },
+        "clientId": {
+            "type": "string",
+            "default": "app.traderepublic.com"
+        },
+        "clientVersion": {
+            "type": "string",
+            "default": "11.4.1"
+        }
+    },
+    "additionalProperties": false
+}

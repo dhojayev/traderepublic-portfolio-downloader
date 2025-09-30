@@ -6,8 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/restclient"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/pkg/traderepublic"
 )
 
 const (
@@ -17,23 +16,23 @@ const (
 
 // Client is a client that uses the generated OpenAPI client.
 type Client struct {
-	client *restclient.ClientWithResponses
+	client *traderepublic.ClientWithResponses
 }
 
 // NewClient creates a new client that uses the generated OpenAPI client.
 func NewClient() (*Client, error) {
 	// Create a request editor to add common headers
 	reqEditor := func(_ context.Context, req *http.Request) error {
-		req.Header.Set("User-Agent", internal.HTTPUserAgent)
+		req.Header.Set("User-Agent", traderepublic.HTTPUserAgent)
 		req.Header.Set("Content-Type", "application/json")
 
 		return nil
 	}
 
 	// Create the client with the base URL and request editor
-	client, err := restclient.NewClientWithResponses(
-		internal.RestAPIBaseURI,
-		restclient.WithRequestEditorFn(reqEditor),
+	client, err := traderepublic.NewClientWithResponses(
+		traderepublic.ServerUrlTradeRepublicRESTAPI,
+		traderepublic.WithRequestEditorFn(reqEditor),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("could not create REST client: %w", err)
@@ -45,7 +44,7 @@ func NewClient() (*Client, error) {
 }
 
 // Login logs in with phone number and PIN.
-func (c *Client) Login(requestBody restclient.APILoginRequest) (string, error) {
+func (c *Client) Login(requestBody traderepublic.APILoginRequest) (string, error) {
 	// Make the login request
 	resp, err := c.client.LoginWithResponse(context.Background(), requestBody)
 	if err != nil {

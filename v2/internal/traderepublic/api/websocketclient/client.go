@@ -7,40 +7,25 @@ import (
 	"fmt"
 	"log/slog"
 	"net/url"
-	"os"
 	"strconv"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/gorilla/websocket"
 
-	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/message/publisher"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/pkg/traderepublic"
 )
 
 const (
-	// ConnectMsg is the message sent to establish a connection.
-	ConnectMsg = "connect 31 {\"locale\":\"de\",\"platformId\":\"webtrading\"," +
-		"\"platformVersion\":\"chrome - 134.0.0\",\"clientId\":\"app.traderepublic.com\",\"clientVersion\":\"3.174.0\"}"
-
 	// Message types.
 	MsgTypeSub   = "sub"
 	MsgTypeUnsub = "unsub"
 
 	// Message states.
-	StateData     = "A"
-	StateContinue = "C"
-	StateError    = "E"
-
-	// Subscription types.
-	TypeTimelineTransactions = "timelineTransactions"
-	TypeTimelineDetail       = "timelineDetailV2"
-
-	// Reconnect delay.
-	reconnectDelay = 5 * time.Second
-
-	// Channel buffer size.
-	channelBufferSize = 10
+	StateData     = traderepublic.WsResponseJsonStateA
+	StateContinue = traderepublic.WsResponseJsonStateC
+	StateError    = traderepublic.WsResponseJsonStateE
 
 	// Minimum parts in a message.
 	minMessageParts = 2
@@ -57,76 +42,35 @@ var (
 	ErrAuthRequired = errors.New("authentication required")
 )
 
-// Message represents a message received from the WebSocket.
-type Message struct {
-	ID    uint
-	State string
-	Data  []byte
-}
-
-// ErrorResponse represents an error response from the WebSocket.
-type ErrorResponse struct {
-	Errors []ErrorDetail `json:"errors"`
-}
-
-// ErrorDetail represents a single error detail.
-type ErrorDetail struct {
-	Code    string `json:"code"`
-	Message string `json:"message"`
-}
-
-// IsAuthError returns true if the error is an authentication error.
-func (e ErrorDetail) IsAuthError() bool {
-	return e.Code == "AUTH_REQUIRED"
-}
-
-// IsUnauthorizedError returns true if the error is an unauthorized error.
-func (e ErrorDetail) IsUnauthorizedError() bool {
-	return e.Code == "UNAUTHORIZED"
-}
-
-// ClientOption is a function that configures a Client.
-type ClientOption func(*Client)
-
-// WithLogger sets the logger for the client.
-func WithLogger(logger *slog.Logger) ClientOption {
-	return func(c *Client) {
-		c.logger = logger
-	}
-}
-
-// WithSessionToken sets the session token for the client.
-func WithSessionToken(token string) ClientOption {
-	return func(c *Client) {
-		c.sessionToken = token
-	}
-}
-
 // Client is a WebSocket client for the Trade Republic API.
 type Client struct {
 	conn         *websocket.Conn
-	sessionToken string
-	logger       *slog.Logger
-	subID        uint
+	publisher    publisher.Interface
+	currentSubID uint
 	mu           sync.Mutex
 	closed       bool
+	ctx          context.Context
 }
 
 // NewClient creates a new WebSocket client.
-func NewClient(options ...ClientOption) (*Client, error) {
+func NewClient(publisher publisher.Interface, ctx context.Context) *Client {
 	client := &Client{
-		logger: slog.New(slog.NewTextHandler(os.Stdout, nil)),
+		publisher: publisher,
+		ctx:       ctx,
 	}
 
-	for _, option := range options {
-		option(client)
+	err := client.Connect()
+	if err != nil {
+		slog.Error("could not connect to websocket", "error", err)
+
+		return nil
 	}
 
-	return client, nil
+	return client
 }
 
 // Connect connects to the WebSocket server.
-func (c *Client) Connect(ctx context.Context) error {
+func (c *Client) Connect() error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -134,28 +78,40 @@ func (c *Client) Connect(ctx context.Context) error {
 		return nil
 	}
 
-	websocketURL := url.URL{Scheme: "wss", Host: internal.WebsocketBaseHost, Path: "/"}
-	c.logger.Info("connecting to WebSocket", "url", websocketURL.String())
+	websocketURL := url.URL{Scheme: "wss", Host: traderepublic.WebsocketBaseHost, Path: "/"}
+	slog.Info("connecting to WebSocket", "url", websocketURL.String())
 
 	// Create header with user agent
 	header := make(map[string][]string)
-	header["User-Agent"] = []string{internal.HTTPUserAgent}
+	header["User-Agent"] = []string{traderepublic.HTTPUserAgent}
 
 	// Connect to the WebSocket server
-	conn, _, err := websocket.DefaultDialer.DialContext(ctx, websocketURL.String(), header)
+	conn, _, err := websocket.DefaultDialer.DialContext(c.ctx, websocketURL.String(), header)
 	if err != nil {
 		return fmt.Errorf("could not connect to websocket: %w", err)
 	}
 
 	c.conn = conn
 	c.closed = false
+	data := traderepublic.WsConnectRequestJson{}
+
+	// Use default values from schema
+	_ = data.UnmarshalJSON([]byte("{}"))
+
+	// Marshal data to JSON
+	dataBytes, err := json.Marshal(data)
+	if err != nil {
+		return fmt.Errorf("could not marshal data: %w", err)
+	}
+
+	payload := fmt.Sprintf("connect %s %s", traderepublic.WebhookVersion, dataBytes)
 
 	// Send connect message
-	if err = c.conn.WriteMessage(websocket.TextMessage, []byte(ConnectMsg)); err != nil {
+	if err = c.conn.WriteMessage(websocket.TextMessage, []byte(payload)); err != nil {
 		return fmt.Errorf("could not send connect message: %w", err)
 	}
 
-	c.logger.Info("sent connect message")
+	slog.Debug("sent connect message", "message", string(payload))
 
 	// Read the response
 	_, msg, err := c.conn.ReadMessage()
@@ -163,7 +119,10 @@ func (c *Client) Connect(ctx context.Context) error {
 		return fmt.Errorf("could not read connect response: %w", err)
 	}
 
-	c.logger.Info("received connect response", "response", string(msg))
+	slog.Debug("received connect response", "response", string(msg))
+
+	// Start goroutine to read messages
+	go c.readMessages()
 
 	return nil
 }
@@ -187,49 +146,8 @@ func (c *Client) Close() error {
 	return nil
 }
 
-// prepareSubscription prepares a subscription request with the given parameters.
-func (c *Client) prepareSubscription(dataType string, params map[string]any) map[string]any {
-	data := map[string]any{
-		"type":  dataType,
-		"token": c.sessionToken,
-	}
-
-	// Add additional parameters
-	for k, v := range params {
-		data[k] = v
-	}
-
-	return data
-}
-
-// SubscribeToTimelineTransactions subscribes to timeline transactions data.
-func (c *Client) SubscribeToTimelineTransactions(ctx context.Context) (<-chan []byte, error) {
-	return c.SubscribeToTimelineTransactionsWithCursor(ctx, "")
-}
-
-// SubscribeToTimelineTransactionsWithCursor subscribes to timeline transactions data with a cursor.
-func (c *Client) SubscribeToTimelineTransactionsWithCursor(ctx context.Context, cursor string) (<-chan []byte, error) {
-	params := map[string]any{}
-
-	// Add cursor if provided
-	if cursor != "" {
-		params["after"] = cursor
-	}
-
-	data := c.prepareSubscription(TypeTimelineTransactions, params)
-
-	return c.subscribe(ctx, data)
-}
-
-// SubscribeToTimelineDetail subscribes to timeline detail data.
-func (c *Client) SubscribeToTimelineDetail(ctx context.Context, itemID string) (<-chan []byte, error) {
-	data := c.prepareSubscription(TypeTimelineDetail, map[string]any{"id": itemID})
-
-	return c.subscribe(ctx, data)
-}
-
 // subscribe subscribes to a data type.
-func (c *Client) subscribe(ctx context.Context, data map[string]any) (<-chan []byte, error) {
+func (c *Client) Subscribe(data traderepublic.WsSubRequestJson) (<-chan []byte, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -241,15 +159,8 @@ func (c *Client) subscribe(ctx context.Context, data map[string]any) (<-chan []b
 		return nil, ErrConnectionClosed
 	}
 
-	if c.sessionToken == "" {
-		return nil, ErrAuthRequired
-	}
-
-	c.subID++
-	subID := c.subID
-
-	// Add token to data
-	data["token"] = c.sessionToken
+	c.currentSubID++
+	subID := strconv.FormatUint(uint64(c.currentSubID), 10)
 
 	// Marshal data to JSON
 	dataBytes, err := json.Marshal(data)
@@ -257,49 +168,39 @@ func (c *Client) subscribe(ctx context.Context, data map[string]any) (<-chan []b
 		return nil, fmt.Errorf("could not marshal data: %w", err)
 	}
 
+	ch := c.publisher.Subscribe(subID)
+
 	// Create subscription message
-	msg := fmt.Sprintf("%s %d %s", MsgTypeSub, subID, string(dataBytes))
+	msg := fmt.Sprintf("%s %s %s", MsgTypeSub, subID, string(dataBytes))
 
 	// Send subscription message
 	if err = c.conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
 		return nil, fmt.Errorf("could not send subscription message: %w", err)
 	}
 
-	c.logger.Info("sent subscription message", "message", msg)
+	slog.Debug("sent subscription message", "message", msg)
 
-	// Create channel for data
-	dataCh := make(chan []byte, channelBufferSize)
-
-	// Start goroutine to read messages
-	go c.readMessages(ctx, subID, dataCh)
-
-	return dataCh, nil
+	return ch, nil
 }
 
 // readMessages reads messages from the WebSocket and sends them to the channel.
-//
-//nolint:gocognit,cyclop,funlen
-func (c *Client) readMessages(ctx context.Context, subID uint, dataCh chan<- []byte) {
-	defer close(dataCh)
-
+func (c *Client) readMessages() {
 	for {
 		select {
-		case <-ctx.Done():
-			c.logger.Info("context done, stopping message reader")
+		case <-c.ctx.Done():
+			slog.Info("context done, stopping message reader")
+
+			err := c.Close()
+			if err != nil {
+				slog.Error("error closing connection", "error", err)
+			}
 
 			return
 		default:
 			// Read message
 			_, msg, err := c.conn.ReadMessage()
 			if err != nil {
-				c.logger.Error("error reading message", "error", err)
-
-				// Try to reconnect
-				if err := c.reconnect(ctx); err != nil {
-					c.logger.Error("could not reconnect", "error", err)
-
-					return
-				}
+				slog.Error("error reading message", "error", err)
 
 				continue
 			}
@@ -307,64 +208,40 @@ func (c *Client) readMessages(ctx context.Context, subID uint, dataCh chan<- []b
 			// Parse message
 			message, err := parseMessage(msg)
 			if err != nil {
-				c.logger.Error("error parsing message", "error", err)
+				slog.Error("error parsing message", "error", err, "message", string(msg))
 
-				continue
-			}
-
-			// Check if message is for this subscription
-			if message.ID != subID {
 				continue
 			}
 
 			// Handle message based on state
 			switch message.State {
 			case StateData:
-				// Send data to channel
-				select {
-				case dataCh <- message.Data:
-					// Data sent
-				default:
-					c.logger.Warn("channel full, dropping message")
-				}
+				c.unsubscribe(message.ID)
 
-				// Unsubscribe after receiving data
-				c.unsubscribe(subID)
+				subID := strconv.FormatInt(int64(message.ID), 10)
 
-				return
+				c.publisher.Publish([]byte(message.Data), subID)
+				c.publisher.Close(subID)
+
+				continue
 
 			case StateContinue:
 				// Continue reading
-				c.logger.Info("received continue message")
+				slog.Debug("received continue message", "message", string(msg))
+
+				continue
 
 			case StateError:
-				// Parse error
-				var errorResp ErrorResponse
-				if err := json.Unmarshal(message.Data, &errorResp); err != nil {
-					c.logger.Error("error parsing error response", "error", err)
+				slog.Error("received error message", "message", string(msg))
 
-					continue
-				}
-
-				// Handle error
-				for _, errorDetail := range errorResp.Errors {
-					if errorDetail.IsUnauthorizedError() {
-						c.logger.Warn("unauthorized error, session expired")
-
-						return
-					}
-				}
-
-				c.logger.Error("received error message", "data", string(message.Data))
-
-				return
+				continue
 			}
 		}
 	}
 }
 
 // unsubscribe unsubscribes from a subscription.
-func (c *Client) unsubscribe(subID uint) {
+func (c *Client) unsubscribe(subID int) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -373,83 +250,22 @@ func (c *Client) unsubscribe(subID uint) {
 	}
 
 	// Create unsubscribe message
-	data := map[string]any{
-		"token": c.sessionToken,
-	}
-
-	// Marshal data to JSON
-	dataBytes, err := json.Marshal(data)
-	if err != nil {
-		c.logger.Error("could not marshal unsubscribe data", "error", err)
-
-		return
-	}
-
-	// Create unsubscribe message
-	msg := fmt.Sprintf("%s %d %s", MsgTypeUnsub, subID, string(dataBytes))
+	msg := fmt.Sprintf("%s %d", MsgTypeUnsub, subID)
 
 	// Send unsubscribe message
-	if err = c.conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
-		c.logger.Error("could not send unsubscribe message", "error", err)
+	if err := c.conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
+		slog.Error("could not send unsubscribe message", "error", err)
 
 		return
 	}
 
-	c.logger.Info("sent unsubscribe message", "message", msg)
-}
-
-// reconnect reconnects to the WebSocket server.
-func (c *Client) reconnect(ctx context.Context) error {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-
-	if c.conn != nil {
-		_ = c.conn.Close()
-		c.conn = nil
-	}
-
-	c.closed = false
-
-	// Wait before reconnecting
-	time.Sleep(reconnectDelay)
-
-	// Connect to the WebSocket server
-	websocketURL := url.URL{Scheme: "wss", Host: internal.WebsocketBaseHost, Path: "/"}
-	c.logger.Info("reconnecting to WebSocket", "url", websocketURL.String())
-
-	// Create header with user agent
-	header := make(map[string][]string)
-	header["User-Agent"] = []string{internal.HTTPUserAgent}
-
-	// Connect to the WebSocket server
-	conn, _, err := websocket.DefaultDialer.DialContext(ctx, websocketURL.String(), header)
-	if err != nil {
-		return fmt.Errorf("could not reconnect to websocket: %w", err)
-	}
-
-	c.conn = conn
-
-	// Send connect message
-	if err = c.conn.WriteMessage(websocket.TextMessage, []byte(ConnectMsg)); err != nil {
-		return fmt.Errorf("could not send connect message: %w", err)
-	}
-
-	c.logger.Info("sent connect message")
-
-	// Read the response
-	_, msg, err := c.conn.ReadMessage()
-	if err != nil {
-		return fmt.Errorf("could not read connect response: %w", err)
-	}
-
-	c.logger.Info("received connect response", "response", string(msg))
-
-	return nil
+	slog.Debug("sent unsubscribe message", "message", msg)
 }
 
 // parseMessage parses a message from the WebSocket.
-func parseMessage(data []byte) (Message, error) {
-	msg := Message{}
+func parseMessage(data []byte) (traderepublic.WsResponseJson, error) {
+	var msg traderepublic.WsResponseJson
+
 	parts := strings.Split(string(data), " ")
 
 	if len(parts) < minMessageParts {
@@ -457,17 +273,17 @@ func parseMessage(data []byte) (Message, error) {
 	}
 
 	// Parse ID
-	id, err := strconv.ParseUint(parts[0], 10, 32)
+	id, err := strconv.ParseInt(parts[0], 10, 32)
 	if err != nil {
 		return msg, fmt.Errorf("could not parse message ID: %w", err)
 	}
 
-	msg.ID = uint(id)
-	msg.State = parts[1]
+	msg.ID = int(id)
+	msg.State = traderepublic.WsResponseJsonState(parts[1])
 
 	// Parse data if available
 	if len(parts) > minMessageParts {
-		msg.Data = []byte(strings.Join(parts[minMessageParts:], " "))
+		msg.Data = strings.Join(parts[minMessageParts:], " ")
 	}
 
 	return msg, nil

@@ -6,15 +6,17 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"sync"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/console"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/restclient"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/pkg/traderepublic"
 )
 
 type Client struct {
 	inputHandler console.InputHandlerInterface
 	apiClient    api.ClientInterface
+	mu           sync.Mutex
 }
 
 func NewClient(inputHandler console.InputHandlerInterface, apiClient api.ClientInterface) *Client {
@@ -26,6 +28,9 @@ func NewClient(inputHandler console.InputHandlerInterface, apiClient api.ClientI
 
 func (c *Client) Login() (Token, error) {
 	var token Token
+
+	c.mu.Lock()
+	defer c.mu.Unlock()
 
 	processID, err := c.ObtainProcessID()
 	if err != nil {
@@ -52,7 +57,7 @@ func (c *Client) ObtainProcessID() (ProcessID, error) {
 	}
 
 	// Create the login request
-	request := restclient.APILoginRequest{
+	request := traderepublic.APILoginRequest{
 		PhoneNumber: phoneNumber,
 		Pin:         pin,
 	}

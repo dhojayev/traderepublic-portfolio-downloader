@@ -1,0 +1,195 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/dhojayev/traderepublic-portfolio-downloader/refs/heads/main/v2/pkg/traderepublic/timeline_transactions.json",
+  "type": "object",
+  "required": [
+    "items",
+    "cursors"
+  ],
+  "properties": {
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "timestamp",
+          "title",
+          "icon",
+          "avatar",
+          "amount",
+          "status",
+          "action",
+          "eventType",
+          "hidden",
+          "deleted"
+        ],
+        "properties": {
+          "id": { "$ref": "common.json#/definitions/uuid" },
+          "timestamp": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "icon": {
+            "type": "string"
+          },
+          "avatar": {
+            "type": "object",
+            "required": [
+              "asset"
+            ],
+            "properties": {
+              "asset": {
+                "type": "string"
+              },
+              "badge": {
+                "type": [
+                  "null",
+                  "string"
+                ]
+              }
+            }
+          },
+          "badge": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "subtitle": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "amount": {
+            "type": "object",
+            "required": [
+              "currency",
+              "value",
+              "fractionDigits"
+            ],
+            "properties": {
+              "currency": {
+                "type": "string",
+                "pattern": "^[A-Z]{3}$"
+              },
+              "value": {
+                "type": "number"
+              },
+              "fractionDigits": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          "subAmount": {
+            "type": [
+              "null",
+              "object"
+            ],
+            "properties": {
+              "currency": {
+                "type": "string",
+                "pattern": "^[A-Z]{3}$"
+              },
+              "value": {
+                "type": "number"
+              },
+              "fractionDigits": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "currency",
+              "value",
+              "fractionDigits"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "EXECUTED",
+              "CANCELED"
+            ]
+          },
+          "action": {
+            "type": "object",
+            "required": [
+              "type",
+              "payload"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "timelineDetail"
+                ]
+              },
+              "payload": { "$ref": "common.json#/definitions/uuid" }
+            }
+          },
+          "eventType": {
+            "type": "string",
+            "enum": [
+              "card_successful_transaction",
+              "ssp_corporate_action_invoice_cash",
+              "trading_savingsplan_executed",
+              "benefits_saveback_execution",
+              "card_failed_transaction",
+              "INTEREST_PAYOUT",
+              "INCOMING_TRANSFER_DELEGATION",
+              "card_successful_verification",
+              "card_failed_verification",
+              "card_refund",
+              "trading_trade_executed",
+              "OUTGOING_TRANSFER_DELEGATION",
+              "timeline_legacy_migrated_events",
+              "INCOMING_TRANSFER",
+              "benefits_spare_change_execution"
+            ]
+          },
+          "cashAccountNumber": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "hidden": {
+            "type": "boolean"
+          },
+          "deleted": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "cursors": {
+      "type": "object",
+      "required": [
+        "after",
+        "before"
+      ],
+      "properties": {
+        "after": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "before": {
+          "type": "string"
+        }
+      }
+    },
+    "startingTransactionId": {
+      "type": [
+        "null",
+        "string"
+      ]
+    }
+  }
+}
