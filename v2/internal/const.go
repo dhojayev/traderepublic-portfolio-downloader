@@ -3,13 +3,6 @@ package internal
 import "time"
 
 const (
-	// WebsocketBaseHost Trade Republic's websocket base host.
-	WebsocketBaseHost = "api.traderepublic.com"
-
-	// HTTPUserAgent used for all HTTP communications.
-	HTTPUserAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) " +
-		"AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
-
 	// SessionRefreshInterval represents in how many seconds session has to be refreshed to keep it alive.
 	SessionRefreshInterval = 120
 

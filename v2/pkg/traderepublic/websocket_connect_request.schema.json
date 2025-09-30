@@ -1,0 +1,34 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "required": [
+        "locale",
+        "platformId",
+        "platformVersion",
+        "clientId",
+        "clientVersion"
+    ],
+    "properties": {
+        "locale": {
+            "type": "string",
+            "default": "de"
+        },
+        "platformId": {
+            "type": "string",
+            "default": "webtrading"
+        },
+        "platformVersion": {
+            "type": "string",
+            "default": "chrome - 140.0.0"
+        },
+        "clientId": {
+            "type": "string",
+            "default": "app.traderepublic.com"
+        },
+        "clientVersion": {
+            "type": "string",
+            "default": "11.4.1"
+        }
+    },
+    "additionalProperties": false
+}

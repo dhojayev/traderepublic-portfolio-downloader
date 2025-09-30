@@ -10,20 +10,14 @@ import (
 	"strconv"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/gorilla/websocket"
 
-	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/message/publisher"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/pkg/traderepublic"
 )
 
 const (
-	// ConnectMsg is the message sent to establish a connection.
-	ConnectMsg = "connect 31 {\"locale\":\"de\",\"platformId\":\"webtrading\"," +
-		"\"platformVersion\":\"chrome - 134.0.0\",\"clientId\":\"app.traderepublic.com\",\"clientVersion\":\"3.174.0\"}"
-
 	// Message types.
 	MsgTypeSub   = "sub"
 	MsgTypeUnsub = "unsub"
@@ -32,13 +26,6 @@ const (
 	StateData     = traderepublic.WebsocketResponseSchemaJsonStateA
 	StateContinue = traderepublic.WebsocketResponseSchemaJsonStateC
 	StateError    = traderepublic.WebsocketResponseSchemaJsonStateE
-
-	// Subscription types.
-	TypeTimelineTransactions = "timelineTransactions"
-	TypeTimelineDetail       = "timelineDetailV2"
-
-	// Reconnect delay.
-	reconnectDelay = 5 * time.Second
 
 	// Minimum parts in a message.
 	minMessageParts = 2
@@ -54,27 +41,6 @@ var (
 	// ErrAuthRequired is returned when authentication is required.
 	ErrAuthRequired = errors.New("authentication required")
 )
-
-// ErrorResponse represents an error response from the WebSocket.
-type ErrorResponse struct {
-	Errors []ErrorDetail `json:"errors"`
-}
-
-// ErrorDetail represents a single error detail.
-type ErrorDetail struct {
-	Code    string `json:"code"`
-	Message string `json:"message"`
-}
-
-// IsAuthError returns true if the error is an authentication error.
-func (e ErrorDetail) IsAuthError() bool {
-	return e.Code == "AUTH_REQUIRED"
-}
-
-// IsUnauthorizedError returns true if the error is an unauthorized error.
-func (e ErrorDetail) IsUnauthorizedError() bool {
-	return e.Code == "UNAUTHORIZED"
-}
 
 // Client is a WebSocket client for the Trade Republic API.
 type Client struct {
@@ -93,7 +59,12 @@ func NewClient(publisher publisher.Interface, ctx context.Context) *Client {
 		ctx:       ctx,
 	}
 
-	client.Connect()
+	err := client.Connect()
+	if err != nil {
+		slog.Error("could not connect to websocket", "error", err)
+
+		return nil
+	}
 
 	return client
 }
@@ -107,12 +78,12 @@ func (c *Client) Connect() error {
 		return nil
 	}
 
-	websocketURL := url.URL{Scheme: "wss", Host: internal.WebsocketBaseHost, Path: "/"}
+	websocketURL := url.URL{Scheme: "wss", Host: traderepublic.WebsocketBaseHost, Path: "/"}
 	slog.Info("connecting to WebSocket", "url", websocketURL.String())
 
 	// Create header with user agent
 	header := make(map[string][]string)
-	header["User-Agent"] = []string{internal.HTTPUserAgent}
+	header["User-Agent"] = []string{traderepublic.HTTPUserAgent}
 
 	// Connect to the WebSocket server
 	conn, _, err := websocket.DefaultDialer.DialContext(c.ctx, websocketURL.String(), header)
@@ -122,13 +93,22 @@ func (c *Client) Connect() error {
 
 	c.conn = conn
 	c.closed = false
+	data := traderepublic.WebsocketConnectRequestSchemaJson{}
+
+	// Marshal data to JSON
+	dataBytes, err := json.Marshal(data)
+	if err != nil {
+		return fmt.Errorf("could not marshal data: %w", err)
+	}
+
+	payload := fmt.Sprintf("connect %s %s", traderepublic.WebhookVersion, dataBytes)
 
 	// Send connect message
-	if err = c.conn.WriteMessage(websocket.TextMessage, []byte(ConnectMsg)); err != nil {
+	if err = c.conn.WriteMessage(websocket.TextMessage, []byte(payload)); err != nil {
 		return fmt.Errorf("could not send connect message: %w", err)
 	}
 
-	slog.Info("sent connect message")
+	slog.Debug("sent connect message", "message", string(payload))
 
 	// Read the response
 	_, msg, err := c.conn.ReadMessage()
@@ -136,7 +116,7 @@ func (c *Client) Connect() error {
 		return fmt.Errorf("could not read connect response: %w", err)
 	}
 
-	slog.Info("received connect response", "response", string(msg))
+	slog.Debug("received connect response", "response", string(msg))
 
 	// Start goroutine to read messages
 	go c.readMessages()
@@ -277,55 +257,6 @@ func (c *Client) unsubscribe(subID int) {
 	}
 
 	slog.Debug("sent unsubscribe message", "message", msg)
-}
-
-// reconnect reconnects to the WebSocket server.
-func (c *Client) reconnect() error {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-
-	if c.conn != nil {
-		_ = c.conn.Close()
-		c.conn = nil
-	}
-
-	c.closed = false
-
-	// Wait before reconnecting
-	time.Sleep(reconnectDelay)
-
-	// Connect to the WebSocket server
-	websocketURL := url.URL{Scheme: "wss", Host: internal.WebsocketBaseHost, Path: "/"}
-	slog.Info("reconnecting to WebSocket", "url", websocketURL.String())
-
-	// Create header with user agent
-	header := make(map[string][]string)
-	header["User-Agent"] = []string{internal.HTTPUserAgent}
-
-	// Connect to the WebSocket server
-	conn, _, err := websocket.DefaultDialer.DialContext(c.ctx, websocketURL.String(), header)
-	if err != nil {
-		return fmt.Errorf("could not reconnect to websocket: %w", err)
-	}
-
-	c.conn = conn
-
-	// Send connect message
-	if err = c.conn.WriteMessage(websocket.TextMessage, []byte(ConnectMsg)); err != nil {
-		return fmt.Errorf("could not send connect message: %w", err)
-	}
-
-	slog.Info("sent connect message")
-
-	// Read the response
-	_, msg, err := c.conn.ReadMessage()
-	if err != nil {
-		return fmt.Errorf("could not read connect response: %w", err)
-	}
-
-	slog.Info("received connect response", "response", string(msg))
-
-	return nil
 }
 
 // parseMessage parses a message from the WebSocket.

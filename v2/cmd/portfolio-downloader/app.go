@@ -42,6 +42,8 @@ func (a *App) Run() error {
 		}
 	}
 
+	slog.Info("Starting downloading transactions")
+
 	err = a.messageClient.SubscribeToTimelineTransactions(context.Background())
 	if err != nil {
 		return fmt.Errorf("subscription failed: %w", err)

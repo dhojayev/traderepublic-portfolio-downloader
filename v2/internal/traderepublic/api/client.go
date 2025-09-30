@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/pkg/traderepublic"
 )
 
@@ -24,7 +23,7 @@ type Client struct {
 func NewClient() (*Client, error) {
 	// Create a request editor to add common headers
 	reqEditor := func(_ context.Context, req *http.Request) error {
-		req.Header.Set("User-Agent", internal.HTTPUserAgent)
+		req.Header.Set("User-Agent", traderepublic.HTTPUserAgent)
 		req.Header.Set("Content-Type", "application/json")
 
 		return nil

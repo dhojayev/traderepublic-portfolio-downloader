@@ -58,8 +58,6 @@ func (c *Client) SubscribeToTimelineTransactions(ctx context.Context) error {
 	var mu sync.Mutex
 
 	go func() {
-		slog.Info("starting to listen for timeline transactions with cursor", "after", *response.Cursors.After)
-
 		for response.Cursors.After != nil {
 			ch, err = c.SubscribeToTimelineTransactionsWithCursor(ctx, *response.Cursors.After)
 			if err != nil {
