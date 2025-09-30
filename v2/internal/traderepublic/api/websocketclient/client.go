@@ -95,6 +95,9 @@ func (c *Client) Connect() error {
 	c.closed = false
 	data := traderepublic.WebsocketConnectRequestSchemaJson{}
 
+	// Use default values from schema
+	_ = data.UnmarshalJSON([]byte("{}"))
+
 	// Marshal data to JSON
 	dataBytes, err := json.Marshal(data)
 	if err != nil {
