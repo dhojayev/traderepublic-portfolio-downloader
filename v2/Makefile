@@ -8,6 +8,7 @@ generate:
 	go tool go-jsonschema -p traderepublic pkg/traderepublic/timeline_transactions.schema.json > pkg/traderepublic/timeline_transactions_gen.go
 	go tool go-jsonschema -p traderepublic pkg/traderepublic/websocket_response.schema.json > pkg/traderepublic/websocket_response_gen.go
 	go tool go-jsonschema -p traderepublic pkg/traderepublic/websocket_sub_request.schema.json > pkg/traderepublic/websocket_sub_response_gen.go
+	go tool go-jsonschema -p traderepublic pkg/traderepublic/timeline_detail.schema.json > pkg/traderepublic/timeline_detail_gen.go
 	go fmt ./pkg/traderepublic/...
 	go generate ./...
 

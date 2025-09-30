@@ -10,7 +10,6 @@
 package websocketclient
 
 import (
-	context "context"
 	reflect "reflect"
 
 	traderepublic "github.com/dhojayev/traderepublic-portfolio-downloader/v2/pkg/traderepublic"
@@ -56,30 +55,30 @@ func (mr *MockClientInterfaceMockRecorder) Close() *gomock.Call {
 }
 
 // Connect mocks base method.
-func (m *MockClientInterface) Connect(ctx context.Context) error {
+func (m *MockClientInterface) Connect() error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Connect", ctx)
+	ret := m.ctrl.Call(m, "Connect")
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Connect indicates an expected call of Connect.
-func (mr *MockClientInterfaceMockRecorder) Connect(ctx any) *gomock.Call {
+func (mr *MockClientInterfaceMockRecorder) Connect() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Connect", reflect.TypeOf((*MockClientInterface)(nil).Connect), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Connect", reflect.TypeOf((*MockClientInterface)(nil).Connect))
 }
 
 // Subscribe mocks base method.
-func (m *MockClientInterface) Subscribe(ctx context.Context, data traderepublic.WebsocketSubRequestSchemaJson) (<-chan []byte, error) {
+func (m *MockClientInterface) Subscribe(data traderepublic.WebsocketSubRequestSchemaJson) (<-chan []byte, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Subscribe", ctx, data)
+	ret := m.ctrl.Call(m, "Subscribe", data)
 	ret0, _ := ret[0].(<-chan []byte)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Subscribe indicates an expected call of Subscribe.
-func (mr *MockClientInterfaceMockRecorder) Subscribe(ctx, data any) *gomock.Call {
+func (mr *MockClientInterfaceMockRecorder) Subscribe(data any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Subscribe", reflect.TypeOf((*MockClientInterface)(nil).Subscribe), ctx, data)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Subscribe", reflect.TypeOf((*MockClientInterface)(nil).Subscribe), data)
 }

@@ -233,8 +233,10 @@ func (c *Client) readMessages() {
 			// Handle message based on state
 			switch message.State {
 			case StateData:
+				c.unsubscribe(message.ID)
+
 				subID := strconv.FormatInt(int64(message.ID), 10)
-				c.unsubscribe(subID)
+
 				c.publisher.Publish([]byte(message.Data), subID)
 				c.publisher.Close(subID)
 
@@ -256,7 +258,7 @@ func (c *Client) readMessages() {
 }
 
 // unsubscribe unsubscribes from a subscription.
-func (c *Client) unsubscribe(subID string) {
+func (c *Client) unsubscribe(subID int) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -265,7 +267,7 @@ func (c *Client) unsubscribe(subID string) {
 	}
 
 	// Create unsubscribe message
-	msg := fmt.Sprintf("%s %s", MsgTypeUnsub, subID)
+	msg := fmt.Sprintf("%s %d", MsgTypeUnsub, subID)
 
 	// Send unsubscribe message
 	if err := c.conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
@@ -337,7 +339,7 @@ func parseMessage(data []byte) (traderepublic.WebsocketResponseSchemaJson, error
 	}
 
 	// Parse ID
-	id, err := strconv.ParseUint(parts[0], 10, 32)
+	id, err := strconv.ParseInt(parts[0], 10, 32)
 	if err != nil {
 		return msg, fmt.Errorf("could not parse message ID: %w", err)
 	}

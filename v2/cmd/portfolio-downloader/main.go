@@ -10,6 +10,7 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/bus"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/console"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/file"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/timelinedetails"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/timelinetransactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/auth"
@@ -63,8 +64,10 @@ func main() {
 
 	messageClient := message.NewClient(eventBus, credentialsService, wsclient)
 	ttHandler := timelinetransactions.NewHandler(eventBus, messageClient)
+	tdHandler := timelinedetails.NewHandler()
 
 	eventBus.Subscribe(bus.TopicTimelineTransactions, ttHandler.Handle)
+	eventBus.Subscribe(bus.TopicTimelineDetailsV2, tdHandler.Handle)
 
 	app := NewApp(auth.NewClient(console.NewInputHandler(), apiClient), credentialsService, messageClient, eventBus)
 

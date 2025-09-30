@@ -1,0 +1,241 @@
+{
+  "$id": "https://example.com/schemas/document-schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["id", "sections"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "sections": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/section"
+      }
+    }
+  },
+  "definitions": {
+    "section": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["header", "table", "documents"]
+        },
+        "data": {
+          "oneOf": [
+            { "$ref": "#/definitions/headerData" },
+            {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  { "$ref": "#/definitions/statusRow" },
+                  { "$ref": "#/definitions/paymentRow" },
+                  { "$ref": "#/definitions/documentRow" },
+                  { "$ref": "#/definitions/supportRow" }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    "headerData": {
+      "type": "object",
+      "required": ["icon", "timestamp", "status"],
+      "properties": {
+        "icon": {
+          "type": "string",
+          "pattern": "^logos/[A-Z0-9]+/v2$"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["executed"]
+        }
+      }
+    },
+    "statusRow": {
+      "type": "object",
+      "required": ["title", "detail", "style"],
+      "properties": {
+        "title": {
+          "type": "string",
+          "enum": ["Status", "Event", "Wertpapier"]
+        },
+        "detail": {
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "text": {
+              "type": "string"
+            },
+            "functionalStyle": {
+              "type": "string",
+              "enum": ["EXECUTED"]
+            },
+            "type": {
+              "type": "string",
+              "enum": ["status", "text"]
+            },
+            "displayValue": {
+              "type": "object",
+              "required": ["text"],
+              "properties": {
+                "text": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "style": {
+          "type": "string",
+          "enum": ["plain"]
+        }
+      }
+    },
+    "paymentRow": {
+      "type": "object",
+      "required": ["title", "detail", "style"],
+      "properties": {
+        "title": {
+          "type": "string",
+          "enum": ["Aktien", "Dividende pro Aktie", "Steuer", "Gesamt"]
+        },
+        "detail": {
+          "type": "object",
+          "required": ["type", "text", "displayValue"],
+          "properties": {
+            "text": {
+              "type": "string",
+              "pattern": "^([0-9]+[.,][0-9]+|[0-9]+,[0-9]+ [€$])$"
+            },
+            "displayValue": {
+              "type": "object",
+              "required": ["text"],
+              "properties": {
+                "text": {
+                  "type": "string"
+                }
+              }
+            },
+            "type": {
+              "type": "string",
+              "const": "text"
+            }
+          }
+        },
+        "style": {
+          "type": "string",
+          "enum": ["plain"]
+        }
+      }
+    },
+    "documentRow": {
+      "type": "object",
+      "required": ["title", "detail", "action", "id", "postboxType"],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "detail": {
+          "type": "string",
+          "pattern": "^[0-9]{2}\\.[0-9]{2}\\.[0-9]{4}$"
+        },
+        "action": {
+          "type": "object",
+          "required": ["payload", "type"],
+          "properties": {
+            "payload": {
+              "type": "string",
+              "pattern": "^https://.*\\.pdf\\?.*$"
+            },
+            "type": {
+              "type": "string",
+              "enum": ["browserModal"]
+            }
+          }
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "postboxType": {
+          "type": "string",
+          "enum": ["CA_INCOME_INVOICE"]
+        }
+      }
+    },
+    "supportRow": {
+      "type": "object",
+      "required": ["title", "detail", "style"],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "detail": {
+          "type": "object",
+          "required": ["type", "action", "style"],
+          "properties": {
+            "icon": {
+              "type": "string"
+            },
+            "action": {
+              "type": "object",
+              "required": ["payload", "type"],
+              "properties": {
+                "payload": {
+                  "type": "object",
+                  "required": ["contextCategory", "contextParams"],
+                  "properties": {
+                    "contextCategory": {
+                      "type": "string"
+                    },
+                    "contextParams": {
+                      "type": "object",
+                      "required": ["timelineEventId", "chat_flow_key"],
+                      "properties": {
+                        "timelineEventId": {
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                        },
+                        "chat_flow_key": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "type": {
+                  "type": "string",
+                  "enum": ["customerSupportChat"]
+                }
+              }
+            },
+            "style": {
+              "type": "string",
+              "enum": ["highlighted"]
+            },
+            "type": {
+              "type": "string",
+              "enum": ["listItemAvatarDefault"]
+            }
+          }
+        },
+        "style": {
+          "type": "string",
+          "enum": ["highlighted"]
+        }
+      }
+    }
+  }
+}
