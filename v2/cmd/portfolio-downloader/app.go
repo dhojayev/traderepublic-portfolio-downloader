@@ -16,27 +16,24 @@ type App struct {
 	authClient         *auth.Client
 	credentialsService auth.CredentialsServiceInterface
 	messageClient      message.ClientInterface
-	logger             *slog.Logger
 }
 
 func NewApp(
 	authClient *auth.Client,
 	credentialsService auth.CredentialsServiceInterface,
 	messageClient message.ClientInterface,
-	log *slog.Logger,
 ) App {
 	return App{
 		authClient:         authClient,
 		credentialsService: credentialsService,
 		messageClient:      messageClient,
-		logger:             log,
 	}
 }
 
 func (a *App) Run() error {
 	err := a.credentialsService.Load()
 	if err != nil {
-		a.logger.Warn("Failed to load credentials, need to authenticate", "error", err)
+		slog.Warn("Failed to load credentials, need to authenticate", "error", err)
 
 		err := a.authenticate()
 		if err != nil {
@@ -49,7 +46,7 @@ func (a *App) Run() error {
 		return fmt.Errorf("subscription failed: %w", err)
 	}
 
-	sub := subscriber.NewSubscriber("timelineTransactions", ch, writer.NewResponseWriter(), a.logger)
+	sub := subscriber.NewSubscriber("timelineTransactions", ch, writer.NewResponseWriter())
 	sub.Listen()
 
 	time.Sleep(time.Minute * 5)
@@ -68,7 +65,7 @@ func (a *App) authenticate() error {
 		return fmt.Errorf("failed to store credentials: %w", err)
 	}
 
-	a.logger.Info("Authentication successful")
+	slog.Info("Authentication successful")
 
 	return nil
 }

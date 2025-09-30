@@ -3,13 +3,11 @@ package publisher
 import "log/slog"
 
 type Publisher struct {
-	logger      *slog.Logger
 	subscribers map[string]chan []byte
 }
 
-func NewPublisher(logger *slog.Logger) *Publisher {
+func NewPublisher() *Publisher {
 	return &Publisher{
-		logger:      logger,
 		subscribers: make(map[string]chan []byte),
 	}
 }
@@ -24,7 +22,7 @@ func (p *Publisher) Subscribe(topic string) <-chan []byte {
 func (p *Publisher) Publish(msg []byte, topic string) {
 	ch, ok := p.subscribers[topic]
 	if !ok {
-		p.logger.Error("channel not found", "topic", topic)
+		slog.Error("channel not found", "topic", topic)
 
 		return
 	}

@@ -2,7 +2,6 @@ package message
 
 import (
 	"context"
-	"encoding/json"
 	"log/slog"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/auth"
@@ -24,14 +23,12 @@ type ClientInterface interface {
 type Client struct {
 	credentialsService auth.CredentialsServiceInterface
 	wsClient           websocketclient.ClientInterface
-	logger             *slog.Logger
 }
 
-func NewClient(credentialsService auth.CredentialsServiceInterface, wsClient websocketclient.ClientInterface, logger *slog.Logger) *Client {
+func NewClient(credentialsService auth.CredentialsServiceInterface, wsClient websocketclient.ClientInterface) *Client {
 	return &Client{
 		credentialsService: credentialsService,
 		wsClient:           wsClient,
-		logger:             logger,
 	}
 }
 
@@ -42,13 +39,13 @@ func (c *Client) SubscribeToTimelineTransactions(ctx context.Context) (<-chan []
 		return nil, err
 	}
 
-	var response traderepublic.TimelineTransactionsSchemaJson
-
 	unifiedChannel := make(chan []byte, 1)
 	data := <-ch
 	unifiedChannel <- data
 
-	err = json.Unmarshal(data, &response)
+	var response traderepublic.TimelineTransactionsSchemaJson
+
+	err = response.UnmarshalJSON(data)
 	if err != nil {
 		return nil, err
 	}
@@ -57,16 +54,16 @@ func (c *Client) SubscribeToTimelineTransactions(ctx context.Context) (<-chan []
 		for response.Cursors.After != nil {
 			ch, err = c.SubscribeToTimelineTransactionsWithCursor(ctx, *response.Cursors.After)
 			if err != nil {
-				c.logger.Error("error subscribing to timeline transactions", "error", err)
+				slog.Error("error subscribing to timeline transactions", "error", err)
 
 				return
 			}
 
 			data = <-ch
 
-			err = json.Unmarshal(data, &response)
+			err = response.UnmarshalJSON(data)
 			if err != nil {
-				c.logger.Error("error subscribing to timeline transactions", "error", err)
+				slog.Error("error subscribing to timeline transactions", "error", err)
 
 				return
 			}

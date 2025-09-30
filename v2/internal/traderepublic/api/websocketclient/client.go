@@ -89,17 +89,15 @@ func (e ErrorDetail) IsUnauthorizedError() bool {
 type Client struct {
 	conn         *websocket.Conn
 	publisher    publisher.Interface
-	logger       *slog.Logger
 	currentSubID uint
 	mu           sync.Mutex
 	closed       bool
 }
 
 // NewClient creates a new WebSocket client.
-func NewClient(publisher publisher.Interface, logger *slog.Logger) *Client {
+func NewClient(publisher publisher.Interface) *Client {
 	return &Client{
 		publisher: publisher,
-		logger:    logger,
 	}
 }
 
@@ -113,7 +111,7 @@ func (c *Client) Connect(ctx context.Context) error {
 	}
 
 	websocketURL := url.URL{Scheme: "wss", Host: internal.WebsocketBaseHost, Path: "/"}
-	c.logger.Info("connecting to WebSocket", "url", websocketURL.String())
+	slog.Info("connecting to WebSocket", "url", websocketURL.String())
 
 	// Create header with user agent
 	header := make(map[string][]string)
@@ -133,7 +131,7 @@ func (c *Client) Connect(ctx context.Context) error {
 		return fmt.Errorf("could not send connect message: %w", err)
 	}
 
-	c.logger.Info("sent connect message")
+	slog.Info("sent connect message")
 
 	// Read the response
 	_, msg, err := c.conn.ReadMessage()
@@ -141,7 +139,7 @@ func (c *Client) Connect(ctx context.Context) error {
 		return fmt.Errorf("could not read connect response: %w", err)
 	}
 
-	c.logger.Info("received connect response", "response", string(msg))
+	slog.Info("received connect response", "response", string(msg))
 
 	return nil
 }
@@ -195,7 +193,7 @@ func (c *Client) Subscribe(ctx context.Context, data map[string]any) (<-chan []b
 		return nil, fmt.Errorf("could not send subscription message: %w", err)
 	}
 
-	c.logger.Info("sent subscription message", "message", msg)
+	slog.Info("sent subscription message", "message", msg)
 
 	sub := c.publisher.Subscribe(subID)
 
@@ -212,14 +210,14 @@ func (c *Client) readMessages(ctx context.Context, subID string) {
 	for {
 		select {
 		case <-ctx.Done():
-			c.logger.Info("context done, stopping message reader")
+			slog.Info("context done, stopping message reader")
 
 			return
 		default:
 			// Read message
 			_, msg, err := c.conn.ReadMessage()
 			if err != nil {
-				c.logger.Error("error reading message", "error", err)
+				slog.Error("error reading message", "error", err)
 
 				return
 			}
@@ -227,7 +225,7 @@ func (c *Client) readMessages(ctx context.Context, subID string) {
 			// Parse message
 			message, err := parseMessage(msg)
 			if err != nil {
-				c.logger.Error("error parsing message", "error", err)
+				slog.Error("error parsing message", "error", err)
 
 				continue
 			}
@@ -242,13 +240,13 @@ func (c *Client) readMessages(ctx context.Context, subID string) {
 
 			case StateContinue:
 				// Continue reading
-				c.logger.Info("received continue message")
+				slog.Info("received continue message")
 
 			case StateError:
 				// Parse error
 				var errorResp ErrorResponse
 				if err := json.Unmarshal(message.Data, &errorResp); err != nil {
-					c.logger.Error("error parsing error response", "error", err)
+					slog.Error("error parsing error response", "error", err)
 
 					continue
 				}
@@ -256,13 +254,13 @@ func (c *Client) readMessages(ctx context.Context, subID string) {
 				// Handle error
 				for _, errorDetail := range errorResp.Errors {
 					if errorDetail.IsUnauthorizedError() {
-						c.logger.Warn("unauthorized error, session expired")
+						slog.Warn("unauthorized error, session expired")
 
 						return
 					}
 				}
 
-				c.logger.Error("received error message", "data", string(message.Data))
+				slog.Error("received error message", "data", string(message.Data))
 
 				return
 			}
@@ -287,7 +285,7 @@ func (c *Client) unsubscribe(subID string, token string) {
 	// Marshal data to JSON
 	dataBytes, err := json.Marshal(data)
 	if err != nil {
-		c.logger.Error("could not marshal unsubscribe data", "error", err)
+		slog.Error("could not marshal unsubscribe data", "error", err)
 
 		return
 	}
@@ -297,12 +295,12 @@ func (c *Client) unsubscribe(subID string, token string) {
 
 	// Send unsubscribe message
 	if err = c.conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
-		c.logger.Error("could not send unsubscribe message", "error", err)
+		slog.Error("could not send unsubscribe message", "error", err)
 
 		return
 	}
 
-	c.logger.Info("sent unsubscribe message", "message", msg)
+	slog.Info("sent unsubscribe message", "message", msg)
 }
 
 // reconnect reconnects to the WebSocket server.
@@ -322,7 +320,7 @@ func (c *Client) reconnect(ctx context.Context) error {
 
 	// Connect to the WebSocket server
 	websocketURL := url.URL{Scheme: "wss", Host: internal.WebsocketBaseHost, Path: "/"}
-	c.logger.Info("reconnecting to WebSocket", "url", websocketURL.String())
+	slog.Info("reconnecting to WebSocket", "url", websocketURL.String())
 
 	// Create header with user agent
 	header := make(map[string][]string)
@@ -341,7 +339,7 @@ func (c *Client) reconnect(ctx context.Context) error {
 		return fmt.Errorf("could not send connect message: %w", err)
 	}
 
-	c.logger.Info("sent connect message")
+	slog.Info("sent connect message")
 
 	// Read the response
 	_, msg, err := c.conn.ReadMessage()
@@ -349,7 +347,7 @@ func (c *Client) reconnect(ctx context.Context) error {
 		return fmt.Errorf("could not read connect response: %w", err)
 	}
 
-	c.logger.Info("received connect response", "response", string(msg))
+	slog.Info("received connect response", "response", string(msg))
 
 	return nil
 }

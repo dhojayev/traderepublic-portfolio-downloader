@@ -29,8 +29,7 @@
             "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
           },
           "timestamp": {
-            "type": "string",
-            "format": "SerializableTime"
+            "type": "string"
           },
           "title": {
             "type": "string"

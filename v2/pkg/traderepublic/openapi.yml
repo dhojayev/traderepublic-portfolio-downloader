@@ -118,6 +118,7 @@ paths:
         - Authentication
       security:
         - refreshToken: []
+        - sessionToken: []
       responses:
         '200':
           description: Session refreshed successfully

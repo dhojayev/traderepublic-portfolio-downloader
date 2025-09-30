@@ -32,6 +32,8 @@ func main() {
 		Level:     logLevel,
 	}))
 
+	slog.SetDefault(log)
+
 	credentialsService := auth.NewFileCredentialsService("")
 
 	apiClient, err := api.NewClient()
@@ -41,14 +43,8 @@ func main() {
 		return
 	}
 
-	messageClient := message.NewClient(credentialsService, websocketclient.NewClient(publisher.NewPublisher(log), log), log)
-
-	app := NewApp(
-		auth.NewClient(console.NewInputHandler(), apiClient),
-		credentialsService,
-		messageClient,
-		log,
-	)
+	messageClient := message.NewClient(credentialsService, websocketclient.NewClient(publisher.NewPublisher()))
+	app := NewApp(auth.NewClient(console.NewInputHandler(), apiClient), credentialsService, messageClient)
 
 	err = app.Run()
 	if err != nil {
