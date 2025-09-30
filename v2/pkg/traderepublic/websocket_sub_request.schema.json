@@ -1,0 +1,27 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "required": [
+        "type",
+        "token"
+    ],
+    "properties": {
+        "after": {
+            "type": "string"
+        },
+        "id": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "type": {
+            "type": "string",
+            "enum": [
+                "timelineTransactions",
+                "timelineDetailV2"
+            ]
+        },
+        "token": {
+            "type": "string"
+        }
+    }
+}

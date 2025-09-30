@@ -37,9 +37,11 @@ func (s *TimelineTransactionsSubscriber) Listen() {
 			filepath := fmt.Sprintf("%s/%s", s.name, strconv.FormatUint(uint64(num), 10))
 
 			err := s.writer.Bytes(filepath, data)
-			if err != nil {
-				slog.Error("failed to write data", "data", string(data), "name", s.name, "error", err)
+			if err == nil {
+				continue
 			}
+
+			slog.Error("failed to write data", "data", string(data), "name", s.name, "error", err)
 		}
 	}()
 }

@@ -9,12 +9,6 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/pkg/traderepublic"
 )
 
-const (
-	// Subscription types.
-	TypeTimelineTransactions = "timelineTransactions"
-	TypeTimelineDetail       = "timelineDetailV2"
-)
-
 type ClientInterface interface {
 	SubscribeToTimelineTransactions(ctx context.Context) (<-chan []byte, error)
 	SubscribeToTimelineDetail(ctx context.Context, itemID string) (<-chan []byte, error)
@@ -77,14 +71,15 @@ func (c *Client) SubscribeToTimelineTransactions(ctx context.Context) (<-chan []
 
 // SubscribeToTimelineTransactionsWithCursor subscribes to timeline transactions data with a cursor.
 func (c *Client) SubscribeToTimelineTransactionsWithCursor(ctx context.Context, cursor string) (<-chan []byte, error) {
-	params := map[string]any{}
+	data := traderepublic.WebsocketSubRequestSchemaJson{
+		Token: c.credentialsService.GetToken().Session(),
+		Type:  traderepublic.WebsocketSubRequestSchemaJsonTypeTimelineTransactions,
+	}
 
 	// Add cursor if provided
 	if cursor != "" {
-		params["after"] = cursor
+		data.After = &cursor
 	}
-
-	data := c.prepareSubscription(TypeTimelineTransactions, params)
 
 	c.wsClient.Connect(ctx)
 
@@ -93,24 +88,13 @@ func (c *Client) SubscribeToTimelineTransactionsWithCursor(ctx context.Context, 
 
 // SubscribeToTimelineDetail subscribes to timeline detail data.
 func (c *Client) SubscribeToTimelineDetail(ctx context.Context, itemID string) (<-chan []byte, error) {
-	data := c.prepareSubscription(TypeTimelineDetail, map[string]any{"id": itemID})
+	data := traderepublic.WebsocketSubRequestSchemaJson{
+		Id:    &itemID,
+		Token: c.credentialsService.GetToken().Session(),
+		Type:  traderepublic.WebsocketSubRequestSchemaJsonTypeTimelineDetailV2,
+	}
 
 	c.wsClient.Connect(ctx)
 
 	return c.wsClient.Subscribe(ctx, data)
-}
-
-// prepareSubscription prepares a subscription request with the given parameters.
-func (c *Client) prepareSubscription(dataType string, params map[string]any) map[string]any {
-	data := map[string]any{
-		"type":  dataType,
-		"token": c.credentialsService.GetToken().Session(),
-	}
-
-	// Add additional parameters
-	for k, v := range params {
-		data[k] = v
-	}
-
-	return data
 }

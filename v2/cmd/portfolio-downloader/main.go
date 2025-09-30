@@ -3,6 +3,7 @@ package main
 import (
 	"log/slog"
 	"os"
+	"time"
 
 	"github.com/alexflint/go-arg"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/console"
@@ -50,4 +51,6 @@ func main() {
 	if err != nil {
 		log.Error("Error running app", "error", err)
 	}
+
+	time.Sleep(time.Minute * 1)
 }

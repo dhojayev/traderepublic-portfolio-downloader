@@ -16,6 +16,7 @@ import (
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/message/publisher"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/pkg/traderepublic"
 )
 
 const (
@@ -28,9 +29,9 @@ const (
 	MsgTypeUnsub = "unsub"
 
 	// Message states.
-	StateData     = "A"
-	StateContinue = "C"
-	StateError    = "E"
+	StateData     = traderepublic.WebsocketResponseSchemaJsonStateA
+	StateContinue = traderepublic.WebsocketResponseSchemaJsonStateC
+	StateError    = traderepublic.WebsocketResponseSchemaJsonStateE
 
 	// Subscription types.
 	TypeTimelineTransactions = "timelineTransactions"
@@ -38,9 +39,6 @@ const (
 
 	// Reconnect delay.
 	reconnectDelay = 5 * time.Second
-
-	// Channel buffer size.
-	channelBufferSize = 10
 
 	// Minimum parts in a message.
 	minMessageParts = 2
@@ -56,13 +54,6 @@ var (
 	// ErrAuthRequired is returned when authentication is required.
 	ErrAuthRequired = errors.New("authentication required")
 )
-
-// Message represents a message received from the WebSocket.
-type Message struct {
-	ID    uint
-	State string
-	Data  []byte
-}
 
 // ErrorResponse represents an error response from the WebSocket.
 type ErrorResponse struct {
@@ -164,7 +155,7 @@ func (c *Client) Close() error {
 }
 
 // subscribe subscribes to a data type.
-func (c *Client) Subscribe(ctx context.Context, data map[string]any) (<-chan []byte, error) {
+func (c *Client) Subscribe(ctx context.Context, data traderepublic.WebsocketSubRequestSchemaJson) (<-chan []byte, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -233,8 +224,8 @@ func (c *Client) readMessages(ctx context.Context, subID string) {
 			// Handle message based on state
 			switch message.State {
 			case StateData:
-				c.publisher.Publish(message.Data, string(subID))
-				c.unsubscribe(subID, "")
+				c.publisher.Publish([]byte(message.Data), string(subID))
+				c.unsubscribe(subID)
 
 				return
 
@@ -245,7 +236,7 @@ func (c *Client) readMessages(ctx context.Context, subID string) {
 			case StateError:
 				// Parse error
 				var errorResp ErrorResponse
-				if err := json.Unmarshal(message.Data, &errorResp); err != nil {
+				if err := json.Unmarshal([]byte(message.Data), &errorResp); err != nil {
 					slog.Error("error parsing error response", "error", err)
 
 					continue
@@ -269,7 +260,7 @@ func (c *Client) readMessages(ctx context.Context, subID string) {
 }
 
 // unsubscribe unsubscribes from a subscription.
-func (c *Client) unsubscribe(subID string, token string) {
+func (c *Client) unsubscribe(subID string) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -278,23 +269,10 @@ func (c *Client) unsubscribe(subID string, token string) {
 	}
 
 	// Create unsubscribe message
-	data := map[string]any{
-		"token": token,
-	}
-
-	// Marshal data to JSON
-	dataBytes, err := json.Marshal(data)
-	if err != nil {
-		slog.Error("could not marshal unsubscribe data", "error", err)
-
-		return
-	}
-
-	// Create unsubscribe message
-	msg := fmt.Sprintf("%s %d %s", MsgTypeUnsub, subID, string(dataBytes))
+	msg := fmt.Sprintf("%s %d", MsgTypeUnsub, subID)
 
 	// Send unsubscribe message
-	if err = c.conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
+	if err := c.conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
 		slog.Error("could not send unsubscribe message", "error", err)
 
 		return
@@ -353,8 +331,9 @@ func (c *Client) reconnect(ctx context.Context) error {
 }
 
 // parseMessage parses a message from the WebSocket.
-func parseMessage(data []byte) (Message, error) {
-	msg := Message{}
+func parseMessage(data []byte) (traderepublic.WebsocketResponseSchemaJson, error) {
+	var msg traderepublic.WebsocketResponseSchemaJson
+
 	parts := strings.Split(string(data), " ")
 
 	if len(parts) < minMessageParts {
@@ -367,12 +346,12 @@ func parseMessage(data []byte) (Message, error) {
 		return msg, fmt.Errorf("could not parse message ID: %w", err)
 	}
 
-	msg.ID = uint(id)
-	msg.State = parts[1]
+	msg.ID = int(id)
+	msg.State = traderepublic.WebsocketResponseSchemaJsonState(parts[1])
 
 	// Parse data if available
 	if len(parts) > minMessageParts {
-		msg.Data = []byte(strings.Join(parts[minMessageParts:], " "))
+		msg.Data = strings.Join(parts[minMessageParts:], " ")
 	}
 
 	return msg, nil

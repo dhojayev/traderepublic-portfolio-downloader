@@ -13,6 +13,7 @@ import (
 	context "context"
 	reflect "reflect"
 
+	traderepublic "github.com/dhojayev/traderepublic-portfolio-downloader/v2/pkg/traderepublic"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -69,7 +70,7 @@ func (mr *MockClientInterfaceMockRecorder) Connect(ctx any) *gomock.Call {
 }
 
 // Subscribe mocks base method.
-func (m *MockClientInterface) Subscribe(ctx context.Context, data map[string]any) (<-chan []byte, error) {
+func (m *MockClientInterface) Subscribe(ctx context.Context, data traderepublic.WebsocketSubRequestSchemaJson) (<-chan []byte, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Subscribe", ctx, data)
 	ret0, _ := ret[0].(<-chan []byte)

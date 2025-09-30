@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"time"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/auth"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/message"
@@ -48,8 +47,6 @@ func (a *App) Run() error {
 
 	sub := subscriber.NewSubscriber("timelineTransactions", ch, writer.NewResponseWriter())
 	sub.Listen()
-
-	time.Sleep(time.Minute * 5)
 
 	return nil
 }
