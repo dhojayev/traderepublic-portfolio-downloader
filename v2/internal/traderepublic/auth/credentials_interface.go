@@ -1,4 +1,4 @@
-//go:generate go tool mockgen -source=credentials_interface.go -destination credentials_mock.go -package=auth
+//go:generate go tool mockgen -source=credentials_interface.go -destination credentials_mock_gen.go -package=auth
 
 package auth
 

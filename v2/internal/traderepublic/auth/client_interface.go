@@ -1,4 +1,4 @@
-//go:generate go tool mockgen -source=client_interface.go -destination client_mock.go -package=auth
+//go:generate go tool mockgen -source=client_interface.go -destination client_mock_gen.go -package=auth
 
 package auth
 
