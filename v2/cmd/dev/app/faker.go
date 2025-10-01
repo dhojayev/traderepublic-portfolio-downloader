@@ -31,7 +31,7 @@ func (f *Faker) Run() error {
 			return err
 		}
 
-		f.eventBus.Publish(bus.NewEvent(bus.TopicTimelineDetailsV2, filenameWithoutExt(entry.Name()), bus.EventNameTimelineDetailV2Received, contents))
+		f.eventBus.Publish(bus.NewEvent(bus.TopicTimelineDetailsV2Received, filenameWithoutExt(entry.Name()), contents))
 	}
 
 	return nil

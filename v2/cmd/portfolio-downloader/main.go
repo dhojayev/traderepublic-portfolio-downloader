@@ -10,6 +10,7 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/bus"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/console"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/file"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/instrument"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/message"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/timelinedetails"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/timelinetransactions"
@@ -56,19 +57,22 @@ func main() {
 	wHandler := file.NewEventWriterHandler(writer.NewResponseWriter())
 	eventBus := bus.New()
 
-	eventBus.Subscribe(bus.TopicTimelineTransactions, wHandler.Handle)
-	eventBus.Subscribe(bus.TopicTimelineDetailsV2, wHandler.Handle)
+	eventBus.Subscribe(bus.TopicTimelineTransactionsReceived, wHandler.Handle)
+	eventBus.Subscribe(bus.TopicTimelineDetailsV2Received, wHandler.Handle)
+	eventBus.Subscribe(bus.TopicInstrumentReceived, wHandler.Handle)
 
 	wsclient := traderepublic.NewWSClient(traderepublic.NewPublisher(), ctx)
 
-	messageClient := message.NewClient(eventBus, credentialsService, wsclient)
-	ttHandler := timelinetransactions.NewHandler(eventBus, messageClient)
-	tdHandler := timelinedetails.NewHandler()
+	msgClient := message.NewClient(eventBus, credentialsService, wsclient)
+	ttHandler := timelinetransactions.NewHandler(eventBus, msgClient)
+	tdHandler := timelinedetails.NewHandler(eventBus)
+	instrHandler := instrument.NewHandler(msgClient)
 
-	eventBus.Subscribe(bus.TopicTimelineTransactions, ttHandler.Handle)
-	eventBus.Subscribe(bus.TopicTimelineDetailsV2, tdHandler.Handle)
+	eventBus.Subscribe(bus.TopicTimelineTransactionsReceived, ttHandler.Handle)
+	eventBus.Subscribe(bus.TopicTimelineDetailsV2Received, tdHandler.Handle)
+	eventBus.Subscribe(bus.TopicInstrumentRequested, instrHandler.Handle)
 
-	app := NewApp(auth.NewClient(console.NewInputHandler(), apiClient), credentialsService, messageClient, eventBus)
+	app := NewApp(auth.NewClient(console.NewInputHandler(), apiClient), credentialsService, msgClient, eventBus)
 
 	err = app.Run()
 	if err != nil {

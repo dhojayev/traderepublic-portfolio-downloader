@@ -12,14 +12,14 @@ generate:
 	--schema-output=https://raw.githubusercontent.com/dhojayev/traderepublic-portfolio-downloader/refs/heads/main/v2/pkg/traderepublic/schemas/ws_sub_request.json=pkg/traderepublic/ws_sub_request_gen.go \
 	--schema-output=https://raw.githubusercontent.com/dhojayev/traderepublic-portfolio-downloader/refs/heads/main/v2/pkg/traderepublic/schemas/ws_response.json=pkg/traderepublic/ws_response_gen.go \
 	--schema-output=https://raw.githubusercontent.com/dhojayev/traderepublic-portfolio-downloader/refs/heads/main/v2/pkg/traderepublic/schemas/timeline_transactions.json=pkg/traderepublic/timeline_transactions_gen.go \
-	--schema-output=https://raw.githubusercontent.com/dhojayev/traderepublic-portfolio-downloader/refs/heads/main/v2/pkg/traderepublic/schemas/timeline_detail.json=pkg/traderepublic/timeline_detail_gen.go \
+	--schema-output=https://raw.githubusercontent.com/dhojayev/traderepublic-portfolio-downloader/refs/heads/main/v2/pkg/traderepublic/schemas/timeline_details.json=pkg/traderepublic/timeline_details_gen.go \
 	--schema-output=https://raw.githubusercontent.com/dhojayev/traderepublic-portfolio-downloader/refs/heads/main/v2/pkg/traderepublic/schemas/instrument.json=pkg/traderepublic/instrument_gen.go \
 	pkg/traderepublic/schemas/common.json \
 	pkg/traderepublic/schemas/ws_connect_request.json \
 	pkg/traderepublic/schemas/ws_sub_request.json \
 	pkg/traderepublic/schemas/ws_response.json \
 	pkg/traderepublic/schemas/timeline_transactions.json \
-	pkg/traderepublic/schemas/timeline_detail.json \
+	pkg/traderepublic/schemas/timeline_details.json \
 	pkg/traderepublic/schemas/instrument.json
 
 	go fmt ./pkg/traderepublic/...

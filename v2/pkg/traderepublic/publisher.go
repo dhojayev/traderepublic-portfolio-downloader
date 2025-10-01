@@ -2,7 +2,10 @@
 
 package traderepublic
 
-import "log/slog"
+import (
+	"log/slog"
+	"sync"
+)
 
 type PublisherInterface interface {
 	Subscribe(topic string) <-chan []byte
@@ -12,15 +15,20 @@ type PublisherInterface interface {
 
 type Publisher struct {
 	subscribers map[string]chan []byte
+	mu          *sync.RWMutex
 }
 
 func NewPublisher() *Publisher {
 	return &Publisher{
 		subscribers: make(map[string]chan []byte),
+		mu:          &sync.RWMutex{},
 	}
 }
 
 func (p *Publisher) Subscribe(topic string) <-chan []byte {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
 	ch := make(chan []byte)
 	p.subscribers[topic] = ch
 
@@ -28,6 +36,9 @@ func (p *Publisher) Subscribe(topic string) <-chan []byte {
 }
 
 func (p *Publisher) Publish(msg []byte, topic string) {
+	p.mu.RLock()
+	defer p.mu.RUnlock()
+
 	ch, ok := p.subscribers[topic]
 	if !ok {
 		slog.Error("channel not found", "topic", topic)

@@ -19,7 +19,7 @@ func NewEventWriterHandler(writer *writer.ResponseWriter) *EventWriterHandler {
 }
 
 func (h *EventWriterHandler) Handle(event bus.Event) {
-	slog.Debug("handling event", "name", event.Name)
+	slog.Debug("handling event", "topic", event.Topic)
 
 	filepath := fmt.Sprintf("%s/%s", event.Topic, event.ID)
 	data := event.Data
@@ -29,5 +29,5 @@ func (h *EventWriterHandler) Handle(event bus.Event) {
 		return
 	}
 
-	slog.Error("failed to write data", "data", event.Data, "name", event.Name, "error", err)
+	slog.Error("failed to write data", "data", event.Data, "error", err)
 }

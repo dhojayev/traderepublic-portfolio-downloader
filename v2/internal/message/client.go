@@ -42,9 +42,8 @@ func (c *Client) SubscribeToTimelineTransactions(ctx context.Context) error {
 	counter := int64(1)
 
 	c.eventBus.Publish(bus.NewEvent(
-		bus.TopicTimelineTransactions,
+		bus.TopicTimelineTransactionsReceived,
 		strconv.FormatInt(counter, 10),
-		bus.EventNameTimelineTransactionsReceived,
 		data,
 	))
 
@@ -75,9 +74,8 @@ func (c *Client) SubscribeToTimelineTransactions(ctx context.Context) error {
 			mu.Unlock()
 
 			c.eventBus.Publish(bus.NewEvent(
-				bus.TopicTimelineTransactions,
+				bus.TopicTimelineTransactionsReceived,
 				strconv.FormatInt(counter, 10),
-				bus.EventNameTimelineTransactionsReceived,
 				data,
 			))
 
@@ -122,9 +120,8 @@ func (c *Client) SubscribeToTimelineDetailV2(ctx context.Context, uuid traderepu
 		data := <-ch
 
 		c.eventBus.Publish(bus.NewEvent(
-			bus.TopicTimelineDetailsV2,
+			bus.TopicTimelineDetailsV2Received,
 			itemID,
-			bus.EventNameTimelineDetailV2Received,
 			data,
 		))
 	}()
@@ -150,9 +147,8 @@ func (c *Client) SubsribeToInstrument(ctx context.Context, isin string) error {
 		data := <-ch
 
 		c.eventBus.Publish(bus.NewEvent(
-			bus.TopicInstrument,
+			bus.TopicInstrumentReceived,
 			isin,
-			bus.EventNameInstrumentReceived,
 			data,
 		))
 	}()

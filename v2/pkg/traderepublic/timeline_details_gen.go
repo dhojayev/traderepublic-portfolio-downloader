@@ -816,77 +816,141 @@ func (j *HeaderData) UnmarshalJSON(value []byte) error {
 }
 
 type HeaderSection struct {
-	// ActionableTitle corresponds to the JSON schema field "actionableTitle".
-	ActionableTitle *HeaderSectionActionableTitle `json:"actionableTitle,omitempty" yaml:"actionableTitle,omitempty" mapstructure:"actionableTitle,omitempty"`
+	// Action corresponds to the JSON schema field "action".
+	Action *HeaderSectionAction `json:"action,omitempty" yaml:"action,omitempty" mapstructure:"action,omitempty"`
 
-	// Button corresponds to the JSON schema field "button".
-	Button *HeaderSectionButton `json:"button,omitempty" yaml:"button,omitempty" mapstructure:"button,omitempty"`
-
-	// Description corresponds to the JSON schema field "description".
-	Description *string `json:"description,omitempty" yaml:"description,omitempty" mapstructure:"description,omitempty"`
+	// Data corresponds to the JSON schema field "data".
+	Data HeaderSectionData `json:"data" yaml:"data" mapstructure:"data"`
 
 	// Title corresponds to the JSON schema field "title".
-	Title *string `json:"title,omitempty" yaml:"title,omitempty" mapstructure:"title,omitempty"`
+	Title string `json:"title" yaml:"title" mapstructure:"title"`
 
 	// Type corresponds to the JSON schema field "type".
 	Type string `json:"type" yaml:"type" mapstructure:"type"`
 }
 
-type HeaderSectionActionableTitle struct {
-	// Action corresponds to the JSON schema field "action".
-	Action DeeplinkAction `json:"action" yaml:"action" mapstructure:"action"`
+type HeaderSectionAction struct {
+	// Payload corresponds to the JSON schema field "payload".
+	Payload string `json:"payload" yaml:"payload" mapstructure:"payload"`
 
-	// Title corresponds to the JSON schema field "title".
-	Title string `json:"title" yaml:"title" mapstructure:"title"`
+	// Type corresponds to the JSON schema field "type".
+	Type HeaderSectionActionType `json:"type" yaml:"type" mapstructure:"type"`
+}
+
+type HeaderSectionActionType string
+
+const HeaderSectionActionTypeInstrumentDetail HeaderSectionActionType = "instrumentDetail"
+
+var enumValues_HeaderSectionActionType = []interface{}{
+	"instrumentDetail",
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *HeaderSectionActionableTitle) UnmarshalJSON(value []byte) error {
-	var raw map[string]interface{}
-	if err := json.Unmarshal(value, &raw); err != nil {
+func (j *HeaderSectionActionType) UnmarshalJSON(value []byte) error {
+	var v string
+	if err := json.Unmarshal(value, &v); err != nil {
 		return err
 	}
-	if _, ok := raw["action"]; raw != nil && !ok {
-		return fmt.Errorf("field action in HeaderSectionActionableTitle: required")
+	var ok bool
+	for _, expected := range enumValues_HeaderSectionActionType {
+		if reflect.DeepEqual(v, expected) {
+			ok = true
+			break
+		}
 	}
-	if _, ok := raw["title"]; raw != nil && !ok {
-		return fmt.Errorf("field title in HeaderSectionActionableTitle: required")
+	if !ok {
+		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_HeaderSectionActionType, v)
 	}
-	type Plain HeaderSectionActionableTitle
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	*j = HeaderSectionActionableTitle(plain)
+	*j = HeaderSectionActionType(v)
 	return nil
 }
 
-type HeaderSectionButton struct {
-	// Action corresponds to the JSON schema field "action".
-	Action DeeplinkAction `json:"action" yaml:"action" mapstructure:"action"`
-
-	// Title corresponds to the JSON schema field "title".
-	Title string `json:"title" yaml:"title" mapstructure:"title"`
-}
-
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *HeaderSectionButton) UnmarshalJSON(value []byte) error {
+func (j *HeaderSectionAction) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
-	if _, ok := raw["action"]; raw != nil && !ok {
-		return fmt.Errorf("field action in HeaderSectionButton: required")
+	if _, ok := raw["payload"]; raw != nil && !ok {
+		return fmt.Errorf("field payload in HeaderSectionAction: required")
 	}
-	if _, ok := raw["title"]; raw != nil && !ok {
-		return fmt.Errorf("field title in HeaderSectionButton: required")
+	if _, ok := raw["type"]; raw != nil && !ok {
+		return fmt.Errorf("field type in HeaderSectionAction: required")
 	}
-	type Plain HeaderSectionButton
+	type Plain HeaderSectionAction
 	var plain Plain
 	if err := json.Unmarshal(value, &plain); err != nil {
 		return err
 	}
-	*j = HeaderSectionButton(plain)
+	*j = HeaderSectionAction(plain)
+	return nil
+}
+
+type HeaderSectionData struct {
+	// Icon corresponds to the JSON schema field "icon".
+	Icon string `json:"icon" yaml:"icon" mapstructure:"icon"`
+
+	// Status corresponds to the JSON schema field "status".
+	Status HeaderSectionDataStatus `json:"status" yaml:"status" mapstructure:"status"`
+
+	// SubtitleText corresponds to the JSON schema field "subtitleText".
+	SubtitleText *string `json:"subtitleText,omitempty" yaml:"subtitleText,omitempty" mapstructure:"subtitleText,omitempty"`
+
+	// Timestamp corresponds to the JSON schema field "timestamp".
+	Timestamp string `json:"timestamp" yaml:"timestamp" mapstructure:"timestamp"`
+}
+
+type HeaderSectionDataStatus string
+
+const HeaderSectionDataStatusCanceled HeaderSectionDataStatus = "canceled"
+const HeaderSectionDataStatusExecuted HeaderSectionDataStatus = "executed"
+
+var enumValues_HeaderSectionDataStatus = []interface{}{
+	"executed",
+	"canceled",
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *HeaderSectionDataStatus) UnmarshalJSON(value []byte) error {
+	var v string
+	if err := json.Unmarshal(value, &v); err != nil {
+		return err
+	}
+	var ok bool
+	for _, expected := range enumValues_HeaderSectionDataStatus {
+		if reflect.DeepEqual(v, expected) {
+			ok = true
+			break
+		}
+	}
+	if !ok {
+		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_HeaderSectionDataStatus, v)
+	}
+	*j = HeaderSectionDataStatus(v)
+	return nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *HeaderSectionData) UnmarshalJSON(value []byte) error {
+	var raw map[string]interface{}
+	if err := json.Unmarshal(value, &raw); err != nil {
+		return err
+	}
+	if _, ok := raw["icon"]; raw != nil && !ok {
+		return fmt.Errorf("field icon in HeaderSectionData: required")
+	}
+	if _, ok := raw["status"]; raw != nil && !ok {
+		return fmt.Errorf("field status in HeaderSectionData: required")
+	}
+	if _, ok := raw["timestamp"]; raw != nil && !ok {
+		return fmt.Errorf("field timestamp in HeaderSectionData: required")
+	}
+	type Plain HeaderSectionData
+	var plain Plain
+	if err := json.Unmarshal(value, &plain); err != nil {
+		return err
+	}
+	*j = HeaderSectionData(plain)
 	return nil
 }
 
@@ -895,6 +959,12 @@ func (j *HeaderSection) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
+	}
+	if _, ok := raw["data"]; raw != nil && !ok {
+		return fmt.Errorf("field data in HeaderSection: required")
+	}
+	if _, ok := raw["title"]; raw != nil && !ok {
+		return fmt.Errorf("field title in HeaderSection: required")
 	}
 	if _, ok := raw["type"]; raw != nil && !ok {
 		return fmt.Errorf("field type in HeaderSection: required")
@@ -1971,7 +2041,7 @@ func (j *TableSection) UnmarshalJSON(value []byte) error {
 	return nil
 }
 
-type TimelineDetailJson struct {
+type TimelineDetailsJson struct {
 	// Id corresponds to the JSON schema field "id".
 	Id Uuid `json:"id" yaml:"id" mapstructure:"id"`
 
@@ -1980,22 +2050,22 @@ type TimelineDetailJson struct {
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
-func (j *TimelineDetailJson) UnmarshalJSON(value []byte) error {
+func (j *TimelineDetailsJson) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
 	}
 	if _, ok := raw["id"]; raw != nil && !ok {
-		return fmt.Errorf("field id in TimelineDetailJson: required")
+		return fmt.Errorf("field id in TimelineDetailsJson: required")
 	}
 	if _, ok := raw["sections"]; raw != nil && !ok {
-		return fmt.Errorf("field sections in TimelineDetailJson: required")
+		return fmt.Errorf("field sections in TimelineDetailsJson: required")
 	}
-	type Plain TimelineDetailJson
+	type Plain TimelineDetailsJson
 	var plain Plain
 	if err := json.Unmarshal(value, &plain); err != nil {
 		return err
 	}
-	*j = TimelineDetailJson(plain)
+	*j = TimelineDetailsJson(plain)
 	return nil
 }

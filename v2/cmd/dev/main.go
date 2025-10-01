@@ -24,9 +24,9 @@ func main() {
 
 	eventBus := bus.New()
 	faker := app.NewFaker(eventBus)
-	tdHandler := timelinedetails.NewHandler()
+	tdHandler := timelinedetails.NewHandler(eventBus)
 
-	eventBus.Subscribe(bus.TopicTimelineDetailsV2, tdHandler.Handle)
+	eventBus.Subscribe(bus.TopicTimelineDetailsV2Received, tdHandler.Handle)
 
 	err := faker.Run()
 	if err != nil {
