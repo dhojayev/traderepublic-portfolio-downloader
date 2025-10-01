@@ -3,7 +3,7 @@ package auth_test
 import (
 	"testing"
 
-	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/auth"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/auth"
 	"github.com/stretchr/testify/assert"
 )
 

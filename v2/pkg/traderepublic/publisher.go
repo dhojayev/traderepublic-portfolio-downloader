@@ -1,6 +1,14 @@
-package publisher
+//go:generate go tool mockgen -source=publisher.go -destination publisher_mock_gen.go -package=traderepublic
+
+package traderepublic
 
 import "log/slog"
+
+type PublisherInterface interface {
+	Subscribe(topic string) <-chan []byte
+	Publish(msg []byte, topic string)
+	Close(topic string)
+}
 
 type Publisher struct {
 	subscribers map[string]chan []byte

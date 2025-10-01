@@ -7,8 +7,7 @@ import (
 	"sync"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/bus"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/auth"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/websocketclient"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/auth"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/pkg/traderepublic"
 )
 
@@ -21,10 +20,10 @@ type ClientInterface interface {
 type Client struct {
 	eventBus           *bus.EventBus
 	credentialsService auth.CredentialsServiceInterface
-	wsClient           websocketclient.ClientInterface
+	wsClient           traderepublic.WSClientInterface
 }
 
-func NewClient(eventBus *bus.EventBus, credentialsService auth.CredentialsServiceInterface, wsClient websocketclient.ClientInterface) *Client {
+func NewClient(eventBus *bus.EventBus, credentialsService auth.CredentialsServiceInterface, wsClient traderepublic.WSClientInterface) *Client {
 	return &Client{
 		eventBus:           eventBus,
 		credentialsService: credentialsService,

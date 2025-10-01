@@ -10,14 +10,13 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/bus"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/console"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/file"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/message"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/timelinedetails"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/timelinetransactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/auth"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/message"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/message/publisher"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/websocketclient"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/auth"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/writer"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/pkg/traderepublic"
 	"github.com/joho/godotenv"
 )
 
@@ -60,7 +59,7 @@ func main() {
 	eventBus.Subscribe(bus.TopicTimelineTransactions, wHandler.Handle)
 	eventBus.Subscribe(bus.TopicTimelineDetailsV2, wHandler.Handle)
 
-	wsclient := websocketclient.NewClient(publisher.NewPublisher(), ctx)
+	wsclient := traderepublic.NewWSClient(traderepublic.NewPublisher(), ctx)
 
 	messageClient := message.NewClient(eventBus, credentialsService, wsclient)
 	ttHandler := timelinetransactions.NewHandler(eventBus, messageClient)

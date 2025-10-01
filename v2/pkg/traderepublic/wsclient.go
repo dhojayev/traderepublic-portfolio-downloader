@@ -1,4 +1,6 @@
-package websocketclient
+//go:generate go tool mockgen -source=wsclient.go -destination wsclient_mock_gen.go -package=traderepublic
+
+package traderepublic
 
 import (
 	"context"
@@ -12,9 +14,6 @@ import (
 	"sync"
 
 	"github.com/gorilla/websocket"
-
-	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/message/publisher"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/pkg/traderepublic"
 )
 
 const (
@@ -23,9 +22,9 @@ const (
 	MsgTypeUnsub = "unsub"
 
 	// Message states.
-	StateData     = traderepublic.WsResponseJsonStateA
-	StateContinue = traderepublic.WsResponseJsonStateC
-	StateError    = traderepublic.WsResponseJsonStateE
+	StateData     = WsResponseJsonStateA
+	StateContinue = WsResponseJsonStateC
+	StateError    = WsResponseJsonStateE
 
 	// Minimum parts in a message.
 	minMessageParts = 2
@@ -42,10 +41,22 @@ var (
 	ErrAuthRequired = errors.New("authentication required")
 )
 
-// Client is a WebSocket client for the Trade Republic API.
-type Client struct {
+// ClientInterface is the interface for the WebSocket client.
+type WSClientInterface interface {
+	// Connect connects to the WebSocket server.
+	Connect() error
+
+	// Close closes the WebSocket connection.
+	Close() error
+
+	// Subscribe subscribes to a data type.
+	Subscribe(data WsSubRequestJson) (<-chan []byte, error)
+}
+
+// WSClient is a WebSocket client for the Trade Republic API.
+type WSClient struct {
 	conn         *websocket.Conn
-	publisher    publisher.Interface
+	publisher    PublisherInterface
 	currentSubID uint
 	mu           sync.Mutex
 	closed       bool
@@ -53,8 +64,8 @@ type Client struct {
 }
 
 // NewClient creates a new WebSocket client.
-func NewClient(publisher publisher.Interface, ctx context.Context) *Client {
-	client := &Client{
+func NewWSClient(publisher PublisherInterface, ctx context.Context) *WSClient {
+	client := &WSClient{
 		publisher: publisher,
 		ctx:       ctx,
 	}
@@ -70,7 +81,7 @@ func NewClient(publisher publisher.Interface, ctx context.Context) *Client {
 }
 
 // Connect connects to the WebSocket server.
-func (c *Client) Connect() error {
+func (c *WSClient) Connect() error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -78,12 +89,12 @@ func (c *Client) Connect() error {
 		return nil
 	}
 
-	websocketURL := url.URL{Scheme: "wss", Host: traderepublic.WebsocketBaseHost, Path: "/"}
+	websocketURL := url.URL{Scheme: "wss", Host: WebsocketBaseHost, Path: "/"}
 	slog.Info("connecting to WebSocket", "url", websocketURL.String())
 
 	// Create header with user agent
 	header := make(map[string][]string)
-	header["User-Agent"] = []string{traderepublic.HTTPUserAgent}
+	header["User-Agent"] = []string{HTTPUserAgent}
 
 	// Connect to the WebSocket server
 	conn, _, err := websocket.DefaultDialer.DialContext(c.ctx, websocketURL.String(), header)
@@ -93,7 +104,7 @@ func (c *Client) Connect() error {
 
 	c.conn = conn
 	c.closed = false
-	data := traderepublic.WsConnectRequestJson{}
+	data := WsConnectRequestJson{}
 
 	// Use default values from schema
 	_ = data.UnmarshalJSON([]byte("{}"))
@@ -104,7 +115,7 @@ func (c *Client) Connect() error {
 		return fmt.Errorf("could not marshal data: %w", err)
 	}
 
-	payload := fmt.Sprintf("connect %s %s", traderepublic.WebhookVersion, dataBytes)
+	payload := fmt.Sprintf("connect %s %s", WebhookVersion, dataBytes)
 
 	// Send connect message
 	if err = c.conn.WriteMessage(websocket.TextMessage, []byte(payload)); err != nil {
@@ -128,7 +139,7 @@ func (c *Client) Connect() error {
 }
 
 // Close closes the WebSocket connection.
-func (c *Client) Close() error {
+func (c *WSClient) Close() error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -147,7 +158,7 @@ func (c *Client) Close() error {
 }
 
 // subscribe subscribes to a data type.
-func (c *Client) Subscribe(data traderepublic.WsSubRequestJson) (<-chan []byte, error) {
+func (c *WSClient) Subscribe(data WsSubRequestJson) (<-chan []byte, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -184,7 +195,7 @@ func (c *Client) Subscribe(data traderepublic.WsSubRequestJson) (<-chan []byte, 
 }
 
 // readMessages reads messages from the WebSocket and sends them to the channel.
-func (c *Client) readMessages() {
+func (c *WSClient) readMessages() {
 	for {
 		select {
 		case <-c.ctx.Done():
@@ -241,7 +252,7 @@ func (c *Client) readMessages() {
 }
 
 // unsubscribe unsubscribes from a subscription.
-func (c *Client) unsubscribe(subID int) {
+func (c *WSClient) unsubscribe(subID int) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -263,8 +274,8 @@ func (c *Client) unsubscribe(subID int) {
 }
 
 // parseMessage parses a message from the WebSocket.
-func parseMessage(data []byte) (traderepublic.WsResponseJson, error) {
-	var msg traderepublic.WsResponseJson
+func parseMessage(data []byte) (WsResponseJson, error) {
+	var msg WsResponseJson
 
 	parts := strings.Split(string(data), " ")
 
@@ -279,7 +290,7 @@ func parseMessage(data []byte) (traderepublic.WsResponseJson, error) {
 	}
 
 	msg.ID = int(id)
-	msg.State = traderepublic.WsResponseJsonState(parts[1])
+	msg.State = WsResponseJsonState(parts[1])
 
 	// Parse data if available
 	if len(parts) > minMessageParts {

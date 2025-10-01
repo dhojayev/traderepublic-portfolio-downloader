@@ -6,8 +6,8 @@ import (
 	"log/slog"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/bus"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/auth"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/message"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/message"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/auth"
 )
 
 type App struct {
