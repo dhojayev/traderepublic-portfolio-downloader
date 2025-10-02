@@ -56,7 +56,7 @@ func (h *Handler) Handle(event bus.Event) {
 		}
 
 		h.eventBus.Publish(bus.NewEvent(
-			bus.TopicInstrumentRequested,
+			bus.TopicInstrumentFetch,
 			isin,
 			[]byte(isin),
 		))

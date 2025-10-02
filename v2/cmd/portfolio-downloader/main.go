@@ -19,6 +19,7 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/writer"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/pkg/traderepublic"
 	"github.com/joho/godotenv"
+	"github.com/patrickmn/go-cache"
 )
 
 func main() {
@@ -66,11 +67,13 @@ func main() {
 	msgClient := message.NewClient(eventBus, credentialsService, wsclient)
 	ttHandler := timelinetransactions.NewHandler(eventBus, msgClient)
 	tdHandler := timelinedetails.NewHandler(eventBus)
-	instrHandler := instrument.NewHandler(msgClient)
+	c := cache.New(cache.NoExpiration, cache.NoExpiration)
+	instrHandler := instrument.NewHandler(msgClient, c)
 
 	eventBus.Subscribe(bus.TopicTimelineTransactionsReceived, ttHandler.Handle)
 	eventBus.Subscribe(bus.TopicTimelineDetailsV2Received, tdHandler.Handle)
-	eventBus.Subscribe(bus.TopicInstrumentRequested, instrHandler.Handle)
+	eventBus.Subscribe(bus.TopicInstrumentFetch, instrHandler.HandleFetch)
+	eventBus.Subscribe(bus.TopicInstrumentReceived, instrHandler.HandleReceived)
 
 	app := NewApp(auth.NewClient(console.NewInputHandler(), apiClient), credentialsService, msgClient, eventBus)
 
