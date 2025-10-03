@@ -11,15 +11,23 @@ var (
 	ErrSectionNotFound  = errors.New("section not found")
 	ErrDataItemNotFound = errors.New("data item not found")
 
+	SectionTableOverview    = sectionTableTitles{"Overview"}    // Title for the overview table section
+	SectionTableTransaction = sectionTableTitles{"Transaction"} // Title for the transaction table section
+
 	// Title maps for payment details.
-	PaymentShares     titleMap = titleMap{"Anteile"}
-	PaymentSharePrice titleMap = titleMap{"Anteilspreis"}
-	PaymentCommission titleMap = titleMap{"Gebühr"}
-	PaymentTotal      titleMap = titleMap{"Gesamt"}
+	DataShares           = dataTitles{"Shares"}      // Title map for shares in payment details
+	DataSharePrice       = dataTitles{"Share price"} // Title map for share price in payment details
+	DataFee              = dataTitles{"Fee"}         // Title map for commission in payment details
+	DataTotal            = dataTitles{"Total"}       // Title map for total in payment details
+	DataTax              = dataTitles{"Tax"}
+	DataDividendPerShare = dataTitles{"Dividend per share"}
 )
 
-// titleMap is a slice of strings representing possible titles.
-type titleMap []string
+// sectionTableTitles is a type alias for string representing a table section title.
+type sectionTableTitles []string
+
+// dataTitles is a slice of strings representing possible titles.
+type dataTitles []string
 
 // SectionHeader retrieves the header section from the timeline details.
 func (d *TimelineDetailsJson) SectionHeader() (HeaderSection, error) {
@@ -34,34 +42,24 @@ func (d *TimelineDetailsJson) SectionHeader() (HeaderSection, error) {
 	return header, nil
 }
 
-// SectionOverview retrieves the overview section from the timeline details.
-func (d *TimelineDetailsJson) SectionOverview() (TableSection, error) {
-	var overview TableSection
+func (d *TimelineDetailsJson) SectionTable(titles sectionTableTitles) (TableSection, error) {
+	var section TableSection
 
-	// Find the overview section in the sections slice.
-	err := findSliceElement(d.Sections, &overview, "Übersicht")
-	if err != nil {
-		return overview, fmt.Errorf("overview %w", ErrSectionNotFound)
+	for _, title := range titles {
+		// Find the section in the sections slice by title.
+		err := findSliceElement(d.Sections, &section, string(title))
+		if err != nil {
+			continue
+		}
+
+		return section, nil
 	}
 
-	return overview, nil
-}
-
-// SectionTransaction retrieves the transaction section from the timeline details.
-func (d *TimelineDetailsJson) SectionTransaction() (TableSection, error) {
-	var transaction TableSection
-
-	// Find the transaction section in the sections slice.
-	err := findSliceElement(d.Sections, &transaction, "Transaktion")
-	if err != nil {
-		return transaction, fmt.Errorf("transaction %w", ErrSectionNotFound)
-	}
-
-	return transaction, nil
+	return section, fmt.Errorf("table %w with titles %#v", ErrSectionNotFound, titles)
 }
 
 // DataPayment retrieves a payment row based on the provided titles from the table section.
-func (s *TableSection) DataPayment(titles titleMap) (PaymentRow, error) {
+func (s *TableSection) DataPayment(titles dataTitles) (PaymentRow, error) {
 	var item PaymentRow
 
 	// Iterate through the data slice to find the matching payment row.

@@ -1,0 +1,9 @@
+name: Commit message
+version: 0.0.1
+schema: v1
+prompts:
+  - name: Generate commit message
+    description: Generates a commit message
+    prompt: Write a short and clear commit message for these changes
+    context:  
+      - provider: diff

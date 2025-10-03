@@ -39,7 +39,7 @@ func (j *WsConnectRequestJson) UnmarshalJSON(value []byte) error {
 		plain.ClientVersion = "11.4.1"
 	}
 	if v, ok := raw["locale"]; !ok || v == nil {
-		plain.Locale = "de"
+		plain.Locale = "en"
 	}
 	if v, ok := raw["platformId"]; !ok || v == nil {
 		plain.PlatformId = "webtrading"

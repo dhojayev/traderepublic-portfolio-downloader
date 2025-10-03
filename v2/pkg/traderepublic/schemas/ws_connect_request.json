@@ -12,7 +12,7 @@
     "properties": {
         "locale": {
             "type": "string",
-            "default": "de"
+            "default": "en"
         },
         "platformId": {
             "type": "string",

@@ -1,0 +1,132 @@
+{
+  "id" : "a0e4c36a-e0ee-4183-a725-09fb1c6b3c33",
+  "sections" : [ {
+    "title" : "You received €4.13",
+    "data" : {
+      "icon" : "logos/IE0031442068/v2",
+      "timestamp" : "2024-06-26T15:22:31.478Z",
+      "status" : "executed"
+    },
+    "type" : "header"
+  }, {
+    "title" : "Overview",
+    "data" : [ {
+      "title" : "Status",
+      "detail" : {
+        "text" : "Executed",
+        "functionalStyle" : "EXECUTED",
+        "type" : "status"
+      },
+      "style" : "plain"
+    }, {
+      "title" : "Event",
+      "detail" : {
+        "text" : "Cash dividend",
+        "displayValue" : {
+          "text" : "Cash dividend"
+        },
+        "type" : "text"
+      },
+      "style" : "plain"
+    }, {
+      "title" : "Asset",
+      "detail" : {
+        "text" : "Core S&P 500 USD (Dist)",
+        "displayValue" : {
+          "text" : "Core S&P 500 USD (Dist)"
+        },
+        "type" : "text"
+      },
+      "style" : "plain"
+    } ],
+    "type" : "table"
+  }, {
+    "title" : "Transaction",
+    "data" : [ {
+      "title" : "Shares",
+      "detail" : {
+        "text" : "30.447001",
+        "displayValue" : {
+          "text" : "30.447001"
+        },
+        "type" : "text"
+      },
+      "style" : "plain"
+    }, {
+      "title" : "Dividend per share",
+      "detail" : {
+        "text" : "0,15 $",
+        "displayValue" : {
+          "text" : "$0.15"
+        },
+        "type" : "text"
+      },
+      "style" : "plain"
+    }, {
+      "title" : "Tax",
+      "detail" : {
+        "text" : "0,00 €",
+        "displayValue" : {
+          "text" : "€0.00"
+        },
+        "type" : "text"
+      },
+      "style" : "plain"
+    }, {
+      "title" : "Total",
+      "detail" : {
+        "text" : "4,13 €",
+        "displayValue" : {
+          "text" : "€4.13"
+        },
+        "type" : "text"
+      },
+      "style" : "plain"
+    } ],
+    "type" : "table"
+  }, {
+    "title" : "Documents",
+    "data" : [ {
+      "title" : "Documents",
+      "detail" : "25.09.2024",
+      "action" : {
+        "payload" : "https://traderepublic-postbox-platform-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
+        "type" : "browserModal"
+      },
+      "id" : "b3175305-7ad3-413c-9f71-24f9b7c0909e",
+      "postboxType" : "CA_INCOME_INVOICE"
+    }, {
+      "title" : "Documents",
+      "detail" : "26.06.2024",
+      "action" : {
+        "payload" : "https://traderepublic-postbox-platform-production.s3.eu-central-1.amazonaws.com/timeline/postbox/",
+        "type" : "browserModal"
+      },
+      "id" : "c0d447b7-6b48-4b46-b365-98f393a08f59",
+      "postboxType" : "CA_INCOME_INVOICE"
+    } ],
+    "type" : "documents"
+  }, {
+    "title" : "",
+    "data" : [ {
+      "title" : "",
+      "detail" : {
+        "icon" : "common_empty_string",
+        "action" : {
+          "payload" : {
+            "contextCategory" : "NHC",
+            "contextParams" : {
+              "timelineEventId" : "b40218e7-82fb-4589-b2e5-2a1f55aea56e",
+              "chat_flow_key" : "NHC_0029_wealth_general_question_dividends"
+            }
+          },
+          "type" : "customerSupportChat"
+        },
+        "style" : "highlighted",
+        "type" : "listItemAvatarDefault"
+      },
+      "style" : "highlighted"
+    } ],
+    "type" : "table"
+  } ]
+}

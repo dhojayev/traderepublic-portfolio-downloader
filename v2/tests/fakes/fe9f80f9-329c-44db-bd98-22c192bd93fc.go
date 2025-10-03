@@ -10,7 +10,7 @@ func Modelfe9f80f9329c44dbbd9822c192bd93fc() (transaction.Model, error) {
 		return model, err
 	}
 
-	model = transaction.Model{
+	return transaction.Model{
 		ID:             "fe9f80f9-329c-44db-bd98-22c192bd93fc",
 		Status:         "executed",
 		Timestamp:      transaction.CSVDateTime{Time: timestamp},
@@ -28,5 +28,5 @@ func Modelfe9f80f9329c44dbbd9822c192bd93fc() (transaction.Model, error) {
 		TaxAmount:      0,
 		InvestedAmount: 0,
 		Documents:      []string{},
-	}
+	}, nil
 }
