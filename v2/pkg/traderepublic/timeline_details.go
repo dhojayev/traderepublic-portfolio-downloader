@@ -16,7 +16,9 @@ var (
 	SectionTransaction = sectionTitles{"Transaction"} // Title for the transaction table section
 	SectionPerformance = sectionTitles{"Performance"}
 
+	DataCardPayment      = dataTitles{"Card payment"}
 	DataOrderType        = dataTitles{"Order Type"}
+	DataSavingsPlan      = dataTitles{"Savings Plan"}
 	DataEvent            = dataTitles{"Event"}
 	DataAsset            = dataTitles{"Asset"}
 	DataShares           = dataTitles{"Shares"}      // Title map for shares in payment details

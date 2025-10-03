@@ -20,19 +20,6 @@ type Model struct {
 	Documents      []string
 }
 
-type TransactionType string
-
-const (
-	TypePurchase       TransactionType = "Purchase"
-	TypeSale           TransactionType = "Sale"
-	TypeDividendPayout TransactionType = "Dividends"
-	TypeRoundUp        TransactionType = "Round up"
-	TypeSaveback       TransactionType = "Saveback"
-	TypeDeposit        TransactionType = "Deposit"
-	TypeWithdrawal     TransactionType = "Withdrawal"
-	TypeInterestPayout TransactionType = "Interest payout"
-)
-
 func NewModelBuilder() *ModelBuilder {
 	return &ModelBuilder{}
 }

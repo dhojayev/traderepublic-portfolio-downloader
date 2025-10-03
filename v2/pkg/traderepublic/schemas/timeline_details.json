@@ -419,6 +419,9 @@
               "properties": {
                 "text": {
                   "type": "string"
+                },
+                "prefix": {
+                  "type": "string"
                 }
               }
             },

@@ -8,7 +8,6 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/timelinedetails"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/transaction"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/pkg/traderepublic"
-	gocache "github.com/patrickmn/go-cache"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -35,20 +34,36 @@ func TestNormalizer_Normalize(t *testing.T) {
 		require.NoError(t, err)
 
 		builder := transaction.NewModelBuilder()
-		cache := gocache.New(gocache.NoExpiration, gocache.NoExpiration)
-		normalizer := timelinedetails.NewNormalizer(builder, cache)
+		normalizer := timelinedetails.NewNormalizer(builder)
 
-		t.Run(entry.Name(), func(t *testing.T) {
+		t.Run("it normalizes "+entry.Name(), func(t *testing.T) {
 			t.Parallel()
 
 			model, err := normalizer.Normalize(details)
 			require.NoError(t, err)
 
-			t.Log(model)
-
 			assert.NotEmpty(t, model.ID)
 			assert.NotEmpty(t, model.Status)
 			assert.NotEmpty(t, model.Timestamp)
+		})
+
+		t.Run("it finds order type in "+entry.Name(), func(t *testing.T) {
+			t.Parallel()
+
+			header, err := details.SectionHeader()
+			require.NoError(t, err)
+
+			overview, err := details.FindSection(traderepublic.SectionOverview)
+			require.NoError(t, err)
+
+			_, err = overview.FindData(traderepublic.DataCardPayment)
+			if err != nil && header.Action == nil {
+				t.Skip()
+			}
+
+			orderType, err := overview.FindData(traderepublic.DataOrderType)
+			require.NoError(t, err, "Unexpected contents: "+string(contents))
+			require.NotEmpty(t, orderType)
 		})
 	}
 }

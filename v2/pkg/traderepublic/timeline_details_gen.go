@@ -1220,6 +1220,9 @@ type PaymentRowDetail struct {
 }
 
 type PaymentRowDetailDisplayValue struct {
+	// Prefix corresponds to the JSON schema field "prefix".
+	Prefix *string `json:"prefix,omitempty" yaml:"prefix,omitempty" mapstructure:"prefix,omitempty"`
+
 	// Text corresponds to the JSON schema field "text".
 	Text string `json:"text" yaml:"text" mapstructure:"text"`
 }
