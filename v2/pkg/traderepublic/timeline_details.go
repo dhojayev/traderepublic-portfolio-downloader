@@ -8,17 +8,21 @@ import (
 
 // Error constants for section and data item not found.
 var (
-	ErrSectionNotFound  = errors.New("section not found")
-	ErrDataItemNotFound = errors.New("data item not found")
+	ErrSliceElementNotFound = errors.New("slice element not found")
+	ErrSectionNotFound      = errors.New("section not found")
+	ErrDataItemNotFound     = errors.New("data item not found")
 
 	SectionTableOverview    = sectionTableTitles{"Overview"}    // Title for the overview table section
 	SectionTableTransaction = sectionTableTitles{"Transaction"} // Title for the transaction table section
+	SectionTablePerformance = sectionTableTitles{"Performance"}
 
 	// Title maps for payment details.
 	DataShares           = dataTitles{"Shares"}      // Title map for shares in payment details
 	DataSharePrice       = dataTitles{"Share price"} // Title map for share price in payment details
 	DataFee              = dataTitles{"Fee"}         // Title map for commission in payment details
-	DataTotal            = dataTitles{"Total"}       // Title map for total in payment details
+	DataProfit           = dataTitles{"Profit"}
+	DataGain             = dataTitles{"Gain"}
+	DataTotal            = dataTitles{"Total"} // Title map for total in payment details
 	DataTax              = dataTitles{"Tax"}
 	DataDividendPerShare = dataTitles{"Dividend per share"}
 )
@@ -55,7 +59,7 @@ func (d *TimelineDetailsJson) SectionTable(titles sectionTableTitles) (TableSect
 		return section, nil
 	}
 
-	return section, fmt.Errorf("table %w with titles %#v", ErrSectionNotFound, titles)
+	return section, fmt.Errorf("table %w with titles %v", ErrSectionNotFound, titles)
 }
 
 // DataPayment retrieves a payment row based on the provided titles from the table section.
@@ -72,7 +76,7 @@ func (s *TableSection) DataPayment(titles dataTitles) (PaymentRow, error) {
 		return item, nil
 	}
 
-	return item, fmt.Errorf("payment %w with titles %#v", ErrDataItemNotFound, titles)
+	return item, fmt.Errorf("payment %w with titles %v", ErrDataItemNotFound, titles)
 }
 
 // findSliceElement searches for a slice element that matches the provided search criteria.
@@ -101,7 +105,7 @@ func findSliceElement(input []any, v any, search string) error {
 		return nil
 	}
 
-	return ErrSectionNotFound
+	return ErrSliceElementNotFound
 }
 
 // unmarshal converts an interface to a JSON string and then back to the provided value.

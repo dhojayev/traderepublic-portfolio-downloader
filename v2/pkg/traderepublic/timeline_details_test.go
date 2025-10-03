@@ -17,6 +17,8 @@ type testCase struct {
 	shares           string
 	sharePrice       string
 	dividendPerShare string
+	profit           string
+	gain             string
 	fee              string
 	tax              string
 	total            string
@@ -78,7 +80,7 @@ func TestTimelineDetailsJson_SectionHeader(t *testing.T) {
 
 }
 
-func TestTimelineDetailsJson_SectionTrnsaction(t *testing.T) {
+func TestTimelineDetailsJson_SectionTransaction(t *testing.T) {
 	t.Parallel()
 
 	testCases := getTestData(t)
@@ -128,6 +130,38 @@ func TestTimelineDetailsJson_SectionTrnsaction(t *testing.T) {
 			require.NoError(t, err)
 
 			assert.Equal(t, testCase.dividendPerShare, dividendPerShare.Detail.Text)
+		})
+
+		t.Run("it can find profit", func(t *testing.T) {
+			t.Parallel()
+
+			if testCase.profit == "" {
+				t.Skip()
+			}
+
+			performance, err := details.SectionTable(traderepublic.SectionTablePerformance)
+			require.NoError(t, err)
+
+			profit, err := performance.DataPayment(traderepublic.DataProfit)
+			require.NoError(t, err)
+
+			assert.Equal(t, testCase.profit, profit.Detail.Text)
+		})
+
+		t.Run("it can find gain", func(t *testing.T) {
+			t.Parallel()
+
+			if testCase.gain == "" {
+				t.Skip()
+			}
+
+			performance, err := details.SectionTable(traderepublic.SectionTablePerformance)
+			require.NoError(t, err)
+
+			gain, err := performance.DataPayment(traderepublic.DataGain)
+			require.NoError(t, err)
+
+			assert.Equal(t, testCase.gain, gain.Detail.Text)
 		})
 
 		t.Run("it can find fee", func(t *testing.T) {
@@ -189,6 +223,28 @@ func getTestData(t *testing.T) []testCase {
 			dividendPerShare: "0,15 $",
 			tax:              "0,00 €",
 			total:            "4,13 €",
+		},
+		{
+			filepath:   "../../tests/fakes/05d28e4e-e07e-424f-b5c8-a79815865dbd.json",
+			status:     traderepublic.HeaderSectionDataStatusExecuted,
+			timestamp:  "2023-10-17T05:51:57.297+0000",
+			isin:       "US6701002056",
+			shares:     "5.186721",
+			sharePrice: "€96.40",
+			fee:        "€1.00",
+			total:      "€501.00",
+		},
+		{
+			filepath:   "../../tests/fakes/deb6f4dc-893c-4f15-aa1d-edc97376952b.json",
+			status:     traderepublic.HeaderSectionDataStatusExecuted,
+			timestamp:  "2024-09-19T20:49:15.582+0000",
+			isin:       "XF000XRP0018",
+			shares:     "424.993643",
+			sharePrice: "€0.5284",
+			profit:     "4.61 %",
+			gain:       "€9.89",
+			fee:        "€1.00",
+			total:      "+ €223.55",
 		},
 	}
 }
