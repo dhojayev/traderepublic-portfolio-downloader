@@ -4,6 +4,6 @@ schema: v1
 prompts:
   - name: Generate commit message
     description: Generates a commit message
-    prompt: Write a short and clear commit message for these changes
+    prompt: Write a short and clear commit message for these changes:\n\n@Git Diff
     context:  
       - provider: diff

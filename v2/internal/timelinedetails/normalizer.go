@@ -2,7 +2,6 @@ package timelinedetails
 
 import (
 	"fmt"
-	"log/slog"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/transaction"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/pkg/traderepublic"
@@ -21,53 +20,45 @@ func NewNormalizer(builder *transaction.ModelBuilder, cache *gocache.Cache) *Nor
 	}
 }
 
-func (n *Normalizer) Normalize(data traderepublic.TimelineDetailsJson) error {
-	parent, found := n.cache.Get(string(data.Id))
-	if !found {
-		return fmt.Errorf("timeline transaction %s not found in cache", data.Id)
+func (n *Normalizer) Normalize(details traderepublic.TimelineDetailsJson) (transaction.Model, error) {
+	// parent, found := n.cache.Get(string(details.Id))
+	// if !found {
+	// 	return fmt.Errorf("timeline transaction %s not found in cache", details.Id)
+	// }
+
+	// item, ok := parent.(traderepublic.TimelineTransaction)
+	// if !ok {
+	// 	return fmt.Errorf("invalid timeline transaction in cache: %#v", parent)
+	// }
+
+	var model transaction.Model
+
+	n.builder.
+		SetID(string(details.Id))
+
+	header, err := details.SectionHeader()
+	if err != nil {
+		return model, fmt.Errorf("failed to find header section: %w", err)
 	}
 
-	item, ok := parent.(traderepublic.TimelineTransaction)
-	if !ok {
-		return fmt.Errorf("invalid timeline transaction in cache: %#v", parent)
-	}
-
-	if item.EventType != traderepublic.TimelineTransactionEventTypeINCOMINGTRANSFERDELEGATION {
-		return nil
+	timestamp, err := transaction.ParseTimestamp(header.Data.Timestamp)
+	if err != nil {
+		return model, fmt.Errorf("failed to parse timestamp: %w", err)
 	}
 
 	n.builder.
-		WithID(string(data.Id)).
-		WithType(transaction.TypeDeposit)
+		SetStatus(string(header.Data.Status)).
+		SetTimestamp(transaction.CSVDateTime{Time: timestamp})
 
-	// var table traderepublic.TableSection
+	overview, err := details.FindSection(traderepublic.SectionOverview)
+	if err != nil {
+		return model, fmt.Errorf("failed to find overview section: %w", err)
+	}
 
-	// err := data.Section(&table)
-	// if err != nil {
-	// 	return errors.New("failed to get table section")
-	// }
+	asset, err := overview.FindData(traderepublic.DataAsset)
+	if err == nil {
+		n.builder.SetAssetName(asset.Detail.Text)
+	}
 
-	// for _, row := range table.Data {
-	// 	payment, ok := row.(traderepublic.PaymentRow)
-	// 	if !ok {
-	// 		continue
-	// 	}
-
-	// 	if payment.Title != "Gesamt" {
-	// 		continue
-	// 	}
-
-	// 	total, err := ParseFloatFromResponse(payment.Detail.Text)
-	// 	if err != nil {
-	// 		return fmt.Errorf("failed to convert string payment total amount to float: %w", err)
-	// 	}
-
-	// 	n.builder.WithCredit(total)
-	// }
-
-	model := n.builder.Build()
-
-	slog.Info("model built", "model", model)
-
-	return nil
+	return n.builder.Build(), nil
 }

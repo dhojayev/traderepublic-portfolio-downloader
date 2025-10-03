@@ -36,7 +36,7 @@ func (h *Handler) Handle(event bus.Event) {
 	go h.FetchInstrument(details)
 
 	// Normalize the transaction details
-	err = h.normalizer.Normalize(details)
+	_, err = h.normalizer.Normalize(details)
 	if err != nil {
 		slog.Error("error during normalization", "error", err)
 	}
