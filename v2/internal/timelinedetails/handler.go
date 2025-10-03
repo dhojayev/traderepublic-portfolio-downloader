@@ -44,10 +44,8 @@ func (h *Handler) Handle(event bus.Event) {
 
 // FetchInstrument retrieves and publishes instrument details based on the provided TimelineDetailsJson.
 func (h *Handler) FetchInstrument(details traderepublic.TimelineDetailsJson) {
-	var header traderepublic.HeaderSection
-
 	// Extract the header section from the timeline details
-	err := details.Section(&header)
+	header, err := details.SectionHeader()
 	if err != nil {
 		slog.Error("failed to get header section", "err", err)
 		return

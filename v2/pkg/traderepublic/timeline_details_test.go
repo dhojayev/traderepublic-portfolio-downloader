@@ -9,23 +9,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestTimelineDetailsJson_Section(t *testing.T) {
+func TestTimelineDetailsJson_SectionHeader(t *testing.T) {
 	t.Parallel()
 
-	t.Run("isin can be fetched", func(t *testing.T) {
+	t.Run("it can find isin", func(t *testing.T) {
 		t.Parallel()
 
 		expected := "IE00B0M63177"
-		response := getTestFileContents(t)
+		details := getTestData(t)
 
-		var details traderepublic.TimelineDetailsJson
-
-		err := details.UnmarshalJSON(response)
-		require.NoError(t, err)
-
-		var header traderepublic.HeaderSection
-
-		err = details.Section(&header)
+		header, err := details.SectionHeader()
 		require.NoError(t, err)
 
 		actual := header.Action.Payload
@@ -33,7 +26,7 @@ func TestTimelineDetailsJson_Section(t *testing.T) {
 		assert.Equal(t, expected, actual)
 	})
 
-	t.Run("SectionNotFound", func(t *testing.T) {
+	t.Run("error returned on header section not found", func(t *testing.T) {
 		t.Parallel()
 
 		d := &traderepublic.TimelineDetailsJson{
@@ -42,18 +35,39 @@ func TestTimelineDetailsJson_Section(t *testing.T) {
 			},
 		}
 
-		var header traderepublic.HeaderSection
-
-		err := d.Section(&header)
+		_, err := d.SectionHeader()
 		assert.ErrorIs(t, err, traderepublic.ErrSectionNotFound)
+	})
+
+}
+
+func TestTimelineDetailsJson_SectionTrnsaction(t *testing.T) {
+	t.Parallel()
+
+	t.Run("it can find shares", func(t *testing.T) {
+		t.Parallel()
+
+		details := getTestData(t)
+		transaction, err := details.SectionTransaction()
+		require.NoError(t, err)
+
+		shares, err := transaction.DataShares()
+		require.NoError(t, err)
+
+		assert.Equal(t, "2,481328", shares.Detail.Text)
 	})
 }
 
-func getTestFileContents(t *testing.T) []byte {
+func getTestData(t *testing.T) traderepublic.TimelineDetailsJson {
 	t.Helper()
 
 	response, err := os.ReadFile("../../tests/fakes/fe9f80f9-329c-44db-bd98-22c192bd93fc.json")
 	require.NoError(t, err)
 
-	return response
+	var details traderepublic.TimelineDetailsJson
+
+	err = details.UnmarshalJSON(response)
+	require.NoError(t, err)
+
+	return details
 }

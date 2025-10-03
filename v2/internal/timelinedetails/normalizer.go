@@ -1,7 +1,6 @@
 package timelinedetails
 
 import (
-	"errors"
 	"fmt"
 	"log/slog"
 
@@ -41,30 +40,30 @@ func (n *Normalizer) Normalize(data traderepublic.TimelineDetailsJson) error {
 		WithID(string(data.Id)).
 		WithType(transaction.TypeDeposit)
 
-	var table traderepublic.TableSection
+	// var table traderepublic.TableSection
 
-	err := data.Section(&table)
-	if err != nil {
-		return errors.New("failed to get table section")
-	}
+	// err := data.Section(&table)
+	// if err != nil {
+	// 	return errors.New("failed to get table section")
+	// }
 
-	for _, row := range table.Data {
-		payment, ok := row.(traderepublic.PaymentRow)
-		if !ok {
-			continue
-		}
+	// for _, row := range table.Data {
+	// 	payment, ok := row.(traderepublic.PaymentRow)
+	// 	if !ok {
+	// 		continue
+	// 	}
 
-		if payment.Title != "Gesamt" {
-			continue
-		}
+	// 	if payment.Title != "Gesamt" {
+	// 		continue
+	// 	}
 
-		total, err := ParseFloatFromResponse(payment.Detail.Text)
-		if err != nil {
-			return fmt.Errorf("failed to convert string payment total amount to float: %w", err)
-		}
+	// 	total, err := ParseFloatFromResponse(payment.Detail.Text)
+	// 	if err != nil {
+	// 		return fmt.Errorf("failed to convert string payment total amount to float: %w", err)
+	// 	}
 
-		n.builder.WithCredit(total)
-	}
+	// 	n.builder.WithCredit(total)
+	// }
 
 	model := n.builder.Build()
 
