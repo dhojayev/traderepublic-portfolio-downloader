@@ -3,19 +3,16 @@ package traderepublic
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 )
 
-var ErrSectionNotFound = errors.New("section not found")
+var (
+	ErrSectionNotFound  = errors.New("section not found")
+	ErrDataItemNotFound = errors.New("data item not found")
+)
 
 func (d *TimelineDetailsJson) Section(v any) error {
 	for _, section := range d.Sections {
-		data, err := json.Marshal(section)
-		if err != nil {
-			continue
-		}
-
-		err = json.Unmarshal(data, &v)
+		err := unmarshal(section, v)
 		if err != nil {
 			continue
 		}
@@ -23,5 +20,19 @@ func (d *TimelineDetailsJson) Section(v any) error {
 		return nil
 	}
 
-	return fmt.Errorf("header %w", ErrSectionNotFound)
+	return ErrSectionNotFound
+}
+
+func unmarshal(i, v any) error {
+	data, err := json.Marshal(i)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(data, &v)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

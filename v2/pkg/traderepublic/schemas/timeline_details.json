@@ -404,8 +404,7 @@
       "required": ["title", "detail", "style"],
       "properties": {
         "title": {
-          "type": "string",
-          "enum": ["Aktien", "Dividende pro Aktie", "Steuer", "Gesamt"]
+          "type": "string"
         },
         "detail": {
           "type": "object",

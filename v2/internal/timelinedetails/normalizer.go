@@ -1,6 +1,7 @@
 package timelinedetails
 
 import (
+	"errors"
 	"fmt"
 	"log/slog"
 
@@ -32,13 +33,38 @@ func (n *Normalizer) Normalize(data traderepublic.TimelineDetailsJson) error {
 		return fmt.Errorf("invalid timeline transaction in cache: %#v", parent)
 	}
 
-	if item.EventType != traderepublic.TimelineTransactionEventTypeINCOMINGTRANSFER {
+	if item.EventType != traderepublic.TimelineTransactionEventTypeINCOMINGTRANSFERDELEGATION {
 		return nil
 	}
 
 	n.builder.
 		WithID(string(data.Id)).
 		WithType(transaction.TypeDeposit)
+
+	var table traderepublic.TableSection
+
+	err := data.Section(&table)
+	if err != nil {
+		return errors.New("failed to get table section")
+	}
+
+	for _, row := range table.Data {
+		payment, ok := row.(traderepublic.PaymentRow)
+		if !ok {
+			continue
+		}
+
+		if payment.Title != "Gesamt" {
+			continue
+		}
+
+		total, err := ParseFloatFromResponse(payment.Detail.Text)
+		if err != nil {
+			return fmt.Errorf("failed to convert string payment total amount to float: %w", err)
+		}
+
+		n.builder.WithCredit(total)
+	}
 
 	model := n.builder.Build()
 

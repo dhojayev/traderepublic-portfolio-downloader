@@ -1205,7 +1205,7 @@ type PaymentRow struct {
 	Style PaymentRowStyle `json:"style" yaml:"style" mapstructure:"style"`
 
 	// Title corresponds to the JSON schema field "title".
-	Title PaymentRowTitle `json:"title" yaml:"title" mapstructure:"title"`
+	Title string `json:"title" yaml:"title" mapstructure:"title"`
 }
 
 type PaymentRowDetail struct {
@@ -1294,40 +1294,6 @@ func (j *PaymentRowStyle) UnmarshalJSON(value []byte) error {
 		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_PaymentRowStyle, v)
 	}
 	*j = PaymentRowStyle(v)
-	return nil
-}
-
-type PaymentRowTitle string
-
-const PaymentRowTitleAktien PaymentRowTitle = "Aktien"
-const PaymentRowTitleDividendeProAktie PaymentRowTitle = "Dividende pro Aktie"
-const PaymentRowTitleGesamt PaymentRowTitle = "Gesamt"
-const PaymentRowTitleSteuer PaymentRowTitle = "Steuer"
-
-var enumValues_PaymentRowTitle = []interface{}{
-	"Aktien",
-	"Dividende pro Aktie",
-	"Steuer",
-	"Gesamt",
-}
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *PaymentRowTitle) UnmarshalJSON(value []byte) error {
-	var v string
-	if err := json.Unmarshal(value, &v); err != nil {
-		return err
-	}
-	var ok bool
-	for _, expected := range enumValues_PaymentRowTitle {
-		if reflect.DeepEqual(v, expected) {
-			ok = true
-			break
-		}
-	}
-	if !ok {
-		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_PaymentRowTitle, v)
-	}
-	*j = PaymentRowTitle(v)
 	return nil
 }
 
