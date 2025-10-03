@@ -43,8 +43,8 @@ type ModelBuilder struct {
 	Timestamp      CSVDateTime
 	Type           TransactionType
 	AssetType      string `csv:"Asset type"`
-	Name           string
-	Instrument     string
+	AssetName      string
+	ISIN           string
 	Shares         float64
 	Rate           float64 `csv:"Realized yield"`
 	Yield          float64 `csv:"Realized PnL"`
@@ -57,97 +57,97 @@ type ModelBuilder struct {
 	Documents      []string
 }
 
-func (b *ModelBuilder) WithID(id string) *ModelBuilder {
+func (b *ModelBuilder) SetID(id string) *ModelBuilder {
 	b.ID = id
 
 	return b
 }
 
-func (b *ModelBuilder) WithStatus(status string) *ModelBuilder {
+func (b *ModelBuilder) SetStatus(status string) *ModelBuilder {
 	b.Status = status
 
 	return b
 }
 
-func (b *ModelBuilder) WithTimestamp(timestamp CSVDateTime) *ModelBuilder {
+func (b *ModelBuilder) SetTimestamp(timestamp CSVDateTime) *ModelBuilder {
 	b.Timestamp = timestamp
 
 	return b
 }
 
-func (b *ModelBuilder) WithType(transactionType TransactionType) *ModelBuilder {
+func (b *ModelBuilder) SetType(transactionType TransactionType) *ModelBuilder {
 	b.Type = transactionType
 
 	return b
 }
 
-func (b *ModelBuilder) WithAssetType(assetType string) *ModelBuilder {
+func (b *ModelBuilder) SetAssetType(assetType string) *ModelBuilder {
 	b.AssetType = assetType
 
 	return b
 }
 
-func (b *ModelBuilder) WithName(name string) *ModelBuilder {
-	b.Name = name
+func (b *ModelBuilder) SetAssetName(name string) *ModelBuilder {
+	b.AssetName = name
 
 	return b
 }
 
-func (b *ModelBuilder) WithInstrument(instrument string) *ModelBuilder {
-	b.Instrument = instrument
+func (b *ModelBuilder) SetISIN(instrument string) *ModelBuilder {
+	b.ISIN = instrument
 
 	return b
 }
 
-func (b *ModelBuilder) WithShares(shares float64) *ModelBuilder {
+func (b *ModelBuilder) SetShares(shares float64) *ModelBuilder {
 	b.Shares = shares
 
 	return b
 }
 
-func (b *ModelBuilder) WithRate(rate float64) *ModelBuilder {
+func (b *ModelBuilder) SetRate(rate float64) *ModelBuilder {
 	b.Rate = rate
 
 	return b
 }
 
-func (b *ModelBuilder) WithYield(yield float64) *ModelBuilder {
+func (b *ModelBuilder) SetYield(yield float64) *ModelBuilder {
 	b.Yield = yield
 
 	return b
 }
 
-func (b *ModelBuilder) WithProfit(profit float64) *ModelBuilder {
+func (b *ModelBuilder) SetProfit(profit float64) *ModelBuilder {
 	b.Profit = profit
 
 	return b
 }
 
-func (b *ModelBuilder) WithCommission(commission float64) *ModelBuilder {
+func (b *ModelBuilder) SetCommission(commission float64) *ModelBuilder {
 	b.Commission = commission
 
 	return b
 }
 
-func (b *ModelBuilder) WithDebit(debit float64) *ModelBuilder {
+func (b *ModelBuilder) SetDebit(debit float64) *ModelBuilder {
 	b.Debit = debit
 
 	return b
 }
 
-func (b *ModelBuilder) WithCredit(credit float64) *ModelBuilder {
+func (b *ModelBuilder) SetCredit(credit float64) *ModelBuilder {
 	b.Credit = credit
 
 	return b
 }
 
-func (b *ModelBuilder) WithTaxAmount(taxAmount float64) *ModelBuilder {
+func (b *ModelBuilder) SetTaxAmount(taxAmount float64) *ModelBuilder {
 	b.TaxAmount = taxAmount
 
 	return b
 }
 
-func (b *ModelBuilder) WithInvestedAmount(investedAmount float64) *ModelBuilder {
+func (b *ModelBuilder) SetInvestedAmount(investedAmount float64) *ModelBuilder {
 	b.InvestedAmount = investedAmount
 
 	return b
@@ -166,8 +166,8 @@ func (b *ModelBuilder) Build() Model {
 		Timestamp:      b.Timestamp,
 		Type:           b.Type,
 		AssetType:      b.AssetType,
-		AssetName:      b.Name,
-		ISIN:           b.Instrument,
+		AssetName:      b.AssetName,
+		ISIN:           b.ISIN,
 		Shares:         b.Shares,
 		Rate:           b.Rate,
 		Yield:          b.Yield,

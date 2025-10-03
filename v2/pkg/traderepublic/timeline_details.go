@@ -12,11 +12,13 @@ var (
 	ErrSectionNotFound      = errors.New("section not found")
 	ErrDataItemNotFound     = errors.New("data item not found")
 
-	SectionTableOverview    = sectionTableTitles{"Overview"}    // Title for the overview table section
-	SectionTableTransaction = sectionTableTitles{"Transaction"} // Title for the transaction table section
-	SectionTablePerformance = sectionTableTitles{"Performance"}
+	SectionOverview    = sectionTitles{"Overview"}    // Title for the overview table section
+	SectionTransaction = sectionTitles{"Transaction"} // Title for the transaction table section
+	SectionPerformance = sectionTitles{"Performance"}
 
-	// Title maps for payment details.
+	DataOrderType        = dataTitles{"Order Type"}
+	DataEvent            = dataTitles{"Event"}
+	DataAsset            = dataTitles{"Asset"}
 	DataShares           = dataTitles{"Shares"}      // Title map for shares in payment details
 	DataSharePrice       = dataTitles{"Share price"} // Title map for share price in payment details
 	DataFee              = dataTitles{"Fee"}         // Title map for commission in payment details
@@ -27,8 +29,8 @@ var (
 	DataDividendPerShare = dataTitles{"Dividend per share"}
 )
 
-// sectionTableTitles is a type alias for string representing a table section title.
-type sectionTableTitles []string
+// sectionTitles is a type alias for string representing a table section title.
+type sectionTitles []string
 
 // dataTitles is a slice of strings representing possible titles.
 type dataTitles []string
@@ -46,7 +48,7 @@ func (d *TimelineDetailsJson) SectionHeader() (HeaderSection, error) {
 	return header, nil
 }
 
-func (d *TimelineDetailsJson) SectionTable(titles sectionTableTitles) (TableSection, error) {
+func (d *TimelineDetailsJson) FindSection(titles sectionTitles) (TableSection, error) {
 	var section TableSection
 
 	for _, title := range titles {
@@ -62,8 +64,8 @@ func (d *TimelineDetailsJson) SectionTable(titles sectionTableTitles) (TableSect
 	return section, fmt.Errorf("table %w with titles %v", ErrSectionNotFound, titles)
 }
 
-// DataPayment retrieves a payment row based on the provided titles from the table section.
-func (s *TableSection) DataPayment(titles dataTitles) (PaymentRow, error) {
+// FindData retrieves a payment row based on the provided titles from the table section.
+func (s *TableSection) FindData(titles dataTitles) (PaymentRow, error) {
 	var item PaymentRow
 
 	// Iterate through the data slice to find the matching payment row.
@@ -76,7 +78,7 @@ func (s *TableSection) DataPayment(titles dataTitles) (PaymentRow, error) {
 		return item, nil
 	}
 
-	return item, fmt.Errorf("payment %w with titles %v", ErrDataItemNotFound, titles)
+	return item, fmt.Errorf("%w with titles %v", ErrDataItemNotFound, titles)
 }
 
 // findSliceElement searches for a slice element that matches the provided search criteria.

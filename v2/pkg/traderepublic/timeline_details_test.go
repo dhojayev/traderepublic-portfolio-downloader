@@ -14,6 +14,9 @@ type testCase struct {
 	status           traderepublic.HeaderSectionDataStatus
 	timestamp        string
 	isin             string
+	asset            string
+	orderType        string
+	event            string
 	shares           string
 	sharePrice       string
 	dividendPerShare string
@@ -94,13 +97,61 @@ func TestTimelineDetailsJson_SectionTransaction(t *testing.T) {
 		err = details.UnmarshalJSON(contents)
 		require.NoError(t, err)
 
-		transaction, err := details.SectionTable(traderepublic.SectionTableTransaction)
+		transaction, err := details.FindSection(traderepublic.SectionTransaction)
 		require.NoError(t, err)
+
+		t.Run("it can find order type", func(t *testing.T) {
+			t.Parallel()
+
+			if testCase.orderType == "" {
+				t.Skip()
+			}
+
+			overview, err := details.FindSection(traderepublic.SectionOverview)
+			require.NoError(t, err)
+
+			orderType, err := overview.FindData(traderepublic.DataOrderType)
+			require.NoError(t, err)
+
+			assert.Equal(t, testCase.orderType, orderType.Detail.Text)
+		})
+
+		t.Run("it can find event", func(t *testing.T) {
+			t.Parallel()
+
+			if testCase.event == "" {
+				t.Skip()
+			}
+
+			overview, err := details.FindSection(traderepublic.SectionOverview)
+			require.NoError(t, err)
+
+			event, err := overview.FindData(traderepublic.DataEvent)
+			require.NoError(t, err)
+
+			assert.Equal(t, testCase.event, event.Detail.Text)
+		})
+
+		t.Run("it can find asset", func(t *testing.T) {
+			t.Parallel()
+
+			if testCase.asset == "" {
+				t.Skip()
+			}
+
+			overview, err := details.FindSection(traderepublic.SectionOverview)
+			require.NoError(t, err)
+
+			asset, err := overview.FindData(traderepublic.DataAsset)
+			require.NoError(t, err)
+
+			assert.Equal(t, testCase.asset, asset.Detail.Text)
+		})
 
 		t.Run("it can find shares", func(t *testing.T) {
 			t.Parallel()
 
-			shares, err := transaction.DataPayment(traderepublic.DataShares)
+			shares, err := transaction.FindData(traderepublic.DataShares)
 			require.NoError(t, err)
 
 			assert.Equal(t, testCase.shares, shares.Detail.Text)
@@ -113,7 +164,7 @@ func TestTimelineDetailsJson_SectionTransaction(t *testing.T) {
 				t.Skip()
 			}
 
-			sharePrice, err := transaction.DataPayment(traderepublic.DataSharePrice)
+			sharePrice, err := transaction.FindData(traderepublic.DataSharePrice)
 			require.NoError(t, err)
 
 			assert.Equal(t, testCase.sharePrice, sharePrice.Detail.Text)
@@ -126,7 +177,7 @@ func TestTimelineDetailsJson_SectionTransaction(t *testing.T) {
 				t.Skip()
 			}
 
-			dividendPerShare, err := transaction.DataPayment(traderepublic.DataDividendPerShare)
+			dividendPerShare, err := transaction.FindData(traderepublic.DataDividendPerShare)
 			require.NoError(t, err)
 
 			assert.Equal(t, testCase.dividendPerShare, dividendPerShare.Detail.Text)
@@ -139,10 +190,10 @@ func TestTimelineDetailsJson_SectionTransaction(t *testing.T) {
 				t.Skip()
 			}
 
-			performance, err := details.SectionTable(traderepublic.SectionTablePerformance)
+			performance, err := details.FindSection(traderepublic.SectionPerformance)
 			require.NoError(t, err)
 
-			profit, err := performance.DataPayment(traderepublic.DataProfit)
+			profit, err := performance.FindData(traderepublic.DataProfit)
 			require.NoError(t, err)
 
 			assert.Equal(t, testCase.profit, profit.Detail.Text)
@@ -155,10 +206,10 @@ func TestTimelineDetailsJson_SectionTransaction(t *testing.T) {
 				t.Skip()
 			}
 
-			performance, err := details.SectionTable(traderepublic.SectionTablePerformance)
+			performance, err := details.FindSection(traderepublic.SectionPerformance)
 			require.NoError(t, err)
 
-			gain, err := performance.DataPayment(traderepublic.DataGain)
+			gain, err := performance.FindData(traderepublic.DataGain)
 			require.NoError(t, err)
 
 			assert.Equal(t, testCase.gain, gain.Detail.Text)
@@ -171,7 +222,7 @@ func TestTimelineDetailsJson_SectionTransaction(t *testing.T) {
 				t.Skip()
 			}
 
-			fee, err := transaction.DataPayment(traderepublic.DataFee)
+			fee, err := transaction.FindData(traderepublic.DataFee)
 			require.NoError(t, err)
 
 			assert.Equal(t, testCase.fee, fee.Detail.Text)
@@ -184,7 +235,7 @@ func TestTimelineDetailsJson_SectionTransaction(t *testing.T) {
 				t.Skip()
 			}
 
-			tax, err := transaction.DataPayment(traderepublic.DataTax)
+			tax, err := transaction.FindData(traderepublic.DataTax)
 			require.NoError(t, err)
 
 			assert.Equal(t, testCase.tax, tax.Detail.Text)
@@ -193,7 +244,7 @@ func TestTimelineDetailsJson_SectionTransaction(t *testing.T) {
 		t.Run("it can find total", func(t *testing.T) {
 			t.Parallel()
 
-			total, err := transaction.DataPayment(traderepublic.DataTotal)
+			total, err := transaction.FindData(traderepublic.DataTotal)
 			require.NoError(t, err)
 
 			assert.Equal(t, testCase.total, total.Detail.Text)
@@ -209,6 +260,8 @@ func getTestData(t *testing.T) []testCase {
 			filepath:   "../../tests/fakes/fe9f80f9-329c-44db-bd98-22c192bd93fc.json",
 			status:     traderepublic.HeaderSectionDataStatusExecuted,
 			timestamp:  "2025-01-02T14:52:18.686+0000",
+			orderType:  "Savings plan",
+			asset:      "MSCI EM USD (Dist)",
 			isin:       "IE00B0M63177",
 			shares:     "2.481328",
 			sharePrice: "€40.301",
@@ -219,6 +272,8 @@ func getTestData(t *testing.T) []testCase {
 			filepath:         "../../tests/fakes/a0e4c36a-e0ee-4183-a725-09fb1c6b3c33.json",
 			status:           traderepublic.HeaderSectionDataStatusExecuted,
 			timestamp:        "2024-06-26T15:22:31.478Z",
+			event:            "Cash dividend",
+			asset:            "Core S&P 500 USD (Dist)",
 			shares:           "30.447001",
 			dividendPerShare: "0,15 $",
 			tax:              "0,00 €",
@@ -229,6 +284,8 @@ func getTestData(t *testing.T) []testCase {
 			status:     traderepublic.HeaderSectionDataStatusExecuted,
 			timestamp:  "2023-10-17T05:51:57.297+0000",
 			isin:       "US6701002056",
+			asset:      "Novo Nordisk (ADR)",
+			orderType:  "Buy",
 			shares:     "5.186721",
 			sharePrice: "€96.40",
 			fee:        "€1.00",
@@ -238,6 +295,8 @@ func getTestData(t *testing.T) []testCase {
 			filepath:   "../../tests/fakes/deb6f4dc-893c-4f15-aa1d-edc97376952b.json",
 			status:     traderepublic.HeaderSectionDataStatusExecuted,
 			timestamp:  "2024-09-19T20:49:15.582+0000",
+			orderType:  "Sell",
+			asset:      "XRP",
 			isin:       "XF000XRP0018",
 			shares:     "424.993643",
 			sharePrice: "€0.5284",
