@@ -10,6 +10,36 @@
     "items": {
       "type": "array",
       "items": {
+        "$ref": "#/definitions/timelineTransaction"
+      }
+    },
+    "cursors": {
+      "type": "object",
+      "required": [
+        "after",
+        "before"
+      ],
+      "properties": {
+        "after": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "before": {
+          "type": "string"
+        }
+      }
+    },
+    "startingTransactionId": {
+      "type": [
+        "null",
+        "string"
+      ]
+    }
+  },
+  "definitions": {
+    "timelineTransaction": {
         "type": "object",
         "required": [
           "id",
@@ -25,7 +55,9 @@
           "deleted"
         ],
         "properties": {
-          "id": { "$ref": "common.json#/definitions/uuid" },
+          "id": {
+            "$ref": "common.json#/definitions/uuid"
+          },
           "timestamp": {
             "type": "string"
           },
@@ -129,7 +161,9 @@
                   "timelineDetail"
                 ]
               },
-              "payload": { "$ref": "common.json#/definitions/uuid" }
+              "payload": {
+                "$ref": "common.json#/definitions/uuid"
+              }
             }
           },
           "eventType": {
@@ -149,7 +183,16 @@
               "OUTGOING_TRANSFER_DELEGATION",
               "timeline_legacy_migrated_events",
               "INCOMING_TRANSFER",
-              "benefits_spare_change_execution"
+              "benefits_spare_change_execution",
+              "PAYMENT_INBOUND",
+              "PAYMENT_INBOUND_SEPA_DIRECT_DEBIT",
+              "PAYMENT_OUTBOUND",
+              "ORDER_EXECUTED",
+              "TRADE_INVOICE",
+              "SAVINGS_PLAN_EXECUTED",
+              "SAVINGS_PLAN_INVOICE_CREATED",
+              "INTEREST_PAYOUT_CREATED",
+              "CREDIT"
             ]
           },
           "cashAccountNumber": {
@@ -166,30 +209,5 @@
           }
         }
       }
-    },
-    "cursors": {
-      "type": "object",
-      "required": [
-        "after",
-        "before"
-      ],
-      "properties": {
-        "after": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "before": {
-          "type": "string"
-        }
-      }
-    },
-    "startingTransactionId": {
-      "type": [
-        "null",
-        "string"
-      ]
-    }
   }
 }

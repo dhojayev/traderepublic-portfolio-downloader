@@ -7,18 +7,18 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/bus"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/message"
 
-	"github.com/patrickmn/go-cache"
+	gocache "github.com/patrickmn/go-cache"
 )
 
 type Handler struct {
 	msgClient message.ClientInterface
-	c         *cache.Cache
+	cache     *gocache.Cache
 }
 
-func NewHandler(msgClient message.ClientInterface, c *cache.Cache) *Handler {
+func NewHandler(msgClient message.ClientInterface, cache *gocache.Cache) *Handler {
 	return &Handler{
 		msgClient: msgClient,
-		c:         c,
+		cache:     cache,
 	}
 }
 
@@ -31,7 +31,7 @@ func (h *Handler) HandleFetch(event bus.Event) {
 		return
 	}
 
-	_, found := h.c.Get(isin)
+	_, found := h.cache.Get(isin)
 	if found {
 		slog.Debug("instrument details found in cache", "isin", isin)
 
@@ -47,8 +47,8 @@ func (h *Handler) HandleFetch(event bus.Event) {
 func (h *Handler) HandleReceived(event bus.Event) {
 	isin := event.ID
 
-	err := h.c.Add(isin, nil, cache.NoExpiration)
+	err := h.cache.Add(isin, nil, gocache.NoExpiration)
 	if err != nil {
-		slog.Error("failed to add isin to cache", "isin", isin)
+		slog.Warn("failed to add isin to cache", "isin", isin)
 	}
 }

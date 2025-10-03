@@ -16,10 +16,11 @@ import (
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/timelinetransactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/auth"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/transaction"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/writer"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/pkg/traderepublic"
 	"github.com/joho/godotenv"
-	"github.com/patrickmn/go-cache"
+	gocache "github.com/patrickmn/go-cache"
 )
 
 func main() {
@@ -64,11 +65,12 @@ func main() {
 
 	wsclient := traderepublic.NewWSClient(traderepublic.NewPublisher(), ctx)
 
+	cache := gocache.New(gocache.NoExpiration, gocache.NoExpiration)
+	normalizer := timelinedetails.NewNormalizer(transaction.NewModelBuilder(), cache)
 	msgClient := message.NewClient(eventBus, credentialsService, wsclient)
-	ttHandler := timelinetransactions.NewHandler(eventBus, msgClient)
-	tdHandler := timelinedetails.NewHandler(eventBus)
-	c := cache.New(cache.NoExpiration, cache.NoExpiration)
-	instrHandler := instrument.NewHandler(msgClient, c)
+	ttHandler := timelinetransactions.NewHandler(eventBus, msgClient, cache)
+	tdHandler := timelinedetails.NewHandler(eventBus, normalizer)
+	instrHandler := instrument.NewHandler(msgClient, cache)
 
 	eventBus.Subscribe(bus.TopicTimelineTransactionsReceived, ttHandler.Handle)
 	eventBus.Subscribe(bus.TopicTimelineDetailsV2Received, tdHandler.Handle)

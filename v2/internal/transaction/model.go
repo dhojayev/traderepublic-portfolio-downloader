@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type CSVEntry struct {
+type Model struct {
 	ID             string
 	Status         string
 	Timestamp      DateTime
@@ -28,16 +28,21 @@ type CSVEntry struct {
 type TransactionType string
 
 const (
-	Buy      TransactionType = "buy"
-	Sell     TransactionType = "sell"
-	Dividend TransactionType = "dividend"
+	TypePurchase       TransactionType = "Purchase"
+	TypeSale           TransactionType = "Sale"
+	TypeDividendPayout TransactionType = "Dividends"
+	TypeRoundUp        TransactionType = "Round up"
+	TypeSaveback       TransactionType = "Saveback"
+	TypeDeposit        TransactionType = "Deposit"
+	TypeWithdrawal     TransactionType = "Withdrawal"
+	TypeInterestPayout TransactionType = "Interest payout"
 )
 
-func NewCSVEntryBuilder() *CSVEntryBuilder {
-	return &CSVEntryBuilder{}
+func NewModelBuilder() *ModelBuilder {
+	return &ModelBuilder{}
 }
 
-type CSVEntryBuilder struct {
+type ModelBuilder struct {
 	ID             string
 	Status         string
 	Timestamp      DateTime
@@ -57,110 +62,110 @@ type CSVEntryBuilder struct {
 	Documents      []string
 }
 
-func (b *CSVEntryBuilder) WithID(id string) *CSVEntryBuilder {
+func (b *ModelBuilder) WithID(id string) *ModelBuilder {
 	b.ID = id
-	
+
 	return b
 }
 
-func (b *CSVEntryBuilder) WithStatus(status string) *CSVEntryBuilder {
+func (b *ModelBuilder) WithStatus(status string) *ModelBuilder {
 	b.Status = status
-	
+
 	return b
 }
 
-func (b *CSVEntryBuilder) WithTimestamp(timestamp DateTime) *CSVEntryBuilder {
+func (b *ModelBuilder) WithTimestamp(timestamp DateTime) *ModelBuilder {
 	b.Timestamp = timestamp
-	
+
 	return b
 }
 
-func (b *CSVEntryBuilder) WithType(transactionType TransactionType) *CSVEntryBuilder {
+func (b *ModelBuilder) WithType(transactionType TransactionType) *ModelBuilder {
 	b.Type = transactionType
-	
+
 	return b
 }
 
-func (b *CSVEntryBuilder) WithAssetType(assetType string) *CSVEntryBuilder {
+func (b *ModelBuilder) WithAssetType(assetType string) *ModelBuilder {
 	b.AssetType = assetType
-	
+
 	return b
 }
 
-func (b *CSVEntryBuilder) WithName(name string) *CSVEntryBuilder {
+func (b *ModelBuilder) WithName(name string) *ModelBuilder {
 	b.Name = name
-	
+
 	return b
 }
 
-func (b *CSVEntryBuilder) WithInstrument(instrument string) *CSVEntryBuilder {
+func (b *ModelBuilder) WithInstrument(instrument string) *ModelBuilder {
 	b.Instrument = instrument
-	
+
 	return b
 }
 
-func (b *CSVEntryBuilder) WithShares(shares float64) *CSVEntryBuilder {
+func (b *ModelBuilder) WithShares(shares float64) *ModelBuilder {
 	b.Shares = shares
-	
+
 	return b
 }
 
-func (b *CSVEntryBuilder) WithRate(rate float64) *CSVEntryBuilder {
+func (b *ModelBuilder) WithRate(rate float64) *ModelBuilder {
 	b.Rate = rate
-	
+
 	return b
 }
 
-func (b *CSVEntryBuilder) WithYield(yield float64) *CSVEntryBuilder {
+func (b *ModelBuilder) WithYield(yield float64) *ModelBuilder {
 	b.Yield = yield
-	
+
 	return b
 }
 
-func (b *CSVEntryBuilder) WithProfit(profit float64) *CSVEntryBuilder {
+func (b *ModelBuilder) WithProfit(profit float64) *ModelBuilder {
 	b.Profit = profit
-	
+
 	return b
 }
 
-func (b *CSVEntryBuilder) WithCommission(commission float64) *CSVEntryBuilder {
+func (b *ModelBuilder) WithCommission(commission float64) *ModelBuilder {
 	b.Commission = commission
-	
+
 	return b
 }
 
-func (b *CSVEntryBuilder) WithDebit(debit float64) *CSVEntryBuilder {
+func (b *ModelBuilder) WithDebit(debit float64) *ModelBuilder {
 	b.Debit = debit
-	
+
 	return b
 }
 
-func (b *CSVEntryBuilder) WithCredit(credit float64) *CSVEntryBuilder {
+func (b *ModelBuilder) WithCredit(credit float64) *ModelBuilder {
 	b.Credit = credit
-	
+
 	return b
 }
 
-func (b *CSVEntryBuilder) WithTaxAmount(taxAmount float64) *CSVEntryBuilder {
+func (b *ModelBuilder) WithTaxAmount(taxAmount float64) *ModelBuilder {
 	b.TaxAmount = taxAmount
-	
+
 	return b
 }
 
-func (b *CSVEntryBuilder) WithInvestedAmount(investedAmount float64) *CSVEntryBuilder {
+func (b *ModelBuilder) WithInvestedAmount(investedAmount float64) *ModelBuilder {
 	b.InvestedAmount = investedAmount
-	
+
 	return b
 }
 
-func (b *CSVEntryBuilder) AddDocument(document string) *CSVEntryBuilder {
+func (b *ModelBuilder) AddDocument(document string) *ModelBuilder {
 	b.Documents = append(b.Documents, document)
-	
+
 	return b
 }
 
-func (b *CSVEntryBuilder) Build() CSVEntry {
-	return CSVEntry{
+func (b *ModelBuilder) Build() Model {
+	return Model{
 		ID:             b.ID,
 		Status:         b.Status,
 		Timestamp:      b.Timestamp,

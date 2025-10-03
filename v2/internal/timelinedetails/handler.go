@@ -1,7 +1,6 @@
 package timelinedetails
 
 import (
-	"encoding/json"
 	"log/slog"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/bus"
@@ -9,12 +8,14 @@ import (
 )
 
 type Handler struct {
-	eventBus *bus.EventBus
+	eventBus   *bus.EventBus
+	normalizer *Normalizer
 }
 
-func NewHandler(eventBus *bus.EventBus) *Handler {
+func NewHandler(eventBus *bus.EventBus, normalizer *Normalizer) *Handler {
 	return &Handler{
-		eventBus: eventBus,
+		eventBus:   eventBus,
+		normalizer: normalizer,
 	}
 }
 
@@ -26,41 +27,27 @@ func (h *Handler) Handle(event bus.Event) {
 		slog.Error("failed to unmarshal timeline detail", "id", event.ID, "error", err)
 	}
 
-	if details.Id == "0af6e075-8034-4ec9-9956-a6c63fe6103b" {
-		slog.Info("here")
+	var header traderepublic.HeaderSection
+
+	err = details.Section(&header)
+	if err != nil {
+		slog.Error("failed to get header section", "err", err)
 	}
 
-	var isin string
-
-	for _, section := range details.Sections {
-		var header traderepublic.HeaderSection
-
-		data, err := json.Marshal(section)
-		if err != nil {
-			continue
-		}
-
-		err = header.UnmarshalJSON(data)
-		if err != nil {
-			continue
-		}
-
-		if header.Action == nil {
-			return
-		}
-
-		isin = header.Action.Payload
-
-		if isin == "" {
-			return
-		}
-
-		h.eventBus.Publish(bus.NewEvent(
-			bus.TopicInstrumentFetch,
-			isin,
-			[]byte(isin),
-		))
-
+	if header.Action == nil {
 		return
+	}
+
+	isin := header.Action.Payload
+
+	h.eventBus.Publish(bus.NewEvent(
+		bus.TopicInstrumentFetch,
+		isin,
+		[]byte(isin),
+	))
+
+	err = h.normalizer.Normalize(details)
+	if err != nil {
+		slog.Error("error during normalization", "error", err)
 	}
 }
