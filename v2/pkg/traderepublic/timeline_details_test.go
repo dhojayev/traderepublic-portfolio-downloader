@@ -12,18 +12,27 @@ import (
 func TestTimelineDetailsJson_SectionHeader(t *testing.T) {
 	t.Parallel()
 
+	details := getTestData(t)
+
+	header, err := details.SectionHeader()
+	require.NoError(t, err)
+
+	t.Run("it can find status", func(t *testing.T) {
+		t.Parallel()
+
+		assert.Equal(t, traderepublic.HeaderSectionDataStatusExecuted, header.Data.Status)
+	})
+
+	t.Run("it can find timestamp", func(t *testing.T) {
+		t.Parallel()
+
+		assert.Equal(t, "2025-01-02T14:52:18.686+0000", header.Data.Timestamp)
+	})
+
 	t.Run("it can find isin", func(t *testing.T) {
 		t.Parallel()
 
-		expected := "IE00B0M63177"
-		details := getTestData(t)
-
-		header, err := details.SectionHeader()
-		require.NoError(t, err)
-
-		actual := header.Action.Payload
-
-		assert.Equal(t, expected, actual)
+		assert.Equal(t, "IE00B0M63177", header.Action.Payload)
 	})
 
 	t.Run("error returned on header section not found", func(t *testing.T) {
@@ -44,17 +53,44 @@ func TestTimelineDetailsJson_SectionHeader(t *testing.T) {
 func TestTimelineDetailsJson_SectionTrnsaction(t *testing.T) {
 	t.Parallel()
 
+	details := getTestData(t)
+	transaction, err := details.SectionTransaction()
+	require.NoError(t, err)
+
 	t.Run("it can find shares", func(t *testing.T) {
 		t.Parallel()
 
-		details := getTestData(t)
-		transaction, err := details.SectionTransaction()
-		require.NoError(t, err)
-
-		shares, err := transaction.DataShares()
+		shares, err := transaction.DataPayment(traderepublic.PaymentShares)
 		require.NoError(t, err)
 
 		assert.Equal(t, "2,481328", shares.Detail.Text)
+	})
+
+	t.Run("it can find share price", func(t *testing.T) {
+		t.Parallel()
+
+		sharePrice, err := transaction.DataPayment(traderepublic.PaymentSharePrice)
+		require.NoError(t, err)
+
+		assert.Equal(t, "40,301 €", sharePrice.Detail.Text)
+	})
+
+	t.Run("it can find commission", func(t *testing.T) {
+		t.Parallel()
+
+		commission, err := transaction.DataPayment(traderepublic.PaymentCommission)
+		require.NoError(t, err)
+
+		assert.Equal(t, "Gratis", commission.Detail.Text)
+	})
+
+	t.Run("it can find total", func(t *testing.T) {
+		t.Parallel()
+
+		total, err := transaction.DataPayment(traderepublic.PaymentTotal)
+		require.NoError(t, err)
+
+		assert.Equal(t, "100,00 €", total.Detail.Text)
 	})
 }
 

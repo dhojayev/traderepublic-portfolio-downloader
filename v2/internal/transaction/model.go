@@ -1,18 +1,13 @@
 package transaction
 
-import (
-	"fmt"
-	"time"
-)
-
 type Model struct {
 	ID             string
 	Status         string
-	Timestamp      DateTime
+	Timestamp      CSVDateTime
 	Type           TransactionType
 	AssetType      string `csv:"Asset type"`
-	Name           string
-	Instrument     string
+	AssetName      string
+	ISIN           string
 	Shares         float64
 	Rate           float64 `csv:"Realized yield"`
 	Yield          float64 `csv:"Realized PnL"`
@@ -45,7 +40,7 @@ func NewModelBuilder() *ModelBuilder {
 type ModelBuilder struct {
 	ID             string
 	Status         string
-	Timestamp      DateTime
+	Timestamp      CSVDateTime
 	Type           TransactionType
 	AssetType      string `csv:"Asset type"`
 	Name           string
@@ -74,7 +69,7 @@ func (b *ModelBuilder) WithStatus(status string) *ModelBuilder {
 	return b
 }
 
-func (b *ModelBuilder) WithTimestamp(timestamp DateTime) *ModelBuilder {
+func (b *ModelBuilder) WithTimestamp(timestamp CSVDateTime) *ModelBuilder {
 	b.Timestamp = timestamp
 
 	return b
@@ -171,8 +166,8 @@ func (b *ModelBuilder) Build() Model {
 		Timestamp:      b.Timestamp,
 		Type:           b.Type,
 		AssetType:      b.AssetType,
-		Name:           b.Name,
-		Instrument:     b.Instrument,
+		AssetName:      b.Name,
+		ISIN:           b.Instrument,
 		Shares:         b.Shares,
 		Rate:           b.Rate,
 		Yield:          b.Yield,
@@ -184,23 +179,4 @@ func (b *ModelBuilder) Build() Model {
 		InvestedAmount: b.InvestedAmount,
 		Documents:      b.Documents,
 	}
-}
-
-type DateTime struct {
-	time.Time
-}
-
-func (date *DateTime) MarshalCSV() (string, error) {
-	return date.Time.In(time.Local).Format(time.RFC822Z), nil
-}
-
-func (date *DateTime) UnmarshalCSV(csv string) error {
-	t, err := time.Parse(time.RFC822Z, csv)
-	if err != nil {
-		return fmt.Errorf("could not parse datetime: %w", err)
-	}
-
-	date.Time = t
-
-	return nil
 }

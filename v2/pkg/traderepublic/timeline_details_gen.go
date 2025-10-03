@@ -1202,7 +1202,7 @@ type PaymentRow struct {
 	Detail PaymentRowDetail `json:"detail" yaml:"detail" mapstructure:"detail"`
 
 	// Style corresponds to the JSON schema field "style".
-	Style PaymentRowStyle `json:"style" yaml:"style" mapstructure:"style"`
+	Style string `json:"style" yaml:"style" mapstructure:"style"`
 
 	// Title corresponds to the JSON schema field "title".
 	Title string `json:"title" yaml:"title" mapstructure:"title"`
@@ -1262,38 +1262,7 @@ func (j *PaymentRowDetail) UnmarshalJSON(value []byte) error {
 	if err := json.Unmarshal(value, &plain); err != nil {
 		return err
 	}
-	if matched, _ := regexp.MatchString(`^([0-9]+[.,][0-9]+|[0-9]+,[0-9]+ [€$])$`, string(plain.Text)); !matched {
-		return fmt.Errorf("field %s pattern match: must match %s", "Text", `^([0-9]+[.,][0-9]+|[0-9]+,[0-9]+ [€$])$`)
-	}
 	*j = PaymentRowDetail(plain)
-	return nil
-}
-
-type PaymentRowStyle string
-
-const PaymentRowStylePlain PaymentRowStyle = "plain"
-
-var enumValues_PaymentRowStyle = []interface{}{
-	"plain",
-}
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *PaymentRowStyle) UnmarshalJSON(value []byte) error {
-	var v string
-	if err := json.Unmarshal(value, &v); err != nil {
-		return err
-	}
-	var ok bool
-	for _, expected := range enumValues_PaymentRowStyle {
-		if reflect.DeepEqual(v, expected) {
-			ok = true
-			break
-		}
-	}
-	if !ok {
-		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_PaymentRowStyle, v)
-	}
-	*j = PaymentRowStyle(v)
 	return nil
 }
 
