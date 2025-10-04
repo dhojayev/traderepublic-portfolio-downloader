@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/alexflint/go-arg"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/bus"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/console"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/file"
@@ -56,7 +57,7 @@ func main() {
 		return
 	}
 
-	wHandler := file.NewEventWriterHandler(writer.NewResponseWriter())
+	wHandler := file.NewRawResponseHandler(writer.NewResponseWriter())
 	eventBus := bus.New()
 
 	eventBus.Subscribe(bus.TopicTimelineTransactionsReceived, wHandler.Handle)
@@ -66,16 +67,23 @@ func main() {
 	wsclient := traderepublic.NewWSClient(traderepublic.NewPublisher(), ctx)
 
 	cache := gocache.New(gocache.NoExpiration, gocache.NoExpiration)
-	normalizer := timelinedetails.NewNormalizer(transaction.NewModelBuilder(), cache)
 	msgClient := message.NewClient(eventBus, credentialsService, wsclient)
-	ttHandler := timelinetransactions.NewHandler(eventBus, msgClient, cache)
-	tdHandler := timelinedetails.NewHandler(eventBus, normalizer)
+	ttHandler := timelinetransactions.NewHandler(eventBus, msgClient)
+	tdHandler := timelinedetails.NewHandler(eventBus)
 	instrHandler := instrument.NewHandler(msgClient, cache)
+
+	mapper := transaction.NewDataMapper(cache)
+	resolver := transaction.NewTypeResolver()
+	trnHandler := transaction.NewHandler(resolver, mapper, eventBus)
+	csvWriter := file.NewCSVWriter()
+	csvHandler := file.NewCSVHandler(internal.CSVFilename, csvWriter)
 
 	eventBus.Subscribe(bus.TopicTimelineTransactionsReceived, ttHandler.Handle)
 	eventBus.Subscribe(bus.TopicTimelineDetailsV2Received, tdHandler.Handle)
 	eventBus.Subscribe(bus.TopicInstrumentFetch, instrHandler.HandleFetch)
 	eventBus.Subscribe(bus.TopicInstrumentReceived, instrHandler.HandleReceived)
+	eventBus.Subscribe(bus.TopicTimelineDetailsV2Received, trnHandler.Handle)
+	eventBus.Subscribe(bus.TopicModelReady, csvHandler.Handle)
 
 	app := NewApp(auth.NewClient(console.NewInputHandler(), apiClient), credentialsService, msgClient, eventBus)
 

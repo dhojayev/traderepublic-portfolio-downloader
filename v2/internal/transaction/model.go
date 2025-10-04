@@ -4,19 +4,19 @@ type Model struct {
 	ID             string
 	Status         string
 	Timestamp      CSVDateTime
-	Type           TransactionType
-	AssetType      string `csv:"Asset type"`
+	Type           Type
+	AssetType      string
 	AssetName      string
 	ISIN           string
 	Shares         float64
-	Rate           float64 `csv:"Realized yield"`
-	Yield          float64 `csv:"Realized PnL"`
-	Profit         float64 `csv:"Realized PnL"`
-	Commission     float64
+	SharePrice     float64
+	Yield          *float64
+	Gain           *float64
+	Fee            *float64
 	Debit          float64
 	Credit         float64
-	TaxAmount      float64 `csv:"Tax amount"`
-	InvestedAmount float64 `csv:"-"`
+	TaxAmount      *float64
+	InvestedAmount *float64 `csv:"-"`
 	Documents      []string
 }
 
@@ -28,7 +28,7 @@ type ModelBuilder struct {
 	ID             string
 	Status         string
 	Timestamp      CSVDateTime
-	Type           TransactionType
+	Type           Type
 	AssetType      string `csv:"Asset type"`
 	AssetName      string
 	ISIN           string
@@ -62,7 +62,7 @@ func (b *ModelBuilder) SetTimestamp(timestamp CSVDateTime) *ModelBuilder {
 	return b
 }
 
-func (b *ModelBuilder) SetType(transactionType TransactionType) *ModelBuilder {
+func (b *ModelBuilder) SetType(transactionType Type) *ModelBuilder {
 	b.Type = transactionType
 
 	return b
@@ -156,14 +156,14 @@ func (b *ModelBuilder) Build() Model {
 		AssetName:      b.AssetName,
 		ISIN:           b.ISIN,
 		Shares:         b.Shares,
-		Rate:           b.Rate,
-		Yield:          b.Yield,
-		Profit:         b.Profit,
-		Commission:     b.Commission,
+		SharePrice:     b.Rate,
+		Yield:          &b.Yield,
+		Gain:           &b.Profit,
+		Fee:            &b.Commission,
 		Debit:          b.Debit,
 		Credit:         b.Credit,
-		TaxAmount:      b.TaxAmount,
-		InvestedAmount: b.InvestedAmount,
+		TaxAmount:      &b.TaxAmount,
+		InvestedAmount: &b.InvestedAmount,
 		Documents:      b.Documents,
 	}
 }

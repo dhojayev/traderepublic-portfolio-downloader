@@ -24,7 +24,7 @@ func main() {
 
 	eventBus := bus.New()
 	faker := app.NewFaker(eventBus)
-	tdHandler := timelinedetails.NewHandler(eventBus, nil)
+	tdHandler := timelinedetails.NewHandler(eventBus)
 
 	eventBus.Subscribe(bus.TopicTimelineDetailsV2Received, tdHandler.Handle)
 

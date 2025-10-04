@@ -17,7 +17,7 @@ func TestModelBuilder(t *testing.T) {
 		expectedID := "12345"
 		expectedStatus := "completed"
 		expectedTimestamp := transaction.CSVDateTime{time.Date(2023, 10, 1, 12, 0, 0, 0, time.UTC)}
-		expectedType := transaction.TypeDeposit
+		expectedType := &transaction.SavingsPlanType{}
 		expectedAssetType := "stock"
 		expectedName := "AAPL"
 		expectedInstrument := "AAPL"
@@ -62,10 +62,10 @@ func TestModelBuilder(t *testing.T) {
 		assert.Equal(t, expectedName, model.AssetName)
 		assert.Equal(t, expectedInstrument, model.ISIN)
 		assert.Equal(t, expectedShares, model.Shares)
-		assert.Equal(t, expectedRate, model.Rate)
+		assert.Equal(t, expectedRate, model.SharePrice)
 		assert.Equal(t, expectedYield, model.Yield)
-		assert.Equal(t, expectedProfit, model.Profit)
-		assert.Equal(t, expectedCommission, model.Commission)
+		assert.Equal(t, expectedProfit, model.Gain)
+		assert.Equal(t, expectedCommission, model.Fee)
 		assert.Equal(t, expectedDebit, model.Debit)
 		assert.Equal(t, expectedCredit, model.Credit)
 		assert.Equal(t, expectedTaxAmount, model.TaxAmount)

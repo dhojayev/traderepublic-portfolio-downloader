@@ -55,19 +55,16 @@
       "enum": ["crypto", "fund", "stock", "etf"]
     },
     "legalTypeId": {
-      "type": "string",
-      "enum": ["CRYPTO", "FUND"]
+      "type": "string"
     },
     "wkn": {
       "type": "string"
     },
     "legacyTypeChar": {
-      "type": "string",
-      "enum": ["U"]
+      "type": "string"
     },
     "isin": {
-      "type": "string",
-      "pattern": "^([A-Z]{2})[A-Z0-9]{10}$"
+      "type": "string"
     },
     "priceFactor": {
       "type": "integer"
@@ -117,12 +114,10 @@
           "type": ["string", "null"]
         },
         "method": {
-          "type": "string",
-          "enum": ["optimized"]
+          "type": "string"
         },
         "useOfProfits": {
-          "type": "string",
-          "enum": ["distributing"]
+          "type": "string"
         },
         "useOfProfitsDisplayName": {
           "type": "string"
@@ -191,8 +186,7 @@
           "type": "object",
           "properties": {
             "instrumentType": {
-              "type": ["string", "null"],
-              "enum": ["INVESTMENT_FUND", null]
+              "type": ["string", "null"]
             },
             "instrumentSubType": {
               "type": ["integer", "null"]
@@ -259,19 +253,16 @@
           "type": ["object", "null"],
           "properties": {
             "minOrderSize": {
-              "type": "string",
-              "pattern": "^[0-9]+\\.[0-9]+$"
+              "type": "string"
             },
             "maxOrderSize": {
               "type": ["string", "null"]
             },
             "stepSize": {
-              "type": "string",
-              "pattern": "^[0-9]+\\.[0-9]+$"
+              "type": "string"
             },
             "orderAmountLimitCurrency": {
-              "type": ["string", "null"],
-              "enum": ["EUR", null]
+              "type": ["string", "null"]
             },
             "minOrderAmount": {
               "type": ["string", "null"]
@@ -325,8 +316,7 @@
       "required": ["type", "id", "name", "icon"],
       "properties": {
         "type": {
-          "type": "string",
-          "enum": ["sector", "region", "issuer", "attribute"]
+          "type": "string"
         },
         "id": {
           "type": "string"

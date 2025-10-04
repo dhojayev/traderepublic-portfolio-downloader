@@ -2,19 +2,36 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://raw.githubusercontent.com/dhojayev/traderepublic-portfolio-downloader/refs/heads/main/v2/pkg/traderepublic/schemas/timeline_details.json",
   "type": "object",
-  "required": ["id", "sections"],
+  "required": [
+    "id",
+    "sections"
+  ],
   "properties": {
-    "id": { "$ref": "common.json#/definitions/uuid" },
+    "id": {
+      "$ref": "common.json#/definitions/uuid"
+    },
     "sections": {
       "type": "array",
       "items": {
         "oneOf": [
-          { "$ref": "#/definitions/headerSection" },
-          { "$ref": "#/definitions/tableSection" },
-          { "$ref": "#/definitions/documentSection" },
-          { "$ref": "#/definitions/stepsSection" },
-          { "$ref": "#/definitions/bannerSection" },
-          { "$ref": "#/definitions/noteSection" }
+          {
+            "$ref": "#/definitions/headerSection"
+          },
+          {
+            "$ref": "#/definitions/tableSection"
+          },
+          {
+            "$ref": "#/definitions/documentSection"
+          },
+          {
+            "$ref": "#/definitions/stepsSection"
+          },
+          {
+            "$ref": "#/definitions/bannerSection"
+          },
+          {
+            "$ref": "#/definitions/noteSection"
+          }
         ]
       }
     }
@@ -22,14 +39,22 @@
   "definitions": {
     "headerSection": {
       "type": "object",
-      "required": ["title", "data", "type"],
+      "required": [
+        "title",
+        "data",
+        "type"
+      ],
       "properties": {
         "title": {
           "type": "string"
         },
         "data": {
           "type": "object",
-          "required": ["icon", "timestamp", "status"],
+          "required": [
+            "icon",
+            "timestamp",
+            "status"
+          ],
           "properties": {
             "icon": {
               "type": "string"
@@ -39,20 +64,31 @@
             },
             "status": {
               "type": "string",
-              "enum": ["executed", "canceled"]
+              "enum": [
+                "executed",
+                "canceled"
+              ]
             },
             "subtitleText": {
-              "type": ["string", "null"]
+              "type": [
+                "string",
+                "null"
+              ]
             }
           }
         },
         "action": {
           "type": "object",
-          "required": ["type", "payload"],
+          "required": [
+            "type",
+            "payload"
+          ],
           "properties": {
             "type": {
               "type": "string",
-              "enum": ["instrumentDetail"]
+              "enum": [
+                "instrumentDetail"
+              ]
             },
             "payload": {
               "type": "string"
@@ -67,7 +103,9 @@
     },
     "tableSection": {
       "type": "object",
-      "required": ["type"],
+      "required": [
+        "type"
+      ],
       "properties": {
         "title": {
           "type": "string"
@@ -80,11 +118,21 @@
           "type": "array",
           "items": {
             "oneOf": [
-              { "$ref": "#/definitions/statusRow" },
-              { "$ref": "#/definitions/paymentRow" },
-              { "$ref": "#/definitions/documentRow" },
-              { "$ref": "#/definitions/supportRow" },
-              { "$ref": "#/definitions/interestRow" }
+              {
+                "$ref": "#/definitions/statusRow"
+              },
+              {
+                "$ref": "#/definitions/paymentRow"
+              },
+              {
+                "$ref": "#/definitions/documentRow"
+              },
+              {
+                "$ref": "#/definitions/supportRow"
+              },
+              {
+                "$ref": "#/definitions/interestRow"
+              }
             ]
           }
         }
@@ -92,7 +140,9 @@
     },
     "documentSection": {
       "type": "object",
-      "required": ["type"],
+      "required": [
+        "type"
+      ],
       "properties": {
         "title": {
           "type": "string"
@@ -111,7 +161,11 @@
     },
     "stepsSection": {
       "type": "object",
-      "required": ["title", "type", "steps"],
+      "required": [
+        "title",
+        "type",
+        "steps"
+      ],
       "properties": {
         "title": {
           "type": "string"
@@ -130,7 +184,9 @@
     },
     "bannerSection": {
       "type": "object",
-      "required": ["type"],
+      "required": [
+        "type"
+      ],
       "properties": {
         "title": {
           "type": "string"
@@ -141,7 +197,10 @@
         },
         "actionableTitle": {
           "type": "object",
-          "required": ["title", "action"],
+          "required": [
+            "title",
+            "action"
+          ],
           "properties": {
             "title": {
               "type": "string"
@@ -155,7 +214,9 @@
     },
     "noteSection": {
       "type": "object",
-      "required": ["type"],
+      "required": [
+        "type"
+      ],
       "properties": {
         "title": {
           "type": "string"
@@ -171,11 +232,16 @@
     },
     "deeplinkAction": {
       "type": "object",
-      "required": ["payload", "type"],
+      "required": [
+        "payload",
+        "type"
+      ],
       "properties": {
         "payload": {
           "type": "object",
-          "required": ["link"],
+          "required": [
+            "link"
+          ],
           "properties": {
             "link": {
               "type": "string",
@@ -191,33 +257,51 @@
     },
     "stepItem": {
       "type": "object",
-      "required": ["leading", "content"],
+      "required": [
+        "leading",
+        "content"
+      ],
       "properties": {
         "leading": {
           "type": "object",
-          "required": ["avatar", "connection"],
+          "required": [
+            "avatar",
+            "connection"
+          ],
           "properties": {
             "avatar": {
               "type": "object",
-              "required": ["status", "type"],
+              "required": [
+                "status",
+                "type"
+              ],
               "properties": {
                 "status": {
                   "type": "string",
-                  "enum": ["completed"]
+                  "enum": [
+                    "completed"
+                  ]
                 },
                 "type": {
                   "type": "string",
-                  "enum": ["bullet"]
+                  "enum": [
+                    "bullet"
+                  ]
                 }
               }
             },
             "connection": {
               "type": "object",
-              "required": ["order"],
+              "required": [
+                "order"
+              ],
               "properties": {
                 "order": {
                   "type": "string",
-                  "enum": ["first", "last"]
+                  "enum": [
+                    "first",
+                    "last"
+                  ]
                 }
               }
             }
@@ -225,20 +309,29 @@
         },
         "content": {
           "type": "object",
-          "required": ["title", "timestamp"],
+          "required": [
+            "title",
+            "timestamp"
+          ],
           "properties": {
             "title": {
               "type": "string"
             },
             "subtitle": {
-              "type": ["string", "null"]
+              "type": [
+                "string",
+                "null"
+              ]
             },
             "timestamp": {
               "type": "string",
               "format": "date-time"
             },
             "cta": {
-              "type": ["object", "null"]
+              "type": [
+                "object",
+                "null"
+              ]
             }
           }
         }
@@ -246,7 +339,11 @@
     },
     "interestRow": {
       "type": "object",
-      "required": ["title", "detail", "style"],
+      "required": [
+        "title",
+        "detail",
+        "style"
+      ],
       "properties": {
         "title": {
           "type": "string",
@@ -262,30 +359,43 @@
         },
         "detail": {
           "type": "object",
-          "required": ["type"],
+          "required": [
+            "type"
+          ],
           "properties": {
             "text": {
               "type": "string"
             },
             "functionalStyle": {
               "type": "string",
-              "enum": ["EXECUTED"]
+              "enum": [
+                "EXECUTED"
+              ]
             },
             "type": {
               "type": "string",
-              "enum": ["status", "text"]
+              "enum": [
+                "status",
+                "text"
+              ]
             }
           }
         },
         "style": {
           "type": "string",
-          "enum": ["plain"]
+          "enum": [
+            "plain"
+          ]
         }
       }
     },
     "headerData": {
       "type": "object",
-      "required": ["icon", "timestamp", "status"],
+      "required": [
+        "icon",
+        "timestamp",
+        "status"
+      ],
       "properties": {
         "icon": {
           "type": "string",
@@ -297,23 +407,37 @@
         },
         "status": {
           "type": "string",
-          "enum": ["executed", "canceled"]
+          "enum": [
+            "executed",
+            "canceled"
+          ]
         },
         "subtitleText": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         }
       }
     },
     "benefitRow": {
       "type": "object",
-      "required": ["title", "detail", "style"],
+      "required": [
+        "title",
+        "detail",
+        "style"
+      ],
       "properties": {
         "title": {
           "type": "string"
         },
         "detail": {
           "type": "object",
-          "required": ["type", "title", "timestamp"],
+          "required": [
+            "type",
+            "title",
+            "timestamp"
+          ],
           "properties": {
             "type": {
               "type": "string",
@@ -336,15 +460,21 @@
             },
             "status": {
               "type": "string",
-              "enum": ["executed"]
+              "enum": [
+                "executed"
+              ]
             },
             "action": {
               "type": "object",
-              "required": ["type"],
+              "required": [
+                "type"
+              ],
               "properties": {
                 "type": {
                   "type": "string",
-                  "enum": ["benefitsSavebackOverview"]
+                  "enum": [
+                    "benefitsSavebackOverview"
+                  ]
                 }
               }
             },
@@ -355,36 +485,56 @@
         },
         "style": {
           "type": "string",
-          "enum": ["plain"]
+          "enum": [
+            "plain"
+          ]
         }
       }
     },
     "statusRow": {
       "type": "object",
-      "required": ["title", "detail", "style"],
+      "required": [
+        "title",
+        "detail",
+        "style"
+      ],
       "properties": {
         "title": {
           "type": "string",
-          "enum": ["Status", "Event", "Wertpapier"]
+          "enum": [
+            "Status",
+            "Event",
+            "Wertpapier"
+          ]
         },
         "detail": {
           "type": "object",
-          "required": ["type"],
+          "required": [
+            "type"
+          ],
           "properties": {
             "text": {
               "type": "string"
             },
             "functionalStyle": {
               "type": "string",
-              "enum": ["EXECUTED", "CANCELED"]
+              "enum": [
+                "EXECUTED",
+                "CANCELED"
+              ]
             },
             "type": {
               "type": "string",
-              "enum": ["status", "text"]
+              "enum": [
+                "status",
+                "text"
+              ]
             },
             "displayValue": {
               "type": "object",
-              "required": ["text"],
+              "required": [
+                "text"
+              ],
               "properties": {
                 "text": {
                   "type": "string"
@@ -395,27 +545,38 @@
         },
         "style": {
           "type": "string",
-          "enum": ["plain"]
+          "enum": [
+            "plain"
+          ]
         }
       }
     },
     "paymentRow": {
       "type": "object",
-      "required": ["title", "detail", "style"],
+      "required": [
+        "title",
+        "detail",
+        "style"
+      ],
       "properties": {
         "title": {
           "type": "string"
         },
         "detail": {
           "type": "object",
-          "required": ["type", "text"],
+          "required": [
+            "type",
+            "text"
+          ],
           "properties": {
             "text": {
               "type": "string"
             },
             "displayValue": {
               "type": "object",
-              "required": ["text"],
+              "required": [
+                "text"
+              ],
               "properties": {
                 "text": {
                   "type": "string"
@@ -441,7 +602,13 @@
     },
     "documentRow": {
       "type": "object",
-      "required": ["title", "detail", "action", "id", "postboxType"],
+      "required": [
+        "title",
+        "detail",
+        "action",
+        "id",
+        "postboxType"
+      ],
       "properties": {
         "title": {
           "type": "string"
@@ -452,7 +619,10 @@
         },
         "action": {
           "type": "object",
-          "required": ["payload", "type"],
+          "required": [
+            "payload",
+            "type"
+          ],
           "properties": {
             "payload": {
               "type": "string",
@@ -460,7 +630,9 @@
             },
             "type": {
               "type": "string",
-              "enum": ["browserModal"]
+              "enum": [
+                "browserModal"
+              ]
             }
           }
         },
@@ -480,21 +652,32 @@
     },
     "supportRow": {
       "type": "object",
-      "required": ["title", "detail", "style"],
+      "required": [
+        "title",
+        "detail",
+        "style"
+      ],
       "properties": {
         "title": {
           "type": "string"
         },
         "detail": {
           "type": "object",
-          "required": ["type", "action", "style"],
+          "required": [
+            "type",
+            "action",
+            "style"
+          ],
           "properties": {
             "icon": {
               "type": "string"
             },
             "action": {
               "type": "object",
-              "required": ["type", "payload"],
+              "required": [
+                "type",
+                "payload"
+              ],
               "properties": {
                 "type": {
                   "type": "string",
@@ -502,11 +685,17 @@
                 },
                 "payload": {
                   "type": "object",
-                  "required": ["contextParams", "contextCategory"],
+                  "required": [
+                    "contextParams",
+                    "contextCategory"
+                  ],
                   "properties": {
                     "contextParams": {
                       "type": "object",
-                      "required": ["chat_flow_key", "timelineEventId"],
+                      "required": [
+                        "chat_flow_key",
+                        "timelineEventId"
+                      ],
                       "properties": {
                         "chat_flow_key": {
                           "type": "string"
@@ -533,13 +722,19 @@
         },
         "style": {
           "type": "string",
-          "enum": ["highlighted"]
+          "enum": [
+            "highlighted"
+          ]
         }
       }
     },
     "cryptoTransactionRow": {
       "type": "object",
-      "required": ["title", "detail", "style"],
+      "required": [
+        "title",
+        "detail",
+        "style"
+      ],
       "properties": {
         "title": {
           "type": "string",
@@ -557,35 +752,58 @@
         },
         "detail": {
           "type": "object",
-          "required": ["type"],
+          "required": [
+            "type"
+          ],
           "properties": {
             "text": {
               "type": "string",
               "pattern": "^([0-9]+,[0-9]{2} [€$]|[0-9]+,[0-9]{6}|[+-]? ?[0-9]+,[0-9]{2} [€$]|[0-9]+,[0-9]{2} %|[A-Za-z ]+)$"
             },
             "trend": {
-              "type": ["string", "null"],
-              "enum": ["positive", "negative", null]
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "positive",
+                "negative",
+                null
+              ]
             },
             "action": {
-              "type": ["object", "null"]
+              "type": [
+                "object",
+                "null"
+              ]
             },
             "displayValue": {
-              "type": ["object", "null"]
+              "type": [
+                "object",
+                "null"
+              ]
             },
             "type": {
               "type": "string",
-              "enum": ["status", "text"]
+              "enum": [
+                "status",
+                "text"
+              ]
             },
             "functionalStyle": {
               "type": "string",
-              "enum": ["EXECUTED"]
+              "enum": [
+                "EXECUTED"
+              ]
             }
           }
         },
         "style": {
           "type": "string",
-          "enum": ["plain", "highlighted"]
+          "enum": [
+            "plain",
+            "highlighted"
+          ]
         }
       }
     }

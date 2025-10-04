@@ -37,10 +37,12 @@ func TestTypeResolver_Resolve(t *testing.T) {
 		t.Run("it resolves type in  "+entry.Name(), func(t *testing.T) {
 			t.Parallel()
 
-			resolveedType, err := resolver.Resolve(details)
+			model := transaction.Model{}
+
+			err := resolver.SetType(details, &model)
 			require.NoError(t, err)
 
-			assert.NotEqual(t, transaction.TypeUnknown, resolveedType)
+			assert.NotEqual(t, transaction.TypeUnknown, model.Type)
 		})
 	}
 }

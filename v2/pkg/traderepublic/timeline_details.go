@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"slices"
 )
 
 // Error constants for section and data item not found.
@@ -17,9 +18,11 @@ var (
 	SectionTransaction = sectionTitles{"Transaction"} // Title for the transaction table section
 	SectionPerformance = sectionTitles{"Performance"}
 	SectionSender      = sectionTitles{"Sender"}
+	SectionSavingsPlan = sectionTitles{"Savings Plan"}
 
 	StepInterestPayment = "Interest payment"
 
+	DataTransaction      = dataTitles{"Transaction"}
 	DataFrom             = dataTitles{"From"}
 	DataTo               = dataTitles{"To", "Recipient"}
 	DataPayment          = dataTitles{"Payment"}
@@ -57,7 +60,7 @@ func (d *TimelineDetailsJson) SectionHeader() (HeaderSection, error) {
 	var header HeaderSection
 
 	// Find the header section in the sections slice.
-	err := findSliceElement(d.Sections, &header, "")
+	err := findSliceElement(d.Sections, &header, []string{})
 	if err != nil {
 		return header, fmt.Errorf("header %w", ErrSectionNotFound)
 	}
@@ -68,7 +71,7 @@ func (d *TimelineDetailsJson) SectionHeader() (HeaderSection, error) {
 func (d *TimelineDetailsJson) SectionSteps() (StepsSection, error) {
 	var steps StepsSection
 
-	err := findSliceElement(d.Sections, &steps, "")
+	err := findSliceElement(d.Sections, &steps, []string{})
 	if err != nil {
 		return steps, fmt.Errorf("steps %w", ErrSectionNotFound)
 	}
@@ -79,34 +82,24 @@ func (d *TimelineDetailsJson) SectionSteps() (StepsSection, error) {
 func (d *TimelineDetailsJson) FindSection(titles sectionTitles) (TableSection, error) {
 	var section TableSection
 
-	for _, title := range titles {
-		// Find the section in the sections slice by title.
-		err := findSliceElement(d.Sections, &section, string(title))
-		if err != nil {
-			continue
-		}
-
-		return section, nil
+	err := findSliceElement(d.Sections, &section, titles)
+	if err != nil {
+		return TableSection{}, fmt.Errorf("table %w with titles %v", ErrSectionNotFound, titles)
 	}
 
-	return TableSection{}, fmt.Errorf("table %w with titles %v", ErrSectionNotFound, titles)
+	return section, nil
 }
 
 // FindData retrieves a payment row based on the provided titles from the table section.
 func (s *TableSection) FindData(titles dataTitles) (PaymentRow, error) {
 	var item PaymentRow
 
-	// Iterate through the data slice to find the matching payment row.
-	for _, title := range titles {
-		err := findSliceElement(s.Data, &item, title)
-		if err != nil {
-			continue
-		}
-
-		return item, nil
+	err := findSliceElement(s.Data, &item, titles)
+	if err != nil {
+		return PaymentRow{}, fmt.Errorf("%w with titles %v", ErrDataItemNotFound, titles)
 	}
 
-	return PaymentRow{}, fmt.Errorf("%w with titles %v", ErrDataItemNotFound, titles)
+	return item, nil
 }
 
 func (s *StepsSection) FindStep(title string) (StepItem, error) {
@@ -122,7 +115,7 @@ func (s *StepsSection) FindStep(title string) (StepItem, error) {
 }
 
 // findSliceElement searches for a slice element that matches the provided search criteria.
-func findSliceElement(input []any, v any, search string) error {
+func findSliceElement(input []any, v any, search []string) error {
 	for _, element := range input {
 		err := unmarshal(element, v)
 		if err != nil {
@@ -130,17 +123,17 @@ func findSliceElement(input []any, v any, search string) error {
 		}
 
 		// If no search criteria is provided, return the first match.
-		if search == "" {
+		if len(search) == 0 {
 			return nil
 		}
 
 		// Check if the title matches the search criteria.
-		title, ok := element.(map[string]any)["title"]
+		title, ok := element.(map[string]any)["title"].(string)
 		if !ok {
 			continue
 		}
 
-		if title != search {
+		if !slices.Contains(search, title) {
 			continue
 		}
 

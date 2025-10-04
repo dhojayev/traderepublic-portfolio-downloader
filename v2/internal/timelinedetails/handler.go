@@ -9,15 +9,13 @@ import (
 
 // Handler struct manages the handling of timeline details events.
 type Handler struct {
-	eventBus   *bus.EventBus // EventBus to publish events
-	normalizer *Normalizer   // Normalizer for normalizing transaction details
+	eventBus *bus.EventBus // EventBus to publish events
 }
 
 // NewHandler creates a new instance of Handler with the provided EventBus and Normalizer.
-func NewHandler(eventBus *bus.EventBus, normalizer *Normalizer) *Handler {
+func NewHandler(eventBus *bus.EventBus) *Handler {
 	return &Handler{
-		eventBus:   eventBus,
-		normalizer: normalizer,
+		eventBus: eventBus,
 	}
 }
 
@@ -32,18 +30,6 @@ func (h *Handler) Handle(event bus.Event) {
 		return
 	}
 
-	// Fetch instrument details asynchronously
-	go h.FetchInstrument(details)
-
-	// Normalize the transaction details
-	_, err = h.normalizer.Normalize(details)
-	if err != nil {
-		slog.Error("error during normalization", "error", err)
-	}
-}
-
-// FetchInstrument retrieves and publishes instrument details based on the provided TimelineDetailsJson.
-func (h *Handler) FetchInstrument(details traderepublic.TimelineDetailsJson) {
 	// Extract the header section from the timeline details
 	header, err := details.SectionHeader()
 	if err != nil {
@@ -59,9 +45,5 @@ func (h *Handler) FetchInstrument(details traderepublic.TimelineDetailsJson) {
 	isin := header.Action.Payload
 
 	// Publish a new event to fetch instrument details
-	h.eventBus.Publish(bus.NewEvent(
-		bus.TopicInstrumentFetch,
-		isin,
-		[]byte(isin),
-	))
+	h.eventBus.Publish(bus.NewEvent(bus.TopicInstrumentFetch, isin, nil))
 }

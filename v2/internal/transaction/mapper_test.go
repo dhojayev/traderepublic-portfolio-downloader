@@ -4,11 +4,11 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
-	"slices"
 	"testing"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/transaction"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/pkg/traderepublic"
+	gocache "github.com/patrickmn/go-cache"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -16,26 +16,41 @@ import (
 func TestDataMapper_Map(t *testing.T) {
 	t.Parallel()
 
-	path := "../../debug/responses/timeline_detail_v2_received"
-	_, err := os.Stat(path)
+	detailsPath := "../../debug/responses/timeline_detail_v2_received"
+	_, err := os.Stat(detailsPath)
 	if err != nil && os.IsNotExist(err) {
 		t.Skip()
 	}
 
-	entries, err := os.ReadDir(path)
+	entries, err := os.ReadDir(detailsPath)
 	require.NoError(t, err)
 
-	resolver := transaction.NewTypeResolver()
-	mapper := transaction.NewDataMapper()
+	cache := gocache.New(gocache.NoExpiration, gocache.NoExpiration)
 
-	ignoredTypes := []transaction.TransactionType{
-		transaction.TypeCardPayment,
-		transaction.TypeCardRefund,
-		transaction.TypeIgnored,
+	instrPath := "../../debug/responses/instrument_received"
+	_, err = os.Stat(instrPath)
+	if err == nil {
+		files, err := os.ReadDir(instrPath)
+		require.NoError(t, err)
+
+		for _, file := range files {
+			contents, err := os.ReadFile(filepath.Join(instrPath, file.Name()))
+			require.NoError(t, err)
+
+			var instr traderepublic.InstrumentJson
+
+			err = instr.UnmarshalJSON(contents)
+			require.NoError(t, err)
+
+			cache.Set(instr.Isin, instr, gocache.NoExpiration)
+		}
 	}
 
+	resolver := transaction.NewTypeResolver()
+	mapper := transaction.NewDataMapper(cache)
+
 	for _, entry := range entries {
-		contents, err := os.ReadFile(filepath.Join(path, entry.Name()))
+		contents, err := os.ReadFile(filepath.Join(detailsPath, entry.Name()))
 		require.NoError(t, err)
 
 		var details traderepublic.TimelineDetailsJson
@@ -46,19 +61,19 @@ func TestDataMapper_Map(t *testing.T) {
 		t.Run("it can map all fields "+entry.Name(), func(t *testing.T) {
 			t.Parallel()
 
-			trnType, err := resolver.Resolve(details)
-			require.NoError(t, err)
+			model := transaction.Model{}
+			err := resolver.SetType(details, &model)
+			if err != nil {
+				switch {
+				case errors.Is(err, transaction.ErrCancelledTransactionReceived), errors.Is(err, transaction.ErrIgnoredTransactionReceived), errors.Is(err, transaction.ErrUnknownTransactionReceived):
+					t.Skip()
+				}
 
-			if slices.Contains(ignoredTypes, trnType) {
-				t.Skip()
+				require.NoError(t, err)
 			}
 
-			if details.Id == "a8a104a8-2d0c-43d8-877f-3f01b884ed0e" {
-				t.Log("test")
-			}
-
-			model, err := mapper.Map(trnType, details)
-			if errors.Is(err, transaction.ErrIgnoredTransactionReceived) {
+			err = mapper.Map(details, &model)
+			if errors.Is(err, transaction.ErrTransactionWithoutTypeReceived) {
 				t.Skip()
 			}
 
@@ -67,36 +82,13 @@ func TestDataMapper_Map(t *testing.T) {
 			assert.NotEmpty(t, model.ID)
 			assert.NotEmpty(t, model.Status)
 			assert.NotEmpty(t, model.Timestamp)
-
-			switch trnType {
-			case transaction.TypeSavingsplan:
-				assert.NotEmpty(t, model.ISIN)
-				assert.NotEmpty(t, model.Shares)
-			case transaction.TypeBuyOrder:
-				assert.NotEmpty(t, model.ISIN)
-				assert.NotEmpty(t, model.Shares)
-			case transaction.TypeSellOrder:
-				assert.NotEmpty(t, model.ISIN)
-				assert.NotEmpty(t, model.Shares)
-			case transaction.TypeDividendsIncome:
-				assert.NotEmpty(t, model.ISIN)
-				assert.NotEmpty(t, model.Shares)
-			case transaction.TypeRoundUp:
-				assert.NotEmpty(t, model.ISIN)
-				assert.NotEmpty(t, model.Shares)
-			case transaction.TypeSaveback:
-				assert.NotEmpty(t, model.ISIN)
-				assert.NotEmpty(t, model.Shares)
-			case transaction.TypeDeposit:
-				assert.Empty(t, model.ISIN)
-				assert.Empty(t, model.Shares)
-			case transaction.TypeWithdrawal:
-				assert.Empty(t, model.ISIN)
-				assert.Empty(t, model.Shares)
-			case transaction.TypeInterestPayment:
-				assert.Empty(t, model.ISIN)
-				assert.Empty(t, model.Shares)
-			}
+			assert.NotEmpty(t, model.ISIN)
+			assert.NotEmpty(t, model.AssetName)
+			assert.NotEmpty(t, model.AssetType)
+			assert.NotEmpty(t, model.Shares)
+			assert.NotEmpty(t, model.SharePrice)
+			assert.NotNil(t, model.Fee)
+			assert.NotEmpty(t, model.Debit)
 		})
 	}
 }

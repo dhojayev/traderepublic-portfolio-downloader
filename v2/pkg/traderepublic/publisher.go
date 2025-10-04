@@ -50,6 +50,9 @@ func (p *Publisher) Publish(msg []byte, topic string) {
 }
 
 func (p *Publisher) Close(topic string) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
 	ch, ok := p.subscribers[topic]
 	if !ok {
 		return

@@ -6,6 +6,7 @@ import (
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/bus"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/message"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/pkg/traderepublic"
 
 	gocache "github.com/patrickmn/go-cache"
 )
@@ -47,8 +48,12 @@ func (h *Handler) HandleFetch(event bus.Event) {
 func (h *Handler) HandleReceived(event bus.Event) {
 	isin := event.ID
 
-	err := h.cache.Add(isin, nil, gocache.NoExpiration)
+	var instr traderepublic.InstrumentJson
+
+	err := instr.UnmarshalJSON(event.Data.([]byte))
 	if err != nil {
-		slog.Warn("failed to add isin to cache", "isin", isin)
+		slog.Error("failed to unmarshal instrument", "isin", isin)
 	}
+
+	_ = h.cache.Add(isin, instr, gocache.NoExpiration)
 }
