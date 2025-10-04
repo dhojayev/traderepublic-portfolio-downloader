@@ -1,57 +1,147 @@
 package fakes
 
-import "github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/transactions"
+import (
+	"time"
+
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/filesystem"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/details"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/api/timeline/transactions"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/instrument"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/internal/traderepublc/portfolio/transaction"
+)
 
 var CardSuccessfulTransaction01 = TransactionTestCase{
 	TimelineTransactionsData: TimelineTransactionsTestData{
+		Raw: []byte(`[
+{
+}
+]`)},
+	TimelineDetailsData: TimelineDetailsTestData{
 		Raw: []byte(`{
-		"items": 
-			[
-				{
-					"action": {
-						"payload": "6221f5fb-b8fa-4ad6-8c99-c3fb3c31da10",
-						"type": "timelineDetail"
+    	"id": "f729b13a-ed08-5e48-bdde-87f17c478e48",
+		"sections": [
+			{
+				"data": {
+					"icon": "merchant-logos/a95de37b-f62d-42fe-b226-0d3bcae8df0c",
+					"status": "executed",
+					"timestamp": "2024-04-07T18:03:33.954+0000"
+				},
+				"title": "Du hast 2,00 € ausgegeben",
+				"type": "header"
+			},
+			{
+				"data": [
+					{
+						"detail": {
+							"functionalStyle": "EXECUTED",
+							"text": "Fertig",
+							"type": "status"
+						},
+						"style": "plain",
+						"title": "Status"
 					},
-					"amount": {
-						"currency": "EUR",
-						"fractionDigits": 2,
-						"value": -5.95
+					{
+						"detail": {
+							"icon": "logos/bank_traderepublic/v2",
+							"text": "··1234",
+							"type": "iconWithText"
+						},
+						"style": "plain",
+						"title": "Zahlung"
 					},
-					"badge": null,
-					"eventType": "card_successful_transaction",
-					"icon": "logos/merchant-45180dc7-8917-45c9-b926-6ae7b3befe28/v2",
-					"id": "6221f5fb-b8fa-4ad6-8c99-c3fb3c31da10",
-					"status": "EXECUTED",
-					"subAmount": null,
-					"subtitle": null,
-					"timestamp": "2024-05-27T13:51:55.167+0000",
-					"title": "Aldi"
-				}
-			]
+					{
+						"detail": {
+							"text": "Stayery",
+							"type": "text"
+						},
+						"style": "plain",
+						"title": "Händler"
+					}
+				],
+				"title": "Übersicht",
+				"type": "table"
+			},
+			{
+				"data": [
+					{
+						"detail": {
+							"action": {
+								"type": "benefitsSavebackOverview"
+							},
+							"amount": "0,02 €",
+							"icon": "logos/IE0031442068/v2",
+							"status": "executed",
+							"subtitle": "Saveback",
+							"timestamp": "2024-04-07T18:03:34.802+0000",
+							"title": "Core S\u0026P 500 USD (Dist)",
+							"type": "embeddedTimelineItem"
+						},
+						"style": "plain",
+						"title": "Core S\u0026P 500 USD (Dist)"
+					}
+				],
+				"title": "Vorteile",
+				"type": "table"
+			},
+			{
+				"data": [
+					{
+						"detail": {
+							"action": {
+								"payload": {
+									"contextCategory": "card-dispute",
+									"contextParams": {
+										"card-dispute-txId": "f729b13a-ed08-5e48-bdde-87f17c478e48"
+									},
+									"transactionId": "f729b13a-ed08-5e48-bdde-87f17c478e48"
+								},
+								"type": "customerSupportChat"
+							},
+							"icon": "logos/timeline_communication/v2",
+							"type": "listItemAvatarDefault"
+						},
+						"style": "highlighted",
+						"title": "Problem melden"
+					}
+				],
+				"title": "Hilfe",
+				"type": "table"
+			}
+		]
 }`),
-		Unmarshalled: transactions.ResponseItem{
-			Action: transactions.ResponseItemAction{
-				Payload: "6221f5fb-b8fa-4ad6-8c99-c3fb3c31da10",
-				Type:    "timelineDetail",
+		Normalized: details.NormalizedResponse{
+			ID: "f729b13a-ed08-5e48-bdde-87f17c478e48",
+			Header: details.NormalizedResponseHeaderSection{
+				Data: details.NormalizedResponseHeaderSectionData{
+					Icon:      "merchant-logos/a95de37b-f62d-42fe-b226-0d3bcae8df0c",
+					Status:    "executed",
+					Timestamp: "2024-04-07T18:03:33.954+0000",
+				},
+				Title: "Du hast 2,00 € ausgegeben",
+				Type:  "header",
 			},
-			Amount: transactions.ResponseItemAmount{
-				Currency:       "EUR",
-				FractionDigits: 2,
-				Value:          -5.95,
-			},
-			EventType: "card_successful_transaction",
-			Icon:      "logos/merchant-45180dc7-8917-45c9-b926-6ae7b3befe28/v2",
-			ID:        "6221f5fb-b8fa-4ad6-8c99-c3fb3c31da10",
-			Status:    "EXECUTED",
-			Timestamp: "2024-05-27T13:51:55.167+0000",
-			Title:     "Aldi",
 		},
 	},
-	TimelineDetailsData: TimelineDetailsTestData{
-		Raw: []byte("{}"),
+	EventType: transactions.EventTypeCardSuccessfulTransaction,
+	Transaction: transaction.Model{
+		UUID:   "f729b13a-ed08-5e48-bdde-87f17c478e48",
+		Type:   transaction.TypeCardPaymentTransaction,
+		Status: "executed",
+		Total:  2,
+		Instrument: instrument.Model{
+			Name: "Stayery",
+		},
+	},
+	CSVEntry: filesystem.CSVEntry{
+		ID:    "f729b13a-ed08-5e48-bdde-87f17c478e48",
+		Debit: 2,
+		Type:  transaction.TypeCardPaymentTransaction,
 	},
 }
 
 func init() {
-	RegisterUnsupported("CardSuccessfulTransaction01", CardSuccessfulTransaction01)
+	CardSuccessfulTransaction01.Transaction.Timestamp, _ = time.Parse(details.ResponseTimeFormat, "2024-04-07T18:03:33.954+0000")
+	CardSuccessfulTransaction01.CSVEntry.Timestamp = internal.DateTime{Time: CardSuccessfulTransaction01.Transaction.Timestamp}
+	RegisterSupported("CardSuccessfulTransaction01", CardSuccessfulTransaction01)
 }

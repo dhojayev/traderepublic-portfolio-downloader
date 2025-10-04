@@ -36,6 +36,9 @@ const (
 	OrderTypeTextsSale                      = "Verkauf"
 	OrderTypeTextsPurchase                  = "Kauf"
 	TrendNegative                           = "negative"
+	CardPaymentTransactionBeneficiary       = "Händler"
+	CardPaymentTransactionHelpSection       = "Hilfe"
+	CardPaymentTransactionGainedBenefits    = "Vorteile"
 )
 
 var ErrSectionDataTitleNotFound = errors.New("section data title not found")

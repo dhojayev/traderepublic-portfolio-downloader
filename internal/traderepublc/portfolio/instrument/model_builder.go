@@ -56,6 +56,7 @@ func (b ModelBuilder) ExtractInstrumentName(response details.NormalizedResponse)
 		details.OverviewDataTitleAsset,
 		details.OverviewDataTitleUnderlyingAsset,
 		details.OverviewDataTitleSecurity,
+		details.CardPaymentTransactionBeneficiary,
 	)
 	if err != nil {
 		return "", fmt.Errorf("could not get overview section asset: %w", err)
