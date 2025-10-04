@@ -21,7 +21,7 @@ var (
 	StepInterestPayment = "Interest payment"
 
 	DataFrom             = dataTitles{"From"}
-	DataTo               = dataTitles{"To"}
+	DataTo               = dataTitles{"To", "Recipient"}
 	DataPayment          = dataTitles{"Payment"}
 	DataRoundUp          = dataTitles{"Round up"}
 	DataBuy              = dataTitles{"Buy"}

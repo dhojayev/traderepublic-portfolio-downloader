@@ -1,11 +1,15 @@
 package transaction
 
 import (
+	"errors"
 	"fmt"
+	"regexp"
 	"time"
 
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal"
 )
+
+var ErrPatternMismatch = errors.New("value did not match the pattern")
 
 type CSVDateTime struct {
 	time.Time
@@ -40,4 +44,15 @@ func ParseTimestamp(src string) (time.Time, error) {
 	}
 
 	return time.Time{}, fmt.Errorf("could not parse timestamp 2 times: '%w' and '%w'", err, err2)
+}
+
+func ExtractInstrumentISINFromIcon(src string) (string, error) {
+	pattern := regexp.MustCompile(`.*[^/]/([A-Z]{2}.*)/.*`)
+	matches := pattern.FindStringSubmatch(src)
+
+	if len(matches) == 0 {
+		return "", ErrPatternMismatch
+	}
+
+	return matches[1], nil
 }
