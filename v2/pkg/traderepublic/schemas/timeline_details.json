@@ -1,0 +1,811 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/dhojayev/traderepublic-portfolio-downloader/refs/heads/main/v2/pkg/traderepublic/schemas/timeline_details.json",
+  "type": "object",
+  "required": [
+    "id",
+    "sections"
+  ],
+  "properties": {
+    "id": {
+      "$ref": "common.json#/definitions/uuid"
+    },
+    "sections": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/definitions/headerSection"
+          },
+          {
+            "$ref": "#/definitions/tableSection"
+          },
+          {
+            "$ref": "#/definitions/documentSection"
+          },
+          {
+            "$ref": "#/definitions/stepsSection"
+          },
+          {
+            "$ref": "#/definitions/bannerSection"
+          },
+          {
+            "$ref": "#/definitions/noteSection"
+          }
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "headerSection": {
+      "type": "object",
+      "required": [
+        "title",
+        "data",
+        "type"
+      ],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "data": {
+          "type": "object",
+          "required": [
+            "icon",
+            "timestamp",
+            "status"
+          ],
+          "properties": {
+            "icon": {
+              "type": "string"
+            },
+            "timestamp": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "executed",
+                "canceled"
+              ]
+            },
+            "subtitleText": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        },
+        "action": {
+          "type": "object",
+          "required": [
+            "type",
+            "payload"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "instrumentDetail"
+              ]
+            },
+            "payload": {
+              "type": "string"
+            }
+          }
+        },
+        "type": {
+          "type": "string",
+          "const": "header"
+        }
+      }
+    },
+    "tableSection": {
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "const": "table"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/definitions/statusRow"
+              },
+              {
+                "$ref": "#/definitions/paymentRow"
+              },
+              {
+                "$ref": "#/definitions/documentRow"
+              },
+              {
+                "$ref": "#/definitions/supportRow"
+              },
+              {
+                "$ref": "#/definitions/interestRow"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "documentSection": {
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "const": "documents"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/documentRow"
+          }
+        }
+      }
+    },
+    "stepsSection": {
+      "type": "object",
+      "required": [
+        "title",
+        "type",
+        "steps"
+      ],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "const": "steps"
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/stepItem"
+          }
+        }
+      }
+    },
+    "bannerSection": {
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "const": "banner"
+        },
+        "actionableTitle": {
+          "type": "object",
+          "required": [
+            "title",
+            "action"
+          ],
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "action": {
+              "$ref": "#/definitions/deeplinkAction"
+            }
+          }
+        }
+      }
+    },
+    "noteSection": {
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "const": "note"
+        },
+        "content": {
+          "type": "string"
+        }
+      }
+    },
+    "deeplinkAction": {
+      "type": "object",
+      "required": [
+        "payload",
+        "type"
+      ],
+      "properties": {
+        "payload": {
+          "type": "object",
+          "required": [
+            "link"
+          ],
+          "properties": {
+            "link": {
+              "type": "string",
+              "pattern": "^traderepublic://[a-z/-]+$"
+            }
+          }
+        },
+        "type": {
+          "type": "string",
+          "const": "deeplink"
+        }
+      }
+    },
+    "stepItem": {
+      "type": "object",
+      "required": [
+        "leading",
+        "content"
+      ],
+      "properties": {
+        "leading": {
+          "type": "object",
+          "required": [
+            "avatar",
+            "connection"
+          ],
+          "properties": {
+            "avatar": {
+              "type": "object",
+              "required": [
+                "status",
+                "type"
+              ],
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "completed"
+                  ]
+                },
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "bullet"
+                  ]
+                }
+              }
+            },
+            "connection": {
+              "type": "object",
+              "required": [
+                "order"
+              ],
+              "properties": {
+                "order": {
+                  "type": "string",
+                  "enum": [
+                    "first",
+                    "last"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "content": {
+          "type": "object",
+          "required": [
+            "title",
+            "timestamp"
+          ],
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "subtitle": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "timestamp": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "cta": {
+              "type": [
+                "object",
+                "null"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "interestRow": {
+      "type": "object",
+      "required": [
+        "title",
+        "detail",
+        "style"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "enum": [
+            "Status",
+            "Durchschnittssaldo",
+            "Jährliche Rate",
+            "Asset",
+            "Angesammelt",
+            "Steuern",
+            "Gesamt"
+          ]
+        },
+        "detail": {
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "text": {
+              "type": "string"
+            },
+            "functionalStyle": {
+              "type": "string",
+              "enum": [
+                "EXECUTED"
+              ]
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "status",
+                "text"
+              ]
+            }
+          }
+        },
+        "style": {
+          "type": "string",
+          "enum": [
+            "plain"
+          ]
+        }
+      }
+    },
+    "headerData": {
+      "type": "object",
+      "required": [
+        "icon",
+        "timestamp",
+        "status"
+      ],
+      "properties": {
+        "icon": {
+          "type": "string",
+          "pattern": "^logos/([A-Z0-9]+|timeline_interest_new|merchant-[a-f0-9-]+|XF[0-9A-Z]+)/v2$"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "executed",
+            "canceled"
+          ]
+        },
+        "subtitleText": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "benefitRow": {
+      "type": "object",
+      "required": [
+        "title",
+        "detail",
+        "style"
+      ],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "detail": {
+          "type": "object",
+          "required": [
+            "type",
+            "title",
+            "timestamp"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "embeddedTimelineItem"
+            },
+            "title": {
+              "type": "string"
+            },
+            "timestamp": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "amount": {
+              "type": "string",
+              "pattern": "^[0-9]+,[0-9]{2} €$"
+            },
+            "icon": {
+              "type": "string",
+              "pattern": "^logos/[A-Z0-9]+/v2$"
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "executed"
+              ]
+            },
+            "action": {
+              "type": "object",
+              "required": [
+                "type"
+              ],
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "benefitsSavebackOverview"
+                  ]
+                }
+              }
+            },
+            "subtitle": {
+              "type": "string"
+            }
+          }
+        },
+        "style": {
+          "type": "string",
+          "enum": [
+            "plain"
+          ]
+        }
+      }
+    },
+    "statusRow": {
+      "type": "object",
+      "required": [
+        "title",
+        "detail",
+        "style"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "enum": [
+            "Status",
+            "Event",
+            "Wertpapier"
+          ]
+        },
+        "detail": {
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "text": {
+              "type": "string"
+            },
+            "functionalStyle": {
+              "type": "string",
+              "enum": [
+                "EXECUTED",
+                "CANCELED"
+              ]
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "status",
+                "text"
+              ]
+            },
+            "displayValue": {
+              "type": "object",
+              "required": [
+                "text"
+              ],
+              "properties": {
+                "text": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "style": {
+          "type": "string",
+          "enum": [
+            "plain"
+          ]
+        }
+      }
+    },
+    "paymentRow": {
+      "type": "object",
+      "required": [
+        "title",
+        "detail",
+        "style"
+      ],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "detail": {
+          "type": "object",
+          "required": [
+            "type",
+            "text"
+          ],
+          "properties": {
+            "text": {
+              "type": "string"
+            },
+            "displayValue": {
+              "type": "object",
+              "required": [
+                "text"
+              ],
+              "properties": {
+                "text": {
+                  "type": "string"
+                },
+                "prefix": {
+                  "type": "string"
+                }
+              }
+            },
+            "functionalStyle": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "const": "text"
+            }
+          }
+        },
+        "style": {
+          "type": "string"
+        }
+      }
+    },
+    "documentRow": {
+      "type": "object",
+      "required": [
+        "title",
+        "detail",
+        "action",
+        "id",
+        "postboxType"
+      ],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "detail": {
+          "type": "string",
+          "pattern": "^[0-9]{2}\\.[0-9]{2}\\.[0-9]{4}$"
+        },
+        "action": {
+          "type": "object",
+          "required": [
+            "payload",
+            "type"
+          ],
+          "properties": {
+            "payload": {
+              "type": "string",
+              "pattern": "^https://.*\\.pdf\\?.*$"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "browserModal"
+              ]
+            }
+          }
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "postboxType": {
+          "type": "string",
+          "enum": [
+            "CA_INCOME_INVOICE",
+            "CRYPTO_SECURITIES_SETTLEMENT",
+            "COSTS_INFO_SELL_V2"
+          ]
+        }
+      }
+    },
+    "supportRow": {
+      "type": "object",
+      "required": [
+        "title",
+        "detail",
+        "style"
+      ],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "detail": {
+          "type": "object",
+          "required": [
+            "type",
+            "action",
+            "style"
+          ],
+          "properties": {
+            "icon": {
+              "type": "string"
+            },
+            "action": {
+              "type": "object",
+              "required": [
+                "type",
+                "payload"
+              ],
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "const": "customerSupportChat"
+                },
+                "payload": {
+                  "type": "object",
+                  "required": [
+                    "contextParams",
+                    "contextCategory"
+                  ],
+                  "properties": {
+                    "contextParams": {
+                      "type": "object",
+                      "required": [
+                        "chat_flow_key",
+                        "timelineEventId"
+                      ],
+                      "properties": {
+                        "chat_flow_key": {
+                          "type": "string"
+                        },
+                        "timelineEventId": {
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                        },
+                        "primId": {
+                          "type": "string",
+                          "pattern": "^C[0-9]+$"
+                        }
+                      }
+                    },
+                    "contextCategory": {
+                      "type": "string",
+                      "const": "NHC"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "style": {
+          "type": "string",
+          "enum": [
+            "highlighted"
+          ]
+        }
+      }
+    },
+    "cryptoTransactionRow": {
+      "type": "object",
+      "required": [
+        "title",
+        "detail",
+        "style"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "enum": [
+            "Status",
+            "Orderart",
+            "Asset",
+            "Rendite",
+            "Gewinn",
+            "Anteile",
+            "Aktienkurs",
+            "Gebühr",
+            "Gesamt"
+          ]
+        },
+        "detail": {
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "text": {
+              "type": "string",
+              "pattern": "^([0-9]+,[0-9]{2} [€$]|[0-9]+,[0-9]{6}|[+-]? ?[0-9]+,[0-9]{2} [€$]|[0-9]+,[0-9]{2} %|[A-Za-z ]+)$"
+            },
+            "trend": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "positive",
+                "negative",
+                null
+              ]
+            },
+            "action": {
+              "type": [
+                "object",
+                "null"
+              ]
+            },
+            "displayValue": {
+              "type": [
+                "object",
+                "null"
+              ]
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "status",
+                "text"
+              ]
+            },
+            "functionalStyle": {
+              "type": "string",
+              "enum": [
+                "EXECUTED"
+              ]
+            }
+          }
+        },
+        "style": {
+          "type": "string",
+          "enum": [
+            "plain",
+            "highlighted"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,187 @@
+{
+    "id": "fe9f80f9-329c-44db-bd98-22c192bd93fc",
+    "sections": [
+        {
+            "title": "You saved €100.00",
+            "data": {
+                "icon": "logos/IE00B0M63177/v2",
+                "subtitleText": null,
+                "timestamp": "2025-01-02T14:52:18.686+0000",
+                "status": "executed"
+            },
+            "action": {
+                "type": "instrumentDetail",
+                "payload": "IE00B0M63177"
+            },
+            "type": "header"
+        },
+        {
+            "title": "Overview",
+            "data": [
+                {
+                    "title": "Status",
+                    "detail": {
+                        "text": "Executed",
+                        "functionalStyle": "EXECUTED",
+                        "type": "status"
+                    },
+                    "style": "plain"
+                },
+                {
+                    "title": "Order Type",
+                    "detail": {
+                        "text": "Savings plan",
+                        "trend": null,
+                        "action": null,
+                        "displayValue": null,
+                        "type": "text"
+                    },
+                    "style": "plain"
+                },
+                {
+                    "title": "Asset",
+                    "detail": {
+                        "text": "MSCI EM USD (Dist)",
+                        "trend": null,
+                        "action": null,
+                        "displayValue": null,
+                        "type": "text"
+                    },
+                    "style": "plain"
+                },
+                {
+                    "title": "Payment",
+                    "detail": {
+                        "text": "Cash",
+                        "icon": "logos/bank_traderepublic/v2",
+                        "type": "iconWithText"
+                    },
+                    "style": "plain"
+                }
+            ],
+            "action": null,
+            "type": "table"
+        },
+        {
+            "title": "Savings plan",
+            "data": [
+                {
+                    "title": "",
+                    "detail": {
+                        "title": "MSCI EM USD (Dist)",
+                        "timestamp": "2025-01-02T14:52:18.686Z",
+                        "amount": "€100.00",
+                        "icon": "logos/IE00B0M63177/v2",
+                        "status": "executed",
+                        "action": {
+                            "type": "openSavingsPlanOverview",
+                            "payload": {
+                                "savingsPlanId": "9b9f4d86-0c14-4f93-9d53-913b60bfc250"
+                            }
+                        },
+                        "subtitle": "Deleted",
+                        "type": "embeddedTimelineItem"
+                    },
+                    "style": "plain"
+                }
+            ],
+            "action": null,
+            "type": "table"
+        },
+        {
+            "title": "Transaction",
+            "data": [
+                {
+                    "title": "Shares",
+                    "detail": {
+                        "text": "2.481328",
+                        "trend": null,
+                        "action": null,
+                        "displayValue": null,
+                        "type": "text"
+                    },
+                    "style": "plain"
+                },
+                {
+                    "title": "Share price",
+                    "detail": {
+                        "text": "€40.301",
+                        "trend": null,
+                        "action": null,
+                        "displayValue": null,
+                        "type": "text"
+                    },
+                    "style": "plain"
+                },
+                {
+                    "title": "Fee",
+                    "detail": {
+                        "text": "Free",
+                        "trend": null,
+                        "action": null,
+                        "displayValue": null,
+                        "type": "text"
+                    },
+                    "style": "plain"
+                },
+                {
+                    "title": "Total",
+                    "detail": {
+                        "text": "€100.00",
+                        "trend": null,
+                        "action": null,
+                        "displayValue": null,
+                        "type": "text"
+                    },
+                    "style": "highlighted"
+                }
+            ],
+            "action": null,
+            "type": "table"
+        },
+        {
+            "title": "Documents",
+            "data": [
+                {
+                    "title": "Billing Execution",
+                    "detail": "02.01.2025",
+                    "action": {
+                        "type": "browserModal",
+                        "payload": "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/postbox/"
+                    },
+                    "id": "2fa1c969-a80e-4505-b64e-357856cac685",
+                    "postboxType": "SAVINGS_PLAN_EXECUTED_V2"
+                }
+            ],
+            "action": null,
+            "type": "documents"
+        },
+        {
+            "title": "",
+            "data": [
+                {
+                    "title": "",
+                    "detail": {
+                        "icon": "",
+                        "action": {
+                            "type": "customerSupportChat",
+                            "payload": {
+                                "contextParams": {
+                                    "chat_flow_key": "NHC_0029_wealth_Failed_savings_plan_execution",
+                                    "timelineEventId": "8c7cb17b-a504-40d5-9c1f-b9757f4d57ab",
+                                    "primId": "N1256288077"
+                                },
+                                "contextCategory": "NHC"
+                            }
+                        },
+                        "style": "highlighted",
+                        "type": "listItemAvatarDefault"
+                    },
+                    "style": "plain"
+                }
+            ],
+            "action": null,
+            "type": "table"
+        }
+    ]
+}

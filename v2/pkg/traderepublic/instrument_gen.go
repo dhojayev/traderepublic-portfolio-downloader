@@ -85,67 +85,10 @@ type ExchangeFractionalTrading struct {
 
 	// OrderAmountLimitCurrency corresponds to the JSON schema field
 	// "orderAmountLimitCurrency".
-	OrderAmountLimitCurrency *ExchangeFractionalTradingOrderAmountLimitCurrency `json:"orderAmountLimitCurrency,omitempty" yaml:"orderAmountLimitCurrency,omitempty" mapstructure:"orderAmountLimitCurrency,omitempty"`
+	OrderAmountLimitCurrency *string `json:"orderAmountLimitCurrency,omitempty" yaml:"orderAmountLimitCurrency,omitempty" mapstructure:"orderAmountLimitCurrency,omitempty"`
 
 	// StepSize corresponds to the JSON schema field "stepSize".
 	StepSize *string `json:"stepSize,omitempty" yaml:"stepSize,omitempty" mapstructure:"stepSize,omitempty"`
-}
-
-type ExchangeFractionalTradingOrderAmountLimitCurrency struct {
-	Value interface{}
-}
-
-// MarshalJSON implements json.Marshaler.
-func (j *ExchangeFractionalTradingOrderAmountLimitCurrency) MarshalJSON() ([]byte, error) {
-	return json.Marshal(j.Value)
-}
-
-var enumValues_ExchangeFractionalTradingOrderAmountLimitCurrency = []interface{}{
-	"EUR",
-	nil,
-}
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *ExchangeFractionalTradingOrderAmountLimitCurrency) UnmarshalJSON(value []byte) error {
-	var v struct {
-		Value interface{}
-	}
-	if err := json.Unmarshal(value, &v.Value); err != nil {
-		return err
-	}
-	var ok bool
-	for _, expected := range enumValues_ExchangeFractionalTradingOrderAmountLimitCurrency {
-		if reflect.DeepEqual(v.Value, expected) {
-			ok = true
-			break
-		}
-	}
-	if !ok {
-		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_ExchangeFractionalTradingOrderAmountLimitCurrency, v.Value)
-	}
-	*j = ExchangeFractionalTradingOrderAmountLimitCurrency(v)
-	return nil
-}
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *ExchangeFractionalTrading) UnmarshalJSON(value []byte) error {
-	type Plain ExchangeFractionalTrading
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	if plain.MinOrderSize != nil {
-		if matched, _ := regexp.MatchString(`^[0-9]+\.[0-9]+$`, string(*plain.MinOrderSize)); !matched {
-			return fmt.Errorf("field %s pattern match: must match %s", "MinOrderSize", `^[0-9]+\.[0-9]+$`)
-		}
-	}
-	if plain.StepSize != nil {
-		if matched, _ := regexp.MatchString(`^[0-9]+\.[0-9]+$`, string(*plain.StepSize)); !matched {
-			return fmt.Errorf("field %s pattern match: must match %s", "StepSize", `^[0-9]+\.[0-9]+$`)
-		}
-	}
-	*j = ExchangeFractionalTrading(plain)
-	return nil
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -222,10 +165,10 @@ type InstrumentJson struct {
 	Jurisdictions map[string]interface{} `json:"jurisdictions" yaml:"jurisdictions" mapstructure:"jurisdictions"`
 
 	// LegacyTypeChar corresponds to the JSON schema field "legacyTypeChar".
-	LegacyTypeChar *InstrumentJsonLegacyTypeChar `json:"legacyTypeChar,omitempty" yaml:"legacyTypeChar,omitempty" mapstructure:"legacyTypeChar,omitempty"`
+	LegacyTypeChar *string `json:"legacyTypeChar,omitempty" yaml:"legacyTypeChar,omitempty" mapstructure:"legacyTypeChar,omitempty"`
 
 	// LegalTypeId corresponds to the JSON schema field "legalTypeId".
-	LegalTypeId InstrumentJsonLegalTypeId `json:"legalTypeId" yaml:"legalTypeId" mapstructure:"legalTypeId"`
+	LegalTypeId string `json:"legalTypeId" yaml:"legalTypeId" mapstructure:"legalTypeId"`
 
 	// MarketCap corresponds to the JSON schema field "marketCap".
 	MarketCap *InstrumentJsonMarketCap `json:"marketCap,omitempty" yaml:"marketCap,omitempty" mapstructure:"marketCap,omitempty"`
@@ -281,7 +224,7 @@ type InstrumentJsonFundInfo struct {
 	Market *string `json:"market,omitempty" yaml:"market,omitempty" mapstructure:"market,omitempty"`
 
 	// Method corresponds to the JSON schema field "method".
-	Method *InstrumentJsonFundInfoMethod `json:"method,omitempty" yaml:"method,omitempty" mapstructure:"method,omitempty"`
+	Method *string `json:"method,omitempty" yaml:"method,omitempty" mapstructure:"method,omitempty"`
 
 	// Ter corresponds to the JSON schema field "ter".
 	Ter string `json:"ter" yaml:"ter" mapstructure:"ter"`
@@ -293,7 +236,7 @@ type InstrumentJsonFundInfo struct {
 	UnderlyingClass string `json:"underlyingClass" yaml:"underlyingClass" mapstructure:"underlyingClass"`
 
 	// UseOfProfits corresponds to the JSON schema field "useOfProfits".
-	UseOfProfits InstrumentJsonFundInfoUseOfProfits `json:"useOfProfits" yaml:"useOfProfits" mapstructure:"useOfProfits"`
+	UseOfProfits string `json:"useOfProfits" yaml:"useOfProfits" mapstructure:"useOfProfits"`
 
 	// UseOfProfitsDisplayName corresponds to the JSON schema field
 	// "useOfProfitsDisplayName".
@@ -325,62 +268,6 @@ func (j *InstrumentJsonFundInfoCategory) UnmarshalJSON(value []byte) error {
 		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_InstrumentJsonFundInfoCategory, v)
 	}
 	*j = InstrumentJsonFundInfoCategory(v)
-	return nil
-}
-
-type InstrumentJsonFundInfoMethod string
-
-const InstrumentJsonFundInfoMethodOptimized InstrumentJsonFundInfoMethod = "optimized"
-
-var enumValues_InstrumentJsonFundInfoMethod = []interface{}{
-	"optimized",
-}
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *InstrumentJsonFundInfoMethod) UnmarshalJSON(value []byte) error {
-	var v string
-	if err := json.Unmarshal(value, &v); err != nil {
-		return err
-	}
-	var ok bool
-	for _, expected := range enumValues_InstrumentJsonFundInfoMethod {
-		if reflect.DeepEqual(v, expected) {
-			ok = true
-			break
-		}
-	}
-	if !ok {
-		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_InstrumentJsonFundInfoMethod, v)
-	}
-	*j = InstrumentJsonFundInfoMethod(v)
-	return nil
-}
-
-type InstrumentJsonFundInfoUseOfProfits string
-
-const InstrumentJsonFundInfoUseOfProfitsDistributing InstrumentJsonFundInfoUseOfProfits = "distributing"
-
-var enumValues_InstrumentJsonFundInfoUseOfProfits = []interface{}{
-	"distributing",
-}
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *InstrumentJsonFundInfoUseOfProfits) UnmarshalJSON(value []byte) error {
-	var v string
-	if err := json.Unmarshal(value, &v); err != nil {
-		return err
-	}
-	var ok bool
-	for _, expected := range enumValues_InstrumentJsonFundInfoUseOfProfits {
-		if reflect.DeepEqual(v, expected) {
-			ok = true
-			break
-		}
-	}
-	if !ok {
-		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_InstrumentJsonFundInfoUseOfProfits, v)
-	}
-	*j = InstrumentJsonFundInfoUseOfProfits(v)
 	return nil
 }
 
@@ -444,64 +331,6 @@ func (j *InstrumentJsonFundInfo) UnmarshalJSON(value []byte) error {
 	return nil
 }
 
-type InstrumentJsonLegacyTypeChar string
-
-const InstrumentJsonLegacyTypeCharU InstrumentJsonLegacyTypeChar = "U"
-
-var enumValues_InstrumentJsonLegacyTypeChar = []interface{}{
-	"U",
-}
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *InstrumentJsonLegacyTypeChar) UnmarshalJSON(value []byte) error {
-	var v string
-	if err := json.Unmarshal(value, &v); err != nil {
-		return err
-	}
-	var ok bool
-	for _, expected := range enumValues_InstrumentJsonLegacyTypeChar {
-		if reflect.DeepEqual(v, expected) {
-			ok = true
-			break
-		}
-	}
-	if !ok {
-		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_InstrumentJsonLegacyTypeChar, v)
-	}
-	*j = InstrumentJsonLegacyTypeChar(v)
-	return nil
-}
-
-type InstrumentJsonLegalTypeId string
-
-const InstrumentJsonLegalTypeIdCRYPTO InstrumentJsonLegalTypeId = "CRYPTO"
-const InstrumentJsonLegalTypeIdFUND InstrumentJsonLegalTypeId = "FUND"
-
-var enumValues_InstrumentJsonLegalTypeId = []interface{}{
-	"CRYPTO",
-	"FUND",
-}
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *InstrumentJsonLegalTypeId) UnmarshalJSON(value []byte) error {
-	var v string
-	if err := json.Unmarshal(value, &v); err != nil {
-		return err
-	}
-	var ok bool
-	for _, expected := range enumValues_InstrumentJsonLegalTypeId {
-		if reflect.DeepEqual(v, expected) {
-			ok = true
-			break
-		}
-	}
-	if !ok {
-		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_InstrumentJsonLegalTypeId, v)
-	}
-	*j = InstrumentJsonLegalTypeId(v)
-	return nil
-}
-
 type InstrumentJsonMarketCap struct {
 	// CurrencyId corresponds to the JSON schema field "currencyId".
 	CurrencyId *string `json:"currencyId,omitempty" yaml:"currencyId,omitempty" mapstructure:"currencyId,omitempty"`
@@ -544,43 +373,7 @@ type InstrumentJsonTaxProviderInfoRegnology struct {
 	InstrumentSubType *int `json:"instrumentSubType,omitempty" yaml:"instrumentSubType,omitempty" mapstructure:"instrumentSubType,omitempty"`
 
 	// InstrumentType corresponds to the JSON schema field "instrumentType".
-	InstrumentType *InstrumentJsonTaxProviderInfoRegnologyInstrumentType `json:"instrumentType,omitempty" yaml:"instrumentType,omitempty" mapstructure:"instrumentType,omitempty"`
-}
-
-type InstrumentJsonTaxProviderInfoRegnologyInstrumentType struct {
-	Value interface{}
-}
-
-// MarshalJSON implements json.Marshaler.
-func (j *InstrumentJsonTaxProviderInfoRegnologyInstrumentType) MarshalJSON() ([]byte, error) {
-	return json.Marshal(j.Value)
-}
-
-var enumValues_InstrumentJsonTaxProviderInfoRegnologyInstrumentType = []interface{}{
-	"INVESTMENT_FUND",
-	nil,
-}
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *InstrumentJsonTaxProviderInfoRegnologyInstrumentType) UnmarshalJSON(value []byte) error {
-	var v struct {
-		Value interface{}
-	}
-	if err := json.Unmarshal(value, &v.Value); err != nil {
-		return err
-	}
-	var ok bool
-	for _, expected := range enumValues_InstrumentJsonTaxProviderInfoRegnologyInstrumentType {
-		if reflect.DeepEqual(v.Value, expected) {
-			ok = true
-			break
-		}
-	}
-	if !ok {
-		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_InstrumentJsonTaxProviderInfoRegnologyInstrumentType, v.Value)
-	}
-	*j = InstrumentJsonTaxProviderInfoRegnologyInstrumentType(v)
-	return nil
+	InstrumentType *string `json:"instrumentType,omitempty" yaml:"instrumentType,omitempty" mapstructure:"instrumentType,omitempty"`
 }
 
 type InstrumentJsonTaxProviderInfoWmdaten struct {
@@ -680,9 +473,6 @@ func (j *InstrumentJson) UnmarshalJSON(value []byte) error {
 			return fmt.Errorf("field %s pattern match: must match %s", "Cfi", `^[A-Z]{6}$`)
 		}
 	}
-	if matched, _ := regexp.MatchString(`^([A-Z]{2})[A-Z0-9]{10}$`, string(plain.Isin)); !matched {
-		return fmt.Errorf("field %s pattern match: must match %s", "Isin", `^([A-Z]{2})[A-Z0-9]{10}$`)
-	}
 	*j = InstrumentJson(plain)
 	return nil
 }
@@ -755,41 +545,7 @@ type Tag struct {
 	Name string `json:"name" yaml:"name" mapstructure:"name"`
 
 	// Type corresponds to the JSON schema field "type".
-	Type TagType `json:"type" yaml:"type" mapstructure:"type"`
-}
-
-type TagType string
-
-const TagTypeAttribute TagType = "attribute"
-const TagTypeIssuer TagType = "issuer"
-const TagTypeRegion TagType = "region"
-const TagTypeSector TagType = "sector"
-
-var enumValues_TagType = []interface{}{
-	"sector",
-	"region",
-	"issuer",
-	"attribute",
-}
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *TagType) UnmarshalJSON(value []byte) error {
-	var v string
-	if err := json.Unmarshal(value, &v); err != nil {
-		return err
-	}
-	var ok bool
-	for _, expected := range enumValues_TagType {
-		if reflect.DeepEqual(v, expected) {
-			ok = true
-			break
-		}
-	}
-	if !ok {
-		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_TagType, v)
-	}
-	*j = TagType(v)
-	return nil
+	Type string `json:"type" yaml:"type" mapstructure:"type"`
 }
 
 // UnmarshalJSON implements json.Unmarshaler.

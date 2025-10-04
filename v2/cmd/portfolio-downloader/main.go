@@ -7,18 +7,21 @@ import (
 	"time"
 
 	"github.com/alexflint/go-arg"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/bus"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/console"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/file"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/instrument"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/message"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/timelinedetails"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/timelinetransactions"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/auth"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/message"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/message/publisher"
-	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/api/websocketclient"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/traderepublic/auth"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/transaction"
 	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/internal/writer"
+	"github.com/dhojayev/traderepublic-portfolio-downloader/v2/pkg/traderepublic"
 	"github.com/joho/godotenv"
+	gocache "github.com/patrickmn/go-cache"
 )
 
 func main() {
@@ -54,22 +57,35 @@ func main() {
 		return
 	}
 
-	wHandler := file.NewEventWriterHandler(writer.NewResponseWriter())
+	wHandler := file.NewRawResponseHandler(writer.NewResponseWriter())
 	eventBus := bus.New()
 
-	eventBus.Subscribe(bus.TopicTimelineTransactions, wHandler.Handle)
-	eventBus.Subscribe(bus.TopicTimelineDetailsV2, wHandler.Handle)
+	eventBus.Subscribe(bus.TopicTimelineTransactionsReceived, wHandler.Handle)
+	eventBus.Subscribe(bus.TopicTimelineDetailsV2Received, wHandler.Handle)
+	eventBus.Subscribe(bus.TopicInstrumentReceived, wHandler.Handle)
 
-	wsclient := websocketclient.NewClient(publisher.NewPublisher(), ctx)
+	wsclient := traderepublic.NewWSClient(traderepublic.NewPublisher(), ctx)
 
-	messageClient := message.NewClient(eventBus, credentialsService, wsclient)
-	ttHandler := timelinetransactions.NewHandler(eventBus, messageClient)
-	tdHandler := timelinedetails.NewHandler()
+	cache := gocache.New(gocache.NoExpiration, gocache.NoExpiration)
+	msgClient := message.NewClient(eventBus, credentialsService, wsclient)
+	ttHandler := timelinetransactions.NewHandler(eventBus, msgClient)
+	tdHandler := timelinedetails.NewHandler(eventBus)
+	instrHandler := instrument.NewHandler(msgClient, cache)
 
-	eventBus.Subscribe(bus.TopicTimelineTransactions, ttHandler.Handle)
-	eventBus.Subscribe(bus.TopicTimelineDetailsV2, tdHandler.Handle)
+	mapper := transaction.NewDataMapper(cache)
+	resolver := transaction.NewTypeResolver()
+	trnHandler := transaction.NewHandler(resolver, mapper, eventBus)
+	csvWriter := file.NewCSVWriter()
+	csvHandler := file.NewCSVHandler(internal.CSVFilename, csvWriter)
 
-	app := NewApp(auth.NewClient(console.NewInputHandler(), apiClient), credentialsService, messageClient, eventBus)
+	eventBus.Subscribe(bus.TopicTimelineTransactionsReceived, ttHandler.Handle)
+	eventBus.Subscribe(bus.TopicTimelineDetailsV2Received, tdHandler.Handle)
+	eventBus.Subscribe(bus.TopicInstrumentFetch, instrHandler.HandleFetch)
+	eventBus.Subscribe(bus.TopicInstrumentReceived, instrHandler.HandleReceived)
+	eventBus.Subscribe(bus.TopicTimelineDetailsV2Received, trnHandler.Handle)
+	eventBus.Subscribe(bus.TopicModelReady, csvHandler.Handle)
+
+	app := NewApp(auth.NewClient(console.NewInputHandler(), apiClient), credentialsService, msgClient, eventBus)
 
 	err = app.Run()
 	if err != nil {

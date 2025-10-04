@@ -1,0 +1,191 @@
+{
+    "id": "deb6f4dc-893c-4f15-aa1d-edc97376952b",
+    "sections": [
+        {
+            "title": "You received €223.55",
+            "data": {
+                "icon": "logos/XF000XRP0018/v2",
+                "subtitleText": null,
+                "timestamp": "2024-09-19T20:49:15.582+0000",
+                "status": "executed"
+            },
+            "action": {
+                "type": "instrumentDetail",
+                "payload": "XF000XRP0018"
+            },
+            "type": "header"
+        },
+        {
+            "title": "Overview",
+            "data": [
+                {
+                    "title": "Status",
+                    "detail": {
+                        "text": "Executed",
+                        "functionalStyle": "EXECUTED",
+                        "type": "status"
+                    },
+                    "style": "plain"
+                },
+                {
+                    "title": "Order Type",
+                    "detail": {
+                        "text": "Sell",
+                        "trend": null,
+                        "action": null,
+                        "displayValue": null,
+                        "type": "text"
+                    },
+                    "style": "plain"
+                },
+                {
+                    "title": "Asset",
+                    "detail": {
+                        "text": "XRP",
+                        "trend": null,
+                        "action": null,
+                        "displayValue": null,
+                        "type": "text"
+                    },
+                    "style": "plain"
+                }
+            ],
+            "action": null,
+            "type": "table"
+        },
+        {
+            "title": "Performance",
+            "data": [
+                {
+                    "title": "Profit",
+                    "detail": {
+                        "text": "4.61 %",
+                        "trend": "positive",
+                        "action": null,
+                        "displayValue": null,
+                        "type": "text"
+                    },
+                    "style": "plain"
+                },
+                {
+                    "title": "Gain",
+                    "detail": {
+                        "text": "€9.89",
+                        "trend": "positive",
+                        "action": null,
+                        "displayValue": null,
+                        "type": "text"
+                    },
+                    "style": "plain"
+                }
+            ],
+            "action": null,
+            "type": "horizontalTable"
+        },
+        {
+            "title": "Transaction",
+            "data": [
+                {
+                    "title": "Shares",
+                    "detail": {
+                        "text": "424.993643",
+                        "trend": null,
+                        "action": null,
+                        "displayValue": null,
+                        "type": "text"
+                    },
+                    "style": "plain"
+                },
+                {
+                    "title": "Share price",
+                    "detail": {
+                        "text": "€0.5284",
+                        "trend": null,
+                        "action": null,
+                        "displayValue": null,
+                        "type": "text"
+                    },
+                    "style": "plain"
+                },
+                {
+                    "title": "Fee",
+                    "detail": {
+                        "text": "€1.00",
+                        "trend": null,
+                        "action": null,
+                        "displayValue": null,
+                        "type": "text"
+                    },
+                    "style": "plain"
+                },
+                {
+                    "title": "Total",
+                    "detail": {
+                        "text": "+ €223.55",
+                        "trend": null,
+                        "action": null,
+                        "displayValue": null,
+                        "type": "text"
+                    },
+                    "style": "highlighted"
+                }
+            ],
+            "action": null,
+            "type": "table"
+        },
+        {
+            "title": "Documents",
+            "data": [
+                {
+                    "title": "Invoice",
+                    "detail": "19.09.2024",
+                    "action": {
+                        "type": "browserModal",
+                        "payload": "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/"
+                    },
+                    "id": "05a487d7-be22-4eef-a6b4-c01ca60b39c2",
+                    "postboxType": "CRYPTO_SECURITIES_SETTLEMENT"
+                },
+                {
+                    "title": "Costs Information",
+                    "detail": "19.09.2024",
+                    "action": {
+                        "type": "browserModal",
+                        "payload": "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/"
+                    },
+                    "id": "fab0488f-dd5b-4394-a25f-3315b4810ab2",
+                    "postboxType": "COSTS_INFO_SELL_V2"
+                }
+            ],
+            "action": null,
+            "type": "documents"
+        },
+        {
+            "title": "",
+            "data": [
+                {
+                    "title": "",
+                    "detail": {
+                        "icon": "",
+                        "action": {
+                            "type": "customerSupportChat",
+                            "payload": {
+                                "contextParams": {
+                                    "chat_flow_key": "NHC_0029_wealth_Crypto_past_trade_executions_&_prices",
+                                    "timelineEventId": "5d4fd840-79ff-4b26-b6db-131f6119ebd4",
+                                    "primId": "C1011594197"
+                                },
+                                "contextCategory": "NHC"
+                            }
+                        },
+                        "style": "highlighted",
+                        "type": "listItemAvatarDefault"
+                    },
+                    "style": "plain"
+                }
+            ],
+            "action": null,
+            "type": "table"
+        }
+    ]
+}

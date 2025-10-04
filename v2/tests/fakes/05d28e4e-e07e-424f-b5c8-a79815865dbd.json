@@ -1,0 +1,182 @@
+{
+    "id": "05d28e4e-e07e-424f-b5c8-a79815865dbd",
+    "sections": [
+        {
+            "title": "You invested €501.00",
+            "data": {
+                "icon": "logos/US6701002056/v2",
+                "subtitleText": null,
+                "timestamp": "2023-10-17T05:51:57.297+0000",
+                "status": "executed"
+            },
+            "action": {
+                "type": "instrumentDetail",
+                "payload": "US6701002056"
+            },
+            "type": "header"
+        },
+        {
+            "title": "Overview",
+            "data": [
+                {
+                    "title": "Status",
+                    "detail": {
+                        "text": "Executed",
+                        "functionalStyle": "EXECUTED",
+                        "type": "status"
+                    },
+                    "style": "plain"
+                },
+                {
+                    "title": "Order Type",
+                    "detail": {
+                        "text": "Buy",
+                        "trend": null,
+                        "action": null,
+                        "displayValue": null,
+                        "type": "text"
+                    },
+                    "style": "plain"
+                },
+                {
+                    "title": "Asset",
+                    "detail": {
+                        "text": "Novo Nordisk (ADR)",
+                        "trend": null,
+                        "action": null,
+                        "displayValue": null,
+                        "type": "text"
+                    },
+                    "style": "plain"
+                }
+            ],
+            "action": null,
+            "type": "table"
+        },
+        {
+            "title": "Transaction",
+            "data": [
+                {
+                    "title": "Shares",
+                    "detail": {
+                        "text": "5.186721",
+                        "trend": null,
+                        "action": null,
+                        "displayValue": null,
+                        "type": "text"
+                    },
+                    "style": "plain"
+                },
+                {
+                    "title": "Share price",
+                    "detail": {
+                        "text": "€96.40",
+                        "trend": null,
+                        "action": null,
+                        "displayValue": null,
+                        "type": "text"
+                    },
+                    "style": "plain"
+                },
+                {
+                    "title": "Fee",
+                    "detail": {
+                        "text": "€1.00",
+                        "trend": null,
+                        "action": null,
+                        "displayValue": null,
+                        "type": "text"
+                    },
+                    "style": "plain"
+                },
+                {
+                    "title": "Total",
+                    "detail": {
+                        "text": "€501.00",
+                        "trend": null,
+                        "action": null,
+                        "displayValue": null,
+                        "type": "text"
+                    },
+                    "style": "highlighted"
+                }
+            ],
+            "action": null,
+            "type": "table"
+        },
+        {
+            "title": "Documents",
+            "data": [
+                {
+                    "title": "Invoice 2",
+                    "detail": "17.10.2023",
+                    "action": {
+                        "type": "browserModal",
+                        "payload": "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/"
+                    },
+                    "id": "4273459c-ed5b-4854-bf8b-41ea2c627c97",
+                    "postboxType": "SECURITIES_SETTLEMENT"
+                },
+                {
+                    "title": "Invoice 1",
+                    "detail": "17.10.2023",
+                    "action": {
+                        "type": "browserModal",
+                        "payload": "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/"
+                    },
+                    "id": "81944a09-9f20-4036-9ddf-91d943be5b53",
+                    "postboxType": "SECURITIES_SETTLEMENT"
+                },
+                {
+                    "title": "Costs Information 2",
+                    "detail": "17.10.2023",
+                    "action": {
+                        "type": "browserModal",
+                        "payload": "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/"
+                    },
+                    "id": "924ad517-8305-41fc-b1fa-e3cd174369bd",
+                    "postboxType": "COSTS_INFO_BUY_V2"
+                },
+                {
+                    "title": "Costs Information 1",
+                    "detail": "17.10.2023",
+                    "action": {
+                        "type": "browserModal",
+                        "payload": "https://traderepublic-data-production.s3.eu-central-1.amazonaws.com/timeline/"
+                    },
+                    "id": "07ad7c83-d533-49f9-b7a6-e79299333de6",
+                    "postboxType": "COSTS_INFO_BUY_V2"
+                }
+            ],
+            "action": null,
+            "type": "documents"
+        },
+        {
+            "title": "",
+            "data": [
+                {
+                    "title": "",
+                    "detail": {
+                        "icon": "",
+                        "action": {
+                            "type": "customerSupportChat",
+                            "payload": {
+                                "contextParams": {
+                                    "chat_flow_key": "NHC_0029_wealth_buying_selling_past_trade_execution",
+                                    "timelineEventId": "54b2fd37-c9f4-466d-b25c-9a1731c4bfe7",
+                                    "groupId": "a59e4b45-db41-48fd-b754-e567135c3b76"
+                                },
+                                "contextCategory": "NHC"
+                            }
+                        },
+                        "style": "highlighted",
+                        "type": "listItemAvatarDefault"
+                    },
+                    "style": "plain"
+                }
+            ],
+            "action": null,
+            "type": "table"
+        }
+    ]
+}

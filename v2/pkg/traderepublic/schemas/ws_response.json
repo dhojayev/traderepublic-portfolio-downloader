@@ -1,0 +1,26 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dhojayev/traderepublic-portfolio-downloader/refs/heads/main/v2/pkg/traderepublic/schemas/ws_response.json",
+    "type": "object",
+    "required": [
+        "ID",
+        "State",
+        "Data"
+    ],
+    "properties": {
+        "ID": {
+            "type": "integer"
+        },
+        "State": {
+            "type": "string",
+            "enum": [
+                "A",
+                "C",
+                "E"
+            ]
+        },
+        "Data": {
+            "type": "string"
+        }
+    }
+}

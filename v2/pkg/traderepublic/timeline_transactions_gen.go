@@ -7,12 +7,376 @@ import "fmt"
 import "reflect"
 import "regexp"
 
+type TimelineTransaction struct {
+	// Action corresponds to the JSON schema field "action".
+	Action TimelineTransactionAction `json:"action" yaml:"action" mapstructure:"action"`
+
+	// Amount corresponds to the JSON schema field "amount".
+	Amount TimelineTransactionAmount `json:"amount" yaml:"amount" mapstructure:"amount"`
+
+	// Avatar corresponds to the JSON schema field "avatar".
+	Avatar TimelineTransactionAvatar `json:"avatar" yaml:"avatar" mapstructure:"avatar"`
+
+	// Badge corresponds to the JSON schema field "badge".
+	Badge *string `json:"badge,omitempty" yaml:"badge,omitempty" mapstructure:"badge,omitempty"`
+
+	// CashAccountNumber corresponds to the JSON schema field "cashAccountNumber".
+	CashAccountNumber *string `json:"cashAccountNumber,omitempty" yaml:"cashAccountNumber,omitempty" mapstructure:"cashAccountNumber,omitempty"`
+
+	// Deleted corresponds to the JSON schema field "deleted".
+	Deleted bool `json:"deleted" yaml:"deleted" mapstructure:"deleted"`
+
+	// EventType corresponds to the JSON schema field "eventType".
+	EventType TimelineTransactionEventType `json:"eventType" yaml:"eventType" mapstructure:"eventType"`
+
+	// Hidden corresponds to the JSON schema field "hidden".
+	Hidden bool `json:"hidden" yaml:"hidden" mapstructure:"hidden"`
+
+	// Icon corresponds to the JSON schema field "icon".
+	Icon string `json:"icon" yaml:"icon" mapstructure:"icon"`
+
+	// Id corresponds to the JSON schema field "id".
+	Id Uuid `json:"id" yaml:"id" mapstructure:"id"`
+
+	// Status corresponds to the JSON schema field "status".
+	Status TimelineTransactionStatus `json:"status" yaml:"status" mapstructure:"status"`
+
+	// SubAmount corresponds to the JSON schema field "subAmount".
+	SubAmount *TimelineTransactionSubAmount `json:"subAmount,omitempty" yaml:"subAmount,omitempty" mapstructure:"subAmount,omitempty"`
+
+	// Subtitle corresponds to the JSON schema field "subtitle".
+	Subtitle *string `json:"subtitle,omitempty" yaml:"subtitle,omitempty" mapstructure:"subtitle,omitempty"`
+
+	// Timestamp corresponds to the JSON schema field "timestamp".
+	Timestamp string `json:"timestamp" yaml:"timestamp" mapstructure:"timestamp"`
+
+	// Title corresponds to the JSON schema field "title".
+	Title string `json:"title" yaml:"title" mapstructure:"title"`
+}
+
+type TimelineTransactionAction struct {
+	// Payload corresponds to the JSON schema field "payload".
+	Payload Uuid `json:"payload" yaml:"payload" mapstructure:"payload"`
+
+	// Type corresponds to the JSON schema field "type".
+	Type TimelineTransactionActionType `json:"type" yaml:"type" mapstructure:"type"`
+}
+
+type TimelineTransactionActionType string
+
+const TimelineTransactionActionTypeTimelineDetail TimelineTransactionActionType = "timelineDetail"
+
+var enumValues_TimelineTransactionActionType = []interface{}{
+	"timelineDetail",
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *TimelineTransactionActionType) UnmarshalJSON(value []byte) error {
+	var v string
+	if err := json.Unmarshal(value, &v); err != nil {
+		return err
+	}
+	var ok bool
+	for _, expected := range enumValues_TimelineTransactionActionType {
+		if reflect.DeepEqual(v, expected) {
+			ok = true
+			break
+		}
+	}
+	if !ok {
+		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_TimelineTransactionActionType, v)
+	}
+	*j = TimelineTransactionActionType(v)
+	return nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *TimelineTransactionAction) UnmarshalJSON(value []byte) error {
+	var raw map[string]interface{}
+	if err := json.Unmarshal(value, &raw); err != nil {
+		return err
+	}
+	if _, ok := raw["payload"]; raw != nil && !ok {
+		return fmt.Errorf("field payload in TimelineTransactionAction: required")
+	}
+	if _, ok := raw["type"]; raw != nil && !ok {
+		return fmt.Errorf("field type in TimelineTransactionAction: required")
+	}
+	type Plain TimelineTransactionAction
+	var plain Plain
+	if err := json.Unmarshal(value, &plain); err != nil {
+		return err
+	}
+	*j = TimelineTransactionAction(plain)
+	return nil
+}
+
+type TimelineTransactionAmount struct {
+	// Currency corresponds to the JSON schema field "currency".
+	Currency string `json:"currency" yaml:"currency" mapstructure:"currency"`
+
+	// FractionDigits corresponds to the JSON schema field "fractionDigits".
+	FractionDigits int `json:"fractionDigits" yaml:"fractionDigits" mapstructure:"fractionDigits"`
+
+	// Value corresponds to the JSON schema field "value".
+	Value float64 `json:"value" yaml:"value" mapstructure:"value"`
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *TimelineTransactionAmount) UnmarshalJSON(value []byte) error {
+	var raw map[string]interface{}
+	if err := json.Unmarshal(value, &raw); err != nil {
+		return err
+	}
+	if _, ok := raw["currency"]; raw != nil && !ok {
+		return fmt.Errorf("field currency in TimelineTransactionAmount: required")
+	}
+	if _, ok := raw["fractionDigits"]; raw != nil && !ok {
+		return fmt.Errorf("field fractionDigits in TimelineTransactionAmount: required")
+	}
+	if _, ok := raw["value"]; raw != nil && !ok {
+		return fmt.Errorf("field value in TimelineTransactionAmount: required")
+	}
+	type Plain TimelineTransactionAmount
+	var plain Plain
+	if err := json.Unmarshal(value, &plain); err != nil {
+		return err
+	}
+	if matched, _ := regexp.MatchString(`^[A-Z]{3}$`, string(plain.Currency)); !matched {
+		return fmt.Errorf("field %s pattern match: must match %s", "Currency", `^[A-Z]{3}$`)
+	}
+	if 0 > plain.FractionDigits {
+		return fmt.Errorf("field %s: must be >= %v", "fractionDigits", 0)
+	}
+	*j = TimelineTransactionAmount(plain)
+	return nil
+}
+
+type TimelineTransactionAvatar struct {
+	// Asset corresponds to the JSON schema field "asset".
+	Asset string `json:"asset" yaml:"asset" mapstructure:"asset"`
+
+	// Badge corresponds to the JSON schema field "badge".
+	Badge *string `json:"badge,omitempty" yaml:"badge,omitempty" mapstructure:"badge,omitempty"`
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *TimelineTransactionAvatar) UnmarshalJSON(value []byte) error {
+	var raw map[string]interface{}
+	if err := json.Unmarshal(value, &raw); err != nil {
+		return err
+	}
+	if _, ok := raw["asset"]; raw != nil && !ok {
+		return fmt.Errorf("field asset in TimelineTransactionAvatar: required")
+	}
+	type Plain TimelineTransactionAvatar
+	var plain Plain
+	if err := json.Unmarshal(value, &plain); err != nil {
+		return err
+	}
+	*j = TimelineTransactionAvatar(plain)
+	return nil
+}
+
+type TimelineTransactionEventType string
+
+const TimelineTransactionEventTypeBenefitsSavebackExecution TimelineTransactionEventType = "benefits_saveback_execution"
+const TimelineTransactionEventTypeBenefitsSpareChangeExecution TimelineTransactionEventType = "benefits_spare_change_execution"
+const TimelineTransactionEventTypeCREDIT TimelineTransactionEventType = "CREDIT"
+const TimelineTransactionEventTypeCardFailedTransaction TimelineTransactionEventType = "card_failed_transaction"
+const TimelineTransactionEventTypeCardFailedVerification TimelineTransactionEventType = "card_failed_verification"
+const TimelineTransactionEventTypeCardRefund TimelineTransactionEventType = "card_refund"
+const TimelineTransactionEventTypeCardSuccessfulTransaction TimelineTransactionEventType = "card_successful_transaction"
+const TimelineTransactionEventTypeCardSuccessfulVerification TimelineTransactionEventType = "card_successful_verification"
+const TimelineTransactionEventTypeINCOMINGTRANSFER TimelineTransactionEventType = "INCOMING_TRANSFER"
+const TimelineTransactionEventTypeINCOMINGTRANSFERDELEGATION TimelineTransactionEventType = "INCOMING_TRANSFER_DELEGATION"
+const TimelineTransactionEventTypeINTERESTPAYOUT TimelineTransactionEventType = "INTEREST_PAYOUT"
+const TimelineTransactionEventTypeINTERESTPAYOUTCREATED TimelineTransactionEventType = "INTEREST_PAYOUT_CREATED"
+const TimelineTransactionEventTypeORDEREXECUTED TimelineTransactionEventType = "ORDER_EXECUTED"
+const TimelineTransactionEventTypeOUTGOINGTRANSFERDELEGATION TimelineTransactionEventType = "OUTGOING_TRANSFER_DELEGATION"
+const TimelineTransactionEventTypePAYMENTINBOUND TimelineTransactionEventType = "PAYMENT_INBOUND"
+const TimelineTransactionEventTypePAYMENTINBOUNDSEPADIRECTDEBIT TimelineTransactionEventType = "PAYMENT_INBOUND_SEPA_DIRECT_DEBIT"
+const TimelineTransactionEventTypePAYMENTOUTBOUND TimelineTransactionEventType = "PAYMENT_OUTBOUND"
+const TimelineTransactionEventTypeSAVINGSPLANEXECUTED TimelineTransactionEventType = "SAVINGS_PLAN_EXECUTED"
+const TimelineTransactionEventTypeSAVINGSPLANINVOICECREATED TimelineTransactionEventType = "SAVINGS_PLAN_INVOICE_CREATED"
+const TimelineTransactionEventTypeSspCorporateActionInvoiceCash TimelineTransactionEventType = "ssp_corporate_action_invoice_cash"
+const TimelineTransactionEventTypeTRADEINVOICE TimelineTransactionEventType = "TRADE_INVOICE"
+const TimelineTransactionEventTypeTimelineLegacyMigratedEvents TimelineTransactionEventType = "timeline_legacy_migrated_events"
+const TimelineTransactionEventTypeTradingSavingsplanExecuted TimelineTransactionEventType = "trading_savingsplan_executed"
+const TimelineTransactionEventTypeTradingTradeExecuted TimelineTransactionEventType = "trading_trade_executed"
+
+var enumValues_TimelineTransactionEventType = []interface{}{
+	"card_successful_transaction",
+	"ssp_corporate_action_invoice_cash",
+	"trading_savingsplan_executed",
+	"benefits_saveback_execution",
+	"card_failed_transaction",
+	"INTEREST_PAYOUT",
+	"INCOMING_TRANSFER_DELEGATION",
+	"card_successful_verification",
+	"card_failed_verification",
+	"card_refund",
+	"trading_trade_executed",
+	"OUTGOING_TRANSFER_DELEGATION",
+	"timeline_legacy_migrated_events",
+	"INCOMING_TRANSFER",
+	"benefits_spare_change_execution",
+	"PAYMENT_INBOUND",
+	"PAYMENT_INBOUND_SEPA_DIRECT_DEBIT",
+	"PAYMENT_OUTBOUND",
+	"ORDER_EXECUTED",
+	"TRADE_INVOICE",
+	"SAVINGS_PLAN_EXECUTED",
+	"SAVINGS_PLAN_INVOICE_CREATED",
+	"INTEREST_PAYOUT_CREATED",
+	"CREDIT",
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *TimelineTransactionEventType) UnmarshalJSON(value []byte) error {
+	var v string
+	if err := json.Unmarshal(value, &v); err != nil {
+		return err
+	}
+	var ok bool
+	for _, expected := range enumValues_TimelineTransactionEventType {
+		if reflect.DeepEqual(v, expected) {
+			ok = true
+			break
+		}
+	}
+	if !ok {
+		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_TimelineTransactionEventType, v)
+	}
+	*j = TimelineTransactionEventType(v)
+	return nil
+}
+
+type TimelineTransactionStatus string
+
+const TimelineTransactionStatusCANCELED TimelineTransactionStatus = "CANCELED"
+const TimelineTransactionStatusEXECUTED TimelineTransactionStatus = "EXECUTED"
+
+var enumValues_TimelineTransactionStatus = []interface{}{
+	"EXECUTED",
+	"CANCELED",
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *TimelineTransactionStatus) UnmarshalJSON(value []byte) error {
+	var v string
+	if err := json.Unmarshal(value, &v); err != nil {
+		return err
+	}
+	var ok bool
+	for _, expected := range enumValues_TimelineTransactionStatus {
+		if reflect.DeepEqual(v, expected) {
+			ok = true
+			break
+		}
+	}
+	if !ok {
+		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_TimelineTransactionStatus, v)
+	}
+	*j = TimelineTransactionStatus(v)
+	return nil
+}
+
+type TimelineTransactionSubAmount struct {
+	// Currency corresponds to the JSON schema field "currency".
+	Currency string `json:"currency" yaml:"currency" mapstructure:"currency"`
+
+	// FractionDigits corresponds to the JSON schema field "fractionDigits".
+	FractionDigits int `json:"fractionDigits" yaml:"fractionDigits" mapstructure:"fractionDigits"`
+
+	// Value corresponds to the JSON schema field "value".
+	Value float64 `json:"value" yaml:"value" mapstructure:"value"`
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *TimelineTransactionSubAmount) UnmarshalJSON(value []byte) error {
+	var raw map[string]interface{}
+	if err := json.Unmarshal(value, &raw); err != nil {
+		return err
+	}
+	if _, ok := raw["currency"]; raw != nil && !ok {
+		return fmt.Errorf("field currency in TimelineTransactionSubAmount: required")
+	}
+	if _, ok := raw["fractionDigits"]; raw != nil && !ok {
+		return fmt.Errorf("field fractionDigits in TimelineTransactionSubAmount: required")
+	}
+	if _, ok := raw["value"]; raw != nil && !ok {
+		return fmt.Errorf("field value in TimelineTransactionSubAmount: required")
+	}
+	type Plain TimelineTransactionSubAmount
+	var plain Plain
+	if err := json.Unmarshal(value, &plain); err != nil {
+		return err
+	}
+	if matched, _ := regexp.MatchString(`^[A-Z]{3}$`, string(plain.Currency)); !matched {
+		return fmt.Errorf("field %s pattern match: must match %s", "Currency", `^[A-Z]{3}$`)
+	}
+	if 0 > plain.FractionDigits {
+		return fmt.Errorf("field %s: must be >= %v", "fractionDigits", 0)
+	}
+	*j = TimelineTransactionSubAmount(plain)
+	return nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *TimelineTransaction) UnmarshalJSON(value []byte) error {
+	var raw map[string]interface{}
+	if err := json.Unmarshal(value, &raw); err != nil {
+		return err
+	}
+	if _, ok := raw["action"]; raw != nil && !ok {
+		return fmt.Errorf("field action in TimelineTransaction: required")
+	}
+	if _, ok := raw["amount"]; raw != nil && !ok {
+		return fmt.Errorf("field amount in TimelineTransaction: required")
+	}
+	if _, ok := raw["avatar"]; raw != nil && !ok {
+		return fmt.Errorf("field avatar in TimelineTransaction: required")
+	}
+	if _, ok := raw["deleted"]; raw != nil && !ok {
+		return fmt.Errorf("field deleted in TimelineTransaction: required")
+	}
+	if _, ok := raw["eventType"]; raw != nil && !ok {
+		return fmt.Errorf("field eventType in TimelineTransaction: required")
+	}
+	if _, ok := raw["hidden"]; raw != nil && !ok {
+		return fmt.Errorf("field hidden in TimelineTransaction: required")
+	}
+	if _, ok := raw["icon"]; raw != nil && !ok {
+		return fmt.Errorf("field icon in TimelineTransaction: required")
+	}
+	if _, ok := raw["id"]; raw != nil && !ok {
+		return fmt.Errorf("field id in TimelineTransaction: required")
+	}
+	if _, ok := raw["status"]; raw != nil && !ok {
+		return fmt.Errorf("field status in TimelineTransaction: required")
+	}
+	if _, ok := raw["timestamp"]; raw != nil && !ok {
+		return fmt.Errorf("field timestamp in TimelineTransaction: required")
+	}
+	if _, ok := raw["title"]; raw != nil && !ok {
+		return fmt.Errorf("field title in TimelineTransaction: required")
+	}
+	type Plain TimelineTransaction
+	var plain Plain
+	if err := json.Unmarshal(value, &plain); err != nil {
+		return err
+	}
+	*j = TimelineTransaction(plain)
+	return nil
+}
+
 type TimelineTransactionsJson struct {
 	// Cursors corresponds to the JSON schema field "cursors".
 	Cursors TimelineTransactionsJsonCursors `json:"cursors" yaml:"cursors" mapstructure:"cursors"`
 
 	// Items corresponds to the JSON schema field "items".
-	Items []TimelineTransactionsJsonItemsElem `json:"items" yaml:"items" mapstructure:"items"`
+	Items []TimelineTransaction `json:"items" yaml:"items" mapstructure:"items"`
 
 	// StartingTransactionId corresponds to the JSON schema field
 	// "startingTransactionId".
@@ -45,352 +409,6 @@ func (j *TimelineTransactionsJsonCursors) UnmarshalJSON(value []byte) error {
 		return err
 	}
 	*j = TimelineTransactionsJsonCursors(plain)
-	return nil
-}
-
-type TimelineTransactionsJsonItemsElem struct {
-	// Action corresponds to the JSON schema field "action".
-	Action TimelineTransactionsJsonItemsElemAction `json:"action" yaml:"action" mapstructure:"action"`
-
-	// Amount corresponds to the JSON schema field "amount".
-	Amount TimelineTransactionsJsonItemsElemAmount `json:"amount" yaml:"amount" mapstructure:"amount"`
-
-	// Avatar corresponds to the JSON schema field "avatar".
-	Avatar TimelineTransactionsJsonItemsElemAvatar `json:"avatar" yaml:"avatar" mapstructure:"avatar"`
-
-	// Badge corresponds to the JSON schema field "badge".
-	Badge *string `json:"badge,omitempty" yaml:"badge,omitempty" mapstructure:"badge,omitempty"`
-
-	// CashAccountNumber corresponds to the JSON schema field "cashAccountNumber".
-	CashAccountNumber *string `json:"cashAccountNumber,omitempty" yaml:"cashAccountNumber,omitempty" mapstructure:"cashAccountNumber,omitempty"`
-
-	// Deleted corresponds to the JSON schema field "deleted".
-	Deleted bool `json:"deleted" yaml:"deleted" mapstructure:"deleted"`
-
-	// EventType corresponds to the JSON schema field "eventType".
-	EventType TimelineTransactionsJsonItemsElemEventType `json:"eventType" yaml:"eventType" mapstructure:"eventType"`
-
-	// Hidden corresponds to the JSON schema field "hidden".
-	Hidden bool `json:"hidden" yaml:"hidden" mapstructure:"hidden"`
-
-	// Icon corresponds to the JSON schema field "icon".
-	Icon string `json:"icon" yaml:"icon" mapstructure:"icon"`
-
-	// Id corresponds to the JSON schema field "id".
-	Id Uuid `json:"id" yaml:"id" mapstructure:"id"`
-
-	// Status corresponds to the JSON schema field "status".
-	Status TimelineTransactionsJsonItemsElemStatus `json:"status" yaml:"status" mapstructure:"status"`
-
-	// SubAmount corresponds to the JSON schema field "subAmount".
-	SubAmount *TimelineTransactionsJsonItemsElemSubAmount `json:"subAmount,omitempty" yaml:"subAmount,omitempty" mapstructure:"subAmount,omitempty"`
-
-	// Subtitle corresponds to the JSON schema field "subtitle".
-	Subtitle *string `json:"subtitle,omitempty" yaml:"subtitle,omitempty" mapstructure:"subtitle,omitempty"`
-
-	// Timestamp corresponds to the JSON schema field "timestamp".
-	Timestamp string `json:"timestamp" yaml:"timestamp" mapstructure:"timestamp"`
-
-	// Title corresponds to the JSON schema field "title".
-	Title string `json:"title" yaml:"title" mapstructure:"title"`
-}
-
-type TimelineTransactionsJsonItemsElemAction struct {
-	// Payload corresponds to the JSON schema field "payload".
-	Payload Uuid `json:"payload" yaml:"payload" mapstructure:"payload"`
-
-	// Type corresponds to the JSON schema field "type".
-	Type TimelineTransactionsJsonItemsElemActionType `json:"type" yaml:"type" mapstructure:"type"`
-}
-
-type TimelineTransactionsJsonItemsElemActionType string
-
-const TimelineTransactionsJsonItemsElemActionTypeTimelineDetail TimelineTransactionsJsonItemsElemActionType = "timelineDetail"
-
-var enumValues_TimelineTransactionsJsonItemsElemActionType = []interface{}{
-	"timelineDetail",
-}
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *TimelineTransactionsJsonItemsElemActionType) UnmarshalJSON(value []byte) error {
-	var v string
-	if err := json.Unmarshal(value, &v); err != nil {
-		return err
-	}
-	var ok bool
-	for _, expected := range enumValues_TimelineTransactionsJsonItemsElemActionType {
-		if reflect.DeepEqual(v, expected) {
-			ok = true
-			break
-		}
-	}
-	if !ok {
-		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_TimelineTransactionsJsonItemsElemActionType, v)
-	}
-	*j = TimelineTransactionsJsonItemsElemActionType(v)
-	return nil
-}
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *TimelineTransactionsJsonItemsElemAction) UnmarshalJSON(value []byte) error {
-	var raw map[string]interface{}
-	if err := json.Unmarshal(value, &raw); err != nil {
-		return err
-	}
-	if _, ok := raw["payload"]; raw != nil && !ok {
-		return fmt.Errorf("field payload in TimelineTransactionsJsonItemsElemAction: required")
-	}
-	if _, ok := raw["type"]; raw != nil && !ok {
-		return fmt.Errorf("field type in TimelineTransactionsJsonItemsElemAction: required")
-	}
-	type Plain TimelineTransactionsJsonItemsElemAction
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	*j = TimelineTransactionsJsonItemsElemAction(plain)
-	return nil
-}
-
-type TimelineTransactionsJsonItemsElemAmount struct {
-	// Currency corresponds to the JSON schema field "currency".
-	Currency string `json:"currency" yaml:"currency" mapstructure:"currency"`
-
-	// FractionDigits corresponds to the JSON schema field "fractionDigits".
-	FractionDigits int `json:"fractionDigits" yaml:"fractionDigits" mapstructure:"fractionDigits"`
-
-	// Value corresponds to the JSON schema field "value".
-	Value float64 `json:"value" yaml:"value" mapstructure:"value"`
-}
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *TimelineTransactionsJsonItemsElemAmount) UnmarshalJSON(value []byte) error {
-	var raw map[string]interface{}
-	if err := json.Unmarshal(value, &raw); err != nil {
-		return err
-	}
-	if _, ok := raw["currency"]; raw != nil && !ok {
-		return fmt.Errorf("field currency in TimelineTransactionsJsonItemsElemAmount: required")
-	}
-	if _, ok := raw["fractionDigits"]; raw != nil && !ok {
-		return fmt.Errorf("field fractionDigits in TimelineTransactionsJsonItemsElemAmount: required")
-	}
-	if _, ok := raw["value"]; raw != nil && !ok {
-		return fmt.Errorf("field value in TimelineTransactionsJsonItemsElemAmount: required")
-	}
-	type Plain TimelineTransactionsJsonItemsElemAmount
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	if matched, _ := regexp.MatchString(`^[A-Z]{3}$`, string(plain.Currency)); !matched {
-		return fmt.Errorf("field %s pattern match: must match %s", "Currency", `^[A-Z]{3}$`)
-	}
-	if 0 > plain.FractionDigits {
-		return fmt.Errorf("field %s: must be >= %v", "fractionDigits", 0)
-	}
-	*j = TimelineTransactionsJsonItemsElemAmount(plain)
-	return nil
-}
-
-type TimelineTransactionsJsonItemsElemAvatar struct {
-	// Asset corresponds to the JSON schema field "asset".
-	Asset string `json:"asset" yaml:"asset" mapstructure:"asset"`
-
-	// Badge corresponds to the JSON schema field "badge".
-	Badge *string `json:"badge,omitempty" yaml:"badge,omitempty" mapstructure:"badge,omitempty"`
-}
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *TimelineTransactionsJsonItemsElemAvatar) UnmarshalJSON(value []byte) error {
-	var raw map[string]interface{}
-	if err := json.Unmarshal(value, &raw); err != nil {
-		return err
-	}
-	if _, ok := raw["asset"]; raw != nil && !ok {
-		return fmt.Errorf("field asset in TimelineTransactionsJsonItemsElemAvatar: required")
-	}
-	type Plain TimelineTransactionsJsonItemsElemAvatar
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	*j = TimelineTransactionsJsonItemsElemAvatar(plain)
-	return nil
-}
-
-type TimelineTransactionsJsonItemsElemEventType string
-
-const TimelineTransactionsJsonItemsElemEventTypeBenefitsSavebackExecution TimelineTransactionsJsonItemsElemEventType = "benefits_saveback_execution"
-const TimelineTransactionsJsonItemsElemEventTypeBenefitsSpareChangeExecution TimelineTransactionsJsonItemsElemEventType = "benefits_spare_change_execution"
-const TimelineTransactionsJsonItemsElemEventTypeCardFailedTransaction TimelineTransactionsJsonItemsElemEventType = "card_failed_transaction"
-const TimelineTransactionsJsonItemsElemEventTypeCardFailedVerification TimelineTransactionsJsonItemsElemEventType = "card_failed_verification"
-const TimelineTransactionsJsonItemsElemEventTypeCardRefund TimelineTransactionsJsonItemsElemEventType = "card_refund"
-const TimelineTransactionsJsonItemsElemEventTypeCardSuccessfulTransaction TimelineTransactionsJsonItemsElemEventType = "card_successful_transaction"
-const TimelineTransactionsJsonItemsElemEventTypeCardSuccessfulVerification TimelineTransactionsJsonItemsElemEventType = "card_successful_verification"
-const TimelineTransactionsJsonItemsElemEventTypeINCOMINGTRANSFER TimelineTransactionsJsonItemsElemEventType = "INCOMING_TRANSFER"
-const TimelineTransactionsJsonItemsElemEventTypeINCOMINGTRANSFERDELEGATION TimelineTransactionsJsonItemsElemEventType = "INCOMING_TRANSFER_DELEGATION"
-const TimelineTransactionsJsonItemsElemEventTypeINTERESTPAYOUT TimelineTransactionsJsonItemsElemEventType = "INTEREST_PAYOUT"
-const TimelineTransactionsJsonItemsElemEventTypeOUTGOINGTRANSFERDELEGATION TimelineTransactionsJsonItemsElemEventType = "OUTGOING_TRANSFER_DELEGATION"
-const TimelineTransactionsJsonItemsElemEventTypeSspCorporateActionInvoiceCash TimelineTransactionsJsonItemsElemEventType = "ssp_corporate_action_invoice_cash"
-const TimelineTransactionsJsonItemsElemEventTypeTimelineLegacyMigratedEvents TimelineTransactionsJsonItemsElemEventType = "timeline_legacy_migrated_events"
-const TimelineTransactionsJsonItemsElemEventTypeTradingSavingsplanExecuted TimelineTransactionsJsonItemsElemEventType = "trading_savingsplan_executed"
-const TimelineTransactionsJsonItemsElemEventTypeTradingTradeExecuted TimelineTransactionsJsonItemsElemEventType = "trading_trade_executed"
-
-var enumValues_TimelineTransactionsJsonItemsElemEventType = []interface{}{
-	"card_successful_transaction",
-	"ssp_corporate_action_invoice_cash",
-	"trading_savingsplan_executed",
-	"benefits_saveback_execution",
-	"card_failed_transaction",
-	"INTEREST_PAYOUT",
-	"INCOMING_TRANSFER_DELEGATION",
-	"card_successful_verification",
-	"card_failed_verification",
-	"card_refund",
-	"trading_trade_executed",
-	"OUTGOING_TRANSFER_DELEGATION",
-	"timeline_legacy_migrated_events",
-	"INCOMING_TRANSFER",
-	"benefits_spare_change_execution",
-}
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *TimelineTransactionsJsonItemsElemEventType) UnmarshalJSON(value []byte) error {
-	var v string
-	if err := json.Unmarshal(value, &v); err != nil {
-		return err
-	}
-	var ok bool
-	for _, expected := range enumValues_TimelineTransactionsJsonItemsElemEventType {
-		if reflect.DeepEqual(v, expected) {
-			ok = true
-			break
-		}
-	}
-	if !ok {
-		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_TimelineTransactionsJsonItemsElemEventType, v)
-	}
-	*j = TimelineTransactionsJsonItemsElemEventType(v)
-	return nil
-}
-
-type TimelineTransactionsJsonItemsElemStatus string
-
-const TimelineTransactionsJsonItemsElemStatusCANCELED TimelineTransactionsJsonItemsElemStatus = "CANCELED"
-const TimelineTransactionsJsonItemsElemStatusEXECUTED TimelineTransactionsJsonItemsElemStatus = "EXECUTED"
-
-var enumValues_TimelineTransactionsJsonItemsElemStatus = []interface{}{
-	"EXECUTED",
-	"CANCELED",
-}
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *TimelineTransactionsJsonItemsElemStatus) UnmarshalJSON(value []byte) error {
-	var v string
-	if err := json.Unmarshal(value, &v); err != nil {
-		return err
-	}
-	var ok bool
-	for _, expected := range enumValues_TimelineTransactionsJsonItemsElemStatus {
-		if reflect.DeepEqual(v, expected) {
-			ok = true
-			break
-		}
-	}
-	if !ok {
-		return fmt.Errorf("invalid value (expected one of %#v): %#v", enumValues_TimelineTransactionsJsonItemsElemStatus, v)
-	}
-	*j = TimelineTransactionsJsonItemsElemStatus(v)
-	return nil
-}
-
-type TimelineTransactionsJsonItemsElemSubAmount struct {
-	// Currency corresponds to the JSON schema field "currency".
-	Currency string `json:"currency" yaml:"currency" mapstructure:"currency"`
-
-	// FractionDigits corresponds to the JSON schema field "fractionDigits".
-	FractionDigits int `json:"fractionDigits" yaml:"fractionDigits" mapstructure:"fractionDigits"`
-
-	// Value corresponds to the JSON schema field "value".
-	Value float64 `json:"value" yaml:"value" mapstructure:"value"`
-}
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *TimelineTransactionsJsonItemsElemSubAmount) UnmarshalJSON(value []byte) error {
-	var raw map[string]interface{}
-	if err := json.Unmarshal(value, &raw); err != nil {
-		return err
-	}
-	if _, ok := raw["currency"]; raw != nil && !ok {
-		return fmt.Errorf("field currency in TimelineTransactionsJsonItemsElemSubAmount: required")
-	}
-	if _, ok := raw["fractionDigits"]; raw != nil && !ok {
-		return fmt.Errorf("field fractionDigits in TimelineTransactionsJsonItemsElemSubAmount: required")
-	}
-	if _, ok := raw["value"]; raw != nil && !ok {
-		return fmt.Errorf("field value in TimelineTransactionsJsonItemsElemSubAmount: required")
-	}
-	type Plain TimelineTransactionsJsonItemsElemSubAmount
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	if matched, _ := regexp.MatchString(`^[A-Z]{3}$`, string(plain.Currency)); !matched {
-		return fmt.Errorf("field %s pattern match: must match %s", "Currency", `^[A-Z]{3}$`)
-	}
-	if 0 > plain.FractionDigits {
-		return fmt.Errorf("field %s: must be >= %v", "fractionDigits", 0)
-	}
-	*j = TimelineTransactionsJsonItemsElemSubAmount(plain)
-	return nil
-}
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *TimelineTransactionsJsonItemsElem) UnmarshalJSON(value []byte) error {
-	var raw map[string]interface{}
-	if err := json.Unmarshal(value, &raw); err != nil {
-		return err
-	}
-	if _, ok := raw["action"]; raw != nil && !ok {
-		return fmt.Errorf("field action in TimelineTransactionsJsonItemsElem: required")
-	}
-	if _, ok := raw["amount"]; raw != nil && !ok {
-		return fmt.Errorf("field amount in TimelineTransactionsJsonItemsElem: required")
-	}
-	if _, ok := raw["avatar"]; raw != nil && !ok {
-		return fmt.Errorf("field avatar in TimelineTransactionsJsonItemsElem: required")
-	}
-	if _, ok := raw["deleted"]; raw != nil && !ok {
-		return fmt.Errorf("field deleted in TimelineTransactionsJsonItemsElem: required")
-	}
-	if _, ok := raw["eventType"]; raw != nil && !ok {
-		return fmt.Errorf("field eventType in TimelineTransactionsJsonItemsElem: required")
-	}
-	if _, ok := raw["hidden"]; raw != nil && !ok {
-		return fmt.Errorf("field hidden in TimelineTransactionsJsonItemsElem: required")
-	}
-	if _, ok := raw["icon"]; raw != nil && !ok {
-		return fmt.Errorf("field icon in TimelineTransactionsJsonItemsElem: required")
-	}
-	if _, ok := raw["id"]; raw != nil && !ok {
-		return fmt.Errorf("field id in TimelineTransactionsJsonItemsElem: required")
-	}
-	if _, ok := raw["status"]; raw != nil && !ok {
-		return fmt.Errorf("field status in TimelineTransactionsJsonItemsElem: required")
-	}
-	if _, ok := raw["timestamp"]; raw != nil && !ok {
-		return fmt.Errorf("field timestamp in TimelineTransactionsJsonItemsElem: required")
-	}
-	if _, ok := raw["title"]; raw != nil && !ok {
-		return fmt.Errorf("field title in TimelineTransactionsJsonItemsElem: required")
-	}
-	type Plain TimelineTransactionsJsonItemsElem
-	var plain Plain
-	if err := json.Unmarshal(value, &plain); err != nil {
-		return err
-	}
-	*j = TimelineTransactionsJsonItemsElem(plain)
 	return nil
 }
 

@@ -9,7 +9,8 @@
 > Development of version 2 has resumed after a long break. Current status:
 >
 > - ✅ Authentication workflow has been completely rewritten
-> - 🚧 WebSocket response handling is the next focus area
+> - ✅ WebSocket response handling is done
+> - 🚧 Processing transaction details is the next focus area
 > - ❌ The current version (v1) is no longer maintained and is broken due to Trade Republic API changes
 >
 > The v2 rewrite aims to deliver:

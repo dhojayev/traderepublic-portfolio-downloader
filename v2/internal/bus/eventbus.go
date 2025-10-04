@@ -1,3 +1,5 @@
+//go:generate go tool mockgen -source=eventbus.go -destination eventbus_mock_gen.go -package=bus
+
 package bus
 
 import (
@@ -8,20 +10,23 @@ import (
 type Event struct {
 	Topic string
 	ID    string
-	Name  string
 	Data  any
 }
 
-func NewEvent(topic, id, name string, data any) Event {
+func NewEvent(topic, id string, data any) Event {
 	return Event{
 		Topic: topic,
 		ID:    id,
-		Name:  name,
 		Data:  data,
 	}
 }
 
 type EventHandler func(Event)
+
+type EventBusInterface interface {
+	Subscribe(string, EventHandler)
+	Publish(Event)
+}
 
 type EventBus struct {
 	subscribers map[string][]EventHandler
@@ -51,5 +56,5 @@ func (b *EventBus) Publish(event Event) {
 		}
 	}
 
-	slog.Debug("event published", "topic", event.Topic, "id", event.ID, "name", event.Name)
+	slog.Debug("event published", "topic", event.Topic, "id", event.ID)
 }

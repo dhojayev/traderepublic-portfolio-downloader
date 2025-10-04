@@ -1,0 +1,374 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/dhojayev/traderepublic-portfolio-downloader/refs/heads/main/v2/pkg/traderepublic/schemas/instrument.json",
+  "type": "object",
+  "required": [
+    "active",
+    "exchangeIds",
+    "exchanges",
+    "jurisdictions",
+    "isin",
+    "name",
+    "typeId",
+    "legalTypeId"
+  ],
+  "properties": {
+    "active": {
+      "type": "boolean"
+    },
+    "exchangeIds": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Z0-9]{3}$"
+      }
+    },
+    "exchanges": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/exchange"
+      }
+    },
+    "jurisdictions": {
+      "type": "object",
+      "patternProperties": {
+        "^[A-Z]{2}$": {
+          "$ref": "#/definitions/jurisdiction"
+        }
+      }
+    },
+    "dividends": {
+      "type": "array"
+    },
+    "splits": {
+      "type": "array"
+    },
+    "cfi": {
+      "type": "string",
+      "pattern": "^[A-Z]{6}$"
+    },
+    "name": {
+      "type": "string"
+    },
+    "typeId": {
+      "type": "string",
+      "enum": ["crypto", "fund", "stock", "etf"]
+    },
+    "legalTypeId": {
+      "type": "string"
+    },
+    "wkn": {
+      "type": "string"
+    },
+    "legacyTypeChar": {
+      "type": "string"
+    },
+    "isin": {
+      "type": "string"
+    },
+    "priceFactor": {
+      "type": "integer"
+    },
+    "shortName": {
+      "type": "string"
+    },
+    "nextGenName": {
+      "type": "string"
+    },
+    "alarmsName": {
+      "type": "string"
+    },
+    "homeSymbol": {
+      "type": "string"
+    },
+    "intlSymbol": {
+      "type": ["string", "null"]
+    },
+    "homeNsin": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/tag"
+      }
+    },
+    "company": {
+      "$ref": "#/definitions/company"
+    },
+    "fundInfo": {
+      "type": ["object", "null"],
+      "properties": {
+        "ter": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+$"
+        },
+        "underlyingClass": {
+          "type": "string"
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "market": {
+          "type": ["string", "null"]
+        },
+        "method": {
+          "type": "string"
+        },
+        "useOfProfits": {
+          "type": "string"
+        },
+        "useOfProfitsDisplayName": {
+          "type": "string"
+        },
+        "index": {
+          "type": "string"
+        },
+        "ucits": {
+          "type": "boolean"
+        },
+        "legalFormType": {
+          "type": "string"
+        },
+        "domicile": {
+          "type": "string",
+          "pattern": "^[A-Z]{2}$"
+        },
+        "launchDate": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "category": {
+          "type": "string",
+          "enum": ["etf"]
+        }
+      },
+      "required": [
+        "ter",
+        "underlyingClass",
+        "currency",
+        "useOfProfits",
+        "useOfProfitsDisplayName",
+        "index",
+        "ucits",
+        "legalFormType",
+        "domicile",
+        "launchDate",
+        "category"
+      ]
+    },
+    "descriptions": {
+      "type": ["object", "null"],
+      "patternProperties": {
+        "^(de|en)$": {
+          "type": "string"
+        }
+      }
+    },
+    "marketCap": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9]+\\.[0-9]{2}$"
+        },
+        "currencyId": {
+          "type": ["string", "null"],
+          "pattern": "^[A-Z]{3}$"
+        }
+      }
+    },
+    "taxProviderInfo": {
+      "type": "object",
+      "properties": {
+        "regnology": {
+          "type": "object",
+          "properties": {
+            "instrumentType": {
+              "type": ["string", "null"]
+            },
+            "instrumentSubType": {
+              "type": ["integer", "null"]
+            }
+          }
+        },
+        "wmdaten": {
+          "type": "object",
+          "properties": {
+            "instrumentTypeA": {
+              "type": ["string", "null"]
+            },
+            "instrumentTypeB": {
+              "type": ["string", "null"]
+            },
+            "instrumentTypeC": {
+              "type": ["string", "null"]
+            },
+            "instrumentTypeD": {
+              "type": ["string", "null"]
+            },
+            "instrumentTypeE": {
+              "type": ["string", "null"]
+            },
+            "instrumentTypeF": {
+              "type": ["string", "null"]
+            },
+            "bistaIssuerCategory": {
+              "type": ["string", "null"]
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "exchange": {
+      "type": "object",
+      "required": ["slug", "active", "nameAtExchange", "symbolAtExchange"],
+      "properties": {
+        "slug": {
+          "type": "string",
+          "pattern": "^[A-Z0-9]{3}$"
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "nameAtExchange": {
+          "type": "string"
+        },
+        "symbolAtExchange": {
+          "type": "string"
+        },
+        "band": {
+          "type": ["integer", "null"]
+        },
+        "firstSeen": {
+          "type": "integer"
+        },
+        "lastSeen": {
+          "type": "integer"
+        },
+        "fractionalTrading": {
+          "type": ["object", "null"],
+          "properties": {
+            "minOrderSize": {
+              "type": "string"
+            },
+            "maxOrderSize": {
+              "type": ["string", "null"]
+            },
+            "stepSize": {
+              "type": "string"
+            },
+            "orderAmountLimitCurrency": {
+              "type": ["string", "null"]
+            },
+            "minOrderAmount": {
+              "type": ["string", "null"]
+            },
+            "maxOrderAmount": {
+              "type": ["string", "null"]
+            }
+          }
+        }
+      }
+    },
+    "jurisdiction": {
+      "type": "object",
+      "required": ["active", "kidRequired", "savable"],
+      "properties": {
+        "active": {
+          "type": "boolean"
+        },
+        "kidLink": {
+          "type": ["string", "null"],
+          "pattern": "^https://.*\\.pdf\\?.*$"
+        },
+        "kidRequired": {
+          "type": "boolean"
+        },
+        "savable": {
+          "type": "boolean"
+        },
+        "fractionalTradingAllowed": {
+          "type": "boolean"
+        },
+        "proprietaryTradable": {
+          "type": "boolean"
+        },
+        "usesWeightsForExchanges": {
+          "type": "boolean"
+        },
+        "weights": {
+          "type": ["object", "null"],
+          "patternProperties": {
+            "^[A-Z0-9]{3}$": {
+              "type": "integer",
+              "enum": [0, 1]
+            }
+          }
+        }
+      }
+    },
+    "tag": {
+      "type": "object",
+      "required": ["type", "id", "name", "icon"],
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "icon": {
+          "type": "string",
+          "pattern": "^https://.*\\.png$"
+        }
+      }
+    },
+    "company": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": ["string", "null"]
+        },
+        "ipoDate": {
+          "type": ["integer", "null"],
+          "description": "Unix timestamp in milliseconds"
+        },
+        "countryOfOrigin": {
+          "type": ["string", "null"],
+          "pattern": "^[A-Z]{2}$"
+        }
+      }
+    },
+    "targetMarket": {
+      "type": "object",
+      "required": ["investorExperience", "investorType"],
+      "properties": {
+        "investorExperience": {
+          "type": "string",
+          "enum": [
+            "basicKnowledge",
+            "informedKnowledge",
+            "advancedKnowledge",
+            "intermediateKnowledge",
+            "expertKnowledge"
+          ]
+        },
+        "investorType": {
+          "type": "string",
+          "enum": ["retail", "professional", "eligible"]
+        }
+      }
+    }
+  }
+}
