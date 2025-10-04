@@ -11,12 +11,27 @@ var (
 	ErrSliceElementNotFound = errors.New("slice element not found")
 	ErrSectionNotFound      = errors.New("section not found")
 	ErrDataItemNotFound     = errors.New("data item not found")
+	ErrStepNotFound         = errors.New("step not found")
 
 	SectionOverview    = sectionTitles{"Overview"}    // Title for the overview table section
 	SectionTransaction = sectionTitles{"Transaction"} // Title for the transaction table section
 	SectionPerformance = sectionTitles{"Performance"}
+	SectionSender      = sectionTitles{"Sender"}
 
+	StepInterestPayment = "Interest payment"
+
+	DataFrom             = dataTitles{"From"}
+	DataTo               = dataTitles{"To"}
+	DataPayment          = dataTitles{"Payment"}
+	DataRoundUp          = dataTitles{"Round up"}
+	DataBuy              = dataTitles{"Buy"}
+	DataCardVerification = dataTitles{"Card verification"}
 	DataCardPayment      = dataTitles{"Card payment"}
+	DataCardRefund       = dataTitles{"Card refund"}
+	DataAverageBalance   = dataTitles{"Average balance"}
+	DataSell             = dataTitles{"Sell"}
+	DataLimitSell        = dataTitles{"Limit Sell"}
+	DataSaveback         = dataTitles{"Saveback"}
 	DataOrderType        = dataTitles{"Order Type"}
 	DataSavingsPlan      = dataTitles{"Savings Plan"}
 	DataEvent            = dataTitles{"Event"}
@@ -50,6 +65,17 @@ func (d *TimelineDetailsJson) SectionHeader() (HeaderSection, error) {
 	return header, nil
 }
 
+func (d *TimelineDetailsJson) SectionSteps() (StepsSection, error) {
+	var steps StepsSection
+
+	err := findSliceElement(d.Sections, &steps, "")
+	if err != nil {
+		return steps, fmt.Errorf("steps %w", ErrSectionNotFound)
+	}
+
+	return steps, nil
+}
+
 func (d *TimelineDetailsJson) FindSection(titles sectionTitles) (TableSection, error) {
 	var section TableSection
 
@@ -63,7 +89,7 @@ func (d *TimelineDetailsJson) FindSection(titles sectionTitles) (TableSection, e
 		return section, nil
 	}
 
-	return section, fmt.Errorf("table %w with titles %v", ErrSectionNotFound, titles)
+	return TableSection{}, fmt.Errorf("table %w with titles %v", ErrSectionNotFound, titles)
 }
 
 // FindData retrieves a payment row based on the provided titles from the table section.
@@ -80,7 +106,19 @@ func (s *TableSection) FindData(titles dataTitles) (PaymentRow, error) {
 		return item, nil
 	}
 
-	return item, fmt.Errorf("%w with titles %v", ErrDataItemNotFound, titles)
+	return PaymentRow{}, fmt.Errorf("%w with titles %v", ErrDataItemNotFound, titles)
+}
+
+func (s *StepsSection) FindStep(title string) (StepItem, error) {
+	for _, step := range s.Steps {
+		if step.Content.Title != title {
+			continue
+		}
+
+		return step, nil
+	}
+
+	return StepItem{}, fmt.Errorf("%w with title %s", ErrStepNotFound, title)
 }
 
 // findSliceElement searches for a slice element that matches the provided search criteria.

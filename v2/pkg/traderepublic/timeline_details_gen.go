@@ -1210,7 +1210,10 @@ type PaymentRow struct {
 
 type PaymentRowDetail struct {
 	// DisplayValue corresponds to the JSON schema field "displayValue".
-	DisplayValue PaymentRowDetailDisplayValue `json:"displayValue" yaml:"displayValue" mapstructure:"displayValue"`
+	DisplayValue *PaymentRowDetailDisplayValue `json:"displayValue,omitempty" yaml:"displayValue,omitempty" mapstructure:"displayValue,omitempty"`
+
+	// FunctionalStyle corresponds to the JSON schema field "functionalStyle".
+	FunctionalStyle *string `json:"functionalStyle,omitempty" yaml:"functionalStyle,omitempty" mapstructure:"functionalStyle,omitempty"`
 
 	// Text corresponds to the JSON schema field "text".
 	Text string `json:"text" yaml:"text" mapstructure:"text"`
@@ -1250,9 +1253,6 @@ func (j *PaymentRowDetail) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
-	}
-	if _, ok := raw["displayValue"]; raw != nil && !ok {
-		return fmt.Errorf("field displayValue in PaymentRowDetail: required")
 	}
 	if _, ok := raw["text"]; raw != nil && !ok {
 		return fmt.Errorf("field text in PaymentRowDetail: required")
@@ -1736,10 +1736,10 @@ func (j *StepItem) UnmarshalJSON(value []byte) error {
 
 type StepsSection struct {
 	// Steps corresponds to the JSON schema field "steps".
-	Steps []StepItem `json:"steps,omitempty" yaml:"steps,omitempty" mapstructure:"steps,omitempty"`
+	Steps []StepItem `json:"steps" yaml:"steps" mapstructure:"steps"`
 
 	// Title corresponds to the JSON schema field "title".
-	Title *string `json:"title,omitempty" yaml:"title,omitempty" mapstructure:"title,omitempty"`
+	Title string `json:"title" yaml:"title" mapstructure:"title"`
 
 	// Type corresponds to the JSON schema field "type".
 	Type string `json:"type" yaml:"type" mapstructure:"type"`
@@ -1750,6 +1750,12 @@ func (j *StepsSection) UnmarshalJSON(value []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(value, &raw); err != nil {
 		return err
+	}
+	if _, ok := raw["steps"]; raw != nil && !ok {
+		return fmt.Errorf("field steps in StepsSection: required")
+	}
+	if _, ok := raw["title"]; raw != nil && !ok {
+		return fmt.Errorf("field title in StepsSection: required")
 	}
 	if _, ok := raw["type"]; raw != nil && !ok {
 		return fmt.Errorf("field type in StepsSection: required")

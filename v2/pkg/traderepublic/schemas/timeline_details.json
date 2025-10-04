@@ -111,7 +111,7 @@
     },
     "stepsSection": {
       "type": "object",
-      "required": ["type"],
+      "required": ["title", "type", "steps"],
       "properties": {
         "title": {
           "type": "string"
@@ -408,7 +408,7 @@
         },
         "detail": {
           "type": "object",
-          "required": ["type", "text", "displayValue"],
+          "required": ["type", "text"],
           "properties": {
             "text": {
               "type": "string"
@@ -424,6 +424,9 @@
                   "type": "string"
                 }
               }
+            },
+            "functionalStyle": {
+              "type": "string"
             },
             "type": {
               "type": "string",
